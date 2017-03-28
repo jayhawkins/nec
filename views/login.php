@@ -39,10 +39,10 @@
                         </p>
                         <form class="login-form mt-lg" method="POST" action="/login">
                             <div class="form-group">
-                                <input type="text" class="form-control" id="username" name="username" placeholder="Email">
+                                <input type="text" class="form-control" id="username" name="username" placeholder="Email" required="required" />
                             </div>
                             <div class="form-group">
-                                <input class="form-control" id="password" name="password" type="password" placeholder="Password">
+                                <input class="form-control" id="password" name="password" type="password" placeholder="Password" required="required" />
                             </div>
 <?php
                             if (!empty($invalidPassword)) {
@@ -100,6 +100,7 @@
 <script src="js/app.js"></script>
 
 <!-- page specific libs -->
+<script src="vendor/parsleyjs/dist/parsley.min.js"></script>
 <!-- page specific js -->
 </body>
 </html>

@@ -28,6 +28,10 @@ $app->route('GET /logout', function() {
   Flight::redirect('/login');
 });
 
+$app->route('GET /accountverified', function() {
+  Flight::render('accountverified');
+});
+
 
 /*****************************************************************************/
 // Test routes
@@ -62,7 +66,7 @@ $app->route('POST /login', function() {
     $username = Flight::request()->data['username'];
     $password = Flight::request()->data['password'];
     $user = Flight::user();
-    $return = $user->login($username,$password);
+    $return = $user->loginapi($username,$password);
     if ($return) {
       Flight::render('dashboard', array());
     } else {
@@ -72,21 +76,33 @@ $app->route('POST /login', function() {
 });
 
 $app->route('POST /register', function() {
-    $password1 = Flight::request()->data['password1'];
+    $password = Flight::request()->data['password'];
     $firstName = Flight::request()->data['firstName'];
     $lastName = Flight::request()->data['lastName'];
     $email = Flight::request()->data['email'];
     $businessName = Flight::request()->data['businessName'];
     $businessType = Flight::request()->data['businessType'];
     $user = Flight::user();
-    $return = $user->register($password1,$firstName,$lastName,$email,$businessName,$businessType);
+    $return = $user->registerapi($password,$firstName,$lastName,$email,$businessName,$businessType);
     if ($return) {
-      Flight::render('dashboard', array());
+      Flight::render('registrationsuccessful', array());
     } else {
       $invalidPassword = (isset($_SESSION['invalidPassword'])) ? $_SESSION['invalidPassword']:'';
       Flight::render('login', array('invalidPassword'=> $invalidPassword));
     }
 });
+
+$app->route('GET /verifyaccount/@id/@code', function($id,$code) {
+    $user = Flight::user();
+    $accountVerified = $user->verifyaccount($id,$code);
+    if ($accountVerified) {
+        Flight::redirect('/accountverified');
+    } else {
+        echo "Account Not Verified!";
+        die();
+    }
+});
+
 
 $app->route('/dashboard', function() {
     if (is_authorized()) {

@@ -6,11 +6,7 @@ session_start();
 
 Flight::set('flight.views.path', 'views');
 
-//$db = new PDO('mysql:host=localhost;dbname=nec', 'MasterWebUser', 'pqlamz');
-
-define("DBNAME", "nec");
-define("DBUSER", "MasterWebUser");
-define("DBPASS", "pqlamz");
+require '../nec_config.php';
 
 Flight::register('db', 'PDO', array('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS ), function($db){
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

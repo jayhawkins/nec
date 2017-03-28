@@ -40,43 +40,56 @@
                         <div class="row">
                           <div class="col-sm-5">
                               <div class="form-group">
-                                <input type="text" class="form-control" id="firstName" name="firstName" placeholder="First Name" />
+                                <input type="text" class="form-control" id="firstName" name="firstName" placeholder="First Name"
+                                        required="required" />
                               </div>
                           </div>
                           <div class="col-sm-5">
                               <div class="form-group">
-                                <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Last Name" />
+                                <input type="text" id="lastName" name="lastName" class="form-control" placeholder="Last Name"
+                                       required="required" />
                               </div>
                           </div>
                         </div>
                         <div class="row">
                           <div class="col-sm-8">
                               <div class="form-group">
-                                <input type="text" class="form-control" id="email" name="email" placeholder="Email" />
+                                <input type="email" id="email" name="email" class="form-control" placeholder="Email"
+                                       data-parsley-trigger="change"
+                                       data-parsley-validation-threshold="1"
+                                       required="required" />
                               </div>
                           </div>
                         </div>
                         <div class="row">
                           <div class="col-sm-5">
                               <div class="form-group">
-                                <input class="form-control" id="password1" name="password1" type="password" placeholder="Password" />
+                                <input type="password" id="password" name="password" class="form-control mb-sm" placeholder="Password"
+                                       data-parsley-trigger="change"
+                                       data-parsley-minlength="6"
+                                       required="required" />
                               </div>
                           </div>
                           <div class="col-sm-5">
                               <div class="form-group">
-                                <input class="form-control" id="password2" name="password2" type="password" placeholder="Password Again" />
+                                <input type="password" id="password2" name="password2" class="form-control" placeholder="Repeat Password"
+                                       data-parsley-trigger="change"
+                                       data-parsley-minlength="6"
+                                       data-parsley-equalto="#password"
+                                       required="required" />
                               </div>
                           </div>
                         </div>
                         <div class="row">
                           <div class="col-sm-5">
                               <div class="form-group">
-                                <input class="form-control" id="businessname" name="businessname" type="text" placeholder="Business Name" />
+                                <input class="form-control" id="businessname" name="businessname" type="text" placeholder="Business Name"
+                                        required="required" />
                               </div>
                           </div>
                           <div class="col-sm-5">
                               <div class="form-group">
-                                <select id="businessType" name="businessType" data-placeholder="Business Type..." class="form-control chzn-select" data-ui-jq="select2">
+                                <select id="businessType" name="businessType" data-placeholder="Business Type..." class="form-control chzn-select" data-ui-jq="select2" required="required">
                                   <option value=""></option>
                                   <option value="carrier">Carrier</option>
                                   <option value="customer">Customer</option>
@@ -126,6 +139,7 @@
 <script src="js/app.js"></script>
 
 <!-- page specific libs -->
+<script src="vendor/parsleyjs/dist/parsley.min.js"></script>
 <!-- page specific js -->
 </body>
 </html>

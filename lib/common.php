@@ -3,7 +3,7 @@
 function sendmail($to, $subject, $body, $from, $document='') {
 
   // Create the Transport
-  $transport = Swift_SmtpTransport::newInstance('smtp.gmail.com', 465, 'tls')
+  $transport = Swift_SmtpTransport::newInstance('smtp.gmail.com', 587, 'tls')
     ->setUsername('jaycarl.hawkins@gmail.com')
     ->setPassword('turnsomepages1978');
 
@@ -14,10 +14,9 @@ function sendmail($to, $subject, $body, $from, $document='') {
       $subject = 'Notification from Nationwide Equipment Control';
   }
 
-  if (empty($fromemail)) {
-      $fromemail = array('jaycarl.hawkins@gmail.com' => 'Jay Hawkins');
+  if (empty($from) || count($from) <= 0) {
+      $from = array('jaycarl.hawkins@gmail.com' => 'Jay Hawkins');
   }
-  $setFrom = array($fromemail => $fromname);
 
   // Send an account activation to the member
   // Create the message
@@ -27,7 +26,7 @@ function sendmail($to, $subject, $body, $from, $document='') {
     ->setSubject($subject)
 
     // Set the From address with an associative array
-    ->setFrom($setFrom)
+    ->setFrom($from)
 
     // Give it a body
     ->setBody($body)
@@ -45,15 +44,19 @@ function sendmail($to, $subject, $body, $from, $document='') {
     /********************************************************************/
     $failedRecipients = array();
     $numSent = 0;
-    foreach ($to as $address => $name)
-    {
-      if (is_int($address)) {
-        $message->setTo($name);
-      } else {
-        $message->setTo(array($address => $name));
-      }
+    foreach ($to as $address => $name) {
+        if (is_int($address)) {
+          $message->setTo($name);
+        } else {
+          $message->setTo(array($address => $name));
+        }
 
-      $numSent += $mailer->send($message, $failedRecipients);
+        try {
+            $numSent += $mailer->send($message, $failedRecipients);
+        } catch (Exception $e) {
+            echo "<p>".$e."</p>";
+            die();
+        }
     }
 
     return $numSent;
