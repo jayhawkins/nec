@@ -79,13 +79,21 @@ $app->route('POST /register', function() {
     $password = Flight::request()->data['password'];
     $firstName = Flight::request()->data['firstName'];
     $lastName = Flight::request()->data['lastName'];
+    $title = Flight::request()->data['title'];
+    $address1 = Flight::request()->data['address1'];
+    $address2 = Flight::request()->data['address2'];
+    $city = Flight::request()->data['city'];
+    $state = Flight::request()->data['state'];
+    $zip = Flight::request()->data['zip'];
+    $phone = Flight::request()->data['phone'];
+    $fax = Flight::request()->data['fax'];
     $email = Flight::request()->data['email'];
-    $businessName = Flight::request()->data['businessName'];
-    $businessType = Flight::request()->data['businessType'];
+    $entityName = Flight::request()->data['entityName'];
+    $entityTypeID = Flight::request()->data['entityTypeID'];
     $user = Flight::user();
-    $return = $user->registerapi($password,$firstName,$lastName,$email,$businessName,$businessType);
+    $return = $user->registerapi($password,$firstName,$lastName,$title,$address1,$address2,$city,$state,$zip,$phone,$fax,$email,$entityName,$entityTypeID);
     if ($return) {
-      Flight::render('registrationsuccessful', array());
+      Flight::render('registrationsuccessful');
     } else {
       $invalidPassword = (isset($_SESSION['invalidPassword'])) ? $_SESSION['invalidPassword']:'';
       Flight::render('login', array('invalidPassword'=> $invalidPassword));

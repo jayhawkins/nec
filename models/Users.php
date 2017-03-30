@@ -105,11 +105,11 @@ class User
       }
     }
 */
-    public function registerapi($password1,$firstName,$lastName,$email,$businessName,$businessType) {
+    public function registerapi($password,$firstName,$lastName,$title,$address1,$address2,$city,$state,$zip,$phone,$fax,$email,$entityName,$entityTypeID) {
       try {
             $userurl = API_HOST.'/api/users';
             $userdata = array("username" => $email,
-                      "password" => password_hash($password1, PASSWORD_BCRYPT),
+                      "password" => password_hash($password, PASSWORD_BCRYPT),
                       "status" => "Inactive",
                       "createdAt" => date('Y-m-d H:i:s'),
                       "updatedAt" => date('Y-m-d H:i:s')
@@ -148,6 +148,7 @@ class User
                 $membercontext  = stream_context_create($memberoptions);
                 $memberresult = file_get_contents($memberurl, false, $membercontext);
                 if ($memberresult > 0) {
+                    $member_id = $memberresult;
                     $code = 0;
                     $to = array($email => $firstName . " " . $lastName);
                     $from = array('jaycarl.hawkins@gmail.com' => 'Jay Hawkins');
@@ -159,17 +160,52 @@ class User
                     if (count($templateresult) > 0) {
                         $numSent = sendmail($to, $subject, $body, $from);
                     }
+                    // Now that you have a member, create the entity record
+                    $entityurl = API_HOST.'/api/entities';
+                    $entitydata = array(
+                                "name" => $entityName,
+                                "entityTypeID" => $entityTypeID,
+                                "assignedMemberID" => $member_id,
+                                "status" => "Active",
+                                "createdAt" => date('Y-m-d H:i:s'),
+                                "updatedAt" => date('Y-m-d H:i:s')
+                    );
+                    // use key 'http' even if you send the request to https://...
+                    $entityoptions = array(
+                        'http' => array(
+                            'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                            'method'  => 'POST',
+                            'content' => http_build_query($entitydata)
+                        )
+                    );
+                    $entitycontext  = stream_context_create($entityoptions);
+                    $entityresult = file_get_contents($entityurl, false, $entitycontext);
+                    if ($entityresult > 0) {
+                        $updatememberurl = API_HOST.'/api/members/'.$member_id;
+                        $updatememberdata = array(
+                                    "entityID" => $entityresult
+                        );
+                        // use key 'http' even if you send the request to https://...
+                        $updatememberoptions = array(
+                            'http' => array(
+                                'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                                'method'  => 'PUT',
+                                'content' => http_build_query($updatememberdata)
+                            )
+                        );
+                        $updatemembercontext  = stream_context_create($updatememberoptions);
+                        $updatememberresult = file_get_contents($updatememberurl, false, $updatemembercontext);
+                    }
                 }
 
-                return true;
+                return true; // Return true to the router so it knows everything was created!
             } else {
-              return false;
+              return "There was an issue with creating the information. Please contact NEC!";  // There was an issue, let the router know something failed!
             }
       } catch (Exception $e) { // The authorization query failed verification
             header('HTTP/1.1 401 Unauthorized');
             header('Content-Type: text/plain; charset=utf8');
-            echo $e->getMessage();
-            exit();
+            return $e->getMessage();
       }
     }
 

@@ -7,7 +7,8 @@
     <!--[if IE 9]>
         <link href="css/application-ie9-part2.css" rel="stylesheet">
     <![endif]-->
-    <link href="vendor/select2/select2.css" rel="stylesheet">
+    <link rel="stylesheet" href="vendor/select2/select2.css">
+    <link rel="stylesheet" href="vendor/select2/select2-bootstrap.css">
     <link rel="shortcut icon" href="img/favicon.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="">
@@ -19,6 +20,28 @@
          chrome fix https://code.google.com/p/chromium/issues/detail?id=167083
          https://code.google.com/p/chromium/issues/detail?id=332189
          */
+
+
+         function loadStates() {
+            $.ajax({
+               type: "GET",
+               url: "<?php echo API_HOST.'/api/states?columns=abbreviation,name&order=name&transform=1' ?>",
+               cache: false,
+               success: function(data){
+                  var listitems = '';
+                  var $select = $('#state');
+                  $.each(data.states, function( index ){
+                     //console.log(data.states[index].abbreviation);
+                     listitems += '<option value=' + data.states[index].abbreviation + '>' + data.states[index].name + '</option>';
+                  });
+                  $select.append(listitems);
+               },
+               error: function() {
+                  alert("Can't Get States for List");
+               }
+            });
+         }
+
     </script>
 </head>
 <body class="login-page">
@@ -27,83 +50,154 @@
     <main id="content" class="widget-login-container" role="main">
         <div class="row">
             <!-- div class="col-xl-4 col-md-6 col-xs-10 col-xl-offset-4 col-md-offset-3 col-xs-offset-1" -->
-            <div class="col-lg-8 col-lg-offset-2">
+            <div class="col-lg-10 col-lg-offset-1">
                 <h5 class="widget-login-logo animated fadeInUp">
                     <img src="img/nec_logo.png" />
                 </h5>
                 <section class="widget widget-login animated fadeInUp">
                     <header>
                         <h3>Register</h3>
+                        <hr />
+                        <p>Please provide the following information to create a free online account to NEC's web portal. NEC makes it easy to manage
+                           your business with us at any time and from any place! <i>(Required fields are marked with an asterisk *)</i>
+                        </p>
                     </header>
                     <div class="widget-body">
                       <form class="register-form mt-lg" method="POST" action="/register">
                         <div class="row">
-                          <div class="col-sm-5">
-                              <div class="form-group">
-                                <input type="text" class="form-control" id="firstName" name="firstName" placeholder="First Name"
-                                        required="required" />
-                              </div>
-                          </div>
-                          <div class="col-sm-5">
-                              <div class="form-group">
-                                <input type="text" id="lastName" name="lastName" class="form-control" placeholder="Last Name"
-                                       required="required" />
-                              </div>
-                          </div>
+                            <div class="col-sm-8">
+                                <div class="form-group">
+                                  <input type="radio" id="customer" name="entityTypeID" value="1" /> Customer&nbsp;&nbsp;
+                                  <input type="radio" id="carrier" name="entityTypeID" value="2"/> Carrier
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                            </div>
                         </div>
                         <div class="row">
-                          <div class="col-sm-8">
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                  <input type="text" class="form-control" id="firstName" name="firstName" placeholder="*First Name"
+                                          required="required" />
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                  <input type="text" id="lastName" name="lastName" class="form-control" placeholder="*Last Name"
+                                         required="required" />
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
                               <div class="form-group">
-                                <input type="email" id="email" name="email" class="form-control" placeholder="Email"
-                                       data-parsley-trigger="change"
-                                       data-parsley-validation-threshold="1"
-                                       required="required" />
+                                <input type="text" id="title" name="title" class="form-control" placeholder="Title" />
                               </div>
-                          </div>
+                            </div>
                         </div>
                         <div class="row">
-                          <div class="col-sm-5">
-                              <div class="form-group">
-                                <input type="password" id="password" name="password" class="form-control mb-sm" placeholder="Password"
-                                       data-parsley-trigger="change"
-                                       data-parsley-minlength="6"
-                                       required="required" />
-                              </div>
-                          </div>
-                          <div class="col-sm-5">
-                              <div class="form-group">
-                                <input type="password" id="password2" name="password2" class="form-control" placeholder="Repeat Password"
-                                       data-parsley-trigger="change"
-                                       data-parsley-minlength="6"
-                                       data-parsley-equalto="#password"
-                                       required="required" />
-                              </div>
-                          </div>
+                            <div class="col-sm-8">
+                                <div class="form-group">
+                                  <input type="text" id="entityName" name="entityName" class="form-control" placeholder="*Company Name"
+                                         required="required" />
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                            </div>
                         </div>
                         <div class="row">
-                          <div class="col-sm-5">
-                              <div class="form-group">
-                                <input class="form-control" id="businessname" name="businessname" type="text" placeholder="Business Name"
-                                        required="required" />
-                              </div>
-                          </div>
-                          <div class="col-sm-5">
-                              <div class="form-group">
-                                <select id="businessType" name="businessType" data-placeholder="Business Type..." class="form-control chzn-select" data-ui-jq="select2" required="required">
-                                  <option value=""></option>
-                                  <option value="carrier">Carrier</option>
-                                  <option value="customer">Customer</option>
-                                </select>
-                              </div>
-                          </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                  <input type="text" id="address1" name="address1" class="form-control mb-sm" placeholder="Company Address" />
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                  <input type="text" id="address2" name="address2" class="form-control mb-sm" placeholder="Bldg. Number/Suite" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                  <input type="text" id="city" name="city" class="form-control" placeholder="*City"
+                                         required="required" />
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                  <select id="state" name="state" data-placeholder="State" class="form-control chzn-select" data-ui-jq="select2" required="required">
+                                    <option value="">*Select State...</option>
+                                  </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                  <input type="text" id="zip" name="zip" class="form-control mb-sm" placeholder="Zip" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <input type="text" id="phone" name="phone" class="form-control" placeholder="*Phone"
+                                           required="required" />
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <input type="text" id="fax" name="fax" class="form-control" placeholder="Fax" />
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                  <input type="email" id="email" name="email" class="form-control" placeholder="*Email Address"
+                                         data-parsley-trigger="change"
+                                         required="required" />
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                  <input type="email" id="email2" name="email_templates2" class="form-control" placeholder="*Confirm Email"
+                                         data-parsley-trigger="change"
+                                         data-parsley-equalto="#email"
+                                         required="required" />
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                  <input type="password" id="password" name="password" class="form-control" placeholder="*Password"
+                                         data-parsley-trigger="change"
+                                         data-parsley-minlength="6"
+                                         required="required" />
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                  <input type="password" id="password2" name="password2" class="form-control" placeholder="*Confirm Password"
+                                         data-parsley-trigger="change"
+                                         data-parsley-minlength="6"
+                                         data-parsley-equalto="#password"
+                                         required="required" />
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                            </div>
                         </div>
                         <div class="clearfix">
-                          <div class="btn-toolbar pull-left">
-                            <a class="btn btn-secondary btn-sm" href="login">Login</a>
-                          </div>
-                          <div class="btn-toolbar pull-right">
-                            <input type="submit" name="register" class="btn btn-inverse btn-sm" value="Register" />
-                          </div>
+                            <div class="btn-toolbar pull-left">
+                              <a class="btn btn-secondary btn-sm" href="login">Login</a>
+                            </div>
+                            <div>&nbsp;</div>
+                            <div class="btn-toolbar pull-right">
+                              <input type="submit" name="register" class="btn btn-inverse btn-sm" value="Register" />
+                            </div>
                         </div>
                       </form>
                     </div>
@@ -141,5 +235,14 @@
 <!-- page specific libs -->
 <script src="vendor/parsleyjs/dist/parsley.min.js"></script>
 <!-- page specific js -->
+
+<script>
+    $( "#state" ).select2({
+        theme: "bootstrap"
+    });
+
+    loadStates();
+</script>
+
 </body>
 </html>
