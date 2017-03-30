@@ -42,6 +42,27 @@
             });
          }
 
+         function verifyInput() {
+             var passValidation = false;
+             var url = '<?php echo API_HOST."/api/users?filter=username,eq,' + $('#email').val() + '&transform=1" ?>';
+             $.ajax({
+                type: "GET",
+                url: url,
+                async: false,
+                success: function(data){
+                   if (data.users.length > 0) {
+                     alert('Email Already Exists in the System!');
+                   } else {
+                     passValidation = true;
+                   }
+                },
+                error: function() {
+                   alert("Can't Get Email for Verification");
+                }
+             });
+             return passValidation;
+         }
+
     </script>
 </head>
 <body class="login-page">
@@ -63,7 +84,7 @@
                         </p>
                     </header>
                     <div class="widget-body">
-                      <form class="register-form mt-lg" method="POST" action="/register">
+                      <form id="formRegister" class="register-form mt-lg" method="POST" action="/register" onsubmit="return verifyInput();">
                         <div class="row">
                             <div class="col-sm-8">
                                 <div class="form-group">

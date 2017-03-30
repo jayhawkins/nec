@@ -18,6 +18,28 @@
          chrome fix https://code.google.com/p/chromium/issues/detail?id=167083
          https://code.google.com/p/chromium/issues/detail?id=332189
          */
+
+         function verifyInput() {
+             var passValidation = false;
+             var url = '<?php echo API_HOST."/api/users?filter=username,eq,' + $('#username').val() + '&transform=1" ?>';
+             $.ajax({
+                type: "GET",
+                url: url,
+                async: false,
+                success: function(data){
+                   if (data.users.length <= 0) {
+                     alert('Email Already Exists in the System!');
+                   } else {
+                     passValidation = true;
+                   }
+                },
+                error: function() {
+                   alert("Can't Get Email for Verification");
+                }
+             });
+             return passValidation;
+         }
+
     </script>
 </head>
 <body class="login-page">
@@ -37,7 +59,7 @@
                         <p class="widget-login-info">
                             Don't have an account? <a href="register">Sign up now!</a>
                         </p>
-                        <form class="login-form mt-lg" method="POST" action="/login">
+                        <form name="formLogin" class="login-form mt-lg" method="POST" action="/login">
                             <div class="form-group">
                                 <input type="text" class="form-control" id="username" name="username" placeholder="Email" required="required" />
                             </div>
