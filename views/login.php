@@ -28,7 +28,7 @@
                 async: false,
                 success: function(data){
                    if (data.users.length <= 0) {
-                     alert('Email Already Exists in the System!');
+                     alert('Username Does Not Exist!');
                    } else {
                      passValidation = true;
                    }
@@ -59,7 +59,7 @@
                         <p class="widget-login-info">
                             Don't have an account? <a href="register">Sign up now!</a>
                         </p>
-                        <form name="formLogin" class="login-form mt-lg" method="POST" action="/login">
+                        <form name="formLogin" class="login-form mt-lg" method="POST" action="/login" onsubmit="return verifyInput();">
                             <div class="form-group">
                                 <input type="text" class="form-control" id="username" name="username" placeholder="Email" required="required" />
                             </div>
