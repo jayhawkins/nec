@@ -68,9 +68,7 @@
                             </div>
 <?php
                             if (!empty($invalidPassword)) {
-?>
-                                  <div class="alert alert-danger" role="alert">Password is invalid!</div>
-<?php
+                                echo "<div class=\"alert alert-danger\" role=\"alert\">". $invalidPassword . "</div>";
                             }
  ?>
                             <div class="clearfix">

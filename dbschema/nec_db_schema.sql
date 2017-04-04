@@ -54,6 +54,7 @@ COLLATE = utf8_general_ci
 ENGINE = InnoDB
 AUTO_INCREMENT = 1;
 -- -------------------------------------------------------------
+ALTER TABLE contacts ADD COLUMN title VARCHAR(255) AFTER lastName;
 -- ---------------------------------------------------------
 
 
@@ -211,6 +212,7 @@ COLLATE = utf8_general_ci
 ENGINE = InnoDB
 AUTO_INCREMENT = 1;
 -- -------------------------------------------------------------
+ALTER TABLE locations ADD COLUMN name VarChar(255) NOT NULL AFTER locationTypeID;
 -- ---------------------------------------------------------
 
 
@@ -230,7 +232,6 @@ COLLATE = utf8_general_ci
 ENGINE = InnoDB
 AUTO_INCREMENT = 1;
 -- -------------------------------------------------------------
-ALTER TABLE members ADD COLUMN title VARCHAR(255) AFTER lastName;
 -- ---------------------------------------------------------
 
 
@@ -249,6 +250,7 @@ COLLATE = utf8_general_ci
 ENGINE = InnoDB
 AUTO_INCREMENT = 1;
 -- -------------------------------------------------------------
+ALTER TABLE object_type_data_points MODIFY objectTypeID Int( 11 ) UNSIGNED NOT NULL;
 -- ---------------------------------------------------------
 
 
@@ -494,6 +496,32 @@ CREATE INDEX `index_entityID6` USING BTREE ON `requisitions`( `entityID` );
 CREATE INDEX `index_objectID` USING BTREE ON `requisitions`( `objectID` );
 -- -------------------------------------------------------------
 -- ---------------------------------------------------------
+
+-- After Everything has been checked --
+ALTER TABLE `locations`
+	ADD CONSTRAINT `lnk_entities_locations` FOREIGN KEY ( `entityID` )
+	REFERENCES `entities`( `id` )
+	ON DELETE No Action
+	ON UPDATE No Action;
+
+ALTER TABLE `members`
+	ADD CONSTRAINT `lnk_entities_members` FOREIGN KEY ( `entityID` )
+	REFERENCES `entities`( `id` )
+	ON DELETE No Action
+	ON UPDATE No Action;
+
+ALTER TABLE `members`
+	ADD CONSTRAINT `lnk_users_members` FOREIGN KEY ( `userID` )
+	REFERENCES `users`( `id` )
+	ON DELETE No Action
+	ON UPDATE No Action;
+
+ALTER TABLE `locations`
+	ADD CONSTRAINT `lnk_location_types_locations` FOREIGN KEY ( `locationTypeID` )
+	REFERENCES `location_types`( `id` )
+	ON DELETE No Action
+	ON UPDATE No Action;
+
 
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

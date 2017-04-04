@@ -14,25 +14,6 @@ $app = new Engine();
 //print_r($_SESSION);
 /**********************/
 
-$app->route('GET /login', function() {
-  $invalidPassword = (isset($_SESSION['invalidPassword'])) ? $_SESSION['invalidPassword']:'';
-  Flight::render('login', array('invalidPassword'=> $invalidPassword));
-});
-
-$app->route('GET /register', function() {
-  Flight::render('register');
-});
-
-$app->route('GET /logout', function() {
-  unset($_SESSION['userid']);
-  Flight::redirect('/login');
-});
-
-$app->route('GET /accountverified', function() {
-  Flight::render('accountverified');
-});
-
-
 /*****************************************************************************/
 // Test routes
 $app->route('GET|POST /json-data', function() {
@@ -53,14 +34,27 @@ $app->route('GET|POST /json-data', function() {
   }
 
 });
+/*****************************************************************************/
 
-$app->route('/', function() {
-    Flight::render('login');
+//echo $_SESSION['userid'];
+
+$app->route('GET /login', function() {
+  $invalidPassword = (isset($_SESSION['invalidPassword'])) ? $_SESSION['invalidPassword']:'';
+  Flight::render('login', array('invalidPassword'=> $invalidPassword));
 });
 
-/*****************************************************************************/
-// Admin routes
-/*****************************************************************************/
+$app->route('GET /register', function() {
+  Flight::render('register');
+});
+
+$app->route('GET /logout', function() {
+  unset($_SESSION['userid']);
+  Flight::redirect('/login');
+});
+
+$app->route('GET /accountverified', function() {
+  Flight::render('accountverified');
+});
 
 $app->route('POST /login', function() {
     $username = Flight::request()->data['username'];
@@ -68,7 +62,7 @@ $app->route('POST /login', function() {
     $user = Flight::user();
     $return = $user->loginapi($username,$password);
     if ($return) {
-      Flight::render('dashboard', array());
+      Flight::redirect('dashboard');
     } else {
       $invalidPassword = (isset($_SESSION['invalidPassword'])) ? $_SESSION['invalidPassword']:'';
       Flight::render('login', array('invalidPassword'=> $invalidPassword));
@@ -111,15 +105,70 @@ $app->route('GET /verifyaccount/@id/@code', function($id,$code) {
     }
 });
 
+$app->route('POST /entities', function() {
+    $locationid = 0;
+    $locationresult = json_decode(file_get_contents(API_HOST.'/api/locations?filter=entityID,eq,' . $_SESSION['entityid']));
+    for ($l=0; $l < count($locationresult->locations->records); $l++) {
+        if ($locationresult->locations->records[$l][2] == 1) { // Get the main location information from the locations table locationTypeID = 1
+            $locationid = $locationresult->locations->records[$l][0];
+        }
+    }
+
+    $contactid = 0;
+    $contactresult = json_decode(file_get_contents(API_HOST.'/api/contacts?filter=entityID,eq,' . $_SESSION['entityid']));
+    for ($c=0; $c < count($contactresult->contacts->records); $c++) {
+        if ($contactresult->contacts->records[$c][2] == 1) { // Get the main location information from the locations table locationTypeID = 1
+            $contactid = $contactresult->contacts->records[$c][0];
+        }
+    }
+
+    $password = Flight::request()->data['password'];
+    $firstName = Flight::request()->data['firstName'];
+    $lastName = Flight::request()->data['lastName'];
+    $title = Flight::request()->data['title'];
+    $address1 = Flight::request()->data['address1'];
+    $address2 = Flight::request()->data['address2'];
+    $city = Flight::request()->data['city'];
+    $state = Flight::request()->data['state'];
+    $zip = Flight::request()->data['zip'];
+    $phone = Flight::request()->data['phone'];
+    $fax = Flight::request()->data['fax'];
+    $email = Flight::request()->data['email'];
+    $entityName = Flight::request()->data['entityName'];
+    $entityTypeID = Flight::request()->data['entityTypeID'];
+    $entity = Flight::entity();
+    $location = Flight::location();
+    $contact = Flight::contact();
+    $returnentity = $entity->put($entityName);
+    $returnlocation = $location->put($locationid,$address1,$address2,$city,$state,$zip);
+    $returncontact = $contact->put($contactid,$firstName,$lastName,$title,$phone,$fax,$email);
+    if ($returnentity && $returnlocation && $returncontact) {
+      Flight::redirect('/');
+    } else {
+      $invalidPassword = (isset($_SESSION['invalidPassword'])) ? $_SESSION['invalidPassword']:'';
+      Flight::render('login', array('invalidPassword'=> $invalidPassword));
+    }
+});
+
+/*****************************************************************************/
+// Admin routes
+/*****************************************************************************/
+
+$app->route('/', function() {
+  if (is_authorized()) {
+    Flight::render('index', array());
+  } else {
+    Flight::render('login', array());
+  }
+});
 
 $app->route('/dashboard', function() {
     if (is_authorized()) {
-      Flight::render('dashboard', array());
+      Flight::render('index', array());
     } else {
       Flight::render('login', array());
     }
 });
-
 
 
 // Start the framework

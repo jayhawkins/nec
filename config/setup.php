@@ -15,5 +15,13 @@ $db = Flight::db();
 
 require 'lib/common.php';
 require 'models/Users.php';
+require 'models/Entities.php';
+require 'models/Members.php';
+require 'models/Locations.php';
+require 'models/Contacts.php';
 
 Flight::register( 'user', 'User' );
+Flight::register( 'entity', 'Entity' );
+Flight::register( 'member', 'Member' );
+Flight::register( 'location', 'Location' );
+Flight::register( 'contact', 'Contact' );
