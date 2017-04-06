@@ -52,6 +52,8 @@
                 success: function(data){
                    if (data.users.length > 0) {
                      alert('Email Already Exists in the System!');
+                     //$("#dialogMessage").text('Email Already Exists in the System!');
+                     //$("#dialog").dialog("open");
                    } else {
                      passValidation = true;
                    }
@@ -235,6 +237,11 @@
     <i class="fa fa-circle-o-notch fa-spin-fast"></i>
 </div>
 
+<!-- The Dialog. -->
+<div id="dialog">
+    <p id="dialogMessage"></p>
+</div>
+
 <!-- common libraries. required for every page-->
 <script src="vendor/jquery/dist/jquery.min.js"></script>
 <script src="vendor/jquery-pjax/jquery.pjax.js"></script>
@@ -258,11 +265,20 @@
 <!-- page specific js -->
 
 <script>
+$(function() {
     $( "#state" ).select2({
         theme: "bootstrap"
     });
 
     loadStates();
+
+    // NOT USED!! Did not install JQueryUI right now - this initializes the dialog (and uses some common options that I do)
+    /*
+    $("#dialog").dialog({
+      autoOpen : false, modal : true, show : "blind", hide : "blind"
+    });
+    */
+});
 </script>
 
 </body>

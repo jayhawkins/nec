@@ -527,7 +527,8 @@ $(function(){
         var errors = JSON.parse(localStorage.getItem('lb-errors')) || {};
         errors[new Date().getTime()] = arguments;
         localStorage.setItem('sing-errors', JSON.stringify(errors));
-        this.debug && alert('check errors');
+        //this.debug && alert('check errors');
+        this.debug;
     };
 
     SingAppView.prototype.log = function(message){
