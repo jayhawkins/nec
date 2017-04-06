@@ -16,6 +16,21 @@ $app = new Engine();
 
 /*****************************************************************************/
 // Test routes
+$app->route('GET|POST /gmail', function() {
+
+  $to = array('jhawkins@dynamasys.com' => 'Jay Hawkins');
+  $from = array('jaycarl.hawkins@gmail.com' => 'Jay Hawkins');
+  $subject = "NEC Test email";
+  $body = "Body of NEC test email";
+
+  if (sendmail($to, $subject, $body, $from)) {
+    echo "Sent";
+  } else {
+    echo "Failed";
+  }
+
+});
+
 $app->route('GET|POST /json-data', function() {
   if (is_authorized()) {
       $db = Flight::db();
