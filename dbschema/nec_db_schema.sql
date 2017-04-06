@@ -522,6 +522,12 @@ ALTER TABLE `locations`
 	ON DELETE No Action
 	ON UPDATE No Action;
 
+ALTER TABLE `contacts`
+	ADD CONSTRAINT `lnk_entities_contacts` FOREIGN KEY ( `entityID` )
+	REFERENCES `entities`( `id` )
+	ON DELETE No Action
+	ON UPDATE No Action;
+
 
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
