@@ -119,7 +119,6 @@ class User
                     $memberdata = array(
                                 "firstName" => $firstName,
                                 "lastName" => $lastName,
-                                "title" => $title,
                                 "userID" => $user_id,
                                 "entityID" => $entity_id,
                                 "createdAt" => date('Y-m-d H:i:s'),
@@ -142,6 +141,7 @@ class User
                                 "contactTypeID" => 1,
                                 "firstName" => $firstName,
                                 "lastName" => $lastName,
+                                "title" => $title,
                                 "emailAddress" => $email,
                                 "primaryPhone" => $phone,
                                 "secondaryPhone" => '',
