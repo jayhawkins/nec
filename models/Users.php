@@ -10,8 +10,8 @@ class User
         try {
               //$result = json_decode(file_get_contents(API_HOST.'/api/users?filter=username,eq,' . $username));
               $result = json_decode(file_get_contents(API_HOST.'/api/users?include=members,entities&filter=username,eq,' . $username));
-              print_r($result);
-              die();
+              //print_r($result);
+              //die();
               if (count($result) > 0) {
                   if ($result->users->records[0][3] == "Active") {
                       if (password_verify($password, $result->users->records[0][2])) {
@@ -167,17 +167,14 @@ class User
                         $numSent = 0;
                         $to = array($email => $firstName . " " . $lastName);
                         $from = array('jaycarl.hawkins@gmail.com' => 'Jay Hawkins');
-                        echo "Call: " . API_HOST."/api/email_templates?filter=title,eq,Authorize Account&transform=1";
-                        $templateresult = file_get_contents(API_HOST."/api/email_templates?filter=title,eq,Authorize Account&transform=1");
+                        echo "Call: " . API_HOST."/api/email_templates?filter=title,eq,Authorize Account";
+                        $templateresult = json_decode(file_get_contents(API_HOST."/api/email_templates?filter=title,eq,Authorize Account"),true);
                         echo "Template Result: " . print_r($templateresult);
-                        //$subject = $templateresult->email_templates->records[0][6];
-                        $subject = $templateresult->email_templates[0][6];
+                        die();
+                        $subject = $templateresult->email_templates->records[0][6];
                         $body = "Hello " . $firstName . ",<br /><br />";
-                        //$body .= $templateresult->email_templates->records[0][2];
-                        $body .= $templateresult->email_templates[0][2];
+                        $body .= $templateresult->email_templates->records[0][2];
                         $body .= "<a href='".HTTP_HOST."/verifyaccount/".$user_id."/".$code."'>Click HERE to Activate!</a>";
-                        echo count($templateresult);
-                        echo "Template Count: " . count($templateresult) . "<br />";
                         if (count($templateresult) > 0) {
                           try {
                             $numSent = sendmail($to, $subject, $body, $from);
@@ -186,7 +183,6 @@ class User
                           }
                         }
                         // Now that you have a member, update the memberID in the entity record
-                        echo "Member ID: " . $member_id . "<br />";
                         if ($member_id > 0) {
                             $updateentityurl = API_HOST.'/api/entities/'.$entity_id;
                             $updateentitydata = array(
@@ -200,13 +196,11 @@ class User
                                     'content' => http_build_query($updateentitydata)
                                 )
                             );
-                            echo "Entity Data: " . print_r($updateentitydata);
                             $updateentitycontext  = stream_context_create($updateentityoptions);
                             $updateentityresult = file_get_contents($updateentityurl, false, $updateentitycontext);
                         }
                     }
                 }
-die();
                 return "success"; // Return true to the router so it knows everything was created!
             } else {
               return "There was an issue with creating the information. Please contact NEC!";  // There was an issue, let the router know something failed!
