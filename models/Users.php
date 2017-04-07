@@ -161,6 +161,7 @@ class User
                     $contactcontext  = stream_context_create($contactoptions);
                     $contactresult = file_get_contents($contacturl, false, $contactcontext);
                     if ($memberresult > 0) {
+                        echo "Template api: " . API_HOST."/api/email_templates?filter=title,eq,Authorize Account<br />";
                         $member_id = $memberresult;
                         $_SESSION['memberid'] = $member_id;
                         $code = 0;
