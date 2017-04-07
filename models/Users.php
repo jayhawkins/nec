@@ -167,11 +167,14 @@ class User
                         $numSent = 0;
                         $to = array($email => $firstName . " " . $lastName);
                         $from = array('jaycarl.hawkins@gmail.com' => 'Jay Hawkins');
-                        $templateresult = file_get_contents(API_HOST."/api/email_templates?filter=title,eq,Authorize Account");
+                        echo "Call: " . API_HOST."/api/email_templates?filter=title,eq,Authorize Account&transform=1";
+                        $templateresult = file_get_contents(API_HOST."/api/email_templates?filter=title,eq,Authorize Account&transform=1");
                         echo "Template Result: " . print_r($templateresult);
-                        $subject = $templateresult->email_templates->records[0][6];
+                        //$subject = $templateresult->email_templates->records[0][6];
+                        $subject = $templateresult->email_templates[0][6];
                         $body = "Hello " . $firstName . ",<br /><br />";
-                        $body .= $templateresult->email_templates->records[0][2];
+                        //$body .= $templateresult->email_templates->records[0][2];
+                        $body .= $templateresult->email_templates[0][2];
                         $body .= "<a href='".HTTP_HOST."/verifyaccount/".$user_id."/".$code."'>Click HERE to Activate!</a>";
                         echo count($templateresult);
                         echo "Template Count: " . count($templateresult) . "<br />";
