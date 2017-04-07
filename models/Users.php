@@ -160,6 +160,8 @@ class User
                     );
                     $contactcontext  = stream_context_create($contactoptions);
                     $contactresult = file_get_contents($contacturl, false, $contactcontext);
+                    echo $memberresult;
+                    die();
                     if ($memberresult > 0) {
                         $member_id = $memberresult;
                         $_SESSION['memberid'] = $member_id;
