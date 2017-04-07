@@ -161,14 +161,13 @@ class User
                     $contactcontext  = stream_context_create($contactoptions);
                     $contactresult = file_get_contents($contacturl, false, $contactcontext);
                     if ($memberresult > 0) {
-                        echo "Template api: " . API_HOST."/api/email_templates?filter=title,eq,Authorize Account<br />";
                         $member_id = $memberresult;
                         $_SESSION['memberid'] = $member_id;
                         $code = 0;
                         $numSent = 0;
                         $to = array($email => $firstName . " " . $lastName);
                         $from = array('jaycarl.hawkins@gmail.com' => 'Jay Hawkins');
-                        $templateresult = json_decode(file_get_contents(API_HOST."/api/email_templates?filter=title,eq,Authorize Account"));
+                        $templateresult = file_get_contents(API_HOST."/api/email_templates?filter=title,eq,Authorize Account");
                         echo "Template Result: " . print_r($templateresult);
                         $subject = $templateresult->email_templates->records[0][6];
                         $body = "Hello " . $firstName . ",<br /><br />";
