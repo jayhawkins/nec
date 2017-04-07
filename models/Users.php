@@ -168,6 +168,7 @@ class User
                         $to = array($email => $firstName . " " . $lastName);
                         $from = array('jaycarl.hawkins@gmail.com' => 'Jay Hawkins');
                         $templateresult = json_decode(file_get_contents(API_HOST."/api/email_templates?filter=title,eq,Authorize Account"));
+                        echo "Template Result: " . print_r($templateresult);
                         $subject = $templateresult->email_templates->records[0][6];
                         $body = "Hello " . $firstName . ",<br /><br />";
                         $body .= $templateresult->email_templates->records[0][2];
@@ -210,7 +211,7 @@ die();
       } catch (Exception $e) { // The authorization query failed verification
             header('HTTP/1.1 401 Unauthorized');
             header('Content-Type: text/plain; charset=utf8');
-            return $e->getMessage();
+            return "Catch Exception: " . $e->getMessage();
       }
     }
 
