@@ -10,8 +10,8 @@ class User
         try {
               //$result = json_decode(file_get_contents(API_HOST.'/api/users?filter=username,eq,' . $username));
               $result = json_decode(file_get_contents(API_HOST.'/api/users?include=members,entities&filter=username,eq,' . $username));
-              //print_r($result);
-              //die();
+              print_r($result);
+              die();
               if (count($result) > 0) {
                   if ($result->users->records[0][3] == "Active") {
                       if (password_verify($password, $result->users->records[0][2])) {
