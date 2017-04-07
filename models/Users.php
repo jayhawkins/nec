@@ -164,6 +164,7 @@ class User
                         $member_id = $memberresult;
                         $_SESSION['memberid'] = $member_id;
                         $code = 0;
+                        $numSent = 0;
                         $to = array($email => $firstName . " " . $lastName);
                         $from = array('jaycarl.hawkins@gmail.com' => 'Jay Hawkins');
                         $templateresult = json_decode(file_get_contents(API_HOST."/api/email_templates?filter=title,eq,Authorize Account"));
@@ -175,7 +176,7 @@ class User
                             $numSent = sendmail($to, $subject, $body, $from);
                         }
                         // Now that you have a member, update the memberID in the entity record
-                        if ($memberresult > 0) {
+                        if ($member_id < 0) {
                             $updateentityurl = API_HOST.'/api/entities/'.$entity_id;
                             $updateentitydata = array(
                                         "assignedMemberID" => $member_id
