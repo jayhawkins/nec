@@ -203,7 +203,7 @@ class User
                     }
                 }
 die();
-                return true; // Return true to the router so it knows everything was created!
+                return "success"; // Return true to the router so it knows everything was created!
             } else {
               return "There was an issue with creating the information. Please contact NEC!";  // There was an issue, let the router know something failed!
             }

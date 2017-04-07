@@ -101,11 +101,12 @@ $app->route('POST /register', function() {
     $entityTypeID = Flight::request()->data['entityTypeID'];
     $user = Flight::user();
     $return = $user->registerapi($password,$firstName,$lastName,$title,$address1,$address2,$city,$state,$zip,$phone,$fax,$email,$entityName,$entityTypeID);
-    if ($return) {
+    if ($return == "success") {
       Flight::render('registrationsuccessful');
     } else {
-      $invalidPassword = (isset($_SESSION['invalidPassword'])) ? $_SESSION['invalidPassword']:'';
-      Flight::render('login', array('invalidPassword'=> $invalidPassword));
+      echo $return;
+      //$invalidPassword = (isset($_SESSION['invalidPassword'])) ? $_SESSION['invalidPassword']:'';
+      //Flight::render('login', array('invalidPassword'=> $invalidPassword));
     }
 });
 
