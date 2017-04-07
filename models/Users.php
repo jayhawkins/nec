@@ -160,8 +160,6 @@ class User
                     );
                     $contactcontext  = stream_context_create($contactoptions);
                     $contactresult = file_get_contents($contacturl, false, $contactcontext);
-                    echo $memberresult;
-                    die();
                     if ($memberresult > 0) {
                         $member_id = $memberresult;
                         $_SESSION['memberid'] = $member_id;
@@ -175,11 +173,16 @@ class User
                         $body .= $templateresult->email_templates->records[0][2];
                         $body .= "<a href='".HTTP_HOST."/verifyaccount/".$user_id."/".$code."'>Click HERE to Activate!</a>";
                         echo count($templateresult);
-                        die();
+                        echo "Template Count: " . count($templateresult) . "<br />";
                         if (count($templateresult) > 0) {
+                          try {
                             $numSent = sendmail($to, $subject, $body, $from);
+                          } catch (Exception $mailex) {
+                            echo $mailex;
+                          }
                         }
                         // Now that you have a member, update the memberID in the entity record
+                        echo "Member ID: " . $member_id . "<br />";
                         if ($member_id > 0) {
                             $updateentityurl = API_HOST.'/api/entities/'.$entity_id;
                             $updateentitydata = array(
@@ -193,12 +196,13 @@ class User
                                     'content' => http_build_query($updateentitydata)
                                 )
                             );
+                            echo "Entity Data: " . print_r($updateentitydata);
                             $updateentitycontext  = stream_context_create($updateentityoptions);
                             $updateentityresult = file_get_contents($updateentityurl, false, $updateentitycontext);
                         }
                     }
                 }
-
+die();
                 return true; // Return true to the router so it knows everything was created!
             } else {
               return "There was an issue with creating the information. Please contact NEC!";  // There was an issue, let the router know something failed!
