@@ -172,11 +172,13 @@ class User
                         $body = "Hello " . $firstName . ",<br /><br />";
                         $body .= $templateresult->email_templates->records[0][2];
                         $body .= "<a href='".HTTP_HOST."/verifyaccount/".$user_id."/".$code."'>Click HERE to Activate!</a>";
+                        echo count($templateresult);
+                        die();
                         if (count($templateresult) > 0) {
                             $numSent = sendmail($to, $subject, $body, $from);
                         }
                         // Now that you have a member, update the memberID in the entity record
-                        if ($member_id < 0) {
+                        if ($member_id > 0) {
                             $updateentityurl = API_HOST.'/api/entities/'.$entity_id;
                             $updateentitydata = array(
                                         "assignedMemberID" => $member_id
