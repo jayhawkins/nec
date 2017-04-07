@@ -52,7 +52,9 @@ function sendmail($to, $subject, $body, $from, $document='') {
         }
 
         try {
-            $numSent += $mailer->send($message, $failedRecipients);
+            if ($mailer->send($message, $failedRecipients)) {
+              $numSent++;
+            }
         } catch (Exception $e) {
             echo "<p>".$e."</p>";
             die();

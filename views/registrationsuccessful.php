@@ -1,3 +1,7 @@
+<?php
+    // Nothing to do yet
+
+ ?>
 <!DOCTYPE html>
 <html>
 <head>
