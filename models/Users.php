@@ -168,7 +168,7 @@ class User
                         $to = array($email => $firstName . " " . $lastName);
                         $from = array('jaycarl.hawkins@gmail.com' => 'Jay Hawkins');
                         echo "Call: " . API_HOST."/api/email_templates?filter=title,eq,Authorize Account";
-                        $templateresult = json_decode(file_get_contents(API_HOST."/api/email_templates?filter=title,eq,Authorize Account"),true);
+                        $templateresult = json_decode(file_get_contents(API_HOST."/api/email_templates?filter=title,eq,'Authorize Account'"));
                         echo "Template Result: " . print_r($templateresult);
                         die();
                         $subject = $templateresult->email_templates->records[0][6];
