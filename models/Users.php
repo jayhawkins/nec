@@ -10,8 +10,21 @@ class User
         try {
               //$result = json_decode(file_get_contents(API_HOST.'/api/users?filter=username,eq,' . $username));
               $result = json_decode(file_get_contents(API_HOST.'/api/users?include=members,entities&filter=username,eq,' . $username));
-              //print_r($result);
-              //die();
+
+              $loginargs = array(
+                            "include"=>"members,entities",
+                            "filter"=>"username,eq,".$username
+              );
+              $loginurl = API_HOST."/api/users?".http_build_query($loginargs);
+              $loginoptions = array(
+                  'http' => array(
+                      'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                      'method'  => 'GET'
+                  )
+              );
+              $logincontext  = stream_context_create($loginoptions);
+              $result = json_decode(file_get_contents($loginurl,false,$logincontext));
+
               if (count($result) > 0) {
                   if ($result->users->records[0][3] == "Active") {
                       if (password_verify($password, $result->users->records[0][2])) {
@@ -179,9 +192,6 @@ class User
                         );
                         $templatecontext  = stream_context_create($templateoptions);
                         $templateresult = json_decode(file_get_contents($templateurl,false,$templatecontext));
-                        echo "Template Result: " . print_r($templateresult);
-                        die();
-
                         $subject = $templateresult->email_templates->records[0][6];
                         $body = "Hello " . $firstName . ",<br /><br />";
                         $body .= $templateresult->email_templates->records[0][2];
