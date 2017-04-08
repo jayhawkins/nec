@@ -169,7 +169,8 @@ class User
                         $from = array('jaycarl.hawkins@gmail.com' => 'Jay Hawkins');
                         //$templateresult = json_decode(file_get_contents(API_HOST.'/api/email_templates?filter=title,eq,Authorize Account'));
 
-                        $templateurl = urlencode(API_HOST."/api/email_templates?filter=title,eq,Authorize Account");
+                        $templateargs = array("filter"=>"title,eq,Authorize Account");
+                        $templateurl = API_HOST."/api/email_templates?".http_build_query($templateargs);
                         $templateoptions = array(
                             'http' => array(
                                 'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
