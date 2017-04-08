@@ -104,9 +104,7 @@ $app->route('POST /register', function() {
     if ($return == "success") {
       Flight::render('registrationsuccessful');
     } else {
-      echo $return;
-      //$invalidPassword = (isset($_SESSION['invalidPassword'])) ? $_SESSION['invalidPassword']:'';
-      //Flight::render('login', array('invalidPassword'=> $invalidPassword));
+      Flight::render('register', array('errorMessage'=> $return));
     }
 });
 

@@ -85,6 +85,11 @@
                            your business with us at any time and from any place! <i>(Required fields are marked with an asterisk *)</i>
                         </p>
                     </header>
+<?php
+                            if (!empty($errorMessage)) {
+                                echo "<div class=\"alert alert-danger\" role=\"alert\">". $errorMessage . "</div>";
+                            }
+ ?>
                     <div class="widget-body">
                       <form id="formRegister" class="register-form mt-lg" method="POST" action="/register" onsubmit="return verifyInput();">
                         <div class="row">
