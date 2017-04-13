@@ -213,6 +213,7 @@ ENGINE = InnoDB
 AUTO_INCREMENT = 1;
 -- -------------------------------------------------------------
 ALTER TABLE locations ADD COLUMN name VarChar(255) NOT NULL AFTER locationTypeID;
+ALTER TABLE locations ADD COLUMN status VARCHAR(255) NOT NULL DEFAULT 'Active' AFTER timezone ;
 -- ---------------------------------------------------------
 
 
