@@ -670,6 +670,7 @@ $lastName = $member->members->records[0][4];
 <script src="vendor/bootstrap/js/dist/button.js"></script>
 <script src="vendor/bootstrap/js/dist/tooltip.js"></script>
 <script src="vendor/bootstrap/js/dist/alert.js"></script>
+<script src="vendor/bootstrap/js/dist/modal.js"></script>
 <script src="vendor/slimScroll/jquery.slimscroll.js"></script>
 <script src="vendor/widgster/widgster.js"></script>
 <script src="vendor/pace.js/pace.js" data-pace-options='{ "target": ".content-wrap", "ghostTime": 1000 }'></script>
@@ -679,7 +680,6 @@ $lastName = $member->members->records[0][4];
 <!-- common app js -->
 <script src="js/settings.js"></script>
 <script src="js/app.js"></script>
-<script src="vendor/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="js/common.js"></script>
 
 <!-- page specific libs -->
@@ -704,6 +704,9 @@ $lastName = $member->members->records[0][4];
 <script src="vendor/backgrid-paginator/backgrid-paginator.js"></script>
 <script src="vendor/datatables/media/js/jquery.dataTables.js"></script>
 <script src="vendor/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+
+<!-- Can't use or the settings gear dropdown won't work -->
+<!--script src="vendor/bootstrap/dist/js/bootstrap.min.js"></script-->
 
 <!-- page specific js -->
 <script src="js/tables-dynamic.js"></script>

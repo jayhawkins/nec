@@ -11,7 +11,7 @@ $states = json_decode(file_get_contents(API_HOST.'/api/states?columns=abbreviati
 $locationTypeID = '';
 $locationTypes = json_decode(file_get_contents(API_HOST.'/api/location_types?columns=id,name&order=id'));
 
-$getlocations = json_decode(file_get_contents(API_HOST.'/api/locations?include=location_types&columns=locations.name,location_types.name,locations.address1,locations.address2,locations.city,locations.state,locations.zip&filter=entityID,eq,' . $_SESSION['entityid'] . '&order=locationTypeID'),true);
+$getlocations = json_decode(file_get_contents(API_HOST.'/api/locations?include=location_types&columns=locations.name,location_types.name,locations.address1,locations.address2,locations.city,locations.state,locations.zip,locations.status&filter=entityID,eq,' . $_SESSION['entityid'] . '&order=locationTypeID'),true);
 $locations = php_crud_api_transform($getlocations);
 //print_r($locations['locations'][0]['name']);
 //print_r($locations['locations'][0]['location_types'][0]['name']);
@@ -33,8 +33,10 @@ $locations = php_crud_api_transform($getlocations);
              async: false,
              success: function(data){
                 if (data > 0) {
-                  alert('Location Created!');
                   $("#myModal").modal('hide');
+                  var htmlTable = loadTable();
+                  //$("#dataTable").html(htmlTable);
+                  //$("#datatable-table").DataTable();
                   passValidation = true;
                 } else {
                   alert("Adding Location Failed!");
@@ -47,17 +49,63 @@ $locations = php_crud_api_transform($getlocations);
           return passValidation;
       }
 
+      function loadTableAJAX() {
+        var url = '<?php echo API_HOST; ?>' + '/api/locations?include=location_types&columns=locations.name,location_types.name,locations.address1,locations.address2,locations.city,locations.state,locations.zip&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order=locationTypeID&transform=1';
+        var example_table = $('#datatable-table').DataTable({
+            retrieve: true,
+            processing: true,
+            ajax: {
+                url: url,
+                dataSrc: 'locations'
+            },
+            columns: [
+                { data: "name" },
+                { data: "location_types[0].name" },
+                { data: "address1" },
+                { data: "address2" },
+                { data: "city" },
+                { data: "state" },
+                { data: "zip" }
+            ]
+          });
+
+          //To Reload The Ajax
+          //See DataTables.net for more information about the reload method
+          example_table.ajax.reload()
+
+      }
+
       function loadTable() {
-        var url = '<?php echo API_HOST; ?>' + '/api/locations?include=location_types&columns=locations.name,location_types.name,locations.address1,locations.address2,locations.city,locations.state,locations.zip&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order=locationTypeID';
+        var url = '<?php echo API_HOST; ?>' + '/api/locations?include=location_types&columns=locations.name,location_types.name,locations.address1,locations.address2,locations.city,locations.state,locations.zip&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order=locationTypeID&transform=1';
         $.ajax({
            url: url,
            type: "GET",
            contentType: "application/json",
            async: false,
            success: function(data){
-             //alert(JSON.stringify(data['locations']['records']));
+             //data = (JSON.stringify(data['locations']['records']));
+             data = php_crud_api_transform(data);
               if (data) {
-                var datat = php_crud_api_transform(data);
+                var example_table = $('#datatable-table').DataTable({
+                    'retrieve': true,
+                    'ajax':  url,
+                    'columns': [
+                        { "locations": "name" },
+                        { "locations_types": "locationTypeID" },
+                        { "locations": "address1" },
+                        { "locations": "address2" },
+                        { "locations": "city" },
+                        { "locations": "state" },
+                        { "locations": "zip" }
+                    ]
+                  });
+
+                  //To Reload The Ajax
+                  //See DataTables.net for more information about the reload method
+                  example_table.ajax.reload()
+
+/*
+                var table = '';
                 var table = '<table id="datatable-table" class="table table-striped table-hover">' +
                     '<thead>' +
                     '<tr>' +
@@ -68,36 +116,36 @@ $locations = php_crud_api_transform($getlocations);
                         '<th class="hidden-sm-down">City</th>' +
                         '<th class="no-sort">State</th>' +
                         '<th class="no-sort">Zip</th>' +
+                        '<th class="no-sort">&nbsp;</th>' +
                     '</tr>' +
                     '</thead>' +
                     '<tbody>';
 
-                       for(var key in data['locations']) {
-                         if (data['locations'].hasOwnProperty(key)) {
-                           alert(data['locations'][key]);
-                         }
+                       for(var key in data.locations) {
+                         if (data.locations.hasOwnProperty(key)) {
                             table += '<tr>' +
-                                      '<td><span class="fw-semi-bold">' + data['locations']['records'][key][1] + '</span></td>' +
-                                      '<td class="hidden-sm-down">' + data['locations']['records'][key][1] + '</td>' +
-                                      '<td class="hidden-sm-down">' + data['locations']['records'][key][1] + '</td>' +
-                                      '<td class="hidden-sm-down">' + data['locations']['records'][key][1] + '</td>' +
-                                      '<td class="hidden-sm-down">' + data['locations']['records'][key][1] + '</td>' +
-                                      '<td class="hidden-sm-down">' + data['locations']['records'][key][1] + '</td>' +
-                                      '<td class="hidden-sm-down">' + data['locations']['records'][key][1] + '</td>' +
+                                      '<td><span class="fw-semi-bold">' + data.locations[key].name + '</span></td>' +
+                                      '<td><span class="fw-semi-bold">' + data.locations[key].location_types[0]['name'] + '</span></td>' +
+                                      '<td class="hidden-sm-down">' + data.locations[key].address1 + '</td>' +
+                                      '<td class="hidden-sm-down">' + data.locations[key].address2 + '</td>' +
+                                      '<td class="hidden-sm-down">' + data.locations[key].city + '</td>' +
+                                      '<td class="hidden-sm-down">' + data.locations[key].state + '</td>' +
+                                      '<td class="hidden-sm-down">' + data.locations[key].zip + '</td>' +
+                                      '<td class="hidden-sm-down"><i class="fa fa-edit"></i></td>' +
                                   '</tr>';
-
+                          }
                        }
 
                     table += '</tbody>' +
-                '</table>';
-                alert(table);
+                          '</table>';
+                return table;
+*/
               } else {
-                alert("Adding Location Failed!");
+                return "Adding Location Failed!";
               }
-
            },
            error: function() {
-              alert("There Was An Error Adding Location!");
+              return "There Was An Error Adding Location!";
            }
         });
 
@@ -126,7 +174,7 @@ $locations = php_crud_api_transform($getlocations);
          </p -->
          <button type="button" id="addLocation" class="btn btn-primary pull-xs-right" data-target="#myModal">Add Location</button>
          <br /><br />
-         <div class="mt">
+         <div id="dataTable" class="mt">
              <table id="datatable-table" class="table table-striped table-hover">
                  <thead>
                  <tr>
@@ -142,7 +190,7 @@ $locations = php_crud_api_transform($getlocations);
                  <tbody>
 
 <?php
-
+/*
                     foreach($locations['locations'] as $key) {
 
                      echo "<tr>
@@ -153,9 +201,20 @@ $locations = php_crud_api_transform($getlocations);
                                <td class=\"hidden-sm-down\">" . $key['city'] ."</td>
                                <td class=\"hidden-sm-down\">" . $key['state'] ."</td>
                                <td class=\"hidden-sm-down\">" . $key['zip'] ."</td>
+                               <td class=\"hidden-sm-down pull-right\"><button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text-info\"></i> <span class=\"text-info\">Edit</span></button>";
+
+                     if ($key['status'] == "Active") {
+                               echo " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text-info\"></i> <span class=\"text-info\">Disable</span></button>";
+                     } else {
+                               echo " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text-info\"></i> <span class=\"text-info\">Enable</span></button>";
+                     }
+
+                     echo "
+                              </td>
                            </tr>\n";
 
                 }
+*/
 ?>
 
                  </tbody>
@@ -247,9 +306,9 @@ $locations = php_crud_api_transform($getlocations);
 
  <script>
 
-    loadTable();
+    loadTableAJAX();
 
-    $("#datatable-table").DataTable();
+    //$("#datatable-table").DataTable();
 
     $("#addLocation").click(function(){
   		$("#myModal").modal('show');
