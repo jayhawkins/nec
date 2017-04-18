@@ -55,6 +55,7 @@ ENGINE = InnoDB
 AUTO_INCREMENT = 1;
 -- -------------------------------------------------------------
 ALTER TABLE contacts ADD COLUMN title VARCHAR(255) AFTER lastName;
+ALTER TABLE contacts ADD COLUMN status VARCHAR(255) NOT NULL DEFAULT 'Active' AFTER contactRating ;
 -- ---------------------------------------------------------
 
 
