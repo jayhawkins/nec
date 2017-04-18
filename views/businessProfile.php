@@ -55,7 +55,6 @@ try {
     <li>ADMIN</li>
     <li class="active">Business Maintenance</li>
 </ol>
-<h1 class="page-title">Profile - <span class="fw-semi-bold">Maintenance</span></h1>
 <div class="row">
     <div class="col-lg-6 col-md-offset-2">
         <section class="widget">

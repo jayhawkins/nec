@@ -15,6 +15,9 @@ $lastName = $member->members->records[0][4];
     <!--[if IE 9]>
         <link href="css/application-ie9-part2.css" rel="stylesheet">
     <![endif]-->
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/b-1.2.4/datatables.min.css"/>
+
     <link rel="shortcut icon" href="img/favicon.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="">
@@ -150,8 +153,10 @@ $lastName = $member->members->records[0][4];
                 <ul id="sidebar-forms" class="collapse">
                     <li><a href="#" onclick="ajaxFormCall('businessProfile');">Business</a></li>
                     <li><a href="#" onclick="ajaxFormCall('listLocations');">Locations</a></li>
-                    <li><a href="form_elements.html">Contacts</a></li>
+                    <li><a href="#" onclick="ajaxFormCall('listContacts');">Contacts</a></li>
                     <li><a href="form_validation.html">Trailers</a></li>
+                    <li><a href="form_validation.html">Insurance</a></li>
+                    <li><a href="form_validation.html">Links</a></li>
                 </ul>
             </li>
             <li>
@@ -704,6 +709,11 @@ $lastName = $member->members->records[0][4];
 <script src="vendor/backgrid-paginator/backgrid-paginator.js"></script>
 <script src="vendor/datatables/media/js/jquery.dataTables.js"></script>
 <script src="vendor/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+
+
+
+<script type="text/javascript" src="https://cdn.datatables.net/v/dt/b-1.2.4/datatables.min.js"></script>
+
 
 <!-- Can't use or the settings gear dropdown won't work -->
 <!--script src="vendor/bootstrap/dist/js/bootstrap.min.js"></script-->
