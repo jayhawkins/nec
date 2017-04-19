@@ -17,7 +17,7 @@ $locationTypes = json_decode(file_get_contents(API_HOST.'/api/location_types?col
 
  ?>
 
- <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+ <script type="text/javascript" src="http://maps.google.com/maps/api/js?key=<?php echo GOOGLE_MAPS_API; ?>"></script>
 
  <script>
 
@@ -64,7 +64,6 @@ $locationTypes = json_decode(file_get_contents(API_HOST.'/api/location_types?col
 
           today = mm+'/'+dd+'/'+yyyy;
           today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
-console.log(today);
 
           var geocoder = new google.maps.Geocoder();
           var address = $("#address1").val() + ' ' + $("#city").val() + ' ' + $("#state").val() + ' ' + $("#zip").val();
@@ -91,7 +90,7 @@ console.log(today);
                     var date = today;
                     var data = {entityID: $("#entityID").val(), locationTypeID: $("#locationTypeID").val(), name: $("#name").val(), address1: $("#address1").val(), address2: $("#address2").val(), city: $("#city").val(), state: $("#state").val(), zip: $("#zip").val(), latitude: lat, longitude: lng, createdAt: date};
                 }
-console.log(data);
+
                 $.ajax({
                    url: url,
                    type: type,
