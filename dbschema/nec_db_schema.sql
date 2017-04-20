@@ -154,6 +154,7 @@ COLLATE = utf8_general_ci
 ENGINE = InnoDB
 AUTO_INCREMENT = 1;
 -- -------------------------------------------------------------
+ALTER TABLE insurance_carriers ADD COLUMN status VARCHAR(255) NOT NULL DEFAULT 'Active' AFTER policyExpirationDate ;
 -- ---------------------------------------------------------
 
 
@@ -172,6 +173,7 @@ COLLATE = utf8_general_ci
 ENGINE = InnoDB
 AUTO_INCREMENT = 1;
 -- -------------------------------------------------------------
+ALTER TABLE links ADD COLUMN status VARCHAR(255) NOT NULL DEFAULT 'Active' AFTER entityID ;
 -- ---------------------------------------------------------
 
 

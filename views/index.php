@@ -155,8 +155,8 @@ $lastName = $member->members->records[0][4];
                     <li><a href="#" onclick="ajaxFormCall('listLocations');">Locations</a></li>
                     <li><a href="#" onclick="ajaxFormCall('listContacts');">Contacts</a></li>
                     <li><a href="form_validation.html">Trailers</a></li>
-                    <li><a href="form_validation.html">Insurance</a></li>
-                    <li><a href="form_validation.html">Links</a></li>
+                    <li><a href="#" onclick="ajaxFormCall('listInsurance');">Insurance</a></li>
+                    <li><a href="#" onclick="ajaxFormCall('listLinks');">Links</a></li>
                 </ul>
             </li>
             <li>
