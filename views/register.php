@@ -154,6 +154,7 @@
                                 <div class="form-group">
                                   <select id="state" name="state" data-placeholder="State" class="form-control chzn-select" data-ui-jq="select2" required="required">
                                     <option value="">*Select State...</option>
+                                    <option value="CO">Colorado</option>
                                   </select>
                                 </div>
                             </div>
