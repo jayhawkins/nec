@@ -156,8 +156,13 @@ $lastName = $member->members->records[0][4];
                     <li><a href="#" onclick="ajaxFormCall('businessProfile');">Business</a></li>
                     <li><a href="#" onclick="ajaxFormCall('listLocations');">Locations</a></li>
                     <li><a href="#" onclick="ajaxFormCall('listContacts');">Contacts</a></li>
-                    <li><a href="form_validation.html">Trailers</a></li>
-                    <li><a href="#" onclick="ajaxFormCall('listInsurance');">Insurance</a></li>
+                    <?php
+                        if ($_SESSION['entitytype'] == 1) {
+                          echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listTrailers');\">Trailers</a></li>";
+                        } else {
+                          echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listInsurance');\">Insurance</a></li>";
+                        }
+                    ?>
                     <li><a href="#" onclick="ajaxFormCall('listLinks');">Links</a></li>
                 </ul>
             </li>

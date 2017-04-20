@@ -202,7 +202,7 @@ require '../lib/common.php';
  </ol>
  <section class="widget">
      <header>
-         <h4><span class="fw-semi-bold">Insurance Carriers</span></h4>
+         <h4><span class="fw-semi-bold">Insurance</span></h4>
          <div class="widget-controls">
              <a data-widgster="expand" title="Expand" href="#"><i class="glyphicon glyphicon-chevron-up"></i></a>
              <a data-widgster="collapse" title="Collapse" href="#"><i class="glyphicon glyphicon-chevron-down"></i></a>
@@ -242,7 +242,7 @@ require '../lib/common.php';
    <div class="modal-dialog modal-lg" role="document">
      <div class="modal-content">
        <div class="modal-header">
-         <h5 class="modal-title" id="exampleModalLabel"><strong>Edit Insurance Carrier</strong></h5>
+         <h5 class="modal-title" id="exampleModalLabel"><strong>Insurance</strong></h5>
          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
            <span aria-hidden="true">&times;</span>
          </button>

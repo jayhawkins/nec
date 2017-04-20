@@ -5,19 +5,7 @@ session_start();
 require '../../nec_config.php';
 require '../lib/common.php';
 
-$state = '';
-$states = json_decode(file_get_contents(API_HOST.'/api/states?columns=abbreviation,name&order=name'));
-
-$locationTypeID = '';
-$locationTypes = json_decode(file_get_contents(API_HOST.'/api/location_types?columns=id,name&order=id'));
-
-// No longer needed. We don't load via PHP anymore. All handled in JS function.
-//$getlocations = json_decode(file_get_contents(API_HOST.'/api/locations?include=location_types&columns=locations.name,location_types.name,locations.address1,locations.address2,locations.city,locations.state,locations.zip,locations.status&filter=entityID,eq,' . $_SESSION['entityid'] . '&order=locationTypeID'),true);
-//$locations = php_crud_api_transform($getlocations);
-
  ?>
-
- <script type="text/javascript" src="http://maps.google.com/maps/api/js?key=<?php echo GOOGLE_MAPS_API; ?>"></script>
 
  <script>
 
@@ -37,8 +25,7 @@ $locationTypes = json_decode(file_get_contents(API_HOST.'/api/location_types?col
 
       function verifyAndPost() {
 
-          if ( $('#formLocation').parsley().validate() ) {
-
+        if ( $('#formTrailer').parsley().validate() ) {
                 var passValidation = false;
                 var type = "";
                 var today = new Date();
@@ -68,62 +55,46 @@ $locationTypes = json_decode(file_get_contents(API_HOST.'/api/location_types?col
                 today = mm+'/'+dd+'/'+yyyy;
                 today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
 
-                var geocoder = new google.maps.Geocoder();
-                var address = $("#address1").val() + ' ' + $("#city").val() + ' ' + $("#state").val() + ' ' + $("#zip").val();
+                if ($("#id").val() > '') {
+                    var url = '<?php echo API_HOST."/api/insurance_carriers" ?>/' + $("#id").val();
+                    type = "PUT";
+                } else {
+                    var url = '<?php echo API_HOST."/api/insurance_carriers" ?>';
+                    type = "POST";
+                }
 
-                geocoder.geocode( { 'address': address}, function(results, status) {
+                if (type == "PUT") {
+                    var date = today;
+                    var data = {entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), updatedAt: date};
+                } else {
+                    var date = today;
+                    var data = {entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), createdAt: date};
+                }
 
-                  if (status == google.maps.GeocoderStatus.OK) {
-                      var lat = results[0].geometry.location.lat();
-                      var lng = results[0].geometry.location.lng();
-
-                      //var url = '<?php echo API_HOST."/api/locations" ?>';
-                      if ($("#id").val() > '') {
-                          var url = '<?php echo API_HOST."/api/locations" ?>/' + $("#id").val();
-                          type = "PUT";
+                $.ajax({
+                   url: url,
+                   type: type,
+                   data: JSON.stringify(data),
+                   contentType: "application/json",
+                   async: false,
+                   success: function(data){
+                      if (data > 0) {
+                        $("#myModal").modal('hide');
+                        loadTableAJAX();
+                        $("#id").val('');
+                        $("#name").val('');
+                        $("#contactName").val('');
+                        $("#contactPhone").val('');
+                        $("#policyNumber").val('');
+                        $("#policyExpirationDate").val('');
+                        passValidation = true;
                       } else {
-                          var url = '<?php echo API_HOST."/api/locations" ?>';
-                          type = "POST";
+                        alert("Adding Insurance Failed!");
                       }
-
-                      if (type == "PUT") {
-                          var date = today;
-                          var data = {entityID: $("#entityID").val(), locationTypeID: $("#locationTypeID").val(), name: $("#name").val(), address1: $("#address1").val(), address2: $("#address2").val(), city: $("#city").val(), state: $("#state").val(), zip: $("#zip").val(), latitude: lat, longitude: lng, updatedAt: date};
-                      } else {
-                          var date = today;
-                          var data = {entityID: $("#entityID").val(), locationTypeID: $("#locationTypeID").val(), name: $("#name").val(), address1: $("#address1").val(), address2: $("#address2").val(), city: $("#city").val(), state: $("#state").val(), zip: $("#zip").val(), latitude: lat, longitude: lng, createdAt: date};
-                      }
-
-                      $.ajax({
-                         url: url,
-                         type: type,
-                         data: JSON.stringify(data),
-                         contentType: "application/json",
-                         async: false,
-                         success: function(data){
-                            if (data > 0) {
-                              $("#myModal").modal('hide');
-                              loadTableAJAX();
-                              $("#id").val('');
-                              $("#locationTypeID").val('');
-                              $("#name").val('');
-                              $("#address1").val('');
-                              $("#address2").val('');
-                              $("#city").val('');
-                              $("#state").val('');
-                              $("#zip").val('');
-                              passValidation = true;
-                            } else {
-                              alert("Adding Location Failed!");
-                            }
-                         },
-                         error: function() {
-                            alert("There Was An Error Adding Location!");
-                         }
-                      });
-                  } else {
-                      alert("ERROR Geo-Coding Address!");
-                  }
+                   },
+                   error: function() {
+                      alert("There Was An Error Adding Insurance!");
+                   }
                 });
 
                 return passValidation;
@@ -138,24 +109,21 @@ $locationTypes = json_decode(file_get_contents(API_HOST.'/api/location_types?col
 
       function loadTableAJAX() {
         myApp.showPleaseWait();
-        var url = '<?php echo API_HOST; ?>' + '/api/locations?include=location_types&columns=locations.id,locations.name,location_types.id,location_types.name,locations.address1,locations.address2,locations.city,locations.state,locations.zip,locations.status&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order=locationTypeID&transform=1';
+        var url = '<?php echo API_HOST; ?>' + '/api/insurance_carriers?columns=id,name,link,contactName,contactPhone,policyNumber,policyExpirationDate,status&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order=name&transform=1';
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
             processing: true,
             ajax: {
                 url: url,
-                dataSrc: 'locations'
+                dataSrc: 'insurance_carriers'
             },
             columns: [
                 { data: "id", visible: false },
                 { data: "name" },
-                { data: "location_types[0].id", visible: false },
-                { data: "location_types[0].name" },
-                { data: "address1" },
-                { data: "address2", visible: false },
-                { data: "city" },
-                { data: "state" },
-                { data: "zip" },
+                { data: "contactName" },
+                { data: "contactPhone" },
+                { data: "policyNumber" },
+                { data: "policyExpirationDate", visible: false },
                 {
                     data: null,
                     "bSortable": false,
@@ -198,7 +166,7 @@ $locationTypes = json_decode(file_get_contents(API_HOST.'/api/location_types?col
           }
 
           var data = {status: newStatus};
-          var url = '<?php echo API_HOST."/api/locations" ?>/' + $("#id").val();
+          var url = '<?php echo API_HOST."/api/insurance_carriers" ?>/' + $("#id").val();
           var type = "PUT";
 
           $.ajax({
@@ -215,11 +183,11 @@ $locationTypes = json_decode(file_get_contents(API_HOST.'/api/location_types?col
                   passValidation = true;
                 } else {
                   $(myDialog).modal('hide');
-                  alert("Changing Status of Location Failed!");
+                  alert("Changing Status of Insurance Failed!");
                 }
              },
              error: function() {
-                alert("There Was An Error Changing Location Status!");
+                alert("There Was An Error Changing Insurance Status!");
              }
           });
 
@@ -230,11 +198,11 @@ $locationTypes = json_decode(file_get_contents(API_HOST.'/api/location_types?col
 
  <ol class="breadcrumb">
    <li>ADMIN</li>
-   <li class="active">Location Maintenance</li>
+   <li class="active">Trailer Maintenance</li>
  </ol>
  <section class="widget">
      <header>
-         <h4><span class="fw-semi-bold">Location</span></h4>
+         <h4><span class="fw-semi-bold">Trailer</span></h4>
          <div class="widget-controls">
              <a data-widgster="expand" title="Expand" href="#"><i class="glyphicon glyphicon-chevron-up"></i></a>
              <a data-widgster="collapse" title="Collapse" href="#"><i class="glyphicon glyphicon-chevron-down"></i></a>
@@ -246,21 +214,18 @@ $locationTypes = json_decode(file_get_contents(API_HOST.'/api/location_types?col
              Column sorting, live search, pagination. Built with
              <a href="http://www.datatables.net/" target="_blank">jQuery DataTables</a>
          </p -->
-         <button type="button" id="addLocation" class="btn btn-primary pull-xs-right" data-target="#myModal">Add Location</button>
+         <button type="button" id="addContact" class="btn btn-primary pull-xs-right" data-target="#myModal">Add Trailer</button>
          <br /><br />
          <div id="dataTable" class="mt">
              <table id="datatable-table" class="table table-striped table-hover">
                  <thead>
                  <tr>
                      <th>ID</th>
-                     <th>Name</th>
-                     <th>Type ID</th>
-                     <th>Type</th>
-                     <th class="hidden-sm-down">Address1</th>
-                     <th class="hidden-sm-down">Address2</th>
-                     <th class="hidden-sm-down">City</th>
-                     <th class="no-sort">State</th>
-                     <th class="no-sort">Zip</th>
+                     <th class="hidden-sm-down">Name</th>
+                     <th class="hidden-sm-down">Contact Name</th>
+                     <th class="hidden-sm-down">Contact Phone</th>
+                     <th class="hidden-sm-down">Policy Number</th>
+                     <th class="hidden-sm-down">Policy Expiration Date</th>
                      <th class="no-sort pull-right">&nbsp;</th>
                  </tr>
                  </thead>
@@ -277,70 +242,48 @@ $locationTypes = json_decode(file_get_contents(API_HOST.'/api/location_types?col
    <div class="modal-dialog modal-lg" role="document">
      <div class="modal-content">
        <div class="modal-header">
-         <h5 class="modal-title" id="exampleModalLabel"><strong>Edit Location</strong></h5>
+         <h5 class="modal-title" id="exampleModalLabel"><strong>Trailer</strong></h5>
          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
            <span aria-hidden="true">&times;</span>
          </button>
        </div>
        <div class="modal-body">
-               <form id="formLocation" class="register-form mt-lg">
+               <form id="formTrailer" class="register-form mt-lg">
                  <input type="hidden" id="entityID" name="entityID" value="<?php echo $_SESSION['entityid']; ?>" />
                  <input type="hidden" id="id" name="id" value="" />
                  <div class="row">
                      <div class="col-sm-6">
                          <div class="form-group">
-                           <input type="text" id="name" name="name" class="form-control mb-sm" placeholder="Location Title"
-                           required="required" />
+                           <input type="text" id="name" name="name" class="form-control mb-sm" placeholder="*Name" required="required" />
                          </div>
                      </div>
                      <div class="col-sm-6">
                          <div class="form-group">
-                           <select id="locationTypeID" name="locationTypeID" data-placeholder="Location Type" class="form-control chzn-select" data-ui-jq="select2" required="required">
-                             <option value="">*Select Type...</option>
-            <?php
-                             foreach($locationTypes->location_types->records as $value) {
-                                 $selected = ($value[0] == $locationTypeID) ? 'selected=selected':'';
-                                 echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
-                             }
-            ?>
-                           </select>
+                           &nbsp;
                          </div>
                      </div>
                  </div>
                  <div class="row">
                      <div class="col-sm-6">
-                       <div class="form-group">
-                         <input type="text" id="address1" name="address1" class="form-control mb-sm" placeholder="Company Address" required="required" />
-                       </div>
+                         <div class="form-group">
+                           <input type="text" id="contactName" name="contactName" class="form-control mb-sm" placeholder="*Contact Name" required="required" />
+                         </div>
                      </div>
                      <div class="col-sm-6">
                          <div class="form-group">
-                           <input type="text" id="address2" name="address2" class="form-control mb-sm" placeholder="Bldg. Number/Suite" />
+                           <input type="text" id="contactPhone" name="contactPhone" class="form-control mb-sm" placeholder="Contact Phone" required="required" />
                          </div>
                      </div>
                  </div>
                  <div class="row">
-                     <div class="col-sm-4">
+                     <div class="col-sm-6">
                          <div class="form-group">
-                           <input type="text" id="city" name="city" class="form-control" placeholder="*City" required="required" />
+                           <input type="text" id="policyNumber" name="policyNumber" class="form-control mb-sm" placeholder="*Policy Number" required="required" />
                          </div>
                      </div>
-                     <div class="col-sm-4">
+                     <div class="col-sm-6">
                          <div class="form-group">
-                           <select id="state" name="state" data-placeholder="State" class="form-control chzn-select" data-ui-jq="select2" required="required">
-                             <option value="">*Select State...</option>
-            <?php
-                             foreach($states->states->records as $value) {
-                                 $selected = ($value[0] == $state) ? 'selected=selected':'';
-                                 echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
-                             }
-            ?>
-                           </select>
-                         </div>
-                     </div>
-                     <div class="col-sm-4">
-                         <div class="form-group">
-                           <input type="text" id="zip" name="zip" class="form-control mb-sm" placeholder="Zip" required="required" />
+                           <input type="text" id="policyExpirationDate" name="policyExpirationDate" class="form-control mb-sm" placeholder="Policy Expiration Date (YYYY-MM-DD)" required="required" />
                          </div>
                      </div>
                  </div>
@@ -371,15 +314,16 @@ $locationTypes = json_decode(file_get_contents(API_HOST.'/api/location_types?col
                   <div class="row">
                       <div class="col-sm-12">
                           <div class="form-group">
-                            <h5>Do you wish to disable this location?</h5>
+                            <h5>Do you wish to disable this insurance policy?</h5>
                           </div>
                       </div>
+
                   </div>
                  </form>
         </div>
          <div class="modal-footer">
            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-           <button type="button" class="btn btn-primary" onclick="return recordEnableDisable('Disable');">Disable Location</button>
+           <button type="button" class="btn btn-primary" onclick="return recordEnableDisable('Disable');">Disable Policy</button>
          </div>
        </div>
      </div>
@@ -401,15 +345,16 @@ $locationTypes = json_decode(file_get_contents(API_HOST.'/api/location_types?col
                    <div class="row">
                        <div class="col-sm-12">
                            <div class="form-group">
-                             <h5>Do you wish to enable this location?</h5>
+                             <h5>Do you wish to enable this insurance policy?</h5>
                            </div>
                        </div>
+
                    </div>
                   </form>
          </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary" onclick="return recordEnableDisable('Enable');">Enable Location</button>
+            <button type="button" class="btn btn-primary" onclick="return recordEnableDisable('Enable');">Enable Policy</button>
           </div>
         </div>
       </div>
@@ -417,15 +362,11 @@ $locationTypes = json_decode(file_get_contents(API_HOST.'/api/location_types?col
 
  <script>
 
-    $( "#state" ).select2({
-       theme: "bootstrap"
-    });
-
     loadTableAJAX();
 
     var table = $("#datatable-table").DataTable();
 
-    $("#addLocation").click(function(){
+    $("#addContact").click(function(){
   		$("#myModal").modal('show');
   	});
 
@@ -433,13 +374,11 @@ $locationTypes = json_decode(file_get_contents(API_HOST.'/api/location_types?col
         var data = table.row( $(this).parents('tr') ).data();
         if (this.textContent.indexOf("Edit") > -1) {
           $("#id").val(data["id"]);
-          $("#locationTypeID").val(data["location_types"][0].id);
           $("#name").val(data["name"]);
-          $("#address1").val(data["address1"]);
-          $("#address2").val(data["address2"]);
-          $("#city").val(data["city"]);
-          $("#state").val(data["state"]);
-          $("#zip").val(data["zip"]);
+          $("#contactName").val(data["contactName"]);
+          $("#contactPhone").val(data["contactPhone"]);
+          $("#policyNumber").val(data["policyNumber"]);
+          $("#policyExpirationDate").val(data["policyExpirationDate"]);
           $("#myModal").modal('show');
         } else {
             $("#id").val(data["id"]);

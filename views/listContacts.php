@@ -260,7 +260,7 @@ $contactTypes = json_decode(file_get_contents(API_HOST.'/api/contact_types?colum
    <div class="modal-dialog modal-lg" role="document">
      <div class="modal-content">
        <div class="modal-header">
-         <h5 class="modal-title" id="exampleModalLabel"><strong>Edit Contact</strong></h5>
+         <h5 class="modal-title" id="exampleModalLabel"><strong>Contact</strong></h5>
          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
            <span aria-hidden="true">&times;</span>
          </button>
