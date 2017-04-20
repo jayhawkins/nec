@@ -277,7 +277,7 @@ $locationTypes = json_decode(file_get_contents(API_HOST.'/api/location_types?col
    <div class="modal-dialog modal-lg" role="document">
      <div class="modal-content">
        <div class="modal-header">
-         <h5 class="modal-title" id="exampleModalLabel"><strong>Edit Location</strong></h5>
+         <h5 class="modal-title" id="exampleModalLabel"><strong>Location</strong></h5>
          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
            <span aria-hidden="true">&times;</span>
          </button>
