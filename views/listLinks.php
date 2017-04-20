@@ -192,11 +192,11 @@ require '../lib/common.php';
 
  <ol class="breadcrumb">
    <li>ADMIN</li>
-   <li class="active">Contact Maintenance</li>
+   <li class="active">Link Maintenance</li>
  </ol>
  <section class="widget">
      <header>
-         <h4><span class="fw-semi-bold">Contacts</span></h4>
+         <h4><span class="fw-semi-bold">Link</span></h4>
          <div class="widget-controls">
              <a data-widgster="expand" title="Expand" href="#"><i class="glyphicon glyphicon-chevron-up"></i></a>
              <a data-widgster="collapse" title="Collapse" href="#"><i class="glyphicon glyphicon-chevron-down"></i></a>

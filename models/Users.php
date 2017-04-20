@@ -31,12 +31,14 @@ class User
                         $_SESSION['userid'] = $result->users->records[0][0];
                         $_SESSION['memberid'] = $result->members->records[0][0];
                         $_SESSION['entityid'] = $result->entities->records[0][0];
+                        $_SESSION['entitytype'] = $result->entities->records[0][1];
                         unset($_SESSION['invalidPassword']);
                         return true;
                       } else {
                         unset($_SESSION['userid']);
                         unset($_SESSION['memberid']);
                         unset($_SESSION['entityid']);
+                        unset($_SESSION['entitytype']);
                         $_SESSION['invalidPassword'] = 'Password is invalid!';
                         return false;
                       }
