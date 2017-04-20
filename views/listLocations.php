@@ -36,94 +36,103 @@ $locationTypes = json_decode(file_get_contents(API_HOST.'/api/location_types?col
       })();
 
       function verifyAndPost() {
-          var passValidation = false;
-          var type = "";
-          var today = new Date();
-          var dd = today.getDate();
-          var mm = today.getMonth()+1; //January is 0!
-          var yyyy = today.getFullYear();
-          var hours = today.getHours();
-          var min = today.getMinutes();
-          var sec = today.getSeconds();
 
-          if(dd<10) {
-              dd='0'+dd;
-          }
+          if ( $('#formLocation').parsley().validate() ) {
 
-          if(mm<10) {
-              mm='0'+mm;
-          }
+                var passValidation = false;
+                var type = "";
+                var today = new Date();
+                var dd = today.getDate();
+                var mm = today.getMonth()+1; //January is 0!
+                var yyyy = today.getFullYear();
+                var hours = today.getHours();
+                var min = today.getMinutes();
+                var sec = today.getSeconds();
 
-          if(hours<10) {
-              hours='0'+hours;
-          }
-
-          if(min<10) {
-              min='0'+min;
-          }
-
-          today = mm+'/'+dd+'/'+yyyy;
-          today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
-
-          var geocoder = new google.maps.Geocoder();
-          var address = $("#address1").val() + ' ' + $("#city").val() + ' ' + $("#state").val() + ' ' + $("#zip").val();
-
-          geocoder.geocode( { 'address': address}, function(results, status) {
-
-            if (status == google.maps.GeocoderStatus.OK) {
-                var lat = results[0].geometry.location.lat();
-                var lng = results[0].geometry.location.lng();
-
-                //var url = '<?php echo API_HOST."/api/locations" ?>';
-                if ($("#id").val() > '') {
-                    var url = '<?php echo API_HOST."/api/locations" ?>/' + $("#id").val();
-                    type = "PUT";
-                } else {
-                    var url = '<?php echo API_HOST."/api/locations" ?>';
-                    type = "POST";
+                if(dd<10) {
+                    dd='0'+dd;
                 }
 
-                if (type == "PUT") {
-                    var date = today;
-                    var data = {entityID: $("#entityID").val(), locationTypeID: $("#locationTypeID").val(), name: $("#name").val(), address1: $("#address1").val(), address2: $("#address2").val(), city: $("#city").val(), state: $("#state").val(), zip: $("#zip").val(), latitude: lat, longitude: lng, updatedAt: date};
-                } else {
-                    var date = today;
-                    var data = {entityID: $("#entityID").val(), locationTypeID: $("#locationTypeID").val(), name: $("#name").val(), address1: $("#address1").val(), address2: $("#address2").val(), city: $("#city").val(), state: $("#state").val(), zip: $("#zip").val(), latitude: lat, longitude: lng, createdAt: date};
+                if(mm<10) {
+                    mm='0'+mm;
                 }
 
-                $.ajax({
-                   url: url,
-                   type: type,
-                   data: JSON.stringify(data),
-                   contentType: "application/json",
-                   async: false,
-                   success: function(data){
-                      if (data > 0) {
-                        $("#myModal").modal('hide');
-                        loadTableAJAX();
-                        $("#id").val('');
-                        $("#locationTypeID").val('');
-                        $("#name").val('');
-                        $("#address1").val('');
-                        $("#address2").val('');
-                        $("#city").val('');
-                        $("#state").val('');
-                        $("#zip").val('');
-                        passValidation = true;
+                if(hours<10) {
+                    hours='0'+hours;
+                }
+
+                if(min<10) {
+                    min='0'+min;
+                }
+
+                today = mm+'/'+dd+'/'+yyyy;
+                today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+
+                var geocoder = new google.maps.Geocoder();
+                var address = $("#address1").val() + ' ' + $("#city").val() + ' ' + $("#state").val() + ' ' + $("#zip").val();
+
+                geocoder.geocode( { 'address': address}, function(results, status) {
+
+                  if (status == google.maps.GeocoderStatus.OK) {
+                      var lat = results[0].geometry.location.lat();
+                      var lng = results[0].geometry.location.lng();
+
+                      //var url = '<?php echo API_HOST."/api/locations" ?>';
+                      if ($("#id").val() > '') {
+                          var url = '<?php echo API_HOST."/api/locations" ?>/' + $("#id").val();
+                          type = "PUT";
                       } else {
-                        alert("Adding Location Failed!");
+                          var url = '<?php echo API_HOST."/api/locations" ?>';
+                          type = "POST";
                       }
-                   },
-                   error: function() {
-                      alert("There Was An Error Adding Location!");
-                   }
-                });
-            } else {
-                alert("ERROR Geo-Coding Address!");
-            }
-          });
 
-          return passValidation;
+                      if (type == "PUT") {
+                          var date = today;
+                          var data = {entityID: $("#entityID").val(), locationTypeID: $("#locationTypeID").val(), name: $("#name").val(), address1: $("#address1").val(), address2: $("#address2").val(), city: $("#city").val(), state: $("#state").val(), zip: $("#zip").val(), latitude: lat, longitude: lng, updatedAt: date};
+                      } else {
+                          var date = today;
+                          var data = {entityID: $("#entityID").val(), locationTypeID: $("#locationTypeID").val(), name: $("#name").val(), address1: $("#address1").val(), address2: $("#address2").val(), city: $("#city").val(), state: $("#state").val(), zip: $("#zip").val(), latitude: lat, longitude: lng, createdAt: date};
+                      }
+
+                      $.ajax({
+                         url: url,
+                         type: type,
+                         data: JSON.stringify(data),
+                         contentType: "application/json",
+                         async: false,
+                         success: function(data){
+                            if (data > 0) {
+                              $("#myModal").modal('hide');
+                              loadTableAJAX();
+                              $("#id").val('');
+                              $("#locationTypeID").val('');
+                              $("#name").val('');
+                              $("#address1").val('');
+                              $("#address2").val('');
+                              $("#city").val('');
+                              $("#state").val('');
+                              $("#zip").val('');
+                              passValidation = true;
+                            } else {
+                              alert("Adding Location Failed!");
+                            }
+                         },
+                         error: function() {
+                            alert("There Was An Error Adding Location!");
+                         }
+                      });
+                  } else {
+                      alert("ERROR Geo-Coding Address!");
+                  }
+                });
+
+                return passValidation;
+
+          } else {
+
+                return false;
+
+          }
 
       }
 
@@ -274,13 +283,14 @@ $locationTypes = json_decode(file_get_contents(API_HOST.'/api/location_types?col
          </button>
        </div>
        <div class="modal-body">
-               <form id="formRegister" class="register-form mt-lg">
+               <form id="formLocation" class="register-form mt-lg">
                  <input type="hidden" id="entityID" name="entityID" value="<?php echo $_SESSION['entityid']; ?>" />
                  <input type="hidden" id="id" name="id" value="" />
                  <div class="row">
                      <div class="col-sm-6">
                          <div class="form-group">
-                           <input type="text" id="name" name="name" class="form-control mb-sm" placeholder="Location Title" required="required" />
+                           <input type="text" id="name" name="name" class="form-control mb-sm" placeholder="Location Title"
+                           required="required" />
                          </div>
                      </div>
                      <div class="col-sm-6">
@@ -338,7 +348,7 @@ $locationTypes = json_decode(file_get_contents(API_HOST.'/api/location_types?col
        </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" onclick="return verifyAndPost();">Save changes</button>
+          <button type="button" class="btn btn-primary" onclick="return verifyAndPost();">Save Changes</button>
         </div>
       </div>
     </div>
@@ -364,7 +374,6 @@ $locationTypes = json_decode(file_get_contents(API_HOST.'/api/location_types?col
                             <h5>Do you wish to disable this location?</h5>
                           </div>
                       </div>
-
                   </div>
                  </form>
         </div>
@@ -395,7 +404,6 @@ $locationTypes = json_decode(file_get_contents(API_HOST.'/api/location_types?col
                              <h5>Do you wish to enable this location?</h5>
                            </div>
                        </div>
-
                    </div>
                   </form>
          </div>
@@ -408,6 +416,10 @@ $locationTypes = json_decode(file_get_contents(API_HOST.'/api/location_types?col
     </div>
 
  <script>
+
+    $( "#state" ).select2({
+       theme: "bootstrap"
+    });
 
     loadTableAJAX();
 

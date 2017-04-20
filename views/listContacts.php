@@ -27,82 +27,91 @@ $contactTypes = json_decode(file_get_contents(API_HOST.'/api/contact_types?colum
       })();
 
       function verifyAndPost() {
-          var passValidation = false;
-          var type = "";
-          var today = new Date();
-          var dd = today.getDate();
-          var mm = today.getMonth()+1; //January is 0!
-          var yyyy = today.getFullYear();
-          var hours = today.getHours();
-          var min = today.getMinutes();
-          var sec = today.getSeconds();
 
-          if(dd<10) {
-              dd='0'+dd;
-          }
+        if ( $('#formContact').parsley().validate() ) {
 
-          if(mm<10) {
-              mm='0'+mm;
-          }
+                var passValidation = false;
+                var type = "";
+                var today = new Date();
+                var dd = today.getDate();
+                var mm = today.getMonth()+1; //January is 0!
+                var yyyy = today.getFullYear();
+                var hours = today.getHours();
+                var min = today.getMinutes();
+                var sec = today.getSeconds();
 
-          if(hours<10) {
-              hours='0'+hours;
-          }
-
-          if(min<10) {
-              min='0'+min;
-          }
-
-          today = mm+'/'+dd+'/'+yyyy;
-          today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
-
-          if ($("#id").val() > '') {
-              var url = '<?php echo API_HOST."/api/contacts" ?>/' + $("#id").val();
-              type = "PUT";
-          } else {
-              var url = '<?php echo API_HOST."/api/contacts" ?>';
-              type = "POST";
-          }
-
-          if (type == "PUT") {
-              var date = today;
-              var data = {entityID: $("#entityID").val(), contactTypeID: $("#contactTypeID").val(), firstName: $("#firstName").val(), lastName: $("#lastName").val(), title: $("#title").val(), emailAddress: $("#emailAddress").val(), primaryPhone: $("#primaryPhone").val(), secondaryPhone: $("#secondaryPhone").val(), fax: $("#fax").val(), contactRating: $("#contactRating").val(), updatedAt: date};
-          } else {
-              var date = today;
-              var data = {entityID: $("#entityID").val(), contactTypeID: $("#contactTypeID").val(), firstName: $("#firstName").val(), lastName: $("#lastName").val(), title: $("#title").val(), emailAddress: $("#emailAddress").val(), primaryPhone: $("#primaryPhone").val(), secondaryPhone: $("#secondaryPhone").val(), fax: $("#fax").val(), contactRating: $("#contactRating").val(), createdAt: date};
-          }
-
-          $.ajax({
-             url: url,
-             type: type,
-             data: JSON.stringify(data),
-             contentType: "application/json",
-             async: false,
-             success: function(data){
-                if (data > 0) {
-                  $("#myModal").modal('hide');
-                  loadTableAJAX();
-                  $("#id").val('');
-                  $("#contactTypeID").val('');
-                  $("#firstName").val('');
-                  $("#lastName").val('');
-                  $("#title").val('');
-                  $("#emailAddress").val('');
-                  $("#primaryPhone").val('');
-                  $("#secondaryPhone").val('');
-                  $("#fax").val('');
-                  $("#contactRating").val('');
-                  passValidation = true;
-                } else {
-                  alert("Adding Contact Failed!");
+                if(dd<10) {
+                    dd='0'+dd;
                 }
-             },
-             error: function() {
-                alert("There Was An Error Adding Contact!");
-             }
-          });
 
-          return passValidation;
+                if(mm<10) {
+                    mm='0'+mm;
+                }
+
+                if(hours<10) {
+                    hours='0'+hours;
+                }
+
+                if(min<10) {
+                    min='0'+min;
+                }
+
+                today = mm+'/'+dd+'/'+yyyy;
+                today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+
+                if ($("#id").val() > '') {
+                    var url = '<?php echo API_HOST."/api/contacts" ?>/' + $("#id").val();
+                    type = "PUT";
+                } else {
+                    var url = '<?php echo API_HOST."/api/contacts" ?>';
+                    type = "POST";
+                }
+
+                if (type == "PUT") {
+                    var date = today;
+                    var data = {entityID: $("#entityID").val(), contactTypeID: $("#contactTypeID").val(), firstName: $("#firstName").val(), lastName: $("#lastName").val(), title: $("#title").val(), emailAddress: $("#emailAddress").val(), primaryPhone: $("#primaryPhone").val(), secondaryPhone: $("#secondaryPhone").val(), fax: $("#fax").val(), contactRating: $("#contactRating").val(), updatedAt: date};
+                } else {
+                    var date = today;
+                    var data = {entityID: $("#entityID").val(), contactTypeID: $("#contactTypeID").val(), firstName: $("#firstName").val(), lastName: $("#lastName").val(), title: $("#title").val(), emailAddress: $("#emailAddress").val(), primaryPhone: $("#primaryPhone").val(), secondaryPhone: $("#secondaryPhone").val(), fax: $("#fax").val(), contactRating: $("#contactRating").val(), createdAt: date};
+                }
+
+                $.ajax({
+                   url: url,
+                   type: type,
+                   data: JSON.stringify(data),
+                   contentType: "application/json",
+                   async: false,
+                   success: function(data){
+                      if (data > 0) {
+                        $("#myModal").modal('hide');
+                        loadTableAJAX();
+                        $("#id").val('');
+                        $("#contactTypeID").val('');
+                        $("#firstName").val('');
+                        $("#lastName").val('');
+                        $("#title").val('');
+                        $("#emailAddress").val('');
+                        $("#primaryPhone").val('');
+                        $("#secondaryPhone").val('');
+                        $("#fax").val('');
+                        $("#contactRating").val('');
+                        passValidation = true;
+                      } else {
+                        alert("Adding Contact Failed!");
+                      }
+                   },
+                   error: function() {
+                      alert("There Was An Error Adding Contact!");
+                   }
+                });
+
+                return passValidation;
+
+          } else {
+
+                return false;
+
+          }
 
       }
 
@@ -257,7 +266,7 @@ $contactTypes = json_decode(file_get_contents(API_HOST.'/api/contact_types?colum
          </button>
        </div>
        <div class="modal-body">
-               <form id="formRegister" class="register-form mt-lg">
+               <form id="formContact" class="register-form mt-lg">
                  <input type="hidden" id="entityID" name="entityID" value="<?php echo $_SESSION['entityid']; ?>" />
                  <input type="hidden" id="id" name="id" value="" />
                  <div class="row">
@@ -324,8 +333,8 @@ $contactTypes = json_decode(file_get_contents(API_HOST.'/api/contact_types?colum
                     </div>
                      <div class="col-sm-6">
                          <div class="form-group">
-                           <select id="contactRating" name="contactRating" data-placeholder="Rating" class="form-control chzn-select" data-ui-jq="select2" required="required">
-                              <option value="">*Select State...</option>
+                           <select id="contactRating" name="contactRating" data-placeholder="Rating" class="form-control chzn-select" data-ui-jq="select2">
+                              <option value="">*Rating...</option>
              <?php
                               for($s = 1; $s < 6; $s++) {
                                   $selected = ($s == $contactRating) ? 'selected=selected':'';

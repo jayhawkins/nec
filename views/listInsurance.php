@@ -24,84 +24,92 @@ require '../lib/common.php';
       })();
 
       function verifyAndPost() {
-          var passValidation = false;
-          var type = "";
-          var today = new Date();
-          var dd = today.getDate();
-          var mm = today.getMonth()+1; //January is 0!
-          var yyyy = today.getFullYear();
-          var hours = today.getHours();
-          var min = today.getMinutes();
-          var sec = today.getSeconds();
 
-          if(dd<10) {
-              dd='0'+dd;
-          }
+        if ( $('#formInsurance').parsley().validate() ) {
+                var passValidation = false;
+                var type = "";
+                var today = new Date();
+                var dd = today.getDate();
+                var mm = today.getMonth()+1; //January is 0!
+                var yyyy = today.getFullYear();
+                var hours = today.getHours();
+                var min = today.getMinutes();
+                var sec = today.getSeconds();
 
-          if(mm<10) {
-              mm='0'+mm;
-          }
-
-          if(hours<10) {
-              hours='0'+hours;
-          }
-
-          if(min<10) {
-              min='0'+min;
-          }
-
-          today = mm+'/'+dd+'/'+yyyy;
-          today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
-
-          if ($("#id").val() > '') {
-              var url = '<?php echo API_HOST."/api/insurance_carriers" ?>/' + $("#id").val();
-              type = "PUT";
-          } else {
-              var url = '<?php echo API_HOST."/api/insurance_carriers" ?>';
-              type = "POST";
-          }
-
-          if (type == "PUT") {
-              var date = today;
-              var data = {entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), updatedAt: date};
-          } else {
-              var date = today;
-              var data = {entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), createdAt: date};
-          }
-
-          $.ajax({
-             url: url,
-             type: type,
-             data: JSON.stringify(data),
-             contentType: "application/json",
-             async: false,
-             success: function(data){
-                if (data > 0) {
-                  $("#myModal").modal('hide');
-                  loadTableAJAX();
-                  $("#id").val('');
-                  $("#name").val('');
-                  $("#contactName").val('');
-                  $("#contactPhone").val('');
-                  $("#policyNumber").val('');
-                  $("#policyExpirationDate").val('');
-                  passValidation = true;
-                } else {
-                  alert("Adding Insurance Failed!");
+                if(dd<10) {
+                    dd='0'+dd;
                 }
-             },
-             error: function() {
-                alert("There Was An Error Adding Insurance!");
-             }
-          });
 
-          return passValidation;
+                if(mm<10) {
+                    mm='0'+mm;
+                }
+
+                if(hours<10) {
+                    hours='0'+hours;
+                }
+
+                if(min<10) {
+                    min='0'+min;
+                }
+
+                today = mm+'/'+dd+'/'+yyyy;
+                today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+
+                if ($("#id").val() > '') {
+                    var url = '<?php echo API_HOST."/api/insurance_carriers" ?>/' + $("#id").val();
+                    type = "PUT";
+                } else {
+                    var url = '<?php echo API_HOST."/api/insurance_carriers" ?>';
+                    type = "POST";
+                }
+
+                if (type == "PUT") {
+                    var date = today;
+                    var data = {entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), updatedAt: date};
+                } else {
+                    var date = today;
+                    var data = {entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), createdAt: date};
+                }
+
+                $.ajax({
+                   url: url,
+                   type: type,
+                   data: JSON.stringify(data),
+                   contentType: "application/json",
+                   async: false,
+                   success: function(data){
+                      if (data > 0) {
+                        $("#myModal").modal('hide');
+                        loadTableAJAX();
+                        $("#id").val('');
+                        $("#name").val('');
+                        $("#contactName").val('');
+                        $("#contactPhone").val('');
+                        $("#policyNumber").val('');
+                        $("#policyExpirationDate").val('');
+                        passValidation = true;
+                      } else {
+                        alert("Adding Insurance Failed!");
+                      }
+                   },
+                   error: function() {
+                      alert("There Was An Error Adding Insurance!");
+                   }
+                });
+
+                return passValidation;
+
+          } else {
+
+                return false;
+
+          }
 
       }
 
       function loadTableAJAX() {
         myApp.showPleaseWait();
-        var url = '<?php echo API_HOST; ?>' + '/api/insurance_carriers?columns=id,name,link,contactName,contactPhone,policyNumber,status&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order=name&transform=1';
+        var url = '<?php echo API_HOST; ?>' + '/api/insurance_carriers?columns=id,name,link,contactName,contactPhone,policyNumber,policyExpirationDate,status&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order=name&transform=1';
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
             processing: true,
@@ -115,6 +123,7 @@ require '../lib/common.php';
                 { data: "contactName" },
                 { data: "contactPhone" },
                 { data: "policyNumber" },
+                { data: "policyExpirationDate", visible: false },
                 {
                     data: null,
                     "bSortable": false,
@@ -216,6 +225,7 @@ require '../lib/common.php';
                      <th class="hidden-sm-down">Contact Name</th>
                      <th class="hidden-sm-down">Contact Phone</th>
                      <th class="hidden-sm-down">Policy Number</th>
+                     <th class="hidden-sm-down">Policy Expiration Date</th>
                      <th class="no-sort pull-right">&nbsp;</th>
                  </tr>
                  </thead>
@@ -238,7 +248,7 @@ require '../lib/common.php';
          </button>
        </div>
        <div class="modal-body">
-               <form id="formRegister" class="register-form mt-lg">
+               <form id="formInsurance" class="register-form mt-lg">
                  <input type="hidden" id="entityID" name="entityID" value="<?php echo $_SESSION['entityid']; ?>" />
                  <input type="hidden" id="id" name="id" value="" />
                  <div class="row">
@@ -273,7 +283,7 @@ require '../lib/common.php';
                      </div>
                      <div class="col-sm-6">
                          <div class="form-group">
-                           <input type="text" id="policyExpirationDate" name="policyExpirationDate" class="form-control mb-sm" placeholder="Policy Expiration Date" required="required" />
+                           <input type="text" id="policyExpirationDate" name="policyExpirationDate" class="form-control mb-sm" placeholder="Policy Expiration Date (YYYY-MM-DD)" required="required" />
                          </div>
                      </div>
                  </div>

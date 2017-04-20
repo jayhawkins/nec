@@ -11,6 +11,8 @@ $lastName = $member->members->records[0][4];
 <head>
     <title>Nationwide Equipment Control - Dashboard</title>
     <link href="css/application.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="vendor/select2/select2.css">
+    <link rel="stylesheet" href="vendor/select2/select2-bootstrap.css">
     <!-- as of IE9 cannot parse css files with more that 4K classes separating in two files -->
     <!--[if IE 9]>
         <link href="css/application-ie9-part2.css" rel="stylesheet">
@@ -720,6 +722,8 @@ $lastName = $member->members->records[0][4];
 
 <!-- page specific js -->
 <script src="js/tables-dynamic.js"></script>
+<script src="vendor/select2/select2.min.js"></script>
+<script src="vendor/parsleyjs/dist/parsley.min.js"></script>
 
 <!-- page specific js -->
 <script src="js/index.js"></script>
