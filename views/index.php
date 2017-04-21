@@ -65,7 +65,8 @@ $lastName = $member->members->records[0][4];
     <!-- need this .js class to initiate slimscroll -->
     <div class="js-sidebar-content">
         <header class="logo hidden-sm-down">
-            <a href="/">NEC</a>
+            <img src="img/nec_logo.png" width="120"/>
+            <!--a href="/">NEC</a-->
         </header>
         <!-- seems like lots of recent admin template have this feature of user info in the sidebar.
              looks good, so adding it and enhancing with notifications -->
@@ -154,7 +155,16 @@ $lastName = $member->members->records[0][4];
                 </a>
                 <ul id="sidebar-forms" class="collapse">
                     <li><a href="#" onclick="ajaxFormCall('businessProfile');">Business</a></li>
-                    <li><a href="#" onclick="ajaxFormCall('listLocations');">Locations</a></li>
+                    <li><a class="collapsed" href="#sidebar-sub-levels" data-toggle="collapse" data-parent="#sidebar-levels">
+                              Location
+                              <i class="toggle fa fa-angle-down"></i>
+                        </a>
+                      <ul id="sidebar-sub-levels" class="collapse">
+                          <li><a href="#" onclick="ajaxFormCall('listLocationTypes');">Location Types</a></li>
+                          <li><a href="#" onclick="ajaxFormCall('listLocations');">Locations</a></li>
+                      </ul>
+                    </li>
+
                     <li><a href="#" onclick="ajaxFormCall('listContacts');">Contacts</a></li>
                     <?php
                         if ($_SESSION['entitytype'] == 1) {

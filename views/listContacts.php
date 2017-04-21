@@ -426,6 +426,16 @@ $contactTypes = json_decode(file_get_contents(API_HOST.'/api/contact_types?colum
     var table = $("#datatable-table").DataTable();
 
     $("#addContact").click(function(){
+      $("#id").val('');
+      $("#contactTypeID").val('');
+      $("#firstName").val('');
+      $("#lastName").val('');
+      $("#title").val('');
+      $("#emailAddress").val('');
+      $("#primaryPhone").val('');
+      $("#secondaryPhone").val('');
+      $("#fax").val('');
+      $("#contactRating").val('');
   		$("#myModal").modal('show');
   	});
 

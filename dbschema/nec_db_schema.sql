@@ -190,6 +190,8 @@ COLLATE = utf8_general_ci
 ENGINE = InnoDB
 AUTO_INCREMENT = 1;
 -- -------------------------------------------------------------
+ALTER TABLE location_types ADD COLUMN entityID int(11) unsigned DEFAULT 0 AFTER id;
+ALTER TABLE location_types ADD COLUMN status VARCHAR(255) NOT NULL DEFAULT 'Active' AFTER name ;
 -- ---------------------------------------------------------
 
 
@@ -290,6 +292,7 @@ COLLATE = utf8_general_ci
 ENGINE = InnoDB
 AUTO_INCREMENT = 1;
 -- -------------------------------------------------------------
+ALTER TABLE objects ADD COLUMN `status` VARCHAR(255) NOT NULL DEFAULT 'Active' AFTER `name`;
 -- ---------------------------------------------------------
 
 

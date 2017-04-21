@@ -59,6 +59,58 @@ class User
 
     public function registerapi($password,$firstName,$lastName,$title,$address1,$address2,$city,$state,$zip,$phone,$fax,$email,$entityName,$entityTypeID) {
       try {
+
+            // url encode the address
+            $address = urlencode($address1.", ".$city.", ".$state.", ".$zip);
+
+            // google map geocode api url
+            $url = "http://maps.google.com/maps/api/geocode/json?address={$address}";
+
+            // get the json response
+            $resp_json = file_get_contents($url);
+
+            // decode the json
+            $resp = json_decode($resp_json, true);
+
+            // response status will be 'OK', if able to geocode given address
+            if($resp['status']=='OK'){
+
+                // get the important data
+                $lati = $resp['results'][0]['geometry']['location']['lat'];
+                $longi = $resp['results'][0]['geometry']['location']['lng'];
+                $formatted_address = $resp['results'][0]['formatted_address'];
+
+                // verify if data is complete
+                if($lati && $longi && $formatted_address){
+
+                    // put the data in the array
+                    $data_arr = array();
+
+                    array_push(
+                        $data_arr,
+                            $lati,
+                            $longi,
+                            $formatted_address
+                        );
+
+                } else {
+                  array_push(
+                      $data_arr,
+                          0.00,
+                          0.00,
+                          $formatted_address
+                      );
+                }
+
+            } else {
+              array_push(
+                  $data_arr,
+                      0.00,
+                      0.00,
+                      $formatted_address
+                  );
+            }
+
             $entityurl = API_HOST.'/api/entities';
             $entitydata = array(
                         "name" => $entityName,
@@ -67,7 +119,7 @@ class User
                         "status" => "Active",
                         "entityRating" => 0,
                         "createdAt" => date('Y-m-d H:i:s'),
-                        "updatedAt" => date('Y-m-d H:i:s')
+                        "updatedAt" => '0000-00-00 00:00:00'
             );
             // use key 'http' even if you send the request to https://...
             $entityoptions = array(
@@ -90,11 +142,11 @@ class User
                         "city" => $city,
                         "state" => $state,
                         "zip" => $zip,
-                        "latitude" => 0.00,
-                        "longitude" => 0.00,
+                        "latitude" => $data_arr[0],
+                        "longitude" => $data_arr[1],
                         "timeZone" => '',
                         "createdAt" => date('Y-m-d H:i:s'),
-                        "updatedAt" => date('Y-m-d H:i:s')
+                        "updatedAt" => '0000-00-00 00:00:00'
             );
             // use key 'http' even if you send the request to https://...
             $locationoptions = array(
@@ -114,7 +166,7 @@ class User
                           "password" => password_hash($password, PASSWORD_BCRYPT),
                           "status" => "Inactive",
                           "createdAt" => date('Y-m-d H:i:s'),
-                          "updatedAt" => date('Y-m-d H:i:s')
+                          "updatedAt" => '0000-00-00 00:00:00'
                 );
                 // use key 'http' even if you send the request to https://...
                 $useroptions = array(
@@ -137,7 +189,7 @@ class User
                                 "userID" => $user_id,
                                 "entityID" => $entity_id,
                                 "createdAt" => date('Y-m-d H:i:s'),
-                                "updatedAt" => date('Y-m-d H:i:s')
+                                "updatedAt" => '0000-00-00 00:00:00'
                     );
                     // use key 'http' even if you send the request to https://...
                     $memberoptions = array(
@@ -163,7 +215,7 @@ class User
                                 "fax" => $fax,
                                 "contactRating" => 0,
                                 "createdAt" => date('Y-m-d H:i:s'),
-                                "updatedAt" => date('Y-m-d H:i:s')
+                                "updatedAt" => '0000-00-00 00:00:00'
                     );
                     // use key 'http' even if you send the request to https://...
                     $contactoptions = array(

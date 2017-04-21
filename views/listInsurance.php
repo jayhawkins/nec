@@ -214,7 +214,7 @@ require '../lib/common.php';
              Column sorting, live search, pagination. Built with
              <a href="http://www.datatables.net/" target="_blank">jQuery DataTables</a>
          </p -->
-         <button type="button" id="addContact" class="btn btn-primary pull-xs-right" data-target="#myModal">Add Insurance</button>
+         <button type="button" id="addInsurance" class="btn btn-primary pull-xs-right" data-target="#myModal">Add Insurance</button>
          <br /><br />
          <div id="dataTable" class="mt">
              <table id="datatable-table" class="table table-striped table-hover">
@@ -366,7 +366,13 @@ require '../lib/common.php';
 
     var table = $("#datatable-table").DataTable();
 
-    $("#addContact").click(function(){
+    $("#addInsurance").click(function(){
+      $("#id").val('');
+      $("#name").val('');
+      $("#contactName").val('');
+      $("#contactPhone").val('');
+      $("#policyNumber").val('');
+      $("#policyExpirationDate").val('');
   		$("#myModal").modal('show');
   	});
 

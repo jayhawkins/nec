@@ -5,6 +5,9 @@ session_start();
 require '../../nec_config.php';
 require '../lib/common.php';
 
+$typeID = '';
+$objectTypes = json_decode(file_get_contents(API_HOST."/api/object_types?order=name"));
+
  ?>
 
  <script>
@@ -56,19 +59,21 @@ require '../lib/common.php';
                 today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
 
                 if ($("#id").val() > '') {
-                    var url = '<?php echo API_HOST."/api/insurance_carriers" ?>/' + $("#id").val();
+                    var url = '<?php echo API_HOST."/api/objects" ?>/' + $("#id").val();
                     type = "PUT";
                 } else {
-                    var url = '<?php echo API_HOST."/api/insurance_carriers" ?>';
+                    var url = '<?php echo API_HOST."/api/objects" ?>';
                     type = "POST";
                 }
 
+                var jsonData = {};
+
                 if (type == "PUT") {
                     var date = today;
-                    var data = {entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), updatedAt: date};
+                    var data = {entityID: $("#entityID").val(), name: $("#name").val(), data: jsonData, updatedAt: date};
                 } else {
                     var date = today;
-                    var data = {entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), createdAt: date};
+                    var data = {entityID: $("#entityID").val(), name: $("#name").val(), data: jsonData, createdAt: date};
                 }
 
                 $.ajax({
@@ -83,17 +88,13 @@ require '../lib/common.php';
                         loadTableAJAX();
                         $("#id").val('');
                         $("#name").val('');
-                        $("#contactName").val('');
-                        $("#contactPhone").val('');
-                        $("#policyNumber").val('');
-                        $("#policyExpirationDate").val('');
                         passValidation = true;
                       } else {
-                        alert("Adding Insurance Failed!");
+                        alert("Adding Trailer Failed!");
                       }
                    },
                    error: function() {
-                      alert("There Was An Error Adding Insurance!");
+                      alert("There Was An Error Adding Trailer`!");
                    }
                 });
 
@@ -109,21 +110,19 @@ require '../lib/common.php';
 
       function loadTableAJAX() {
         myApp.showPleaseWait();
-        var url = '<?php echo API_HOST; ?>' + '/api/insurance_carriers?columns=id,name,link,contactName,contactPhone,policyNumber,policyExpirationDate,status&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order=name&transform=1';
+        var url = '<?php echo API_HOST; ?>' + '/api/objects?columns=id,objectTypeID,name,data,status&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order=name&transform=1';
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
             processing: true,
             ajax: {
                 url: url,
-                dataSrc: 'insurance_carriers'
+                dataSrc: 'objects'
             },
             columns: [
                 { data: "id", visible: false },
+                { data: "objectTypeID", visible: false },
                 { data: "name" },
-                { data: "contactName" },
-                { data: "contactPhone" },
-                { data: "policyNumber" },
-                { data: "policyExpirationDate", visible: false },
+                { data: "data", visible: false },
                 {
                     data: null,
                     "bSortable": false,
@@ -166,7 +165,7 @@ require '../lib/common.php';
           }
 
           var data = {status: newStatus};
-          var url = '<?php echo API_HOST."/api/insurance_carriers" ?>/' + $("#id").val();
+          var url = '<?php echo API_HOST."/api/objects" ?>/' + $("#id").val();
           var type = "PUT";
 
           $.ajax({
@@ -183,11 +182,11 @@ require '../lib/common.php';
                   passValidation = true;
                 } else {
                   $(myDialog).modal('hide');
-                  alert("Changing Status of Insurance Failed!");
+                  alert("Changing Status of Trailer Failed!");
                 }
              },
              error: function() {
-                alert("There Was An Error Changing Insurance Status!");
+                alert("There Was An Error Changing Trailer Status!");
              }
           });
 
@@ -214,18 +213,21 @@ require '../lib/common.php';
              Column sorting, live search, pagination. Built with
              <a href="http://www.datatables.net/" target="_blank">jQuery DataTables</a>
          </p -->
-         <button type="button" id="addContact" class="btn btn-primary pull-xs-right" data-target="#myModal">Add Trailer</button>
+         <div class='col-xs-11'>
+           <button type="button" id="addTrailer" class="btn btn-primary pull-xs-right" data-target="#myModal">Add Trailer</button>
+         </div>
+         <div class='col-xs-1'>
+         <button type="button" id="addDataPoint" class="btn btn-primary pull-xs-right" data-target="#myModal">Add Data Point</button>
+         </div>
          <br /><br />
          <div id="dataTable" class="mt">
              <table id="datatable-table" class="table table-striped table-hover">
                  <thead>
                  <tr>
                      <th>ID</th>
+                     <th>objectTypeID</th>
                      <th class="hidden-sm-down">Name</th>
-                     <th class="hidden-sm-down">Contact Name</th>
-                     <th class="hidden-sm-down">Contact Phone</th>
-                     <th class="hidden-sm-down">Policy Number</th>
-                     <th class="hidden-sm-down">Policy Expiration Date</th>
+                     <th class="hidden-sm-down">Data</th>
                      <th class="no-sort pull-right">&nbsp;</th>
                  </tr>
                  </thead>
@@ -238,11 +240,11 @@ require '../lib/common.php';
  </section>
 
  <!-- Modal -->
- <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+ <div class="modal fade" id="myDataPointModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
    <div class="modal-dialog modal-lg" role="document">
      <div class="modal-content">
        <div class="modal-header">
-         <h5 class="modal-title" id="exampleModalLabel"><strong>Trailer</strong></h5>
+         <h5 class="modal-title" id="exampleModalLabel"><strong>Data Point</strong></h5>
          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
            <span aria-hidden="true">&times;</span>
          </button>
@@ -252,38 +254,27 @@ require '../lib/common.php';
                  <input type="hidden" id="entityID" name="entityID" value="<?php echo $_SESSION['entityid']; ?>" />
                  <input type="hidden" id="id" name="id" value="" />
                  <div class="row">
-                     <div class="col-sm-6">
+                     <div class="col-sm-4">
                          <div class="form-group">
-                           <input type="text" id="name" name="name" class="form-control mb-sm" placeholder="*Name" required="required" />
+                           <input type="text" id="columnName" name="columnName" class="form-control mb-sm" placeholder="*Name of Column" required="required" />
                          </div>
                      </div>
-                     <div class="col-sm-6">
+                     <div class="col-sm-4">
                          <div class="form-group">
-                           &nbsp;
+                           <input type="text" id="title" name="title" class="form-control mb-sm" placeholder="*Title of Column" required="required" />
                          </div>
                      </div>
-                 </div>
-                 <div class="row">
-                     <div class="col-sm-6">
+                     <div class="col-sm-4">
                          <div class="form-group">
-                           <input type="text" id="contactName" name="contactName" class="form-control mb-sm" placeholder="*Contact Name" required="required" />
-                         </div>
-                     </div>
-                     <div class="col-sm-6">
-                         <div class="form-group">
-                           <input type="text" id="contactPhone" name="contactPhone" class="form-control mb-sm" placeholder="Contact Phone" required="required" />
-                         </div>
-                     </div>
-                 </div>
-                 <div class="row">
-                     <div class="col-sm-6">
-                         <div class="form-group">
-                           <input type="text" id="policyNumber" name="policyNumber" class="form-control mb-sm" placeholder="*Policy Number" required="required" />
-                         </div>
-                     </div>
-                     <div class="col-sm-6">
-                         <div class="form-group">
-                           <input type="text" id="policyExpirationDate" name="policyExpirationDate" class="form-control mb-sm" placeholder="Policy Expiration Date (YYYY-MM-DD)" required="required" />
+                           <select id="objectTypeID" name="objectTypeID" data-placeholder="*Data Point Type" class="form-control chzn-select" data-ui-jq="select2" required="required">
+                             <option value="">*Select Type...</option>
+            <?php
+                             foreach($objectTypes->object_types->records as $value) {
+                                 $selected = ($value[0] == $typeID) ? 'selected=selected':'';
+                                 echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
+                             }
+            ?>
+                           </select>
                          </div>
                      </div>
                  </div>
@@ -296,6 +287,42 @@ require '../lib/common.php';
       </div>
     </div>
   </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel"><strong>Trailer</strong></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+                <form id="formTrailer" class="register-form mt-lg">
+                  <input type="hidden" id="entityID" name="entityID" value="<?php echo $_SESSION['entityid']; ?>" />
+                  <input type="hidden" id="id" name="id" value="" />
+                  <div class="row">
+                      <div class="col-sm-6">
+                          <div class="form-group">
+                            <input type="text" id="name" name="name" class="form-control mb-sm" placeholder="*Name" required="required" />
+                          </div>
+                      </div>
+                      <div class="col-sm-6">
+                          <div class="form-group">
+                            &nbsp;
+                          </div>
+                      </div>
+                  </div>
+                 </form>
+        </div>
+         <div class="modal-footer">
+           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+           <button type="button" class="btn btn-primary" onclick="return verifyAndPost();">Save Changes</button>
+         </div>
+       </div>
+     </div>
+   </div>
 
   <!-- Modal -->
   <div class="modal fade" id="myDisableDialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -314,7 +341,7 @@ require '../lib/common.php';
                   <div class="row">
                       <div class="col-sm-12">
                           <div class="form-group">
-                            <h5>Do you wish to disable this insurance policy?</h5>
+                            <h5>Do you wish to disable this trailer?</h5>
                           </div>
                       </div>
 
@@ -323,7 +350,7 @@ require '../lib/common.php';
         </div>
          <div class="modal-footer">
            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-           <button type="button" class="btn btn-primary" onclick="return recordEnableDisable('Disable');">Disable Policy</button>
+           <button type="button" class="btn btn-primary" onclick="return recordEnableDisable('Disable');">Disable Trailer</button>
          </div>
        </div>
      </div>
@@ -345,7 +372,7 @@ require '../lib/common.php';
                    <div class="row">
                        <div class="col-sm-12">
                            <div class="form-group">
-                             <h5>Do you wish to enable this insurance policy?</h5>
+                             <h5>Do you wish to enable this trailer?</h5>
                            </div>
                        </div>
 
@@ -354,7 +381,7 @@ require '../lib/common.php';
          </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary" onclick="return recordEnableDisable('Enable');">Enable Policy</button>
+            <button type="button" class="btn btn-primary" onclick="return recordEnableDisable('Enable');">Enable Trailer</button>
           </div>
         </div>
       </div>
@@ -366,19 +393,23 @@ require '../lib/common.php';
 
     var table = $("#datatable-table").DataTable();
 
-    $("#addContact").click(function(){
+    $("#addTrailer").click(function(){
+      $("#id").val('');
+      $("#objectTypeID").val('');
+      $("#name").val('');
   		$("#myModal").modal('show');
+  	});
+
+    $("#addDataPoint").click(function(){
+  		$("#myDataPointModal").modal('show');
   	});
 
     $('#datatable-table tbody').on( 'click', 'button', function () {
         var data = table.row( $(this).parents('tr') ).data();
         if (this.textContent.indexOf("Edit") > -1) {
           $("#id").val(data["id"]);
+          $("#objectTypeID").val(data["objectTypeID"]);
           $("#name").val(data["name"]);
-          $("#contactName").val(data["contactName"]);
-          $("#contactPhone").val(data["contactPhone"]);
-          $("#policyNumber").val(data["policyNumber"]);
-          $("#policyExpirationDate").val(data["policyExpirationDate"]);
           $("#myModal").modal('show');
         } else {
             $("#id").val(data["id"]);
