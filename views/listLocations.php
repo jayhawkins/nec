@@ -204,7 +204,7 @@ $locationTypes = json_decode(file_get_contents(API_HOST."/api/location_types?col
           $.ajax({
              url: url,
              type: type,
-             data: JSON.stringify(data),print_r($objectTypes);
+             data: JSON.stringify(data),
              contentType: "application/json",
              async: false,
              success: function(data){
