@@ -9,7 +9,7 @@ $state = '';
 $states = json_decode(file_get_contents(API_HOST.'/api/states?columns=abbreviation,name&order=name'));
 
 $locationTypeID = '';
-$locationTypes = json_decode(file_get_contents(API_HOST.'/api/location_types?columns=id,name&order=id'));
+$locationTypes = json_decode(file_get_contents(API_HOST."/api/location_types?columns=id,name,status&filter=entityID,in,(0," . $_SESSION['entityid'] . ")&order=name"));
 
 // No longer needed. We don't load via PHP anymore. All handled in JS function.
 //$getlocations = json_decode(file_get_contents(API_HOST.'/api/locations?include=location_types&columns=locations.name,location_types.name,locations.address1,locations.address2,locations.city,locations.state,locations.zip,locations.status&filter=entityID,eq,' . $_SESSION['entityid'] . '&order=locationTypeID'),true);
@@ -204,7 +204,7 @@ $locationTypes = json_decode(file_get_contents(API_HOST.'/api/location_types?col
           $.ajax({
              url: url,
              type: type,
-             data: JSON.stringify(data),
+             data: JSON.stringify(data),print_r($objectTypes);
              contentType: "application/json",
              async: false,
              success: function(data){
@@ -299,8 +299,10 @@ $locationTypes = json_decode(file_get_contents(API_HOST.'/api/location_types?col
                              <option value="">*Select Type...</option>
             <?php
                              foreach($locationTypes->location_types->records as $value) {
-                                 $selected = ($value[0] == $locationTypeID) ? 'selected=selected':'';
-                                 echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
+                                 if ($value[2] == "Active") {
+                                   $selected = ($value[0] == $locationTypeID) ? 'selected=selected':'';
+                                   echo "<option value=" . $value[0] . ">" . $value[1] . "</option>\n";
+                                 }
                              }
             ?>
                            </select>
@@ -417,15 +419,23 @@ $locationTypes = json_decode(file_get_contents(API_HOST.'/api/location_types?col
 
  <script>
 
-    $( "#state" ).select2({
-       theme: "bootstrap"
-    });
+    $( "#state" ).select2();
+
+    $( "#locationTypeID" ).select2();
 
     loadTableAJAX();
 
     var table = $("#datatable-table").DataTable();
 
     $("#addLocation").click(function(){
+      $("#id").val('');
+      $("#locationTypeID").val('');
+      $("#name").val('');
+      $("#address1").val('');
+      $("#address2").val('');
+      $("#city").val('');
+      $("#state").val('');
+      $("#zip").val('');
   		$("#myModal").modal('show');
   	});
 

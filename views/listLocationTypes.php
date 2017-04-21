@@ -25,7 +25,7 @@ require '../lib/common.php';
 
       function verifyAndPost() {
 
-        if ( $('#formLink').parsley().validate() ) {
+        if ( $('#formLocationType').parsley().validate() ) {
                 var passValidation = false;
                 var type = "";
                 var today = new Date();
@@ -56,19 +56,19 @@ require '../lib/common.php';
                 today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
 
                 if ($("#id").val() > '') {
-                    var url = '<?php echo API_HOST."/api/links" ?>/' + $("#id").val();
+                    var url = '<?php echo API_HOST."/api/location_types" ?>/' + $("#id").val();
                     type = "PUT";
                 } else {
-                    var url = '<?php echo API_HOST."/api/links" ?>';
+                    var url = '<?php echo API_HOST."/api/location_types" ?>';
                     type = "POST";
                 }
 
                 if (type == "PUT") {
                     var date = today;
-                    var data = {entityID: $("#entityID").val(), name: $("#name").val(), link: $("#link").val(), updatedAt: date};
+                    var data = {entityID: $("#entityID").val(), name: $("#name").val(), updatedAt: date};
                 } else {
                     var date = today;
-                    var data = {entityID: $("#entityID").val(), name: $("#name").val(), link: $("#link").val(), createdAt: date};
+                    var data = {entityID: $("#entityID").val(), name: $("#name").val(), createdAt: date};
                 }
 
                 $.ajax({
@@ -83,14 +83,13 @@ require '../lib/common.php';
                         loadTableAJAX();
                         $("#id").val('');
                         $("#name").val('');
-                        $("#link").val('');
                         passValidation = true;
                       } else {
-                        alert("Adding Link Failed!");
+                        alert("Adding Location Type Failed!");
                       }
                    },
                    error: function() {
-                      alert("There Was An Error Adding Link!");
+                      alert("There Was An Error Adding Location Type!");
                    }
                 });
 
@@ -106,18 +105,17 @@ require '../lib/common.php';
 
       function loadTableAJAX() {
         myApp.showPleaseWait();
-        var url = '<?php echo API_HOST; ?>' + '/api/links?columns=id,name,link,status&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order=name&transform=1';
+        var url = '<?php echo API_HOST; ?>' + '/api/location_types?columns=id,name,status&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order=name&transform=1';
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
             processing: true,
             ajax: {
                 url: url,
-                dataSrc: 'links'
+                dataSrc: 'location_types'
             },
             columns: [
                 { data: "id", visible: false },
                 { data: "name" },
-                { data: "link" },
                 {
                     data: null,
                     "bSortable": false,
@@ -160,7 +158,7 @@ require '../lib/common.php';
           }
 
           var data = {status: newStatus};
-          var url = '<?php echo API_HOST."/api/links" ?>/' + $("#id").val();
+          var url = '<?php echo API_HOST."/api/location_types" ?>/' + $("#id").val();
           var type = "PUT";
 
           $.ajax({
@@ -177,11 +175,11 @@ require '../lib/common.php';
                   passValidation = true;
                 } else {
                   $(myDialog).modal('hide');
-                  alert("Changing Status of Link Failed!");
+                  alert("Changing Status of Location Type Failed!");
                 }
              },
              error: function() {
-                alert("There Was An Error Changing Link Status!");
+                alert("There Was An Error Changing Location Type Status!");
              }
           });
 
@@ -192,11 +190,11 @@ require '../lib/common.php';
 
  <ol class="breadcrumb">
    <li>ADMIN</li>
-   <li class="active">Link Maintenance</li>
+   <li class="active">Location Type Maintenance</li>
  </ol>
  <section class="widget">
      <header>
-         <h4><span class="fw-semi-bold">Link</span></h4>
+         <h4><span class="fw-semi-bold">Location Type</span></h4>
          <div class="widget-controls">
              <a data-widgster="expand" title="Expand" href="#"><i class="glyphicon glyphicon-chevron-up"></i></a>
              <a data-widgster="collapse" title="Collapse" href="#"><i class="glyphicon glyphicon-chevron-down"></i></a>
@@ -208,7 +206,7 @@ require '../lib/common.php';
              Column sorting, live search, pagination. Built with
              <a href="http://www.datatables.net/" target="_blank">jQuery DataTables</a>
          </p -->
-         <button type="button" id="addLink" class="btn btn-primary pull-xs-right" data-target="#myModal">Add Link</button>
+         <button type="button" id="addType" class="btn btn-primary pull-xs-right" data-target="#myModal">Add Type</button>
          <br /><br />
          <div id="dataTable" class="mt">
              <table id="datatable-table" class="table table-striped table-hover">
@@ -216,7 +214,6 @@ require '../lib/common.php';
                  <tr>
                      <th>ID</th>
                      <th class="hidden-sm-down">Name</th>
-                     <th class="hidden-sm-down">Link</th>
                      <th class="no-sort pull-right">&nbsp;</th>
                  </tr>
                  </thead>
@@ -233,13 +230,13 @@ require '../lib/common.php';
    <div class="modal-dialog modal-lg" role="document">
      <div class="modal-content">
        <div class="modal-header">
-         <h5 class="modal-title" id="exampleModalLabel"><strong>Link</strong></h5>
+         <h5 class="modal-title" id="exampleModalLabel"><strong>Location Type</strong></h5>
          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
            <span aria-hidden="true">&times;</span>
          </button>
        </div>
        <div class="modal-body">
-               <form id="formLink" class="register-form mt-lg">
+               <form id="formLocationType" class="register-form mt-lg">
                  <input type="hidden" id="entityID" name="entityID" value="<?php echo $_SESSION['entityid']; ?>" />
                  <input type="hidden" id="id" name="id" value="" />
                  <div class="row">
@@ -250,7 +247,7 @@ require '../lib/common.php';
                      </div>
                      <div class="col-sm-6">
                          <div class="form-group">
-                           <input type="text" id="link" name="link" class="form-control mb-sm" placeholder="Link" required="required" />
+                           &nbsp;
                          </div>
                      </div>
                  </div>
@@ -258,7 +255,7 @@ require '../lib/common.php';
        </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" onclick="return verifyAndPost();">Save changes</button>
+          <button type="button" class="btn btn-primary" onclick="return verifyAndPost();">Save Changes</button>
         </div>
       </div>
     </div>
@@ -281,7 +278,7 @@ require '../lib/common.php';
                   <div class="row">
                       <div class="col-sm-12">
                           <div class="form-group">
-                            <h5>Do you wish to disable this link?</h5>
+                            <h5>Do you wish to disable this type?</h5>
                           </div>
                       </div>
 
@@ -290,7 +287,7 @@ require '../lib/common.php';
         </div>
          <div class="modal-footer">
            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-           <button type="button" class="btn btn-primary" onclick="return recordEnableDisable('Disable');">Disable Link</button>
+           <button type="button" class="btn btn-primary" onclick="return recordEnableDisable('Disable');">Disable Type</button>
          </div>
        </div>
      </div>
@@ -312,7 +309,7 @@ require '../lib/common.php';
                    <div class="row">
                        <div class="col-sm-12">
                            <div class="form-group">
-                             <h5>Do you wish to enable this link?</h5>
+                             <h5>Do you wish to enable this type?</h5>
                            </div>
                        </div>
 
@@ -321,7 +318,7 @@ require '../lib/common.php';
          </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary" onclick="return recordEnableDisable('Enable');">Enable Link</button>
+            <button type="button" class="btn btn-primary" onclick="return recordEnableDisable('Enable');">Enable Type</button>
           </div>
         </div>
       </div>
@@ -333,10 +330,9 @@ require '../lib/common.php';
 
     var table = $("#datatable-table").DataTable();
 
-    $("#addLink").click(function(){
+    $("#addType").click(function(){
       $("#id").val('');
       $("#name").val('');
-      $("#link").val('');
   		$("#myModal").modal('show');
   	});
 
@@ -345,7 +341,6 @@ require '../lib/common.php';
         if (this.textContent.indexOf("Edit") > -1) {
           $("#id").val(data["id"]);
           $("#name").val(data["name"]);
-          $("#link").val(data["link"]);
           $("#myModal").modal('show');
         } else {
             $("#id").val(data["id"]);
