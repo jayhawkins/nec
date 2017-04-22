@@ -9,7 +9,18 @@ $state = '';
 $states = json_decode(file_get_contents(API_HOST.'/api/states?columns=abbreviation,name&order=name'));
 
 $locationTypeID = '';
-$locationTypes = json_decode(file_get_contents(API_HOST."/api/location_types?columns=id,name,status&filter=entityID,in,(0," . $_SESSION['entityid'] . ")&order=name"));
+$locationTypes = json_decode(file_get_contents(API_HOST."/api/location_types?columns=id,name,status&filter[]=entityID,eq," . $_SESSION['entityid'] . "&filter[]=id,gt,0&satisfy=all&order=name"));
+
+$contacts = '';
+$contacts = json_decode(file_get_contents(API_HOST."/api/contacts?columns=id,firstName,lastName&order=lastName&filter=entityID,eq," . $_SESSION['entityid'] ));
+
+$locations_contacts = '';
+$locations_contacts = json_decode(file_get_contents(API_HOST."/api/locations_contacts?columns=location_id,contact_id&filter=entityID,eq," . $_SESSION['entityid'] ));
+
+$loccon = array();
+for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
+    $loccon[$locations_contacts->locations_contacts->records[$lc][0]] = $locations_contacts->locations_contacts->records[$lc][1];
+}
 
 // No longer needed. We don't load via PHP anymore. All handled in JS function.
 //$getlocations = json_decode(file_get_contents(API_HOST.'/api/locations?include=location_types&columns=locations.name,location_types.name,locations.address1,locations.address2,locations.city,locations.state,locations.zip,locations.status&filter=entityID,eq,' . $_SESSION['entityid'] . '&order=locationTypeID'),true);
@@ -20,6 +31,12 @@ $locationTypes = json_decode(file_get_contents(API_HOST."/api/location_types?col
  <script type="text/javascript" src="http://maps.google.com/maps/api/js?key=<?php echo GOOGLE_MAPS_API; ?>"></script>
 
  <script>
+
+     var contacts = <?php echo json_encode($contacts); ?>;
+     console.log(contacts);
+
+     var locations_contacts = <?php echo json_encode($locations_contacts); ?>;
+     console.log(locations_contacts);
 
      var myApp;
       myApp = myApp || (function () {
@@ -138,7 +155,9 @@ $locationTypes = json_decode(file_get_contents(API_HOST."/api/location_types?col
 
       function loadTableAJAX() {
         myApp.showPleaseWait();
-        var url = '<?php echo API_HOST; ?>' + '/api/locations?include=location_types&columns=locations.id,locations.name,location_types.id,location_types.name,locations.address1,locations.address2,locations.city,locations.state,locations.zip,locations.status&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order=locationTypeID&transform=1';
+        //var url = '<?php echo API_HOST; ?>' + '/api/locations?include=location_types&columns=locations.id,locations.name,location_types.id,location_types.name,locations.address1,locations.address2,locations.city,locations.state,locations.zip,locations.status&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order=locationTypeID&transform=1';
+        var url = '<?php echo API_HOST; ?>' + '/api/locations?include=location_types&columns=locations.id,locations.name,location_types.id,location_types.name,locations.address1,locations.address2,locations.city,locations.state,locations.zip,locations.status&filter[]=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&filter[]=locationTypeID,ne,1&satisfy=all&order=locationTypeID&transform=1';
+
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
             processing: true,
@@ -226,7 +245,104 @@ $locationTypes = json_decode(file_get_contents(API_HOST."/api/location_types?col
           //return passValidation;
       }
 
+      function formatListBox() {
+          // Bootstrap Listbox
+          $('.list-group.checked-list-box .list-group-item').each(function () {
+
+              // Settings
+              var $widget = $(this),
+                  $checkbox = $('<input type="checkbox" class="hidden" style="display: none" />'),
+                  color = ($widget.data('color') ? $widget.data('color') : "primary"),
+                  style = ($widget.data('style') == "button" ? "btn-" : "list-group-item-"),
+                  settings = {
+                      on: {
+                          icon: 'glyphicon glyphicon-check'
+                      },
+                      off: {
+                          icon: 'glyphicon glyphicon-unchecked'
+                      }
+                  };
+
+              $widget.css('cursor', 'pointer')
+              $widget.append($checkbox);
+
+              // Event Handlers
+              $widget.on('click', function () {
+                  $checkbox.prop('checked', !$checkbox.is(':checked'));
+                  $checkbox.triggerHandler('change');
+                  updateDisplay();
+              });
+              $checkbox.on('change', function () {
+                  updateDisplay();
+              });
+
+
+              // Actions
+              function updateDisplay() {
+                  var isChecked = $checkbox.is(':checked');
+
+                  // Set the button's state
+                  $widget.data('state', (isChecked) ? "on" : "off");
+
+                  // Set the button's icon
+                  $widget.find('.state-icon')
+                      .removeClass()
+                      .addClass('state-icon ' + settings[$widget.data('state')].icon);
+
+                  // Update the button's color
+                  if (isChecked) {
+                      $widget.addClass(style + color + ' active');
+                  } else {
+                      $widget.removeClass(style + color + ' active');
+                  }
+              }
+
+              // Initialization
+              function init() {
+
+                  if ($widget.data('checked') == true) {
+                      $checkbox.prop('checked', !$checkbox.is(':checked'));
+                  }
+
+                  updateDisplay();
+
+                  // Inject the icon if applicable
+                  if ($widget.find('.state-icon').length == 0) {
+                      $widget.prepend('<span class="state-icon ' + settings[$widget.data('state')].icon + '"></span>');
+                  }
+              }
+              init();
+          });
+
+          $('#get-checked-data').on('click', function(event) {
+              event.preventDefault();
+              var checkedItems = {}, counter = 0;
+              $("#check-list-box li.active").each(function(idx, li) {
+                  checkedItems[counter] = $(li).text();
+                  counter++;
+              });
+              $('#display-json').html(JSON.stringify(checkedItems, null, '\t'));
+          });
+
+      }
+
  </script>
+
+ <style>
+    /* CSS REQUIRED */
+    .state-icon {
+     left: -5px;
+    }
+    .list-group-item-primary {
+     color: rgb(255, 255, 255);
+     background-color: rgb(66, 139, 202);
+    }
+
+    /* DEMO ONLY - REMOVES UNWANTED MARGIN */
+    .well .list-group {
+     margin-bottom: 0px;
+    }
+ </style>
 
  <ol class="breadcrumb">
    <li>ADMIN</li>
@@ -346,6 +462,19 @@ $locationTypes = json_decode(file_get_contents(API_HOST."/api/location_types?col
                          </div>
                      </div>
                  </div>
+                 <hr />
+                 <div class="container" style="margin-top:20px;">
+                 <div class="row">
+                   <div class="col-xs-6">
+                        <h5 class="text-center"><strong>Associated Contacts</strong></h5>
+                        <div class="well" style="max-height: 200px;overflow: auto;">
+                            <ul id="contacts" class="list-group checked-list-box">
+
+                            </ul>
+                        </div>
+                    </div>
+                 </div>
+               </div>
                 </form>
        </div>
         <div class="modal-footer">
@@ -419,6 +548,8 @@ $locationTypes = json_decode(file_get_contents(API_HOST."/api/location_types?col
 
  <script>
 
+
+
     $( "#state" ).select2();
 
     $( "#locationTypeID" ).select2();
@@ -426,6 +557,7 @@ $locationTypes = json_decode(file_get_contents(API_HOST."/api/location_types?col
     loadTableAJAX();
 
     var table = $("#datatable-table").DataTable();
+    var tableContact = $("#datatable-table-contact").DataTable();
 
     $("#addLocation").click(function(){
       $("#id").val('');
@@ -442,6 +574,8 @@ $locationTypes = json_decode(file_get_contents(API_HOST."/api/location_types?col
     $('#datatable-table tbody').on( 'click', 'button', function () {
         var data = table.row( $(this).parents('tr') ).data();
         if (this.textContent.indexOf("Edit") > -1) {
+          var li = '';
+          var checked = '';
           $("#id").val(data["id"]);
           $("#locationTypeID").val(data["location_types"][0].id);
           $("#name").val(data["name"]);
@@ -450,6 +584,26 @@ $locationTypes = json_decode(file_get_contents(API_HOST."/api/location_types?col
           $("#city").val(data["city"]);
           $("#state").val(data["state"]);
           $("#zip").val(data["zip"]);
+          console.log("contacts records: " + contacts.contacts.records.length);
+          console.log("locations_contacts records: " + locations_contacts.locations_contacts.records.length);
+          console.log('data id is ' + data["id"]);
+          for (var i = 0; i < contacts.contacts.records.length; i++) {
+              for (var l = 0; l < locations_contacts.locations_contacts.records.length; l++) {
+                  //console.log(contacts.contacts.records[i]);
+                  if ( locations_contacts.locations_contacts.records[l][0] == data["id"] ) {
+                      if (locations_contacts.locations_contacts.records[l][1] == contacts.contacts.records[i][0]) {
+                          checked = 'data-checked="true"';
+                      } else {
+                          checked = '';
+                      }
+                  }
+              }
+              console.log('checked is: ' + checked);
+              li += '<li id=\"' + contacts.contacts.records[i][0] + '\" class=\"list-group-item\" ' + checked + '>' + contacts.contacts.records[i][1] + ' ' + contacts.contacts.records[i][2] + '</li>\n';
+              console.log(li);
+          }
+          $("#contacts").html(li);
+          formatListBox();
           $("#myModal").modal('show');
         } else {
             $("#id").val(data["id"]);
@@ -465,5 +619,7 @@ $locationTypes = json_decode(file_get_contents(API_HOST."/api/location_types?col
         }
 
     } );
+
+
 
  </script>
