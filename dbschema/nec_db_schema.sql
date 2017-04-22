@@ -176,6 +176,16 @@ AUTO_INCREMENT = 1;
 ALTER TABLE links ADD COLUMN status VARCHAR(255) NOT NULL DEFAULT 'Active' AFTER entityID ;
 -- ---------------------------------------------------------
 
+-- CREATE TABLE "locations_contacts" ---------------------------
+CREATE TABLE `locations_contacts` (
+	`location_id` Int( 11 ) UNSIGNED NOT NULL,
+	`contact_id` Int( 11 ) UNSIGNED NOT NULL,
+	`entityID` Int( 11 ) UNSIGNED NOT NULL )
+CHARACTER SET = utf8
+COLLATE = utf8_general_ci
+ENGINE = InnoDB;
+-- -------------------------------------------------------------
+
 
 -- CREATE TABLE "location_types" ---------------------------
 -- CREATE TABLE "location_types" -------------------------------
@@ -220,6 +230,15 @@ AUTO_INCREMENT = 1;
 ALTER TABLE locations ADD COLUMN name VarChar(255) NOT NULL AFTER locationTypeID;
 ALTER TABLE locations ADD COLUMN status VARCHAR(255) NOT NULL DEFAULT 'Active' AFTER timezone ;
 -- ---------------------------------------------------------
+
+-- CREATE TABLE "locations_contacts" ---------------------------
+CREATE TABLE `locations_contacts` (
+	`location_id` Int( 11 ) UNSIGNED NOT NULL,
+	`contact_id` Int( 11 ) UNSIGNED NOT NULL )
+CHARACTER SET = utf8
+COLLATE = utf8_general_ci
+ENGINE = InnoDB;
+-- -------------------------------------------------------------
 
 
 -- CREATE TABLE "members" ----------------------------------
@@ -455,6 +474,14 @@ CREATE INDEX `index_entityID` USING BTREE ON `locations`( `entityID` );
 -- -------------------------------------------------------------
 -- ---------------------------------------------------------
 
+-- CREATE INDEX "index_location_id" ----------------------------
+CREATE INDEX `index_location_id` USING BTREE ON `locations_contacts`( `location_id` );
+-- -------------------------------------------------------------
+
+-- CREATE INDEX "index_entityID9" ------------------------------
+CREATE INDEX `index_entityID9` USING BTREE ON `locations_contacts`( `entityID` );
+-- -------------------------------------------------------------
+
 
 -- CREATE INDEX "index_entityID4" --------------------------
 -- CREATE INDEX "index_entityID4" ------------------------------
@@ -526,6 +553,12 @@ ALTER TABLE `members`
 ALTER TABLE `locations`
 	ADD CONSTRAINT `lnk_location_types_locations` FOREIGN KEY ( `locationTypeID` )
 	REFERENCES `location_types`( `id` )
+	ON DELETE No Action
+	ON UPDATE No Action;
+
+ALTER TABLE `contacts`
+	ADD CONSTRAINT `lnk_contact_types_contacts` FOREIGN KEY ( `contactTypeID` )
+	REFERENCES `contact_types`( `id` )
 	ON DELETE No Action
 	ON UPDATE No Action;
 

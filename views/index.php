@@ -155,6 +155,7 @@ $lastName = $member->members->records[0][4];
                 </a>
                 <ul id="sidebar-forms" class="collapse">
                     <li><a href="#" onclick="ajaxFormCall('businessProfile');">Business</a></li>
+                    <li><a href="#" onclick="ajaxFormCall('listContacts');">Contacts</a></li>
                     <li><a class="collapsed" href="#sidebar-sub-levels" data-toggle="collapse" data-parent="#sidebar-levels">
                               Location
                               <i class="toggle fa fa-angle-down"></i>
@@ -165,7 +166,6 @@ $lastName = $member->members->records[0][4];
                       </ul>
                     </li>
 
-                    <li><a href="#" onclick="ajaxFormCall('listContacts');">Contacts</a></li>
                     <?php
                         if ($_SESSION['entitytype'] == 1) {
                           echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listTrailers');\">Trailers</a></li>";
