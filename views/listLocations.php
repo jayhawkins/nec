@@ -560,6 +560,8 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
     var tableContact = $("#datatable-table-contact").DataTable();
 
     $("#addLocation").click(function(){
+      var li = '';
+      var checked = '';
       $("#id").val('');
       $("#locationTypeID").val('');
       $("#name").val('');
@@ -568,6 +570,11 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
       $("#city").val('');
       $("#state").val('');
       $("#zip").val('');
+      for (var i = 0; i < contacts.contacts.records.length; i++) {
+          li += '<li id=\"' + contacts.contacts.records[i][0] + '\" class=\"list-group-item\" ' + checked + '>' + contacts.contacts.records[i][1] + ' ' + contacts.contacts.records[i][2] + '</li>\n';
+      }
+      $("#contacts").html(li);
+      formatListBox();
   		$("#myModal").modal('show');
   	});
 
