@@ -19,9 +19,11 @@ require 'models/Entities.php';
 require 'models/Members.php';
 require 'models/Locations.php';
 require 'models/Contacts.php';
+require 'models/LocationsContacts.php';
 
 Flight::register( 'user', 'User' );
 Flight::register( 'entity', 'Entity' );
 Flight::register( 'member', 'Member' );
 Flight::register( 'location', 'Location' );
 Flight::register( 'contact', 'Contact' );
+Flight::register( 'locationcontact', 'LocationContact' );
