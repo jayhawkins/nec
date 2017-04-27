@@ -184,6 +184,17 @@ $app->route('/dashboard', function() {
     }
 });
 
+$app->route('POST /deletelocationcontacts', function() {
+    $locationid = Flight::request()->data['location_id'];
+    $locationcontact = Flight::locationcontact();
+    $recorddeleted = $locationcontact->delete($locationid);
+    if ($recorddeleted) {
+        echo "success";
+    } else {
+        echo $recorddeleted;
+    }
+});
+
 
 // Start the framework
 $app->start();
