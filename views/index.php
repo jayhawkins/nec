@@ -108,11 +108,11 @@ $lastName = $member->members->records[0][4];
     if ($_SESSION['entitytype'] == 2) {
 ?>
             <li>
-                <a href="#">
+                <a href="#" onclick="ajaxFormCall('listCarrierNeeds');">
                     <span class="icon">
                         <i class="fa fa-truck"></i>
                     </span>
-                    Needs
+                    I Need Trailers
                     <span class="label label-danger">
                         9
                     </span>
@@ -143,7 +143,7 @@ $lastName = $member->members->records[0][4];
             <li>
                 <a href="#">
                     <span class="icon">
-                        <i class="fa fa-long-arrow-down"></i>
+                        <i class="fa fa-thumbs-down"></i>
                     </span>
                     Damage Claims
                 </a>
@@ -151,7 +151,7 @@ $lastName = $member->members->records[0][4];
             <li>
                 <a href="#">
                     <span class="icon">
-                        <i class="fa fa-thumbs-down"></i>
+                        <i class="fa fa-money"></i>
                     </span>
                     Collections
                     <span class="label label-danger">
@@ -187,8 +187,15 @@ $lastName = $member->members->records[0][4];
 
                     <?php
                         if ($_SESSION['entitytype'] == 1) {
+                          echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listTrailerSpecs');\">Trailer Specs</a></li>";
                           echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listTrailers');\">Trailers</a></li>";
+                        } else if ($_SESSION['entitytype'] == 2) {
+                          echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listTrailerSpecs');\">Trailer Specs</a></li>";
+                          echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listInsurance');\">Insurance</a></li>";
                         } else {
+                          // Must be NEC Admin So Show it all...
+                          echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listTrailerSpecs');\">Trailer Specs</a></li>";
+                          echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listTrailers');\">Trailers</a></li>";
                           echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listInsurance');\">Insurance</a></li>";
                         }
                     ?>
