@@ -13,6 +13,8 @@ $lastName = $member->members->records[0][4];
     <link href="css/application.min.css" rel="stylesheet">
     <link rel="stylesheet" href="vendor/select2/select2.css">
     <link rel="stylesheet" href="vendor/select2/select2-bootstrap.css">
+    <link rel="stylesheet" href="vendor/bootstrap-datepicker/css/bootstrap-datepicker3.min.css">
+    <link rel="stylesheet" href="vendor/bootstrap-datepicker/css/bootstrap-datepicker3.min.css.map">
     <!-- as of IE9 cannot parse css files with more that 4K classes separating in two files -->
     <!--[if IE 9]>
         <link href="css/application-ie9-part2.css" rel="stylesheet">
@@ -102,10 +104,27 @@ $lastName = $member->members->records[0][4];
                     <li><a href="/"><i>(Mashup)</i></a></li>
                 </ul>
             </li>
+<?php
+    if ($_SESSION['entitytype'] == 2) {
+?>
             <li>
                 <a href="#">
                     <span class="icon">
-                        <i class="fa fa-table"></i>
+                        <i class="fa fa-truck"></i>
+                    </span>
+                    Needs
+                    <span class="label label-danger">
+                        9
+                    </span>
+                </a>
+            </li>
+<?php
+    }
+ ?>
+            <li>
+                <a href="#">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
                     </span>
                     Requisitions
                     <span class="label label-danger">
@@ -116,7 +135,7 @@ $lastName = $member->members->records[0][4];
             <li>
                 <a href="#">
                     <span class="icon">
-                        <i class="fa fa-envelope"></i>
+                        <i class="fa fa-dollar"></i>
                     </span>
                     Invoicing
                 </a>
@@ -124,7 +143,7 @@ $lastName = $member->members->records[0][4];
             <li>
                 <a href="#">
                     <span class="icon">
-                        <i class="glyphicon glyphicon-stats"></i>
+                        <i class="fa fa-long-arrow-down"></i>
                     </span>
                     Damage Claims
                 </a>
@@ -132,7 +151,7 @@ $lastName = $member->members->records[0][4];
             <li>
                 <a href="#">
                     <span class="icon">
-                        <i class="glyphicon glyphicon-user"></i>
+                        <i class="fa fa-thumbs-down"></i>
                     </span>
                     Collections
                     <span class="label label-danger">

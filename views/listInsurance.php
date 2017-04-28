@@ -7,6 +7,8 @@ require '../lib/common.php';
 
  ?>
 
+ <script src="vendor/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
+
  <script>
 
      var myApp;
@@ -283,9 +285,13 @@ require '../lib/common.php';
                      </div>
                      <div class="col-sm-6">
                          <div class="form-group">
-                           <input type="text" id="policyExpirationDate" name="policyExpirationDate" class="form-control mb-sm" placeholder="Policy Expiration Date (YYYY-MM-DD)" required="required" />
+                           <!--input type="text" id="policyExpirationDate" name="policyExpirationDate" class="form-control mb-sm" placeholder="Policy Expiration Date (YYYY-MM-DD)" required="required" /-->
+                           <div id="sandbox-container" class="input-group date  datepicker">
+                              <input type="text" id="policyExpirationDate" name="policyExpirationDate" class="form-control" placeholder="Policy Expiration Date"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                           </div>
                          </div>
                      </div>
+
                  </div>
                 </form>
        </div>
@@ -366,6 +372,12 @@ require '../lib/common.php';
 
     var table = $("#datatable-table").DataTable();
 
+    $('.datepicker').datepicker({
+        autoclose: true,
+        todayHighlight: true,
+        format: "yyyy-mm-dd"
+    });
+
     $("#addInsurance").click(function(){
       $("#id").val('');
       $("#name").val('');
@@ -400,5 +412,7 @@ require '../lib/common.php';
         }
 
     } );
+
+
 
  </script>

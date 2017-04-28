@@ -185,7 +185,7 @@ $app->route('/dashboard', function() {
 });
 
 $app->route('POST /deletelocationcontacts', function() {
-    $locationid = Flight::request()->data['location_id'];
+    $locationid = Flight::request()->data->location_id;
     $locationcontact = Flight::locationcontact();
     $recorddeleted = $locationcontact->delete($locationid);
     if ($recorddeleted) {
