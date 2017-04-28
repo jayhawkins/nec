@@ -16,6 +16,32 @@ CREATE DATABASE IF NOT EXISTS `nec` CHARACTER SET utf8 COLLATE utf8_general_ci;
 USE `nec`;
 -- ---------------------------------------------------------
 
+-- CREATE TABLE "carrier_needs" --------------------------------
+CREATE TABLE `carrier_needs` (
+	`id` Int( 11 ) UNSIGNED AUTO_INCREMENT NOT NULL,
+	`entityID` Int( 11 ) UNSIGNED NOT NULL,
+	`originationCity` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	`originationState` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	`originationZip` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	`destinationCity` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
+	`destinationState` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
+	`destinationZip` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
+	`orinigationLng` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	`originationLat` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	`destinationLng` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
+	`destinationLat` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
+	`needsDataPoints` JSON NOT NULL,
+	`status` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'Open',
+	`createdAt` DateTime NOT NULL,
+	`updatedAt` DateTime NOT NULL,
+	`contactID` JSON NOT NULL,
+	CONSTRAINT `unique_id` UNIQUE( `id` ) )
+CHARACTER SET = utf8
+COLLATE = utf8_general_ci
+ENGINE = InnoDB
+AUTO_INCREMENT = 1;
+-- -------------------------------------------------------------
+
 
 -- CREATE TABLE "contact_types" ----------------------------
 -- CREATE TABLE "contact_types" --------------------------------
@@ -264,7 +290,7 @@ AUTO_INCREMENT = 1;
 -- CREATE TABLE "object_type_data_points" ----------------------
 CREATE TABLE IF NOT EXISTS `object_type_data_points` (
 	`id` Int( 11 ) UNSIGNED AUTO_INCREMENT NOT NULL,
-	`objectTypeID` Int( 11 ) NOT NULL,
+	`objectTypeID` Int( 11 ) UNSIGNED NOT NULL,
 	`columnName` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
 	`title` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
 	`createdAt` DateTime NOT NULL,
@@ -276,6 +302,8 @@ ENGINE = InnoDB
 AUTO_INCREMENT = 1;
 -- -------------------------------------------------------------
 ALTER TABLE object_type_data_points MODIFY objectTypeID Int( 11 ) UNSIGNED NOT NULL;
+ALTER TABLE object_type_data_points ADD COLUMN entityID INT(11) UNSIGNED DEFAULT 0 AFTER id;
+ALTER TABLE object_type_data_points ADD COLUMN status VARCHAR(255) NOT NULL DEFAULT 'Active' AFTER title ;
 -- ---------------------------------------------------------
 
 
@@ -531,6 +559,10 @@ CREATE INDEX `index_objectID` USING BTREE ON `requisitions`( `objectID` );
 -- -------------------------------------------------------------
 -- ---------------------------------------------------------
 
+-- CREATE INDEX "index_entityID10" -----------------------------
+CREATE INDEX `index_entityID10` USING BTREE ON `carrier_needs`( `entityID` );
+-- -------------------------------------------------------------
+
 -- After Everything has been checked --
 ALTER TABLE `locations`
 	ADD CONSTRAINT `lnk_entities_locations` FOREIGN KEY ( `entityID` )
@@ -565,6 +597,12 @@ ALTER TABLE `contacts`
 ALTER TABLE `contacts`
 	ADD CONSTRAINT `lnk_entities_contacts` FOREIGN KEY ( `entityID` )
 	REFERENCES `entities`( `id` )
+	ON DELETE No Action
+	ON UPDATE No Action;
+
+ALTER TABLE `object_type_data_points`
+	ADD CONSTRAINT `lnk_object_types_object_type_data_points` FOREIGN KEY ( `objectTypeID` )
+	REFERENCES `object_types`( `id` )
 	ON DELETE No Action
 	ON UPDATE No Action;
 
