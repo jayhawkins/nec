@@ -33,10 +33,10 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
  <script>
 
      var contacts = <?php echo json_encode($contacts); ?>;
-     console.log(contacts);
+     //console.log(contacts);
 
      var locations_contacts = <?php echo json_encode($locations_contacts); ?>;
-     console.log(locations_contacts);
+     //console.log(locations_contacts);
 
      var myApp;
       myApp = myApp || (function () {
@@ -119,7 +119,6 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
                          async: false,
                          success: function(data){
                             if (data > 0) {
-                              recordLocationContacts();
                               $("#myModal").modal('hide');
                               loadTableAJAX();
                               $("#id").val('');
@@ -271,14 +270,14 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
               $widget.on('click', function () {
                   $checkbox.prop('checked', !$checkbox.is(':checked'));
                   $checkbox.triggerHandler('change');
-                  //recordLocationContacts2();
+                  recordLocationContacts();
                   updateDisplay();
               });
               $checkbox.on('change', function () {
                   updateDisplay();
               });
 
-              function recordLocationContacts2() {
+              function recordLocationContacts() {
                   var passValidation = false;
                   var entityID = <?php echo $_SESSION['entityid']; ?>;
                   var contactdata = [];
@@ -286,7 +285,6 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
                   $("#check-list-box li.active").each(function(idx, li) {
                       contactdata.push({"entityID": entityID, "location_id": $("#id").val(), "contact_id": $(li).context.id});
                   });
-                  //console.log(contactdata);
 
                   if (contactdata.length > 0) {
                       var url = '<?php echo HTTP_HOST."/deletelocationcontacts" ?>';
@@ -297,9 +295,11 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
                          url: url,
                          type: type,
                          data: JSON.stringify(data),
+                         contentType: "application/json",
                          async: false,
                          success: function(data){
                             if (data == "success") {
+
                                  var data = contactdata;
                                  var url = '<?php echo API_HOST."/api/locations_contacts" ?>';
                                  var type = "POST";
@@ -311,23 +311,15 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
                                     contentType: "application/json",
                                     async: false,
                                     success: function(data){
-                                       if (data > 0) {
-                                         //$("#myModal").modal('hide');
-                                         //$(myDialog).modal('hide');
-                                         //loadTableAJAX();
-                                         //passValidation = true;
-                                       } else {
-                                         //$(myDialog).modal('hide');
-                                         alert("Adding Location Contacts Failed!");
-                                       }
+                                         getLocationContacts();
                                     },
                                     error: function() {
                                        alert("There Was An Error Adding Location Contacts!");
                                     }
                                  });
-                              } else {
+                            } else {
                                   alert("There Was An Issue Clearing Location Contacts!");
-                              }
+                            }
                          },
                          error: function() {
                               alert("There Was An Error Deleting Location Records!");
@@ -372,7 +364,7 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
                       checkedItems[counter] = $(li).context.id;
                       counter++;
                   });
-                  $('#display-json').html(JSON.stringify(checkedItems, null, '\t'));
+                  //$('#display-json').html(JSON.stringify(checkedItems, null, '\t'));
                   if ($widget.find('.state-icon').length == 0) {
                       $widget.prepend('<span class="state-icon ' + settings[$widget.data('state')].icon + '"></span>');
                   }
@@ -393,64 +385,22 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
 
       }
 
-      function recordLocationContacts() {
-          var passValidation = false;
-          var entityID = <?php echo $_SESSION['entityid']; ?>;
-          var contactdata = [];
+      function getLocationContacts() {
 
-          $("#check-list-box li.active").each(function(idx, li) {
-              contactdata.push({"entityID": entityID, "location_id": $("#id").val(), "contact_id": $(li).context.id});
+          var url = '<?php echo API_HOST."/api/locations_contacts?columns=location_id,contact_id&filter=entityID,eq," . $_SESSION['entityid'] ?>';
+          var type = "GET";
+
+          $.ajax({
+             url: url,
+             type: type,
+             async: false,
+             success: function(data){
+                  locations_contacts = data;
+             },
+             error: function() {
+                alert("There Was An Error Retrieving Location Contacts!");
+             }
           });
-          //console.log(contactdata);
-
-          if (contactdata.length > 0) {
-              var url = '<?php echo HTTP_HOST."/deletelocationcontacts" ?>';
-              var data = {"location_id": $("#id").val()};
-              var type = "POST";
-
-              $.ajax({
-                 url: url,
-                 type: type,
-                 data: JSON.stringify(data),
-                 async: false,
-                 success: function(data){
-                    if (data == "success") {
-                         var data = contactdata;
-                         var url = '<?php echo API_HOST."/api/locations_contacts" ?>';
-                         var type = "POST";
-
-                         $.ajax({
-                            url: url,
-                            type: type,
-                            data: JSON.stringify(data),
-                            contentType: "application/json",
-                            async: false,
-                            success: function(data){
-                               if (data > 0) {
-                                 //$("#myModal").modal('hide');
-                                 //$(myDialog).modal('hide');
-                                 //loadTableAJAX();
-                                 //passValidation = true;
-                               } else {
-                                 //$(myDialog).modal('hide');
-                                 alert("Adding Location Contacts Failed!");
-                               }
-                            },
-                            error: function() {
-                               alert("There Was An Error Adding Location Contacts!");
-                            }
-                         });
-                      } else {
-                          alert("There Was An Issue Clearing Location Contacts!");
-                      }
-                 },
-                 error: function() {
-                      alert("There Was An Error Deleting Location Records!");
-                 }
-              });
-          }
-
-          //return passValidation;
       }
 
  </script>
@@ -673,8 +623,6 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
       </div>
     </div>
 
-    <pre id="display-json"></pre>
-
  <script>
 
 
@@ -730,14 +678,13 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
                   if ( locations_contacts.locations_contacts.records[l][0] == data["id"] ) {
                       if (locations_contacts.locations_contacts.records[l][1] == contacts.contacts.records[i][0]) {
                           checked = 'data-checked="true"';
-                      } else {
-                          checked = '';
                       }
                   }
               }
               //console.log('checked is: ' + checked);
               li += '<li id=\"' + contacts.contacts.records[i][0] + '\" class=\"list-group-item\" ' + checked + '>' + contacts.contacts.records[i][1] + ' ' + contacts.contacts.records[i][2] + '</li>\n';
               //console.log(li);
+              checked = '';
           }
           $("#check-list-box").html(li);
           formatListBox();
