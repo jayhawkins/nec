@@ -17,7 +17,7 @@ USE `nec`;
 -- ---------------------------------------------------------
 
 -- CREATE TABLE "carrier_needs" --------------------------------
-CREATE TABLE `carrier_needs` (
+CREATE TABLE IF NOT EXISTS `carrier_needs` (
 	`id` Int( 11 ) UNSIGNED AUTO_INCREMENT NOT NULL,
 	`entityID` Int( 11 ) UNSIGNED NOT NULL,
 	`originationCity` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
@@ -26,7 +26,7 @@ CREATE TABLE `carrier_needs` (
 	`destinationCity` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
 	`destinationState` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
 	`destinationZip` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
-	`orinigationLng` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	`originationLng` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
 	`originationLat` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
 	`destinationLng` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
 	`destinationLat` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
