@@ -22,6 +22,9 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
     $loccon[$locations_contacts->locations_contacts->records[$lc][0]] = $locations_contacts->locations_contacts->records[$lc][1];
 }
 
+$dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_points?columns=id,columnName,title,status&filter=entityID,eq," . $_SESSION['entityid'] ));
+
+
 // No longer needed. We don't load via PHP anymore. All handled in JS function.
 //$getlocations = json_decode(file_get_contents(API_HOST.'/api/locations?include=location_types&columns=locations.name,location_types.name,locations.address1,locations.address2,locations.city,locations.state,locations.zip,locations.status&filter=entityID,eq,' . $_SESSION['entityid'] . '&order=locationTypeID'),true);
 //$locations = php_crud_api_transform($getlocations);
@@ -37,6 +40,9 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
 
      var locations_contacts = <?php echo json_encode($locations_contacts); ?>;
      //console.log(locations_contacts);
+
+     var dataPoints = <?php echo json_encode($dataPoints); ?>;
+     //console.log(dataPoints);
 
      var myApp;
       myApp = myApp || (function () {
@@ -86,56 +92,86 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
                 today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
 
                 var geocoder = new google.maps.Geocoder();
-                var address = $("#address1").val() + ' ' + $("#city").val() + ' ' + $("#state").val() + ' ' + $("#zip").val();
+                var originationaddress = $("#originationCity").val() + ' ' + $("#originationState").val() + ' ' + $("#originationZip").val();
 
-                geocoder.geocode( { 'address': address}, function(results, status) {
+                geocoder.geocode( { 'address': originationaddress}, function(originationresults, status) {
 
                   if (status == google.maps.GeocoderStatus.OK) {
-                      var lat = results[0].geometry.location.lat();
-                      var lng = results[0].geometry.location.lng();
 
-                      if ($("#id").val() > '') {
-                          var url = '<?php echo API_HOST."/api/carrier_needs" ?>/' + $("#id").val();
-                          type = "PUT";
-                      } else {
-                          var url = '<?php echo API_HOST."/api/carrier_needs" ?>';
-                          type = "POST";
-                      }
+                    var originationlat = originationresults[0].geometry.location.lat();
+                    var originationlng = originationresults[0].geometry.location.lng();
+                    //console.log('origin lat ' + originationlat);
+                    //console.log('origin lng ' + originationlng);
 
-                      if (type == "PUT") {
-                          var date = today;
-                          var data = {entityID: $("#entityID").val(), locationTypeID: $("#locationTypeID").val(), name: $("#name").val(), address1: $("#address1").val(), address2: $("#address2").val(), city: $("#city").val(), state: $("#state").val(), zip: $("#zip").val(), latitude: lat, longitude: lng, updatedAt: date};
-                      } else {
-                          var date = today;
-                          var data = {entityID: $("#entityID").val(), locationTypeID: $("#locationTypeID").val(), name: $("#name").val(), address1: $("#address1").val(), address2: $("#address2").val(), city: $("#city").val(), state: $("#state").val(), zip: $("#zip").val(), latitude: lat, longitude: lng, createdAt: date};
-                      }
+                      var destinationaddress = $("#destinationCity").val() + ' ' + $("#destinationState").val() + ' ' + $("#destinationZip").val();
+                      geocoder.geocode( { 'address': destinationaddress}, function(destinationresults, status) {
 
-                      $.ajax({
-                         url: url,
-                         type: type,
-                         data: JSON.stringify(data),
-                         contentType: "application/json",
-                         async: false,
-                         success: function(data){
-                            if (data > 0) {
-                              $("#myModal").modal('hide');
-                              loadTableAJAX();
-                              $("#id").val('');
-                              $("#locationTypeID").val('');
-                              $("#name").val('');
-                              $("#address1").val('');
-                              $("#address2").val('');
-                              $("#city").val('');
-                              $("#state").val('');
-                              $("#zip").val('');
-                              passValidation = true;
-                            } else {
-                              alert("Adding Need Failed!");
-                            }
-                         },
-                         error: function() {
-                            alert("There Was An Error Adding Need!");
-                         }
+                          if (status == google.maps.GeocoderStatus.OK) {
+                              var destinationlat = destinationresults[0].geometry.location.lat();
+                              var destinationlng = destinationresults[0].geometry.location.lng();
+
+                              //console.log('dest lat ' + destinationlat);
+                              //console.log('dest lng ' + destinationlng);
+
+                              if ($("#id").val() > '') {
+                                  var url = '<?php echo API_HOST."/api/carrier_needs" ?>/' + $("#id").val();
+                                  type = "PUT";
+                              } else {
+                                  var url = '<?php echo API_HOST."/api/carrier_needs" ?>';
+                                  type = "POST";
+                              }
+
+                              // Build the needsDataPoints
+                              var needsdatapoints = [];
+                              //console.log("number of items: " + $("#dp-check-list-box li input").length);
+                              var obj = $("#dp-check-list-box li input");
+                              for (var i = 0; i < obj.length; i++) {
+                                  item = {};
+                                  item[obj[i].id] = obj[i].value;
+                                  needsdatapoints.push(item);
+                                  //console.log(obj[i].id);
+                                  //console.log(obj[i].value);
+                              }
+                              //console.log(needsdatapoints);
+
+                              if (type == "PUT") {
+                                  var date = today;
+                                  var data = {entityID: $("#entityID").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, updatedAt: date};
+                              } else {
+                                  var date = today;
+                                  var data = {entityID: $("#entityID").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, createdAt: date};
+                              }
+
+                              $.ajax({
+                                 url: url,
+                                 type: type,
+                                 data: JSON.stringify(data),
+                                 contentType: "application/json",
+                                 async: false,
+                                 success: function(data){
+                                    if (data > 0) {
+                                      $("#myModal").modal('hide');
+                                      loadTableAJAX();
+                                      $("#id").val('');
+                                      $("#originationCity").val('');
+                                      $("#originationState").val('');
+                                      $("#originationZip").val('');
+                                      $("#destinationCity").val('');
+                                      $("#destinationState").val('');
+                                      $("#destinationZip").val('');
+                                      passValidation = true;
+                                    } else {
+                                      alert("Adding Need Failed!");
+                                    }
+                                 },
+                                 error: function() {
+                                    alert("There Was An Error Adding Location!");
+                                 }
+                              });
+
+                          } else {
+                              alert("ERROR Geo-Coding Address!");
+                          }
                       });
                   } else {
                       alert("ERROR Geo-Coding Address!");
@@ -144,18 +180,17 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
 
                 return passValidation;
 
-          } else {
+            } else {
 
                 return false;
 
-          }
+            }
 
       }
 
       function loadTableAJAX() {
         myApp.showPleaseWait();
-        //var url = '<?php echo API_HOST; ?>' + '/api/locations?include=location_types&columns=locations.id,locations.name,location_types.id,location_types.name,locations.address1,locations.address2,locations.city,locations.state,locations.zip,locations.status&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order=locationTypeID&transform=1';
-        var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?columns=id,originationCity,originationState,originationZip,originationLat,originationLng,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactID&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&satisfy=all&order[]=createdAt,desc&transform=1';
+        var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?include=contacts&columns=id,originationCity,originationState,originationZip,originationLat,originationLng,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactID&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&satisfy=all&order[]=createdAt,desc&transform=1';
 
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
@@ -168,26 +203,27 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
                 { data: "id", visible: false },
                 { data: "originationCity" },
                 { data: "originationState" },
-                { data: "originationZip", visible false },
-                { data: "originationLat", visible false },
-                { data: "originationLng", visible false },
+                { data: "originationZip", visible: false },
+                { data: "originationLat", visible: false },
+                { data: "originationLng", visible: false },
                 { data: "destinationCity" },
                 { data: "destinationState" },
-                { data: "destinationZip", visible false },
-                { data: "destinationLat", visible false },
-                { data: "destinationLng", visible false },
-                { data: "needsDataPoints", visible false },
-                { data: "contactID", visible false },
+                { data: "destinationZip", visible: false },
+                { data: "destinationLat", visible: false },
+                { data: "destinationLng", visible: false },
+                { data: "needsDataPoints", visible: false },
+                { data: "contactID", visible: false },
+                { data: "contacts[0].firstName" + " " + "contacts[0].lastName" },
                 {
                     data: null,
                     "bSortable": false,
                     "mRender": function (o) {
                         var buttons = '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text-info\"></i> <span class=\"text-info\">Edit</span></button>';
 
-                        if (o.status == "Active") {
-                                  buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text-info\"></i> <span class=\"text-info\">Disable</span></button>";
+                        if (o.status == "Open") {
+                                  buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text-info\"></i> <span class=\"text-info\">Close</span></button>";
                         } else {
-                                  buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text-info\"></i> <span class=\"text-info\">Enable</span></button>";
+                                  buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text-info\"></i> <span class=\"text-info\">Open</span></button>";
                         }
 
                         return buttons;
@@ -266,7 +302,7 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
                       }
                   };
 
-              $widget.css('cursor', 'pointer')
+              $widget.css('cursor', 'pointer');
               $widget.append($checkbox);
 
               // Event Handlers
@@ -280,12 +316,101 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
                   updateDisplay();
               });
 
-              function recordLocationContacts() {
+
+
+
+              // Actions
+              function updateDisplay() {
+                  var isChecked = $checkbox.is(':checked');
+
+                  // Set the button's state
+                  $widget.data('state', (isChecked) ? "on" : "off");
+
+                  // Set the button's icon
+                  $widget.find('.state-icon')
+                      .removeClass()
+                      .addClass('state-icon ' + settings[$widget.data('state')].icon);
+
+                  // Update the button's color
+                  if (isChecked) {
+                      $widget.addClass(style + color + ' active');
+                  } else {
+                      $widget.removeClass(style + color + ' active');
+                  }
+              }
+
+              // Initialization
+              function init() {
+
+                  if ($widget.data('checked') == true) {
+                      $checkbox.prop('checked', !$checkbox.is(':checked'));
+                  }
+
+                  updateDisplay();var checkedItems = {}, counter = 0;
+                  $("#check-list-box li.active").each(function(idx, li) {
+                    console.log($(li));
+                      checkedItems[counter] = $(li).context.id;
+                      counter++;
+                  });
+                  //$('#display-json').html(JSON.stringify(checkedItems, null, '\t'));
+                  if ($widget.find('.state-icon').length == 0) {
+                      $widget.prepend('<span class="state-icon ' + settings[$widget.data('state')].icon + '"></span>');
+                  }
+              }
+
+              init();
+          });
+
+          // Doesn't get called - this is from the example but copied to the Save Changes button click
+          $('#get-checked-data').on('click', function(event) {
+              event.preventDefault();
+              var checkedItems = {}, counter = 0;
+              $("#check-list-box li.active").each(function(idx, li) {
+                  checkedItems[counter] = $(li).context.id;
+                  counter++;
+              });
+          });
+
+      }
+
+      function formatListBoxDP() {
+          // Bootstrap Listbox
+          $('.list-group.checked-list-box .list-group-item').each(function () {
+
+              // Settings
+              var $widget = $(this),
+                  $checkbox = $('<input type="checkbox" class="hidden" style="display: none" />'),
+                  color = ($widget.data('color') ? $widget.data('color') : "primary"),
+                  style = ($widget.data('style') == "button" ? "btn-" : "list-group-item-"),
+                  settings = {
+                      on: {
+                          icon: 'glyphicon glyphicon-check'
+                      },
+                      off: {
+                          icon: 'glyphicon glyphicon-unchecked'
+                      }
+                  };
+
+              $widget.css('cursor', 'pointer');
+              $widget.append($checkbox);
+
+              // Event Handlers
+              $widget.on('click', function () {
+                  $checkbox.prop('checked', !$checkbox.is(':checked'));
+                  $checkbox.triggerHandler('change');
+                  recordDataPoints();
+                  updateDisplay();
+              });
+              $checkbox.on('change', function () {
+                  updateDisplay();
+              });
+
+              function recordDataPoints() {
                   var passValidation = false;
                   var entityID = <?php echo $_SESSION['entityid']; ?>;
                   var contactdata = [];
 
-                  $("#check-list-box li.active").each(function(idx, li) {
+                  $("#dp-check-list-box li.active").each(function(idx, li) {
                       contactdata.push({"entityID": entityID, "location_id": $("#id").val(), "contact_id": $(li).context.id});
                   });
 
@@ -302,10 +427,6 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
                          async: false,
                          success: function(data){
                             if (data == "success") {
-
-                                 var data = contactdata;
-                                 var url = '<?php echo API_HOST."/api/locations_contacts" ?>';
-                                 var type = "POST";
 
                                  $.ajax({
                                     url: url,
@@ -362,7 +483,7 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
                   }
 
                   updateDisplay();var checkedItems = {}, counter = 0;
-                  $("#check-list-box li.active").each(function(idx, li) {
+                  $("#dp-check-list-box li.active").each(function(idx, li) {
                     console.log($(li));
                       checkedItems[counter] = $(li).context.id;
                       counter++;
@@ -449,18 +570,19 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
                  <thead>
                  <tr>
                      <th>ID</th>
-                     <th>Orig. City</th>
-                     <th>Orig. State</th>
-                     <th>Orig. Zip</th>
+                     <th class="hidden-sm-down">Orig. City</th>
+                     <th class="hidden-sm-down">Orig. State</th>
+                     <th class="hidden-sm-down">Orig. Zip</th>
                      <th class="hidden-sm-down">Orig. Lat.</th>
                      <th class="hidden-sm-down">Orig. Long.</th>
                      <th class="hidden-sm-down">Dest. City</th>
-                     <th class="no-sort">Dest. State</th>
-                     <th class="no-sort">Dest. Zip</th>
-                     <th class="no-sort">Dest. Lat.</th>
-                     <th class="no-sort">Dest. Long.</th>
-                     <th class="no-sort">Data Points</th>
-                     <th class="no-sort">Contact</th>
+                     <th class="hidden-sm-down">Dest. State</th>
+                     <th class="hidden-sm-down">Dest. Zip</th>
+                     <th class="hidden-sm-down">Dest. Lat.</th>
+                     <th class="hidden-sm-down">Dest. Long.</th>
+                     <th class="hidden-sm-down">Data Points</th>
+                     <th class="hidden-sm-down">Contact</th>
+                     <th class="hidden-sm-down">Contact Name</th>
                      <th class="no-sort pull-right">&nbsp;</th>
                  </tr>
                  </thead>
@@ -487,49 +609,17 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
                  <input type="hidden" id="entityID" name="entityID" value="<?php echo $_SESSION['entityid']; ?>" />
                  <input type="hidden" id="id" name="id" value="" />
                  <div class="row">
-                     <div class="col-sm-6">
+                     <div class="col-sm-4">
+                         <label for="originationCity">Origination City</label>
                          <div class="form-group">
-                           <input type="text" id="name" name="name" class="form-control mb-sm" placeholder="Location Title"
+                           <input type="text" id="originationCity" name="originationCity" class="form-control mb-sm" placeholder="Origination City"
                            required="required" />
                          </div>
                      </div>
-                     <div class="col-sm-6">
-                         <div class="form-group">
-                           <select id="locationTypeID" name="locationTypeID" data-placeholder="Location Type" class="form-control chzn-select" data-ui-jq="select2" required="required">
-                             <option value="">*Select Type...</option>
-            <?php
-                             foreach($locationTypes->location_types->records as $value) {
-                                 if ($value[2] == "Active") {
-                                   $selected = ($value[0] == $locationTypeID) ? 'selected=selected':'';
-                                   echo "<option value=" . $value[0] . ">" . $value[1] . "</option>\n";
-                                 }
-                             }
-            ?>
-                           </select>
-                         </div>
-                     </div>
-                 </div>
-                 <div class="row">
-                     <div class="col-sm-6">
-                       <div class="form-group">
-                         <input type="text" id="address1" name="address1" class="form-control mb-sm" placeholder="Company Address" required="required" />
-                       </div>
-                     </div>
-                     <div class="col-sm-6">
-                         <div class="form-group">
-                           <input type="text" id="address2" name="address2" class="form-control mb-sm" placeholder="Bldg. Number/Suite" />
-                         </div>
-                     </div>
-                 </div>
-                 <div class="row">
                      <div class="col-sm-4">
+                         <label for="originationState">Origination State</label>
                          <div class="form-group">
-                           <input type="text" id="city" name="city" class="form-control" placeholder="*City" required="required" />
-                         </div>
-                     </div>
-                     <div class="col-sm-4">
-                         <div class="form-group">
-                           <select id="state" name="state" data-placeholder="State" class="form-control chzn-select" data-ui-jq="select2" required="required">
+                           <select id="originationState" name="origitnaionState" data-placeholder="Origination State" class="form-control chzn-select" data-ui-jq="select2" required="required">
                              <option value="">*Select State...</option>
             <?php
                              foreach($states->states->records as $value) {
@@ -541,24 +631,64 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
                          </div>
                      </div>
                      <div class="col-sm-4">
+                         <label for="originationZip">Origination Zip</label>
                          <div class="form-group">
-                           <input type="text" id="zip" name="zip" class="form-control mb-sm" placeholder="Zip" required="required" />
+                           <input type="text" id="originationZip" name="originationZip" class="form-control mb-sm" placeholder="Origination Zip"
+                           required="required" />
                          </div>
                      </div>
                  </div>
+                 <div class="row">
+                   <div class="col-sm-4">
+                       <label for="DestinationCity">Destination City</label>
+                       <div class="form-group">
+                         <input type="text" id="destinationCity" name="destinationCity" class="form-control mb-sm" placeholder="Destination City"
+                         required="required" />
+                       </div>
+                   </div>
+                   <div class="col-sm-4">
+                       <label for="destinationState">Destination State</label>
+                       <div class="form-group">
+                         <select id="destinationState" name="destinationState" data-placeholder="Destination State" class="form-control chzn-select" data-ui-jq="select2" required="required">
+                           <option value="">*Select State...</option>
+          <?php
+                           foreach($states->states->records as $value) {
+                               $selected = ($value[0] == $state) ? 'selected=selected':'';
+                               echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
+                           }
+          ?>
+                         </select>
+                       </div>
+                   </div>
+                   <div class="col-sm-4">
+                       <label for="destinationZip">Destination Zip</label>
+                       <div class="form-group">
+                         <input type="text" id="destinationZip" name="destinationZip" class="form-control mb-sm" placeholder="Destination Zip"
+                         required="required" />
+                       </div>
+                   </div>
+                 </div>
                  <hr />
                  <div class="container" style="margin-top:20px;">
-                 <div class="row">
-                   <div class="col-xs-6">
-                        <h5 class="text-center"><strong>Associated Contacts</strong></h5>
-                        <div class="well" style="max-height: 200px;overflow: auto;">
-                            <ul id="check-list-box" class="list-group checked-list-box">
+                     <div class="row">
+                       <div class="col-xs-6">
+                            <h5 class="text-center"><strong>Trailer Data</strong></h5>
+                            <div class="well" style="max-height: 200px;overflow: auto;">
+                                <ul id="dp-check-list-box" class="list-group">
 
-                            </ul>
+                                </ul>
+                            </div>
                         </div>
-                    </div>
+                        <div class="col-xs-6">
+                             <h5 class="text-center"><strong>Contacts For This Need:</strong></h5>
+                             <div class="well" style="max-height: 200px;overflow: auto;">
+                                 <ul id="check-list-box" class="list-group checked-list-box">
+
+                                 </ul>
+                             </div>
+                         </div>
+                     </div>
                  </div>
-               </div>
                 </form>
        </div>
         <div class="modal-footer">
@@ -586,7 +716,7 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
                   <div class="row">
                       <div class="col-sm-12">
                           <div class="form-group">
-                            <h5>Do you wish to disable this need?</h5>
+                            <h5>Do you wish to close this need?</h5>
                           </div>
                       </div>
                   </div>
@@ -594,7 +724,7 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
         </div>
          <div class="modal-footer">
            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-           <button type="button" class="btn btn-primary" onclick="return recordEnableDisable('Disable');">Disable Need</button>
+           <button type="button" class="btn btn-primary" onclick="return recordEnableDisable('Close');">Close Need</button>
          </div>
        </div>
      </div>
@@ -616,7 +746,7 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
                    <div class="row">
                        <div class="col-sm-12">
                            <div class="form-group">
-                             <h5>Do you wish to enable this need?</h5>
+                             <h5>Do you wish to open this need?</h5>
                            </div>
                        </div>
                    </div>
@@ -624,7 +754,7 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
          </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary" onclick="return recordEnableDisable('Enable');">Enable Need</button>
+            <button type="button" class="btn btn-primary" onclick="return recordEnableDisable('Enable');">Open Need</button>
           </div>
         </div>
       </div>
@@ -632,33 +762,37 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
 
  <script>
 
-
-
-    $( "#state" ).select2();
-
-    $( "#locationTypeID" ).select2();
+    $( "#originationState" ).select2();
+    $( "#destinationState" ).select2();
 
     loadTableAJAX();
 
     var table = $("#datatable-table").DataTable();
     var tableContact = $("#datatable-table-contact").DataTable();
+    var tableDataPoints = $("#datatable-table-datapoints").DataTable();
 
     $("#addNeed").click(function(){
       var li = '';
       var checked = '';
+      var dpli = '';
+      var dpchecked = '';
       $("#id").val('');
-      $("#locationTypeID").val('');
-      $("#name").val('');
-      $("#address1").val('');
-      $("#address2").val('');
-      $("#city").val('');
-      $("#state").val('');
-      $("#zip").val('');
+      $("#originationCity").val('');
+      $("#originationState").val('');
+      $("#originationZip").val('');
+      $("#destinationCity").val('');
+      $("#destinationState").val('');
+      $("#destinationZip").val('');
       for (var i = 0; i < contacts.contacts.records.length; i++) {
           li += '<li id=\"' + contacts.contacts.records[i][0] + '\" class=\"list-group-item\" ' + checked + '>' + contacts.contacts.records[i][1] + ' ' + contacts.contacts.records[i][2] + '</li>\n';
       }
       $("#check-list-box").html(li);
+      for (var i = 0; i < dataPoints.object_type_data_points.records.length; i++) {
+          dpli += '<li>' + dataPoints.object_type_data_points.records[i][2] + ' <input type="text" class="form-control mb-sm" id="' + dataPoints.object_type_data_points.records[i][1] + '" name="' + dataPoints.object_type_data_points.records[i][1] + '"></li>\n';
+      }
+      $("#dp-check-list-box").html(dpli);
       formatListBox();
+      formatListBoxDP();
   		$("#myModal").modal('show');
   	});
 
@@ -668,42 +802,34 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
         if (this.textContent.indexOf("Edit") > -1) {
           var li = '';
           var checked = '';
+          var dpli = '';
+          var dpchecked = '';
           $("#id").val(data["id"]);
-          $("#locationTypeID").val(data["location_types"][0].id);
-          $("#name").val(data["name"]);
-          $("#address1").val(data["address1"]);
-          $("#address2").val(data["address2"]);
-          $("#city").val(data["city"]);
-          $("#state").val(data["state"]);
-          $("#zip").val(data["zip"]);
-          //console.log("contacts records: " + contacts.contacts.records.length);
-          //console.log("locations_contacts records: " + locations_contacts.locations_contacts.records.length);
-          //console.log('data id is ' + data["id"]);
+          $("#originationCity").val(data["originationCity"]);
+          $("#originationState").val(data["originationState"]);
+          $("#originationZip").val(data["originationZip"]);
+          $("#destinationCity").val(data["destinationCity"]);
+          $("#destinationState").val(data["destinationState"]);
+          $("#destinationZip").val(data["destinationZip"]);
           for (var i = 0; i < contacts.contacts.records.length; i++) {
-              for (var l = 0; l < locations_contacts.locations_contacts.records.length; l++) {
-                  //console.log(contacts.contacts.records[i]);
-                  if ( locations_contacts.locations_contacts.records[l][0] == data["id"] ) {
-                      if (locations_contacts.locations_contacts.records[l][1] == contacts.contacts.records[i][0]) {
-                          checked = 'data-checked="true"';
-                      }
-                  }
-              }
-              //console.log('checked is: ' + checked);
               li += '<li id=\"' + contacts.contacts.records[i][0] + '\" class=\"list-group-item\" ' + checked + '>' + contacts.contacts.records[i][1] + ' ' + contacts.contacts.records[i][2] + '</li>\n';
-              //console.log(li);
-              checked = '';
           }
           $("#check-list-box").html(li);
+          for (var i = 0; i < dataPoints.object_type_data_points.records.length; i++) {
+              dpli += '<li>' + dataPoints.object_type_data_points.records[i][2] + ' <input type="text" class="form-control mb-sm" id="' + dataPoints.object_type_data_points.records[i][1] + '" name="' + dataPoints.object_type_data_points.records[i][1] + '" value=\"' + dataPoints.object_type_data_points.records[i][1] + '\"></li>\n';
+          }
+          $("#dp-check-list-box").html(dpli);
           formatListBox();
+          formatListBoxDP();
           $("#myModal").modal('show');
         } else {
             $("#id").val(data["id"]);
-            if (this.textContent.indexOf("Disable") > -1) {
-              $("#disableDialogLabel").html('Disable <strong>' + data['name'] + '</strong>');
+            if (this.textContent.indexOf("Close") > -1) {
+              $("#disableDialogLabel").html('Close <strong>' + data['name'] + '</strong>');
               $("#myDisableDialog").modal('show');
             } else {
-              if (this.textContent.indexOf("Enable") > -1) {
-                $("#enableDialogLabel").html('Enable <strong>' + data['name'] + '</strong>');
+              if (this.textContent.indexOf("Open") > -1) {
+                $("#enableDialogLabel").html('Open <strong>' + data['name'] + '</strong>');
                 $("#myEnableDialog").modal('show');
               }
             }
