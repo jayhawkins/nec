@@ -266,7 +266,7 @@ $objectTypes = json_decode(file_get_contents(API_HOST."/api/object_types?columns
                          </div>
                      </div>
                      <div class="col-sm-4">
-                       <label for="columnName">Title</label>
+                       <label for="title">Title</label>
                        <div class="form-group">
                          <input type="text" id="title" name="title" class="form-control mb-sm" placeholder="*Title" required="required" />
                        </div>
@@ -365,7 +365,7 @@ $objectTypes = json_decode(file_get_contents(API_HOST."/api/object_types?columns
 
     var table = $("#datatable-table").DataTable();
 
-    $("#objectTypeID").select2();
+    //$("#objectTypeID").select2();
 
     $("#addDataPoint").click(function(){
       $("#id").val('');

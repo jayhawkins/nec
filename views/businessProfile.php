@@ -62,18 +62,21 @@ try {
               <form id="formRegister" class="register-form mt-lg" method="POST" action="/entities" onsubmit="return verifyInput();">
                 <div class="row">
                     <div class="col-sm-4">
+                        <label for="firstName">First Name</label>
                         <div class="form-group">
                           <input type="text" class="form-control" id="firstName" name="firstName" placeholder="*First Name" value="<?php echo $firstName; ?>"
                                   required="required" />
                         </div>
                     </div>
                     <div class="col-sm-4">
+                        <label for="lastName">Last Name</label>
                         <div class="form-group">
                           <input type="text" id="lastName" name="lastName" class="form-control" placeholder="*Last Name" value="<?php echo $lastName; ?>"
                                  required="required" />
                         </div>
                     </div>
                     <div class="col-sm-4">
+                      <label for="title">Title</label>
                       <div class="form-group">
                         <input type="text" id="title" name="title" class="form-control" placeholder="Title" value="<?php echo $title; ?>" />
                       </div>
@@ -81,6 +84,7 @@ try {
                 </div>
                 <div class="row">
                     <div class="col-sm-8">
+                        <label for="entityName">Company Name</label>
                         <div class="form-group">
                           <input type="text" id="entityName" name="entityName" class="form-control" placeholder="*Company Name" value="<?php echo $entityName; ?>"
                                  required="required" />
@@ -91,11 +95,13 @@ try {
                 </div>
                 <div class="row">
                     <div class="col-sm-6">
+                        <label for="address1">Address 1</label>
                         <div class="form-group">
                           <input type="text" id="address1" name="address1" class="form-control mb-sm" placeholder="Company Address" value="<?php echo $address1; ?>" />
                         </div>
                     </div>
                     <div class="col-sm-6">
+                        <label for="address2">Suite # / Apt #</label>
                         <div class="form-group">
                           <input type="text" id="address2" name="address2" class="form-control mb-sm" placeholder="Bldg. Number/Suite" value="<?php echo $address2; ?>" />
                         </div>
@@ -103,12 +109,14 @@ try {
                 </div>
                 <div class="row">
                     <div class="col-sm-4">
+                        <label for="city">City</label>
                         <div class="form-group">
                           <input type="text" id="city" name="city" class="form-control" placeholder="*City" value="<?php echo $city; ?>"
                                  required="required" />
                         </div>
                     </div>
                     <div class="col-sm-4">
+                        <label for="state">State</label>
                         <div class="form-group">
                           <select id="state" name="state" data-placeholder="State" class="form-control chzn-select" data-ui-jq="select2" required="required">
                             <option value="">*Select State...</option>
@@ -122,6 +130,7 @@ try {
                         </div>
                     </div>
                     <div class="col-sm-4">
+                        <label for="zip">Zip</label>
                         <div class="form-group">
                           <input type="text" id="zip" name="zip" class="form-control mb-sm" placeholder="Zip" value="<?php echo $zip; ?>" />
                         </div>
@@ -129,17 +138,20 @@ try {
                 </div>
                 <div class="row">
                     <div class="col-sm-4">
+                        <label for="phone">Phone</label>
                         <div class="form-group">
                             <input type="text" id="phone" name="phone" class="form-control" placeholder="*Phone" value="<?php echo $phone; ?>"
                                    required="required" />
                         </div>
                     </div>
                     <div class="col-sm-4">
+                        <label for="fax">Fax</label>
                         <div class="form-group">
                             <input type="text" id="fax" name="fax" class="form-control" placeholder="Fax" value="<?php echo $fax; ?>" />
                         </div>
                     </div>
                     <div class="col-sm-4">
+                        <label for="email">Email Address</label>
                         <div class="form-group">
                           <input type="email" id="email" name="email" class="form-control" placeholder="*Email Address" value="<?php echo $email; ?>"
                                  data-parsley-trigger="change"

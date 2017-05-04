@@ -92,17 +92,18 @@ $lastName = $member->members->records[0][4];
         <ul class="sidebar-nav">
             <li class="active">
                 <!-- an example of nested submenu. basic bootstrap collapse component -->
-                <a href="#sidebar-dashboard" data-toggle="collapse" data-parent="#sidebar">
+                <!--a href="#sidebar-dashboard" data-toggle="collapse" data-parent="#sidebar"-->
+                <a href="/">
                     <span class="icon">
                         <i class="fa fa-desktop"></i>
                     </span>
-                    Dashboard
-                    <i class="toggle fa fa-angle-down"></i>
+                    Dashboard</a>
+                    <!--i class="toggle fa fa-angle-down"></i>
                 </a>
                 <ul id="sidebar-dashboard" class="collapse in">
                     <li class="active"><a href="/">Dashboard</a></li>
                     <li><a href="/"><i>(Mashup)</i></a></li>
-                </ul>
+                </ul-->
             </li>
 <?php
     if ($_SESSION['entitytype'] == 2) {
@@ -161,7 +162,7 @@ $lastName = $member->members->records[0][4];
             </li>
         </ul>
         <!-- every .sidebar-nav may have a title -->
-        <h5 class="sidebar-nav-title">&nbsp; <a class="action-link" href="#"><i class="glyphicon glyphicon-refresh"></i></a></h5>
+        <!--h5 class="sidebar-nav-title">&nbsp; <a class="action-link" href="#"><i class="glyphicon glyphicon-refresh"></i></a></h5-->
         <ul class="sidebar-nav">
             <li>
                 <!-- an example of nested submenu. basic bootstrap collapse component -->
@@ -187,14 +188,11 @@ $lastName = $member->members->records[0][4];
 
                     <?php
                         if ($_SESSION['entitytype'] == 1) {
-                          echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listTrailerSpecs');\">Trailer Specs</a></li>";
                           echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listTrailers');\">Trailers</a></li>";
                         } else if ($_SESSION['entitytype'] == 2) {
-                          echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listTrailerSpecs');\">Trailer Specs</a></li>";
                           echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listInsurance');\">Insurance</a></li>";
                         } else {
                           // Must be NEC Admin So Show it all...
-                          echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listTrailerSpecs');\">Trailer Specs</a></li>";
                           echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listTrailers');\">Trailers</a></li>";
                           echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listInsurance');\">Insurance</a></li>";
                         }
@@ -213,8 +211,31 @@ $lastName = $member->members->records[0][4];
                 <ul id="sidebar-maps" class="collapse">
                     <!-- data-no-pjax turns off pjax loading for this link. Use in case of complicated js loading on the
                          target page -->
-                    <li><a href="maps_google.html" data-no-pjax>Google Maps</a></li>
+                    <li><a href="#" onclick="ajaxFormCall('listGoogleMaps');" data-no-pjax>Google Maps</a></li>
                     <li><a href="maps_vector.html">Vector Maps</a></li>
+                </ul>
+            </li>
+            <li>
+                <a class="collapsed" href="#sidebar-settings" data-toggle="collapse" data-parent="#sidebar">
+                    <span class="icon">
+                        <i class="fa fa-gear"></i>
+                    </span>
+                    Settings
+                    <i class="toggle fa fa-angle-down"></i>
+                </a>
+                <ul id="sidebar-settings" class="collapse">
+                    <!-- data-no-pjax turns off pjax loading for this link. Use in case of complicated js loading on the
+                         target page -->
+               <?php
+                   if ($_SESSION['entitytype'] == 1) {
+                     echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listTrailerSpecs');\">Trailer Specs</a></li>";
+                   } else if ($_SESSION['entitytype'] == 2) {
+                     echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listTrailerSpecs');\">Trailer Specs</a></li>";
+                   } else {
+                     // Must be NEC Admin So Show it all...
+                     echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listTrailerSpecs');\">Trailer Specs</a></li>";
+                   }
+               ?>
                 </ul>
             </li>
         </ul>
@@ -680,7 +701,7 @@ $lastName = $member->members->records[0][4];
 
         <!-- Default Load -->
         <div class="row">
-            <div class="col-lg-10">
+            <div class="col-lg-8">
                 <!-- minimal widget consist of .widget class. note bg-transparent - it can be any background like bg-gray,
                 bg-primary, bg-white -->
                 <section class="widget bg-transparent">
@@ -698,6 +719,91 @@ $lastName = $member->members->records[0][4];
                     </div>
                 </section>
             </div>
+
+            <div class="col-lg-4">
+                <section class="widget bg-transparent">
+                    <header>
+                        <h5>
+                            Map
+                            <span class="fw-semi-bold">Statistics</span>
+                        </h5>
+                        <div class="widget-controls widget-controls-hover">
+                            <a href="#"><i class="glyphicon glyphicon-cog"></i></a>
+                            <a href="#"><i class="fa fa-refresh"></i></a>
+                            <a href="#" data-widgster="close"><i class="glyphicon glyphicon-remove"></i></a>
+                        </div>
+                    </header>
+                    <div class="widget-body">
+                        <p>Status: <strong>Live</strong></p>
+                        <p>
+                            <span class="circle bg-warning"><i class="fa fa-map-marker"></i></span>
+                            146 Active Locations
+                        </p>
+                        <div class="row progress-stats">
+                            <div class="col-md-9">
+                                <h6 class="name m-t-1">Needs</h6>
+                                <p class="description deemphasize">open needs</p>
+                                <div class="bg-white progress-bar">
+                                    <progress class="progress progress-primary progress-sm js-progress-animate" value="100" max="100" style="width: 0%" data-width="60%"></progress>
+                                </div>
+                            </div>
+                            <div class="col-md-3 text-xs-center">
+                                <!--span class="status rounded rounded-lg bg-body-light"-->
+                                <span class="label label-pill label-primary">
+                                    <small><span id="percent-1">63</span></small>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row progress-stats">
+                            <div class="col-md-9">
+                                <h6 class="name m-t-1">Requisitions (Orders)</h6>
+                                <p class="description deemphasize">current open requisitions (orders)</p>
+                                <div class="bg-white progress-bar">
+                                    <progress class="progress progress-sm progress-success js-progress-animate" value="100" max="100" style="width: 0%" data-width="12%"></progress>
+                                </div>
+                            </div>
+                            <div class="col-md-3 text-xs-center">
+                                <!--span class="status rounded rounded-lg bg-body-light"-->
+                                <span class="label label-pill label-success">
+                                    <small><span  id="percent-2">12</span></small>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row progress-stats">
+                            <div class="col-md-9">
+                                <h6 class="name m-t-1">Agreements</h6>
+                                <p class="description deemphasize">open agreements</p>
+                                <div class="bg-white progress-bar">
+                                    <progress class="progress progress-sm progress-warning js-progress-animate" value="100" max="100" style="width: 0%" data-width="50%"></progress>
+                                </div>
+                            </div>
+                            <div class="col-md-3 text-xs-center">
+                                <!--span class="status rounded rounded-lg bg-body-light"-->
+                                <span class="label label-pill label-warning">
+                                    <small><span id="percent-3">37</span></small>
+                                </span>
+                            </div>
+                        </div>
+                        <!--
+                        <h6 class="fw-semi-bold mt">Map Distributions</h6>
+                        <p>Tracking: <strong>Active</strong></p>
+                        <p>
+                            <span class="circle bg-warning"><i class="fa fa-cog"></i></span>
+                            391 elements installed, 84 sets
+                        </p>
+                        <div class="input-group mt">
+                            <input type="text" class="form-control" placeholder="Search Map">
+                            <span class="input-group-btn">
+                                <button type="submit" class="btn btn-default">
+                                    <i class="fa fa-search text-gray"></i>
+                                </button>
+                            </span>
+                        </div>
+                      -->
+                    </div>
+                </section>
+            </div>
+
         </div>
         <!-- End Default Load -->
 
@@ -756,6 +862,7 @@ $lastName = $member->members->records[0][4];
 
 
 <script type="text/javascript" src="https://cdn.datatables.net/v/dt/b-1.2.4/datatables.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script> 
 
 
 <!-- Can't use or the settings gear dropdown won't work -->
@@ -765,6 +872,7 @@ $lastName = $member->members->records[0][4];
 <script src="js/tables-dynamic.js"></script>
 <script src="vendor/select2/select2.min.js"></script>
 <script src="vendor/parsleyjs/dist/parsley.min.js"></script>
+
 
 <!-- page specific js -->
 <script src="js/index.js"></script>

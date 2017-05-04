@@ -244,11 +244,13 @@ require '../lib/common.php';
                  <input type="hidden" id="id" name="id" value="" />
                  <div class="row">
                      <div class="col-sm-6">
+                         <label for="name">Link Name</label>
                          <div class="form-group">
                            <input type="text" id="name" name="name" class="form-control mb-sm" placeholder="*Name" required="required" />
                          </div>
                      </div>
                      <div class="col-sm-6">
+                         <label for="link">Link</label>
                          <div class="form-group">
                            <input type="text" id="link" name="link" class="form-control mb-sm" placeholder="Link" required="required" />
                          </div>
