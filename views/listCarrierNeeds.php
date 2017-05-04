@@ -527,6 +527,25 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
           });
       }
 
+      function getLocations(city) {
+
+          var url = '<?php echo API_HOST."/api/locations?columns=id,city,state,zip&filter[]=entityID,eq," . $_SESSION['entityid'] ?>';
+          url += "&filter[]=city,sw," + city;
+          var type = "GET";
+
+          $.ajax({
+             url: url,
+             type: type,
+             async: false,
+             success: function(data){
+                  alert(JSON.stringify(data));
+             },
+             error: function() {
+                alert("There Was An Error Retrieving Location Contacts!");
+             }
+          });
+      }
+
  </script>
 
  <style>
@@ -612,7 +631,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                      <div class="col-sm-4">
                          <label for="originationCity">Origination City</label>
                          <div class="form-group">
-                           <input type="text" id="originationCity" name="originationCity" class="form-control mb-sm" placeholder="Origination City"
+                           <input type="text" id="originationCity" name="originationCity" class="typeahead form-control mb-sm" placeholder="Origination City"
                            required="required" />
                          </div>
                      </div>
@@ -762,8 +781,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
  <script>
 
-    $( "#originationState" ).select2();
-    $( "#destinationState" ).select2();
+    //$( "#originationState" ).select2();
+    //$( "#destinationState" ).select2();
 
     loadTableAJAX();
 
@@ -838,6 +857,18 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         }
 
     } );
+
+    $('input.typeahead').typeahead({
+  	    source:  function (query, process) {
+          var url = '<?php echo API_HOST."/api/locations?columns=id,city,state,zip"; ?>'
+          var newquery = "filter[]=entityID,eq,<?php echo $_SESSION['entityid'] ?>&filter[]=city,sw," + query;
+          return $.get(url, { query: newquery }, function (data) {
+          		console.log(JSON.stringify(data));
+          		//data = $.parseJSON(data);
+  	            return process(data);
+  	        });
+  	    }
+	  });
 
 
 

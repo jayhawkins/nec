@@ -241,6 +241,7 @@ require '../lib/common.php';
                  <input type="hidden" id="id" name="id" value="" />
                  <div class="row">
                      <div class="col-sm-6">
+                         <label for="name">Type Name</label>
                          <div class="form-group">
                            <input type="text" id="name" name="name" class="form-control mb-sm" placeholder="*Name" required="required" />
                          </div>

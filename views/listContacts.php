@@ -271,11 +271,13 @@ $contactTypes = json_decode(file_get_contents(API_HOST.'/api/contact_types?colum
                  <input type="hidden" id="id" name="id" value="" />
                  <div class="row">
                      <div class="col-sm-6">
+                         <label for="firstName">First Name</label>
                          <div class="form-group">
                            <input type="text" id="firstName" name="firstName" class="form-control mb-sm" placeholder="*First Name" required="required" />
                          </div>
                      </div>
                      <div class="col-sm-6">
+                         <label for="lastName">Last Name</label>
                          <div class="form-group">
                            <input type="text" id="lastName" name="lastName" class="form-control mb-sm" placeholder="Last Name" required="required" />
                          </div>
@@ -283,6 +285,7 @@ $contactTypes = json_decode(file_get_contents(API_HOST.'/api/contact_types?colum
                   </div>
                   <div class="row">
                      <div class="col-sm-4">
+                         <label for="contactTypeID">Contact Type</label>
                          <div class="form-group">
                            <select id="contactTypeID" name="contactTypeID" data-placeholder="*Contact Type" class="form-control chzn-select" data-ui-jq="select2" required="required">
                              <option value="">*Select Type...</option>
@@ -303,11 +306,13 @@ $contactTypes = json_decode(file_get_contents(API_HOST.'/api/contact_types?colum
                  </div>
                  <div class="row">
                      <div class="col-sm-6">
+                       <label for="title">Title</label>
                        <div class="form-group">
                          <input type="text" id="title" name="title" class="form-control mb-sm" placeholder="*Title" required="required" />
                        </div>
                      </div>
                      <div class="col-sm-6">
+                         <label for="emailAddress">Email Address</label>
                          <div class="form-group">
                            <input type="text" id="emailAddress" name="emailAddress" class="form-control mb-sm" placeholder="*Email Address" required="required"/>
                          </div>
@@ -315,11 +320,13 @@ $contactTypes = json_decode(file_get_contents(API_HOST.'/api/contact_types?colum
                  </div>
                  <div class="row">
                      <div class="col-sm-6">
+                         <label for="primaryPhone">Primary Phone</label>
                          <div class="form-group">
                            <input type="text" id="primaryPhone" name="primaryPhone" class="form-control" placeholder="*Primary Phone" required="required" />
                          </div>
                      </div>
                      <div class="col-sm-6">
+                         <label for="secondaryPhone">Secondary Phone</label>
                          <div class="form-group">
                            <input type="text" id="secondaryPhone" name="secondaryPhone" class="form-control" placeholder="Secondary Phone" />
                          </div>
@@ -327,11 +334,13 @@ $contactTypes = json_decode(file_get_contents(API_HOST.'/api/contact_types?colum
                   </div>
                   <div class="row">
                     <div class="col-sm-6">
+                        <label for="fax">Fax</label>
                         <div class="form-group">
                           <input type="text" id="fax" name="fax" class="form-control mb-sm" placeholder="Fax" />
                         </div>
                     </div>
                      <div class="col-sm-6">
+                         <label for="contactRating">Rating</label>
                          <div class="form-group">
                            <select id="contactRating" name="contactRating" data-placeholder="Rating" class="form-control chzn-select" data-ui-jq="select2">
                               <option value="">*Rating...</option>

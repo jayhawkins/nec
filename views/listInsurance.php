@@ -255,6 +255,7 @@ require '../lib/common.php';
                  <input type="hidden" id="id" name="id" value="" />
                  <div class="row">
                      <div class="col-sm-6">
+                         <label for="name">Name</label>
                          <div class="form-group">
                            <input type="text" id="name" name="name" class="form-control mb-sm" placeholder="*Name" required="required" />
                          </div>
@@ -267,11 +268,13 @@ require '../lib/common.php';
                  </div>
                  <div class="row">
                      <div class="col-sm-6">
+                         <label for="contactName">Contact Name</label>
                          <div class="form-group">
                            <input type="text" id="contactName" name="contactName" class="form-control mb-sm" placeholder="*Contact Name" required="required" />
                          </div>
                      </div>
                      <div class="col-sm-6">
+                         <label for="contactPhone">Contact Phone</label>
                          <div class="form-group">
                            <input type="text" id="contactPhone" name="contactPhone" class="form-control mb-sm" placeholder="Contact Phone" required="required" />
                          </div>
@@ -279,11 +282,13 @@ require '../lib/common.php';
                  </div>
                  <div class="row">
                      <div class="col-sm-6">
+                         <label for="policyNumber">Policy Number</label>
                          <div class="form-group">
                            <input type="text" id="policyNumber" name="policyNumber" class="form-control mb-sm" placeholder="*Policy Number" required="required" />
                          </div>
                      </div>
                      <div class="col-sm-6">
+                         <label for="policyExpirationDate">Expiration Date</label>
                          <div class="form-group">
                            <!--input type="text" id="policyExpirationDate" name="policyExpirationDate" class="form-control mb-sm" placeholder="Policy Expiration Date (YYYY-MM-DD)" required="required" /-->
                            <div id="sandbox-container" class="input-group date  datepicker">
