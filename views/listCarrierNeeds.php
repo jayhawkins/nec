@@ -256,7 +256,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
           }
 
           var data = {status: newStatus};
-          var url = '<?php echo API_HOST."/api/locations" ?>/' + $("#id").val();
+          var url = '<?php echo API_HOST."/api/carrier_needs" ?>/' + $("#id").val();
           var type = "PUT";
 
           $.ajax({
@@ -307,13 +307,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
               // Event Handlers
               $widget.on('click', function () {
-                  $checkbox.prop('checked', !$checkbox.is(':checked'));
-                  $checkbox.triggerHandler('change');
-                  recordLocationContacts();
-                  updateDisplay();
+                  //$checkbox.prop('checked', !$checkbox.is(':checked'));
+                  //$checkbox.triggerHandler('change');
+                  //recordLocationContacts();
+                  //updateDisplay();
               });
               $checkbox.on('change', function () {
-                  updateDisplay();
+                  //updateDisplay();
               });
 
 
@@ -348,7 +348,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
                   updateDisplay();var checkedItems = {}, counter = 0;
                   $("#check-list-box li.active").each(function(idx, li) {
-                    console.log($(li));
+                      //console.log($(li));
                       checkedItems[counter] = $(li).context.id;
                       counter++;
                   });
@@ -396,13 +396,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
               // Event Handlers
               $widget.on('click', function () {
-                  $checkbox.prop('checked', !$checkbox.is(':checked'));
-                  $checkbox.triggerHandler('change');
-                  recordDataPoints();
-                  updateDisplay();
+                  //$checkbox.prop('checked', !$checkbox.is(':checked'));
+                  //$checkbox.triggerHandler('change');
+                  //recordDataPoints();
+                  //updateDisplay();
               });
               $checkbox.on('change', function () {
-                  updateDisplay();
+                  //updateDisplay();
               });
 
               function recordDataPoints() {
@@ -484,7 +484,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
                   updateDisplay();var checkedItems = {}, counter = 0;
                   $("#dp-check-list-box li.active").each(function(idx, li) {
-                    console.log($(li));
+                    //console.log($(li));
                       checkedItems[counter] = $(li).context.id;
                       counter++;
                   });
@@ -811,12 +811,14 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
           $("#destinationCity").val(data["destinationCity"]);
           $("#destinationState").val(data["destinationState"]);
           $("#destinationZip").val(data["destinationZip"]);
+          var ndp = data["needsDataPoints"];
+          //console.log(JSON.stringify(ndp));
           for (var i = 0; i < contacts.contacts.records.length; i++) {
               li += '<li id=\"' + contacts.contacts.records[i][0] + '\" class=\"list-group-item\" ' + checked + '>' + contacts.contacts.records[i][1] + ' ' + contacts.contacts.records[i][2] + '</li>\n';
           }
           $("#check-list-box").html(li);
           for (var i = 0; i < dataPoints.object_type_data_points.records.length; i++) {
-              dpli += '<li>' + dataPoints.object_type_data_points.records[i][2] + ' <input type="text" class="form-control mb-sm" id="' + dataPoints.object_type_data_points.records[i][1] + '" name="' + dataPoints.object_type_data_points.records[i][1] + '" value=\"' + dataPoints.object_type_data_points.records[i][1] + '\"></li>\n';
+              dpli += '<li>' + dataPoints.object_type_data_points.records[i][2] + ' <input type="text" class="form-control mb-sm" id="' + dataPoints.object_type_data_points.records[i][1] + '" name="' + dataPoints.object_type_data_points.records[i][1] + '" value=\"' + ndp[i][dataPoints.object_type_data_points.records[i][1]] + '\"></li>\n';
           }
           $("#dp-check-list-box").html(dpli);
           formatListBox();
