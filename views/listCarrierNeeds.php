@@ -22,7 +22,7 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
     $loccon[$locations_contacts->locations_contacts->records[$lc][0]] = $locations_contacts->locations_contacts->records[$lc][1];
 }
 
-$dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_points?columns=id,columnName,title,status&filter=entityID,eq," . $_SESSION['entityid'] ));
+$dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_points?include=object_type_data_point_values&transform=1&columns=id,columnName,title,status,object_type_data_point_values.value&filter=entityID,eq," . $_SESSION['entityid'] ));
 
 
 // No longer needed. We don't load via PHP anymore. All handled in JS function.
@@ -122,24 +122,27 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                               }
 
                               // Build the needsDataPoints
-                              var needsdatapoints = [];
+                              //var needsdatapoints = {};
+                              var needsarray = [];
                               //console.log("number of items: " + $("#dp-check-list-box li input").length);
-                              var obj = $("#dp-check-list-box li input");
+                              var obj = $("#dp-check-list-box li select");
                               for (var i = 0; i < obj.length; i++) {
                                   item = {};
                                   item[obj[i].id] = obj[i].value;
-                                  needsdatapoints.push(item);
+                                  needsarray.push(item);
                                   //console.log(obj[i].id);
                                   //console.log(obj[i].value);
                               }
                               //console.log(needsdatapoints);
+                              var needsdatapoints = {"data": needsarray};
+                              console.log(needsdatapoints);
 
                               if (type == "PUT") {
                                   var date = today;
-                                  var data = {entityID: $("#entityID").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, updatedAt: date};
+                                  var data = {entityID: $("#entityID").val(), qty: $("#qty").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, updatedAt: date};
                               } else {
                                   var date = today;
-                                  var data = {entityID: $("#entityID").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, createdAt: date};
+                                  var data = {entityID: $("#entityID").val(), qty: $("#qty").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, createdAt: date};
                               }
 
                               $.ajax({
@@ -153,6 +156,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                                       $("#myModal").modal('hide');
                                       loadTableAJAX();
                                       $("#id").val('');
+                                      $("#qty").val('');
                                       $("#originationCity").val('');
                                       $("#originationState").val('');
                                       $("#originationZip").val('');
@@ -190,7 +194,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
       function loadTableAJAX() {
         myApp.showPleaseWait();
-        var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?include=contacts&columns=id,originationCity,originationState,originationZip,originationLat,originationLng,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactID&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&satisfy=all&order[]=createdAt,desc&transform=1';
+        var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?include=contacts&columns=id,qty,originationCity,originationState,originationZip,originationLat,originationLng,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactID&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&satisfy=all&order[]=createdAt,desc&transform=1';
 
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
@@ -201,6 +205,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             },
             columns: [
                 { data: "id", visible: false },
+                { data: "qty" },
                 { data: "originationCity" },
                 { data: "originationState" },
                 { data: "originationZip", visible: false },
@@ -375,7 +380,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
       function formatListBoxDP() {
           // Bootstrap Listbox
-          $('.list-group.checked-list-box .list-group-item').each(function () {
+          $('.list-group.dp-checked-list-box .list-group-item').each(function () {
 
               // Settings
               var $widget = $(this),
@@ -562,6 +567,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
     .well .list-group {
      margin-bottom: 0px;
     }
+
  </style>
 
  <ol class="breadcrumb">
@@ -589,6 +595,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                  <thead>
                  <tr>
                      <th>ID</th>
+                     <th>Quantity</th>
                      <th class="hidden-sm-down">Orig. City</th>
                      <th class="hidden-sm-down">Orig. State</th>
                      <th class="hidden-sm-down">Orig. Zip</th>
@@ -628,17 +635,31 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                  <input type="hidden" id="entityID" name="entityID" value="<?php echo $_SESSION['entityid']; ?>" />
                  <input type="hidden" id="id" name="id" value="" />
                  <div class="row">
-                     <div class="col-sm-4">
-                         <label for="originationCity">Origination City</label>
+                     <div class="col-sm-3">
+                         <label for="qty">Number Avaiable</label>
                          <div class="form-group">
-                           <input type="text" id="originationCity" name="originationCity" class="typeahead form-control mb-sm" placeholder="Origination City"
+                           <input type="text" id="qty" name="qty" class="typeahead form-control mb-sm" placeholder="# Available"
                            required="required" />
                          </div>
                      </div>
-                     <div class="col-sm-4">
+                     <div class="col-sm-9">
+                         <div class="form-group">
+
+                         </div>
+                     </div>
+                 </div>
+                 <div class="row">
+                     <div class="col-sm-7">
+                         <label for="originationCity">Origination City</label>
+                         <div class="form-group">
+                           <input type="text" id="originationCity" name="originationCity" class="typeahead form-control mb-sm" placeholder="Origin City"
+                           required="required" />
+                         </div>
+                     </div>
+                     <div class="col-sm-3">
                          <label for="originationState">Origination State</label>
                          <div class="form-group">
-                           <select id="originationState" name="origitnaionState" data-placeholder="Origination State" class="form-control chzn-select" data-ui-jq="select2" required="required">
+                           <select id="originationState" name="origitnaionState" data-placeholder="Origin State" class="form-control chzn-select" data-ui-jq="select2" required="required">
                              <option value="">*Select State...</option>
             <?php
                              foreach($states->states->records as $value) {
@@ -649,26 +670,26 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                            </select>
                          </div>
                      </div>
-                     <div class="col-sm-4">
+                     <div class="col-sm-2">
                          <label for="originationZip">Origination Zip</label>
                          <div class="form-group">
-                           <input type="text" id="originationZip" name="originationZip" class="form-control mb-sm" placeholder="Origination Zip"
+                           <input type="text" id="originationZip" name="originationZip" class="form-control mb-sm" placeholder="Origin Zip"
                            required="required" />
                          </div>
                      </div>
                  </div>
                  <div class="row">
-                   <div class="col-sm-4">
+                   <div class="col-sm-7">
                        <label for="DestinationCity">Destination City</label>
                        <div class="form-group">
-                         <input type="text" id="destinationCity" name="destinationCity" class="form-control mb-sm" placeholder="Destination City"
+                         <input type="text" id="destinationCity" name="destinationCity" class="form-control mb-sm" placeholder="Dest. City"
                          required="required" />
                        </div>
                    </div>
-                   <div class="col-sm-4">
+                   <div class="col-sm-3">
                        <label for="destinationState">Destination State</label>
                        <div class="form-group">
-                         <select id="destinationState" name="destinationState" data-placeholder="Destination State" class="form-control chzn-select" data-ui-jq="select2" required="required">
+                         <select id="destinationState" name="destinationState" data-placeholder="Dest. State" class="form-control chzn-select" data-ui-jq="select2" required="required">
                            <option value="">*Select State...</option>
           <?php
                            foreach($states->states->records as $value) {
@@ -679,10 +700,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                          </select>
                        </div>
                    </div>
-                   <div class="col-sm-4">
+                   <div class="col-sm-2">
                        <label for="destinationZip">Destination Zip</label>
                        <div class="form-group">
-                         <input type="text" id="destinationZip" name="destinationZip" class="form-control mb-sm" placeholder="Destination Zip"
+                         <input type="text" id="destinationZip" name="destinationZip" class="form-control mb-sm" placeholder="Dest. Zip"
                          required="required" />
                        </div>
                    </div>
@@ -796,6 +817,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       var dpli = '';
       var dpchecked = '';
       $("#id").val('');
+      $("#qty").val('');
       $("#originationCity").val('');
       $("#originationState").val('');
       $("#originationZip").val('');
@@ -806,8 +828,15 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
           li += '<li id=\"' + contacts.contacts.records[i][0] + '\" class=\"list-group-item\" ' + checked + '>' + contacts.contacts.records[i][1] + ' ' + contacts.contacts.records[i][2] + '</li>\n';
       }
       $("#check-list-box").html(li);
-      for (var i = 0; i < dataPoints.object_type_data_points.records.length; i++) {
-          dpli += '<li>' + dataPoints.object_type_data_points.records[i][2] + ' <input type="text" class="form-control mb-sm" id="' + dataPoints.object_type_data_points.records[i][1] + '" name="' + dataPoints.object_type_data_points.records[i][1] + '"></li>\n';
+      for (var i = 0; i < dataPoints.object_type_data_points.length; i++) {
+          dpli += '<li>' + dataPoints.object_type_data_points[i].title +
+                  ' <select class="form-control mb-sm" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '">';
+          for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
+              //console.log(JSON.stringify(dataPoints.object_type_data_points[i].object_type_data_point_values[v]));
+              dpli += '<option>' + dataPoints.object_type_data_points[i].object_type_data_point_values[v].value + '</option>\n';
+          }
+          dpli += '</select>' +
+                  '</li>\n';
       }
       $("#dp-check-list-box").html(dpli);
       formatListBox();
@@ -824,6 +853,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
           var dpli = '';
           var dpchecked = '';
           $("#id").val(data["id"]);
+          $("#qty").val(data["qty"]);
           $("#originationCity").val(data["originationCity"]);
           $("#originationState").val(data["originationState"]);
           $("#originationZip").val(data["originationZip"]);
@@ -831,13 +861,33 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
           $("#destinationState").val(data["destinationState"]);
           $("#destinationZip").val(data["destinationZip"]);
           var ndp = data["needsDataPoints"];
-          //console.log(JSON.stringify(ndp));
+          console.log(ndp);
+          //console.log(JSON.stringify(dataPoints.object_type_data_points));
           for (var i = 0; i < contacts.contacts.records.length; i++) {
               li += '<li id=\"' + contacts.contacts.records[i][0] + '\" class=\"list-group-item\" ' + checked + '>' + contacts.contacts.records[i][1] + ' ' + contacts.contacts.records[i][2] + '</li>\n';
           }
           $("#check-list-box").html(li);
-          for (var i = 0; i < dataPoints.object_type_data_points.records.length; i++) {
-              dpli += '<li>' + dataPoints.object_type_data_points.records[i][2] + ' <input type="text" class="form-control mb-sm" id="' + dataPoints.object_type_data_points.records[i][1] + '" name="' + dataPoints.object_type_data_points.records[i][1] + '" value=\"' + ndp[i][dataPoints.object_type_data_points.records[i][1]] + '\"></li>\n';
+
+          for (var i = 0; i < dataPoints.object_type_data_points.length; i++) {
+              var selected = '';
+              dpli += '<li>' + dataPoints.object_type_data_points[i].title +
+                      ' <select class="form-control mb-sm" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '">';
+              for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
+                $.each(ndp.data, function(idx, obj) {
+                  $.each(obj, function(key, val) {
+                    if (dataPoints.object_type_data_points[i].columnName == key) {
+                        if (dataPoints.object_type_data_points[i].object_type_data_point_values[v].value == val) {
+                            selected = 'selected';
+                        }
+                    }
+                  })
+                });
+
+                dpli += '<option' + selected + '>' + dataPoints.object_type_data_points[i].object_type_data_point_values[v].value + '</option>\n';
+              }
+
+              dpli += '</select>' +
+                      '</li>\n';
           }
           $("#dp-check-list-box").html(dpli);
           formatListBox();
@@ -858,18 +908,36 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
     } );
 
-    $('input.typeahead').typeahead({
-  	    source:  function (query, process) {
-          var url = '<?php echo API_HOST."/api/locations?columns=id,city,state,zip"; ?>'
-          var newquery = "filter[]=entityID,eq,<?php echo $_SESSION['entityid'] ?>&filter[]=city,sw," + query;
-          return $.get(url, { query: newquery }, function (data) {
-          		console.log(JSON.stringify(data));
-          		//data = $.parseJSON(data);
-  	            return process(data);
-  	        });
+    var $input = $(".typeahead");
+    $input.typeahead({
+        autoSelect: true,
+  	    source:  function (data) {
+          var url = '<?php echo API_HOST."/api/locations?transform=1&columns=id,city&filter[]=entityID,eq," . $_SESSION['entityid'] . "&filter[]=city,sw,"; ?>' + data;
+          $.get(url, function (data) {
+
+          });
   	    }
 	  });
 
+    $input.change(function() {
+      console.log('hello');
+      var current = $input.typeahead("getActive");
+      if (current) {
+        // Some item from your model is active!
+        if (current.name == $input.val()) {
+          // This means the exact match is found. Use toLowerCase() if you want case insensitive match.
+          alert("I'm a match");
+        } else {
+          // This means it is only a partial match, you can either add a new item
+          // or take the active if you don't want new items
+          alert('Here');
+          console.log($("#originationCity").val())
+        }
+      } else {
+        // Nothing is active so it is a new value (or maybe empty value)
+        alert('nothing');
+      }
+    });
 
 
  </script>

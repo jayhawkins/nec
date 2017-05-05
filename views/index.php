@@ -862,7 +862,7 @@ $lastName = $member->members->records[0][4];
 
 
 <script type="text/javascript" src="https://cdn.datatables.net/v/dt/b-1.2.4/datatables.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
 
 
 <!-- Can't use or the settings gear dropdown won't work -->

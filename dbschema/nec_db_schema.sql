@@ -41,6 +41,8 @@ COLLATE = utf8_general_ci
 ENGINE = InnoDB
 AUTO_INCREMENT = 1;
 -- -------------------------------------------------------------
+ALTER TABLE carrier_needs ADD COLUMN qty SMALLINT(5) UNSIGNED DEFAULT 0 AFTER `status`;
+-- -------------------------------------------------------------
 
 
 -- CREATE TABLE "contact_types" ----------------------------
@@ -305,6 +307,21 @@ ALTER TABLE object_type_data_points MODIFY objectTypeID Int( 11 ) UNSIGNED NOT N
 ALTER TABLE object_type_data_points ADD COLUMN entityID INT(11) UNSIGNED DEFAULT 0 AFTER id;
 ALTER TABLE object_type_data_points ADD COLUMN status VARCHAR(255) NOT NULL DEFAULT 'Active' AFTER title ;
 -- ---------------------------------------------------------
+
+-- CREATE TABLE "object_type_data_point_values" ----------------
+CREATE TABLE `object_type_data_point_values` (
+	`id` Int( 11 ) UNSIGNED AUTO_INCREMENT NOT NULL,
+	`object_type_data_point_id` Int( 11 ) UNSIGNED NOT NULL,
+	`value` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	`createdAt` DateTime NOT NULL,
+	`updatedAt` DateTime NOT NULL,
+	`status` VarChar( 24 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'Active',
+	CONSTRAINT `unique_id` UNIQUE( `id` ) )
+CHARACTER SET = utf8
+COLLATE = utf8_general_ci
+ENGINE = InnoDB
+AUTO_INCREMENT = 1;
+-- -------------------------------------------------------------
 
 
 -- CREATE TABLE "object_types" -----------------------------
@@ -603,6 +620,12 @@ ALTER TABLE `contacts`
 ALTER TABLE `object_type_data_points`
 	ADD CONSTRAINT `lnk_object_types_object_type_data_points` FOREIGN KEY ( `objectTypeID` )
 	REFERENCES `object_types`( `id` )
+	ON DELETE No Action
+	ON UPDATE No Action;
+
+ALTER TABLE `object_type_data_point_values`
+	ADD CONSTRAINT `lnk_object_type_data_points_object_type_data_point_values` FOREIGN KEY ( `object_type_data_point_id` )
+	REFERENCES `object_type_data_points`( `id` )
 	ON DELETE No Action
 	ON UPDATE No Action;
 
