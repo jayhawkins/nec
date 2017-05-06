@@ -76,7 +76,7 @@ $objectTypes = json_decode(file_get_contents(API_HOST."/api/object_types?columns
 
                 if (type == "PUT") {
                     var date = today;
-                    var data = {entityID: $("#entityID").val(), objectTypeID: $("#objectTypeID").val(), columnName: $("#columnName").val(), title: $("#title").val(), updatedAt: date};
+                    var data = {objectTypeID: $("#objectTypeID").val(), columnName: $("#columnName").val(), title: $("#title").val(), updatedAt: date};
                 } else {
                     var date = today;
                     var data = {entityID: $("#entityID").val(), objectTypeID: $("#objectTypeID").val(), columnName: $("#columnName").val(), title: $("#title").val(), createdAt: date};
@@ -118,7 +118,7 @@ $objectTypes = json_decode(file_get_contents(API_HOST."/api/object_types?columns
 
       function loadTableAJAX() {
         myApp.showPleaseWait();
-        var url = '<?php echo API_HOST; ?>' + '/api/object_type_data_points?include=object_types&columns=id,objectTypeID,object_types.name,columnName,title,status&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order=title&transform=1';
+        var url = '<?php echo API_HOST; ?>' + '/api/object_type_data_points?include=object_types&columns=id,entityID,objectTypeID,object_types.name,columnName,title,status&filter=entityID,in,(0, ' + <?php echo $_SESSION['entityid']; ?> + ')&order[]=entityID&order[]=title&transform=1';
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
             processing: true,
@@ -128,6 +128,12 @@ $objectTypes = json_decode(file_get_contents(API_HOST."/api/object_types?columns
             },
             columns: [
                 { data: "id", visible: false },
+                { data: null,
+                    "bSortable": false,
+                    "mRender": function(s) {
+                        return entity = (s.entityID == 0) ? "System":"Custom";
+                    }
+                },
                 { data: "objectTypeID", visible: false },
                 { data: "title" },
                 { data: "columnName" },
@@ -136,12 +142,17 @@ $objectTypes = json_decode(file_get_contents(API_HOST."/api/object_types?columns
                     data: null,
                     "bSortable": false,
                     "mRender": function (o) {
-                        var buttons = '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text-info\"></i> <span class=\"text-info\">Edit</span></button>';
 
-                        if (o.status == "Active") {
-                                  buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text-info\"></i> <span class=\"text-info\">Disable</span></button>";
-                        } else {
-                                  buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text-info\"></i> <span class=\"text-info\">Enable</span></button>";
+                        var buttons = '';
+
+                        if (o.entityID > 0) {
+                            buttons = '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text-info\"></i> <span class=\"text-info\">Edit</span></button>';
+
+                            if (o.status == "Active") {
+                                      buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text-info\"></i> <span class=\"text-info\">Disable</span></button>";
+                            } else {
+                                      buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text-info\"></i> <span class=\"text-info\">Enable</span></button>";
+                            }
                         }
 
                         return buttons;
@@ -229,6 +240,7 @@ $objectTypes = json_decode(file_get_contents(API_HOST."/api/object_types?columns
                  <thead>
                  <tr>
                      <th>ID</th>
+                     <th>Defined By</th>
                      <th class="hidden-sm-down">Object Type ID</th>
                      <th class="hidden-sm-down">Title</th>
                      <th class="hidden-sm-down">Column Name</th>

@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS `carrier_needs` (
 	`status` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'Open',
 	`createdAt` DateTime NOT NULL,
 	`updatedAt` DateTime NOT NULL,
-	`contactID` JSON NOT NULL,
+	`contacts` JSON NOT NULL,
 	CONSTRAINT `unique_id` UNIQUE( `id` ) )
 CHARACTER SET = utf8
 COLLATE = utf8_general_ci
