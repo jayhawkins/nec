@@ -22,7 +22,7 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
     $loccon[$locations_contacts->locations_contacts->records[$lc][0]] = $locations_contacts->locations_contacts->records[$lc][1];
 }
 
-$dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_points?include=object_type_data_point_values&transform=1&columns=id,columnName,title,status,object_type_data_point_values.value&filter=entityID,eq," . $_SESSION['entityid'] ));
+$dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_points?include=object_type_data_point_values&transform=1&columns=id,columnName,title,status,object_type_data_point_values.value&filter[]=entityID,in,(0," . $_SESSION['entityid'] . ")&filter[]=status,eq,Active" ));
 
 
 // No longer needed. We don't load via PHP anymore. All handled in JS function.
@@ -121,28 +121,32 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                                   type = "POST";
                               }
 
+                              // Build the contacts
+                              var contactsarray = [];
+                              var obj = $("#check-list-box li.active");
+                              for (var i = 0; i < obj.length; i++) {
+                                  item = {};
+                                  item[obj[i].id] = obj[i].innerText;
+                                  contactsarray.push(item);
+                              }
+                              var $contacts = contactsarray;
+
                               // Build the needsDataPoints
-                              //var needsdatapoints = {};
                               var needsarray = [];
-                              //console.log("number of items: " + $("#dp-check-list-box li input").length);
                               var obj = $("#dp-check-list-box li select");
                               for (var i = 0; i < obj.length; i++) {
                                   item = {};
                                   item[obj[i].id] = obj[i].value;
                                   needsarray.push(item);
-                                  //console.log(obj[i].id);
-                                  //console.log(obj[i].value);
                               }
-                              //console.log(needsdatapoints);
-                              var needsdatapoints = {"data": needsarray};
-                              console.log(needsdatapoints);
+                              var needsdatapoints = needsarray;
 
                               if (type == "PUT") {
                                   var date = today;
-                                  var data = {entityID: $("#entityID").val(), qty: $("#qty").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, updatedAt: date};
+                                  var data = {qty: $("#qty").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, contactEmails: $contacts, updatedAt: date};
                               } else {
                                   var date = today;
-                                  var data = {entityID: $("#entityID").val(), qty: $("#qty").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, createdAt: date};
+                                  var data = {entityID: $("#entityID").val(), qty: $("#qty").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, contactEmails: $contacts, createdAt: date};
                               }
 
                               $.ajax({
@@ -194,7 +198,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
       function loadTableAJAX() {
         myApp.showPleaseWait();
-        var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?include=contacts&columns=id,qty,originationCity,originationState,originationZip,originationLat,originationLng,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactID&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&satisfy=all&order[]=createdAt,desc&transform=1';
+        var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?columns=id,qty,originationCity,originationState,originationZip,originationLat,originationLng,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&filter[]=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&satisfy=all&order[]=createdAt,desc&transform=1';
 
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
@@ -217,8 +221,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 { data: "destinationLat", visible: false },
                 { data: "destinationLng", visible: false },
                 { data: "needsDataPoints", visible: false },
-                { data: "contactID", visible: false },
-                { data: "contacts[0].firstName" + " " + "contacts[0].lastName" },
+                { data: "contactEmails", visible: false },
                 {
                     data: null,
                     "bSortable": false,
@@ -312,13 +315,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
               // Event Handlers
               $widget.on('click', function () {
-                  //$checkbox.prop('checked', !$checkbox.is(':checked'));
-                  //$checkbox.triggerHandler('change');
+                  $checkbox.prop('checked', !$checkbox.is(':checked'));
+                  $checkbox.triggerHandler('change');
                   //recordLocationContacts();
                   //updateDisplay();
               });
               $checkbox.on('change', function () {
-                  //updateDisplay();
+                  updateDisplay();
               });
 
 
@@ -608,7 +611,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                      <th class="hidden-sm-down">Dest. Long.</th>
                      <th class="hidden-sm-down">Data Points</th>
                      <th class="hidden-sm-down">Contact</th>
-                     <th class="hidden-sm-down">Contact Name</th>
                      <th class="no-sort pull-right">&nbsp;</th>
                  </tr>
                  </thead>
@@ -832,7 +834,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
           dpli += '<li>' + dataPoints.object_type_data_points[i].title +
                   ' <select class="form-control mb-sm" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '">';
           for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
-              //console.log(JSON.stringify(dataPoints.object_type_data_points[i].object_type_data_point_values[v]));
               dpli += '<option>' + dataPoints.object_type_data_points[i].object_type_data_point_values[v].value + '</option>\n';
           }
           dpli += '</select>' +
@@ -846,53 +847,71 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
     $('#datatable-table tbody').on( 'click', 'button', function () {
         var data = table.row( $(this).parents('tr') ).data();
-        //console.log(data["id"]);
-        if (this.textContent.indexOf("Edit") > -1) {
-          var li = '';
-          var checked = '';
-          var dpli = '';
-          var dpchecked = '';
-          $("#id").val(data["id"]);
-          $("#qty").val(data["qty"]);
-          $("#originationCity").val(data["originationCity"]);
-          $("#originationState").val(data["originationState"]);
-          $("#originationZip").val(data["originationZip"]);
-          $("#destinationCity").val(data["destinationCity"]);
-          $("#destinationState").val(data["destinationState"]);
-          $("#destinationZip").val(data["destinationZip"]);
-          var ndp = data["needsDataPoints"];
-          console.log(ndp);
-          //console.log(JSON.stringify(dataPoints.object_type_data_points));
-          for (var i = 0; i < contacts.contacts.records.length; i++) {
-              li += '<li id=\"' + contacts.contacts.records[i][0] + '\" class=\"list-group-item\" ' + checked + '>' + contacts.contacts.records[i][1] + ' ' + contacts.contacts.records[i][2] + '</li>\n';
-          }
-          $("#check-list-box").html(li);
 
-          for (var i = 0; i < dataPoints.object_type_data_points.length; i++) {
-              var selected = '';
-              dpli += '<li>' + dataPoints.object_type_data_points[i].title +
-                      ' <select class="form-control mb-sm" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '">';
-              for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
-                $.each(ndp.data, function(idx, obj) {
+        if (this.textContent.indexOf("Edit") > -1) {
+            var li = '';
+            var checked = '';
+            var dpli = '';
+            var dpchecked = '';
+            $("#id").val(data["id"]);
+            $("#qty").val(data["qty"]);
+            $("#originationCity").val(data["originationCity"]);
+            $("#originationState").val(data["originationState"]);
+            $("#originationZip").val(data["originationZip"]);
+            $("#destinationCity").val(data["destinationCity"]);
+            $("#destinationState").val(data["destinationState"]);
+            $("#destinationZip").val(data["destinationZip"]);
+            var ndp = data["needsDataPoints"];
+            var con = data["contactEmails"]
+
+            for (var i = 0; i < contacts.contacts.records.length; i++) {
+                checked = '';
+                for (var l = 0; l < con.length; l++) {
+                    $.each(con, function(idx, obj) {
+                      $.each(obj, function(key, val) {
+                        if (contacts.contacts.records[i][0] == key) {
+                            checked = 'data-checked="true"';
+                        }
+                      })
+                    });
+                }
+                li += '<li id=\"' + contacts.contacts.records[i][0] + '\" class=\"list-group-item\" ' + checked + '>' + contacts.contacts.records[i][1] + ' ' + contacts.contacts.records[i][2] + '</li>\n';
+            }
+            $("#check-list-box").html(li);
+
+            for (var i = 0; i < dataPoints.object_type_data_points.length; i++) {
+                var selected = '';
+                var value = '';
+
+                $.each(ndp, function(idx, obj) {
                   $.each(obj, function(key, val) {
                     if (dataPoints.object_type_data_points[i].columnName == key) {
-                        if (dataPoints.object_type_data_points[i].object_type_data_point_values[v].value == val) {
-                            selected = 'selected';
-                        }
+                        value = val; // Get the value from the JSON data in the record to use to set the selected option in the dropdown
                     }
                   })
                 });
 
-                dpli += '<option' + selected + '>' + dataPoints.object_type_data_points[i].object_type_data_point_values[v].value + '</option>\n';
-              }
+                dpli += '<li>' + dataPoints.object_type_data_points[i].title +
+                        ' <select class="form-control mb-sm" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '">';
+                for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
 
-              dpli += '</select>' +
-                      '</li>\n';
-          }
-          $("#dp-check-list-box").html(dpli);
-          formatListBox();
-          formatListBoxDP();
-          $("#myModal").modal('show');
+                    if (dataPoints.object_type_data_points[i].object_type_data_point_values[v].value === value) {
+                        selected = ' selected ';
+                    } else {
+                        selected = '';
+                    }
+
+                    dpli += '<option' + selected + '>' + dataPoints.object_type_data_points[i].object_type_data_point_values[v].value + '</option>\n';
+
+                }
+
+                dpli += '</select>' +
+                        '</li>\n';
+            }
+            $("#dp-check-list-box").html(dpli);
+            formatListBox();
+            formatListBoxDP();
+            $("#myModal").modal('show');
         } else {
             $("#id").val(data["id"]);
             if (this.textContent.indexOf("Close") > -1) {
