@@ -49,6 +49,14 @@ $app->route('GET|POST /json-data', function() {
   }
 
 });
+
+$app->route('GET|POST /testroute', function() {
+    $carrierneedid = Flight::request()->data->id;
+    $carrierneed = Flight::carrierneed();
+    $result = $carrierneed->load(API_HOST,$carrierneedid);
+    $notificationresult = $carrierneed->getContactEmails();
+    var_dump($notificationresult);
+});
 /*****************************************************************************/
 
 //echo $_SESSION['userid'];
@@ -184,6 +192,9 @@ $app->route('/dashboard', function() {
     }
 });
 
+/*****************************************************************************/
+// Locations Processes
+/*****************************************************************************/
 $app->route('POST /deletelocationcontacts', function() {
     $locationid = Flight::request()->data->location_id;
     $locationcontact = Flight::locationcontact();
@@ -195,6 +206,20 @@ $app->route('POST /deletelocationcontacts', function() {
     }
 });
 
+/*****************************************************************************/
+// Carrier Needs Processes
+/*****************************************************************************/
+$app->route('POST /carrierneedsnotification', function() {
+    $carrierneedid = Flight::request()->data->id;
+    $carrierneed = Flight::carrierneed();
+    $notificationresult = $carrierneed->sendNotification(API_HOST,$carrierneedid);
+    if ($notificationresult) {
+        print_r($notificationresult);
+        //echo "success";
+    } else {
+        print_r($notificationresult);
+    }
+});
 
 // Start the framework
 $app->start();
