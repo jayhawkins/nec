@@ -157,6 +157,22 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                                  async: false,
                                  success: function(data){
                                     if (data > 0) {
+                                      if (type == 'POST') {
+                                        var params = {id: data};
+                                        $.ajax({
+                                           url: '<?php echo HTTP_HOST."/carrierneedsnotification" ?>',
+                                           type: 'POST',
+                                           data: JSON.stringify(params),
+                                           contentType: "application/json",
+                                           async: false,
+                                           success: function(notification){
+                                              alert(notification);
+                                           },
+                                           error: function() {
+                                              alert('Failed Sending Notifications! - Notify NEC of this failure.');
+                                           }
+                                        });
+                                      }
                                       $("#myModal").modal('hide');
                                       loadTableAJAX();
                                       $("#id").val('');
@@ -638,9 +654,9 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                  <input type="hidden" id="id" name="id" value="" />
                  <div class="row">
                      <div class="col-sm-3">
-                         <label for="qty">Number Avaiable</label>
+                         <label for="qty">Quantity Needed</label>
                          <div class="form-group">
-                           <input type="text" id="qty" name="qty" class="typeahead form-control mb-sm" placeholder="# Available"
+                           <input type="text" id="qty" name="qty" class="form-control mb-sm" placeholder="# Available"
                            required="required" />
                          </div>
                      </div>
@@ -939,7 +955,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 	  });
 
     $input.change(function() {
-      console.log('hello');
       var current = $input.typeahead("getActive");
       if (current) {
         // Some item from your model is active!
