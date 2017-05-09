@@ -14,10 +14,10 @@ function sendmail($to, $subject, $body, $from, $document='') {
       $subject = 'Notification from Nationwide Equipment Control';
   }
 
-  if (empty($fromemail)) {
-      $fromemail = array('jaycarl.hawkins@gmail.com' => 'Jay Hawkins');
+  if (empty($from)) {
+      $from = array('operations@nationwide-equipment.com' => 'Nationwide Equipment Control');
   }
-  $setFrom = array($fromemail => $fromname);
+  $setFrom = $from;
 
   // Send an account activation to the member
   // Create the message

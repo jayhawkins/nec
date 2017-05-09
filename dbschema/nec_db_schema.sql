@@ -629,6 +629,12 @@ ALTER TABLE `object_type_data_point_values`
 	ON DELETE No Action
 	ON UPDATE No Action;
 
+ALTER TABLE `carrier_needs`
+	ADD CONSTRAINT `lnk_entities_carrier_needs` FOREIGN KEY ( `entityID` )
+	REFERENCES `entities`( `id` )
+	ON DELETE No Action
+	ON UPDATE No Action;
+
 
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

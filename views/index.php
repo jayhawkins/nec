@@ -106,7 +106,7 @@ $lastName = $member->members->records[0][4];
                 </ul-->
             </li>
 <?php
-    if ($_SESSION['entitytype'] == 2) {
+    if ($_SESSION['entitytype'] == 2 || $_SESSION['entityid'] == 0) {
 ?>
             <li>
                 <a href="#" onclick="ajaxFormCall('listCarrierNeeds');">
