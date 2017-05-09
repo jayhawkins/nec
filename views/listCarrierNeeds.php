@@ -214,7 +214,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
       function loadTableAJAX() {
         myApp.showPleaseWait();
-        var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?columns=id,qty,originationCity,originationState,originationZip,originationLat,originationLng,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&filter[]=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&satisfy=all&order[]=createdAt,desc&transform=1';
+        if (<?php echo $_SESSION['entityid']; ?> > 0) {
+            var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?include=entities&columns=entities.name,id,qty,originationCity,originationState,originationZip,originationLat,originationLng,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&filter[]=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&satisfy=all&order[]=createdAt,desc&transform=1';
+        } else {
+            var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?include=entities&columns=entities.name,id,qty,originationCity,originationState,originationZip,originationLat,originationLng,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&satisfy=all&order[]=entityID&order[]=createdAt,desc&transform=1';
+        }
 
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
@@ -224,6 +228,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 dataSrc: 'carrier_needs'
             },
             columns: [
+                { data: "entities[0].name" },
                 { data: "id", visible: false },
                 { data: "qty" },
                 { data: "originationCity" },
@@ -613,6 +618,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
              <table id="datatable-table" class="table table-striped table-hover">
                  <thead>
                  <tr>
+                     <th>Organization</th>
                      <th>ID</th>
                      <th>Quantity</th>
                      <th class="hidden-sm-down">Orig. City</th>
