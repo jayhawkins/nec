@@ -206,6 +206,77 @@ $app->route('POST /deletelocationcontacts', function() {
     }
 });
 
+$app->route('POST /getlocation', function() {
+    $locationid = Flight::request()->data->id;
+    $location = Flight::location();
+    $result = $location->get($locationid);
+    if ($result) {
+        echo $result;
+    } else {
+        echo "Could not get location selected";
+    }
+});
+
+$app->route('POST /getlocationbycitystatezip', function() {
+    $city = Flight::request()->data->city;
+    $state = Flight::request()->data->state;
+    $zip = Flight::request()->data->zip;
+    $entityID = Flight::request()->data->entityID;
+    $locationType = Flight::request()->data->locationType;
+    $location = Flight::location();
+    $result = $location->getLocationByCityStateZip($city,$state,$zip,$entityID);
+    if ($result == 0) {
+        // Create the address in the locations table
+        // url encode the address
+        $address = urlencode($city.", ".$state.", ".$zip);
+
+        // google map geocode api url
+        $url = "http://maps.google.com/maps/api/geocode/json?address={$address}";
+
+        // get the json response
+        $resp_json = file_get_contents($url);
+
+        // decode the json
+        $resp = json_decode($resp_json, true);
+
+        // response status will be 'OK', if able to geocode given address
+        if($resp['status']=='OK'){
+
+            if ($locationType == "Origination") {
+                $locationTypeID = 2;
+            } else {
+                $locationTypeID = 3;
+            }
+
+            // get the important data
+            $lati = $resp['results'][0]['geometry']['location']['lat'];
+            $longi = $resp['results'][0]['geometry']['location']['lng'];
+            $formatted_address = $resp['results'][0]['formatted_address'];
+
+            $result = $location-> post($entityID,$locationTypeID,$city,"","",$city,$state,$zip,$lati,$longi);
+
+            echo $result;
+
+        }
+    } else {
+        echo $result;
+    }
+});
+
+/*****************************************************************************/
+// Contacts Processes
+/*****************************************************************************/
+$app->route('POST /getcontactsbycarrier', function() {
+    $entityid = Flight::request()->data->id;
+    $contact = Flight::contact();
+    $result = json_encode($contact->getContactsByEntity($entityid));
+    if ($result) {
+        echo $result;
+    } else {
+        echo "There was an error retrieving Contacts!";
+    }
+});
+
 /*****************************************************************************/
 // Carrier Needs Processes
 /*****************************************************************************/

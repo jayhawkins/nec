@@ -8,6 +8,10 @@ require '../lib/common.php';
 $state = '';
 $states = json_decode(file_get_contents(API_HOST.'/api/states?columns=abbreviation,name&order=name'));
 
+$entities = '';
+$entities = json_decode(file_get_contents(API_HOST.'/api/entities?columns=id,name&order=name&filter[]=id,gt,0&filter[]=entityTypeID,eq,2'));
+
+
 $locationTypeID = '';
 $locationTypes = json_decode(file_get_contents(API_HOST."/api/location_types?columns=id,name,status&filter[]=entityID,eq," . $_SESSION['entityid'] . "&filter[]=id,gt,0&satisfy=all&order=name"));
 
@@ -58,6 +62,58 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
        };
       })();
 
+      function prepare() {
+
+          var params = {
+                city: $("#originationCity").val(),
+                state: $("#originationState").val(),
+                zip: $("#originationZip").val(),
+                entityID: $("#entityID").val(),
+                locationType: "Origination"
+          };
+
+          $.ajax({
+             url: '<?php echo HTTP_HOST."/getlocationbycitystatezip" ?>',
+             type: 'POST',
+             data: JSON.stringify(params),
+             contentType: "application/json",
+             async: false,
+             success: function(response){
+                if (response == "success") {
+                    var params = {
+                          city: $("#destinationCity").val(),
+                          state: $("#destinationState").val(),
+                          zip: $("#destinationZip").val(),
+                          entityID: $("#entityID").val(),
+                          locationType: "Destination"
+                    };
+                    $.ajax({
+                       url: '<?php echo HTTP_HOST."/getlocationbycitystatezip" ?>',
+                       type: 'POST',
+                       data: JSON.stringify(params),
+                       contentType: "application/json",
+                       async: false,
+                       success: function(response){
+                          if (response == "success") {
+                              verifyAndPost();
+                          } else {
+                              alert('Preparation Failed!');
+                          }
+                       },
+                       error: function() {
+                          alert('Failed Searching for Destination Location! - Notify NEC of this failure.');
+                       }
+                    });
+                } else {
+                    alert('Preparation Failed!');
+                }
+             },
+             error: function() {
+                alert('Failed Searching for Origination Location! - Notify NEC of this failure.');
+             }
+          });
+      }
+
       function verifyAndPost() {
 
           if ( $('#formNeed').parsley().validate() ) {
@@ -100,8 +156,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
                     var originationlat = originationresults[0].geometry.location.lat();
                     var originationlng = originationresults[0].geometry.location.lng();
-                    //console.log('origin lat ' + originationlat);
-                    //console.log('origin lng ' + originationlng);
 
                       var destinationaddress = $("#destinationCity").val() + ' ' + $("#destinationState").val() + ' ' + $("#destinationZip").val();
                       geocoder.geocode( { 'address': destinationaddress}, function(destinationresults, status) {
@@ -109,9 +163,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                           if (status == google.maps.GeocoderStatus.OK) {
                               var destinationlat = destinationresults[0].geometry.location.lat();
                               var destinationlng = destinationresults[0].geometry.location.lng();
-
-                              //console.log('dest lat ' + destinationlat);
-                              //console.log('dest lng ' + destinationlng);
 
                               if ($("#id").val() > '') {
                                   var url = '<?php echo API_HOST."/api/carrier_needs" ?>/' + $("#id").val();
@@ -215,9 +266,9 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       function loadTableAJAX() {
         myApp.showPleaseWait();
         if (<?php echo $_SESSION['entityid']; ?> > 0) {
-            var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?include=entities&columns=entities.name,id,qty,originationCity,originationState,originationZip,originationLat,originationLng,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&filter[]=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&satisfy=all&order[]=createdAt,desc&transform=1';
+            var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,originationCity,originationState,originationZip,originationLat,originationLng,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&filter[]=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&satisfy=all&order[]=createdAt,desc&transform=1';
         } else {
-            var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?include=entities&columns=entities.name,id,qty,originationCity,originationState,originationZip,originationLat,originationLng,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&satisfy=all&order[]=entityID&order[]=createdAt,desc&transform=1';
+            var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,originationCity,originationState,originationZip,originationLat,originationLng,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&satisfy=all&order[]=entityID&order[]=createdAt,desc&transform=1';
         }
 
         var example_table = $('#datatable-table').DataTable({
@@ -230,6 +281,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             columns: [
                 { data: "entities[0].name" },
                 { data: "id", visible: false },
+                { data: "entityID", visible: false },
                 { data: "qty" },
                 { data: "originationCity" },
                 { data: "originationState" },
@@ -266,6 +318,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
           //To Reload The Ajax
           //See DataTables.net for more information about the reload method
           example_table.ajax.reload();
+          $("#entityID").prop('disabled', false);
           myApp.hidePleaseWait();
 
       }
@@ -592,6 +645,23 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
      margin-bottom: 0px;
     }
 
+    /***************** Autocomplete ***********************/
+
+    .orgSearch {z-index: 9999}
+    .destSearch {z-index: 9999}
+
+    #origination-list{float:left;list-style:none;margin-top:-3px;padding:0;width:250px;position: absolute;}
+
+    #origination-list li{padding: 10px; background: #f0f0f0; border-bottom: #bbb9b9 1px solid;}
+
+    #origination-list li:hover{background:#ece3d2;cursor: pointer;}
+
+    #destination-list{float:left;list-style:none;margin-top:-3px;padding:0;width:250px;position: absolute;}
+
+    #destination-list li{padding: 10px; background: #f0f0f0; border-bottom: #bbb9b9 1px solid;}
+
+    #destination-list li:hover{background:#ece3d2;cursor: pointer;}
+
  </style>
 
  <ol class="breadcrumb">
@@ -620,6 +690,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                  <tr>
                      <th>Organization</th>
                      <th>ID</th>
+                     <th>Entity ID</th>
                      <th>Quantity</th>
                      <th class="hidden-sm-down">Orig. City</th>
                      <th class="hidden-sm-down">Orig. State</th>
@@ -645,7 +716,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
  </section>
 
  <!-- Modal -->
- <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+ <div class="modal fade" id="myModal" z-index="1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
    <div class="modal-dialog modal-lg" role="document">
      <div class="modal-content">
        <div class="modal-header">
@@ -656,19 +727,31 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
        </div>
        <div class="modal-body">
                <form id="formNeed" class="register-form mt-lg">
-                 <input type="hidden" id="entityID" name="entityID" value="<?php echo $_SESSION['entityid']; ?>" />
                  <input type="hidden" id="id" name="id" value="" />
                  <div class="row">
-                     <div class="col-sm-3">
-                         <label for="qty">Quantity Needed</label>
+                     <div class="col-sm-4">
+                         <label for="qty"># of Trailers Looking For:</label>
                          <div class="form-group">
-                           <input type="text" id="qty" name="qty" class="form-control mb-sm" placeholder="# Available"
+                           <input type="text" id="qty" name="qty" class="form-control mb-sm" placeholder="# of Trailers Looking For"
                            required="required" />
                          </div>
                      </div>
-                     <div class="col-sm-9">
+                     <div class="col-sm-8">
                          <div class="form-group">
-
+             <?php if ($_SESSION['entityid'] > 0) { ?>
+                            <input type="hidden" id="entityID" name="entityID" value="<?php echo $_SESSION['entityid']; ?>" />
+             <?php } else { ?>
+                             <label for="entityID">Carrier:</label>
+                             <select id="entityID" name="entityID" data-placeholder="Carrier" class="form-control chzn-select" required="required">
+                               <option value="">*Select Carrier...</option>
+              <?php
+                               foreach($entities->entities->records as $value) {
+                                   $selected = ($value[0] == $entity) ? 'selected=selected':'';
+                                   echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
+                               }
+              ?>
+                             </select>
+              <?php } ?>
                          </div>
                      </div>
                  </div>
@@ -676,9 +759,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                      <div class="col-sm-7">
                          <label for="originationCity">Origination City</label>
                          <div class="form-group">
-                           <input type="text" id="originationCity" name="originationCity" class="typeahead form-control mb-sm" placeholder="Origin City"
+                           <input type="text" id="originationCity" name="originationCity" class="form-control mb-sm" placeholder="Origin City"
                            required="required" />
                          </div>
+                         <div id="suggesstion-box" class="frmSearch"></div>
                      </div>
                      <div class="col-sm-3">
                          <label for="originationState">Origination State</label>
@@ -757,7 +841,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
        </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" onclick="return verifyAndPost();">Save Changes</button>
+          <button type="button" class="btn btn-primary" onclick="return prepare();">Save Changes</button>
         </div>
       </div>
     </div>
@@ -864,6 +948,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       $("#dp-check-list-box").html(dpli);
       formatListBox();
       formatListBoxDP();
+      $("#entityID").prop('disabled', false);
   		$("#myModal").modal('show');
   	});
 
@@ -876,6 +961,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             var dpli = '';
             var dpchecked = '';
             $("#id").val(data["id"]);
+            $("#entityID").val(data["entityID"]);
             $("#qty").val(data["qty"]);
             $("#originationCity").val(data["originationCity"]);
             $("#originationState").val(data["originationState"]);
@@ -884,22 +970,38 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             $("#destinationState").val(data["destinationState"]);
             $("#destinationZip").val(data["destinationZip"]);
             var ndp = data["needsDataPoints"];
-            var con = data["contactEmails"]
+            var con = data["contactEmails"];
 
-            for (var i = 0; i < contacts.contacts.records.length; i++) {
-                checked = '';
-                for (var l = 0; l < con.length; l++) {
-                    $.each(con, function(idx, obj) {
-                      $.each(obj, function(key, val) {
-                        if (contacts.contacts.records[i][0] == key) {
-                            checked = 'data-checked="true"';
-                        }
-                      })
-                    });
-                }
-                li += '<li id=\"' + contacts.contacts.records[i][0] + '\" class=\"list-group-item\" ' + checked + '>' + contacts.contacts.records[i][1] + ' ' + contacts.contacts.records[i][2] + '</li>\n';
-            }
-            $("#check-list-box").html(li);
+            var params = {id: $("#entityID").val()};
+            $.ajax({
+               url: '<?php echo HTTP_HOST."/getcontactsbycarrier" ?>',
+               type: 'POST',
+               data: JSON.stringify(params),
+               contentType: "application/json",
+               async: false,
+               success: function(response){
+                 response = JSON.parse(response);
+                 var li = '';
+                 for (var i = 0; i < response.contacts.length; i++) {
+                     checked = '';
+                     for (var l = 0; l < con.length; l++) {
+                         $.each(con, function(idx, obj) {
+                           $.each(obj, function(key, val) {
+                             if (response.contacts[i].id == key) {
+                                 checked = 'data-checked="true"';
+                             }
+                           })
+                         });
+                     }
+                     li += '<li id=\"' + response.contacts[i].id + '\" class=\"list-group-item\" ' + checked + '>' + response.contacts[i].firstName + ' ' + response.contacts[i].lastName + '</li>\n';
+                 }
+                 $("#check-list-box").html(li);
+                 formatListBox();
+               },
+               error: function() {
+                  alert('Failed Getting Contacts! - Notify NEC of this failure.');
+               }
+            });
 
             for (var i = 0; i < dataPoints.object_type_data_points.length; i++) {
                 var selected = '';
@@ -933,6 +1035,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             $("#dp-check-list-box").html(dpli);
             formatListBox();
             formatListBoxDP();
+            $("#entityID").prop('disabled', true);
             $("#myModal").modal('show');
         } else {
             $("#id").val(data["id"]);
@@ -947,36 +1050,140 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             }
         }
 
-    } );
+    });
 
-    var $input = $(".typeahead");
-    $input.typeahead({
-        autoSelect: true,
-  	    source:  function (data) {
-          var url = '<?php echo API_HOST."/api/locations?transform=1&columns=id,city&filter[]=entityID,eq," . $_SESSION['entityid'] . "&filter[]=city,sw,"; ?>' + data;
-          $.get(url, function (data) {
+    $('#entityID').on( 'change', function () {
+        var params = {id: $("#entityID").val()};
+        //alert(JSON.stringify(params));
+        $.ajax({
+           url: '<?php echo HTTP_HOST."/getcontactsbycarrier" ?>',
+           type: 'POST',
+           data: JSON.stringify(params),
+           contentType: "application/json",
+           async: false,
+           success: function(response){
+             response = JSON.parse(response);
+             var li = '';
+             for (var i = 0; i < response.contacts.length; i++) {
+                 checked = '';
+                 /*
+                 for (var l = 0; l < con.length; l++) {
+                     $.each(con, function(idx, obj) {
+                       $.each(obj, function(key, val) {
+                         if (contacts.contacts.records[i][0] == key) {
+                             checked = 'data-checked="true"';
+                         }
+                       })
+                     });
+                 }
+                 */
+                 li += '<li id=\"' + response.contacts[i].id + '\" class=\"list-group-item\" ' + checked + '>' + response.contacts[i].firstName + ' ' + response.contacts[i].lastName + '</li>\n';
+             }
+             $("#check-list-box").html(li);
+             formatListBox();
+           },
+           error: function() {
+              alert('Failed Getting Contacts! - Notify NEC of this failure.');
+           }
+        });
+    });
 
-          });
-  	    }
-	  });
+    $("#originationCity").keyup(function(){
+        $("#originationCity").css("background","#FFF url(img/loaderIcon.gif) no-repeat 165px");
 
-    $input.change(function() {
-      var current = $input.typeahead("getActive");
-      if (current) {
-        // Some item from your model is active!
-        if (current.name == $input.val()) {
-          // This means the exact match is found. Use toLowerCase() if you want case insensitive match.
-          alert("I'm a match");
-        } else {
-          // This means it is only a partial match, you can either add a new item
-          // or take the active if you don't want new items
-          alert('Here');
-          console.log($("#originationCity").val())
-        }
-      } else {
-        // Nothing is active so it is a new value (or maybe empty value)
-        alert('nothing');
-      }
+        var url = '<?php echo API_HOST; ?>/api/locations?transform=1&columns=id,city&filter[]=entityID,eq,' + $("#entityID").val() + '&filter[]=city,sw,' + $(this).val();
+
+    		$.ajax({
+        		type: "GET",
+        		url: url,
+        		//data: data,
+        		beforeSend: function(){
+        			$("#originationCity").css("background","#FFF url(img/loaderIcon.gif) no-repeat 165px");
+        		},
+        		success: function(data){
+              var li = '<ul id="origination-list" class="orgSearch">';
+              for (var t=0;t<data.locations.length;t++) {
+                  li += '<li onClick="selectOrgCity(\'' + data.locations[t].id + '\');" id=\"' + data.locations[t].id + '\">' + data.locations[t].city + '</li>\n';
+              }
+              li += '</ul>';
+              $("#suggesstion-box").html(li);
+        			$("#suggesstion-box").show();
+        			$("#originationCity").css("background","#FFF");
+        		}
+    		});
+  	});
+
+    function selectOrgCity(val) {
+        var params = {id: val};
+        $.ajax({
+           url: '<?php echo HTTP_HOST."/getlocation" ?>',
+           type: 'POST',
+           data: JSON.stringify(params),
+           contentType: "application/json",
+           async: false,
+           success: function(response){
+             //response = JSON.stringify(JSON.parse(response));
+             response = JSON.parse(response);
+             $("#originationCity").val(response.city);
+             $("#originationState").val(response.state);
+             $("#originationZip").val(response.zip);
+             $("#suggesstion-box").hide();
+           },
+           error: function() {
+                alert('Error Selecting Origination City!');
+           }
+        });
+    }
+
+    $("#destinationCity").keyup(function(){
+        $("#destinationCity").css("background","#FFF url(img/loaderIcon.gif) no-repeat 165px");
+
+        var url = '<?php echo API_HOST; ?>/api/locations?transform=1&columns=id,city&filter[]=entityID,eq,' + $("#entityID").val() + '&filter[]=city,sw,' + $(this).val();
+
+    		$.ajax({
+        		type: "GET",
+        		url: url,
+        		//data: data,
+        		beforeSend: function(){
+        			$("#destinationCity").css("background","#FFF url(img/loaderIcon.gif) no-repeat 165px");
+        		},
+        		success: function(data){
+              var li = '<ul id="destination-list" class="destSearch">';
+              for (var t=0;t<data.locations.length;t++) {
+                  li += '<li onClick="selectDestCity(\'' + data.locations[t].id + '\');" id=\"' + data.locations[t].id + '\">' + data.locations[t].city + '</li>\n';
+              }
+              li += '</ul>';
+              $("#suggesstion-box").html(li);
+        			$("#suggesstion-box").show();
+        			$("#destinationCity").css("background","#FFF");
+        		}
+    		});
+  	});
+
+    function selectDestCity(val) {
+        var params = {id: val};
+        $.ajax({
+           url: '<?php echo HTTP_HOST."/getlocation" ?>',
+           type: 'POST',
+           data: JSON.stringify(params),
+           contentType: "application/json",
+           async: false,
+           success: function(response){
+             //response = JSON.stringify(JSON.parse(response));
+             response = JSON.parse(response);
+             $("#destinationCity").val(response.city);
+             $("#destinationState").val(response.state);
+             $("#destinationZip").val(response.zip);
+             $("#suggesstion-box").hide();
+           },
+           error: function() {
+                alert('Error Selecting Destination City!');
+           }
+        });
+    }
+
+    $("#myModal").on("hidden.bs.modal", function () {
+        $("#entityID").prop('disabled', false);
     });
 
 
