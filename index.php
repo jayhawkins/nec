@@ -225,7 +225,7 @@ $app->route('POST /getlocationbycitystatezip', function() {
     $locationType = Flight::request()->data->locationType;
     $location = Flight::location();
     $result = $location->getLocationByCityStateZip($city,$state,$zip,$entityID);
-    if ($result == 0) {
+    if ($result == 0) { // Address does not exist as array count returned is 0 - So... Add the location as a new location to the database to be used moving forward
         // Create the address in the locations table
         // url encode the address
         $address = urlencode($city.", ".$state.", ".$zip);
@@ -253,13 +253,17 @@ $app->route('POST /getlocationbycitystatezip', function() {
             $longi = $resp['results'][0]['geometry']['location']['lng'];
             $formatted_address = $resp['results'][0]['formatted_address'];
 
-            $result = $location-> post($entityID,$locationTypeID,$city,"","",$city,$state,$zip,$lati,$longi);
+            $result = $location->post($entityID,$locationTypeID,$city,"","",$city,$state,$zip,$lati,$longi);
 
             echo $result;
 
         }
     } else {
-        echo $result;
+        if ( $result > 0 ) {
+            echo "success";
+        } else {
+            echo $result;
+        }
     }
 });
 

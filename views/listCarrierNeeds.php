@@ -35,7 +35,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
  ?>
 
- <script type="text/javascript" src="http://maps.google.com/maps/api/js?key=<?php echo GOOGLE_MAPS_API; ?>"></script>
+ <script type="text/javascript" src="https://maps.google.com/maps/api/js?key=<?php echo GOOGLE_MAPS_API; ?>"></script>
 
  <script>
 
@@ -62,7 +62,9 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
        };
       })();
 
-      function prepare() {
+      function post() {
+
+          var result = true;
 
           var params = {
                 city: $("#originationCity").val(),
@@ -71,7 +73,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 entityID: $("#entityID").val(),
                 locationType: "Origination"
           };
-
+          //alert(JSON.stringify(params));
           $.ajax({
              url: '<?php echo HTTP_HOST."/getlocationbycitystatezip" ?>',
              type: 'POST',
@@ -87,6 +89,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                           entityID: $("#entityID").val(),
                           locationType: "Destination"
                     };
+                    //alert(JSON.stringify(params));
                     $.ajax({
                        url: '<?php echo HTTP_HOST."/getlocationbycitystatezip" ?>',
                        type: 'POST',
@@ -95,23 +98,32 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                        async: false,
                        success: function(response){
                           if (response == "success") {
-                              verifyAndPost();
                           } else {
-                              alert('Preparation Failed!');
+                              alert("1: " + response);
+                              result = false;
+                              //alert('Preparation Failed!');
                           }
                        },
-                       error: function() {
-                          alert('Failed Searching for Destination Location! - Notify NEC of this failure.');
+                       error: function(response) {
+                          alert("2: " + response);
+                          result = false;
+                          //alert('Failed Searching for Destination Location! - Notify NEC of this failure.');
                        }
                     });
                 } else {
-                    alert('Preparation Failed!');
+                    alert("3: " + response);
+                    result = false;
+                    //alert('Preparation Failed!');
                 }
              },
-             error: function() {
-                alert('Failed Searching for Origination Location! - Notify NEC of this failure.');
+             error: function(response) {
+                alert("4: " + JSON.stringify(response));
+                result = false;
+                //alert('Failed Searching for Origination Location! - Notify NEC of this failure.');
              }
           });
+
+          if (result) { verifyAndPost(); } else { return false; }
       }
 
       function verifyAndPost() {
@@ -841,7 +853,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
        </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" onclick="return prepare();">Save Changes</button>
+          <button type="button" class="btn btn-primary" onclick="return post();">Save Changes</button>
         </div>
       </div>
     </div>
@@ -1091,7 +1103,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
     $("#originationCity").keyup(function(){
         $("#originationCity").css("background","#FFF url(img/loaderIcon.gif) no-repeat 165px");
 
-        var url = '<?php echo API_HOST; ?>/api/locations?transform=1&columns=id,city&filter[]=entityID,eq,' + $("#entityID").val() + '&filter[]=city,sw,' + $(this).val();
+        var url = '<?php echo API_HOST; ?>/api/locations?transform=1&columns=id,name,city&filter[]=entityID,eq,' + $("#entityID").val() + '&filter[]=city,sw,' + $(this).val();
 
     		$.ajax({
         		type: "GET",
@@ -1103,7 +1115,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         		success: function(data){
               var li = '<ul id="origination-list" class="orgSearch">';
               for (var t=0;t<data.locations.length;t++) {
-                  li += '<li onClick="selectOrgCity(\'' + data.locations[t].id + '\');" id=\"' + data.locations[t].id + '\">' + data.locations[t].city + '</li>\n';
+                  li += '<li onClick="selectOrgCity(\'' + data.locations[t].id + '\');" id=\"' + data.locations[t].id + '\">' + data.locations[t].city + ' [' + data.locations[t].name + ']</li>\n';
               }
               li += '</ul>';
               $("#suggesstion-box").html(li);
@@ -1138,7 +1150,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
     $("#destinationCity").keyup(function(){
         $("#destinationCity").css("background","#FFF url(img/loaderIcon.gif) no-repeat 165px");
 
-        var url = '<?php echo API_HOST; ?>/api/locations?transform=1&columns=id,city&filter[]=entityID,eq,' + $("#entityID").val() + '&filter[]=city,sw,' + $(this).val();
+        var url = '<?php echo API_HOST; ?>/api/locations?transform=1&columns=id,name,city&filter[]=entityID,eq,' + $("#entityID").val() + '&filter[]=city,sw,' + $(this).val();
 
     		$.ajax({
         		type: "GET",
@@ -1150,7 +1162,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         		success: function(data){
               var li = '<ul id="destination-list" class="destSearch">';
               for (var t=0;t<data.locations.length;t++) {
-                  li += '<li onClick="selectDestCity(\'' + data.locations[t].id + '\');" id=\"' + data.locations[t].id + '\">' + data.locations[t].city + '</li>\n';
+                  li += '<li onClick="selectDestCity(\'' + data.locations[t].id + '\');" id=\"' + data.locations[t].id + '\">' + data.locations[t].city + ' [' + data.locations[t].name + ']</li>\n';
               }
               li += '</ul>';
               $("#suggesstion-box").html(li);

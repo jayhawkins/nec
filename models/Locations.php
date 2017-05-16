@@ -32,7 +32,7 @@ class Location
                 'content' => http_build_query($locationdata)
             )
         );
-        
+
         $locationcontext  = stream_context_create($locationoptions);
         try {
             $locationresult = file_get_contents($locationurl, false, $locationcontext);
@@ -71,27 +71,27 @@ class Location
 
     public function getLocationByCityStateZip($city,$state,$zip,$entityID) {
           try {
-                $locationurl = API_HOST.'/api/locations';
-                $locationdata = array(
+                //$locationurl = API_HOST.'/api/locations?transform=1&filter[]=entityID,eq,'.$entityID.'&filter[]=city,eq,'.$city.'&filter[]=state,eq,'.$state.'&filter[]=zip,eq,'.$zip.'&filter[]=status,eq,Active';
+                $locationargs = array(
                       "transform"=>1,
-                      "filter[]"=>"entityID,eq,".$entityID,
-                      "filter[]"=>"city,eq,".$city,
-                      "filter[]"=>"state,eq,".$state,
-                      "filter[]"=>"zip,eq,".$zip,
-                      "filter[]"=>"status,eq,Active"
+                      "filter[0]"=>"entityID,eq,".$entityID,
+                      "filter[1]"=>"city,eq,".$city,
+                      "filter[2]"=>"state,eq,".$state,
+                      "filter[3]"=>"zip,eq,".$zip,
+                      "filter[4]"=>"status,eq,Active"
                 );
                 // use key 'http' even if you send the request to https://...
                 $locationoptions = array(
                     'http' => array(
                         'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
-                        'method'  => 'GET',
-                        'content' => http_build_query($locationdata)
+                        'method'  => 'GET'
                     )
                 );
+                $locationurl = API_HOST.'/api/locations?'.http_build_query($locationargs);
                 $locationcontext  = stream_context_create($locationoptions);
-                $locationresult = file_get_contents($locationurl, false, $locationcontext);
-                if (count($locationresult.locations) > 0) {
-                    return $locationresult;
+                $locationresult = json_decode(file_get_contents($locationurl, false, $locationcontext));
+                if (count($locationresult->locations) > 0) {
+                    return count($locationresult);
                 } else {
                     return 0;
                 }
