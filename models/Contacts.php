@@ -47,4 +47,27 @@ class Contact
     public function delete() {
 
     }
+
+    public function getContactsByEntity($id) {
+        $args = array(
+              "transform"=>"1",
+              "filter"=>"entityID,eq,".$id
+        );
+
+        $url = API_HOST."/api/contacts?".http_build_query($args);
+        $options = array(
+            'http' => array(
+                'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                'method'  => 'GET'
+            )
+        );
+        $context  = stream_context_create($options);
+        try {
+            $result = json_decode(file_get_contents($url,false,$context),true);
+        } catch (Exception $e) {
+            $result = '';
+        }
+        return $result;
+
+    }
 }
