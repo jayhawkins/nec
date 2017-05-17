@@ -30,7 +30,7 @@
                   var listitems = '';
                   var $select = $('#state');
                   $.each(data.states, function( index ){
-                     //console.log(data.states[index].abbreviation);
+                     console.log(data.states[index].abbreviation);
                      listitems += '<option value=' + data.states[index].abbreviation + '>' + data.states[index].name + '</option>';
                   });
                   $select.append(listitems);
