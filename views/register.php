@@ -21,7 +21,6 @@
          https://code.google.com/p/chromium/issues/detail?id=332189
          */
 
-
          function loadStates() {
             $.ajax({
                type: "GET",
