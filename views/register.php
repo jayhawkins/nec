@@ -270,18 +270,10 @@
 
 <script>
 $(function() {
-    $( "#state" ).select2({
-        //theme: "bootstrap"
-    });
+    $( "#state" ).select2();
 
     loadStates();
 
-    // NOT USED!! Did not install JQueryUI right now - this initializes the dialog (and uses some common options that I do)
-    /*
-    $("#dialog").dialog({
-      autoOpen : false, modal : true, show : "blind", hide : "blind"
-    });
-    */
 });
 </script>
 
