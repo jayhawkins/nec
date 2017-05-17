@@ -106,20 +106,36 @@ $lastName = $member->members->records[0][4];
                 </ul-->
             </li>
 <?php
-    if ($_SESSION['entitytype'] == 2 || $_SESSION['entityid'] == 0) {
+    if ($_SESSION['entitytype'] == 1 || $_SESSION['entityid'] == 0) {
 ?>
             <li>
-                <a href="#" onclick="ajaxFormCall('listCarrierNeeds');">
+                <a href="#" onclick="ajaxFormCall('listCustomerNeeds');">
                     <span class="icon">
-                        <i class="fa fa-truck"></i>
+                        <i class="fa fa-users"></i>
                     </span>
-                    I Need Trailers
+                    I Have Trailers
                     <span class="label label-danger">
                         9
                     </span>
                 </a>
             </li>
 <?php
+    }
+
+    if ($_SESSION['entitytype'] == 2 || $_SESSION['entityid'] == 0) {
+ ?>
+             <li>
+                 <a href="#" onclick="ajaxFormCall('listCarrierNeeds');">
+                     <span class="icon">
+                         <i class="fa fa-truck"></i>
+                     </span>
+                     I Need Trailers
+                     <span class="label label-danger">
+                         9
+                     </span>
+                 </a>
+             </li>
+ <?php
     }
  ?>
             <li>
