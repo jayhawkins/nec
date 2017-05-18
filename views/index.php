@@ -122,6 +122,7 @@ $lastName = $member->members->records[0][4];
 <?php
     }
 
+
     if ($_SESSION['entitytype'] == 2 || $_SESSION['entityid'] == 0) {
  ?>
              <li>
