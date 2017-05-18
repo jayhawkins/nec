@@ -97,6 +97,14 @@ $lastName = $member->members->records[0][4];
                     <span class="icon">
                         <i class="fa fa-desktop"></i>
                     </span>
+<?php
+    if ($_SESSION['entitytype'] == 1) {
+      echo "Customer ";
+    } else {
+      if ($_SESSION['entitytype'] == 0) {
+        echo "Carrier ";
+    }
+?>
                     Dashboard</a>
                     <!--i class="toggle fa fa-angle-down"></i>
                 </a>
@@ -113,7 +121,7 @@ $lastName = $member->members->records[0][4];
                     <span class="icon">
                         <i class="fa fa-users"></i>
                     </span>
-                    I Have Trailers
+                    Available Trailers
                     <span class="label label-danger">
                         9
                     </span>
