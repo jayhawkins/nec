@@ -102,7 +102,7 @@ class Location
           }
     }
 
-    public function put($locationid,$address1,$address2,$city,$state,$zip) {
+    public function put($locationid,$address1,$address2,$city,$state,$zip,$latitude="0.00",$longitude="0.00") {
         try {
               $locationurl = API_HOST.'/api/locations/'.$locationid;
               $locationdata = array(
@@ -111,6 +111,8 @@ class Location
                           "city" => $city,
                           "state" => $state,
                           "zip" => $zip,
+                          "latitude"=>$latitude,
+                          "longitude"=>$longitude,
                           "updatedAt" => date('Y-m-d H:i:s')
               );
               // use key 'http' even if you send the request to https://...
