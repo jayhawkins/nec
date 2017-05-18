@@ -99,9 +99,9 @@ $lastName = $member->members->records[0][4];
                     </span>
 <?php
     if ($_SESSION['entitytype'] == 1) {
-        echo "Customer ";
-    } else if ($_SESSION['entitytype'] == 0) {
         echo "Carrier ";
+    } else if ($_SESSION['entitytype'] == 2) {
+        echo "Customer ";
     }
 ?>
                     Dashboard</a>
