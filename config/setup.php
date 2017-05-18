@@ -21,6 +21,7 @@ require 'models/Locations.php';
 require 'models/Contacts.php';
 require 'models/LocationsContacts.php';
 require 'models/CarrierNeeds.php';
+require 'models/CustomerNeeds.php';
 
 Flight::register( 'user', 'User' );
 Flight::register( 'entity', 'Entity' );
@@ -29,3 +30,4 @@ Flight::register( 'location', 'Location' );
 Flight::register( 'contact', 'Contact' );
 Flight::register( 'locationcontact', 'LocationContact' );
 Flight::register( 'carrierneed', 'CarrierNeed' );
+Flight::register( 'customerneed', 'CustomerNeed' );
