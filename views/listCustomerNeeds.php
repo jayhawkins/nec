@@ -9,7 +9,7 @@ $state = '';
 $states = json_decode(file_get_contents(API_HOST.'/api/states?columns=abbreviation,name&order=name'));
 
 $entities = '';
-$entities = json_decode(file_get_contents(API_HOST.'/api/entities?columns=id,name&order=name&filter[]=id,gt,0&filter[]=entityTypeID,eq,2'));
+$entities = json_decode(file_get_contents(API_HOST.'/api/entities?columns=id,name&order=name&filter[]=id,gt,0&filter[]=entityTypeID,eq,1'));
 
 
 $locationTypeID = '';
@@ -753,9 +753,9 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
              <?php if ($_SESSION['entityid'] > 0) { ?>
                             <input type="hidden" id="entityID" name="entityID" value="<?php echo $_SESSION['entityid']; ?>" />
              <?php } else { ?>
-                             <label for="entityID">Carrier:</label>
+                             <label for="entityID">Customer:</label>
                              <select id="entityID" name="entityID" data-placeholder="Carrier" class="form-control chzn-select" required="required">
-                               <option value="">*Select Carrier...</option>
+                               <option value="">*Select Customer...</option>
               <?php
                                foreach($entities->entities->records as $value) {
                                    $selected = ($value[0] == $entity) ? 'selected=selected':'';
