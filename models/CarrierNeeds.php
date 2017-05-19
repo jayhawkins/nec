@@ -17,6 +17,7 @@ class CarrierNeed
     private $needsDataPoints;
     private $status;
     private $qty;
+    private $availableDate;
     private $contactEmails;
 
     public function __construct() {
@@ -57,6 +58,7 @@ class CarrierNeed
       $this->needsDataPoints = $result["needsDataPoints"];
       $this->status = $result["status"];
       $this->qty = $result["qty"];
+      $this->availableDate = $result["availableDate"];
       $this->contactEmails = $result["contactEmails"];
 
     }

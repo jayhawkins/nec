@@ -17,6 +17,7 @@ class CustomerNeed
     private $needsDataPoints;
     private $status;
     private $qty;
+    private $availableDate;
     private $contactEmails;
 
     public function __construct() {
@@ -57,6 +58,7 @@ class CustomerNeed
       $this->needsDataPoints = $result["needsDataPoints"];
       $this->status = $result["status"];
       $this->qty = $result["qty"];
+      $this->availableDate = $result["availableDate"];
       $this->contactEmails = $result["contactEmails"];
 
     }
@@ -136,7 +138,7 @@ class CustomerNeed
 
             $templateargs = array(
                 "transform"=>1,
-                "filter"=>"title,eq,Customer Need Notification"
+                "filter"=>"title,eq,Customer Availability Notification"
             );
             $templateurl = API_HOST."/api/email_templates?".http_build_query($templateargs);
             $templateoptions = array(
@@ -172,6 +174,6 @@ class CustomerNeed
             }
         }
 
-        return "Your Need Notification has been recorded, and Customers will be notified";
+        return "Your Availability Notification has been recorded, and Carriers will be notified";
     }
 }
