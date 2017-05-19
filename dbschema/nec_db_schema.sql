@@ -42,6 +42,7 @@ ENGINE = InnoDB
 AUTO_INCREMENT = 1;
 -- -------------------------------------------------------------
 ALTER TABLE carrier_needs ADD COLUMN qty SMALLINT(5) UNSIGNED DEFAULT 0 AFTER `status`;
+ALTER TABLE carrier_needs ADD COLUMN availableDate DATE NULL;
 -- -------------------------------------------------------------
 
 
@@ -112,6 +113,7 @@ ENGINE = InnoDB
 AUTO_INCREMENT = 1;
 -- -------------------------------------------------------------
 ALTER TABLE customer_needs ADD COLUMN qty SMALLINT(5) UNSIGNED DEFAULT 0 AFTER `status`;
+ALTER TABLE customer_needs ADD COLUMN availableDate DATE NULL;
 -- -------------------------------------------------------------
 
 
@@ -659,6 +661,12 @@ ALTER TABLE `object_type_data_point_values`
 
 ALTER TABLE `carrier_needs`
 	ADD CONSTRAINT `lnk_entities_carrier_needs` FOREIGN KEY ( `entityID` )
+	REFERENCES `entities`( `id` )
+	ON DELETE No Action
+	ON UPDATE No Action;
+
+ALTER TABLE `customer_needs`
+	ADD CONSTRAINT `lnk_entities_customer_needs` FOREIGN KEY ( `entityID` )
 	REFERENCES `entities`( `id` )
 	ON DELETE No Action
 	ON UPDATE No Action;

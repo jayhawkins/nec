@@ -35,6 +35,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
  ?>
 
+ <script src="vendor/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
+
  <script type="text/javascript" src="https://maps.google.com/maps/api/js?key=<?php echo GOOGLE_MAPS_API; ?>"></script>
 
  <script>
@@ -206,10 +208,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
                               if (type == "PUT") {
                                   var date = today;
-                                  var data = {qty: $("#qty").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, contactEmails: $contacts, updatedAt: date};
+                                  var data = {qty: $("#qty").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, contactEmails: $contacts, availableDate: $("#availableDate").val(), updatedAt: date};
                               } else {
                                   var date = today;
-                                  var data = {entityID: $("#entityID").val(), qty: $("#qty").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, contactEmails: $contacts, createdAt: date};
+                                  var data = {entityID: $("#entityID").val(), qty: $("#qty").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, contactEmails: $contacts, availableDate: $("#availableDate").val(), createdAt: date};
                               }
 
                               $.ajax({
@@ -240,6 +242,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                                       loadTableAJAX();
                                       $("#id").val('');
                                       $("#qty").val('');
+                                      $("#availableDate").val('');
                                       $("#originationCity").val('');
                                       $("#originationState").val('');
                                       $("#originationZip").val('');
@@ -278,9 +281,9 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       function loadTableAJAX() {
         myApp.showPleaseWait();
         if (<?php echo $_SESSION['entityid']; ?> > 0) {
-            var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,originationCity,originationState,originationZip,originationLat,originationLng,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&filter[]=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&satisfy=all&order[]=createdAt,desc&transform=1';
+            var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,availableDate,originationCity,originationState,originationZip,originationLat,originationLng,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&filter[]=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&satisfy=all&order[]=availableDate,desc&transform=1';
         } else {
-            var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,originationCity,originationState,originationZip,originationLat,originationLng,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&satisfy=all&order[]=entityID&order[]=createdAt,desc&transform=1';
+            var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,availableDate,originationCity,originationState,originationZip,originationLat,originationLng,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&satisfy=all&order[]=entityID&order[]=availableDate,desc&transform=1';
         }
 
         var example_table = $('#datatable-table').DataTable({
@@ -295,6 +298,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 { data: "id", visible: false },
                 { data: "entityID", visible: false },
                 { data: "qty" },
+                { data: "availableDate", visible: false },
                 { data: "originationCity" },
                 { data: "originationState" },
                 { data: "originationZip", visible: false },
@@ -704,6 +708,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                      <th>ID</th>
                      <th>Entity ID</th>
                      <th>Quantity</th>
+                     <th>Available Date</th>
                      <th class="hidden-sm-down">Orig. City</th>
                      <th class="hidden-sm-down">Orig. State</th>
                      <th class="hidden-sm-down">Orig. Zip</th>
@@ -748,7 +753,16 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                            required="required" />
                          </div>
                      </div>
-                     <div class="col-sm-8">
+                     <div class="col-sm-4">
+                         <label for="availableDate">Need Date</label>
+                         <div class="form-group">
+                           <!--input type="text" id="policyExpirationDate" name="policyExpirationDate" class="form-control mb-sm" placeholder="Policy Expiration Date (YYYY-MM-DD)" required="required" /-->
+                           <div id="sandbox-container" class="input-group date  datepicker">
+                              <input type="text" id="availableDate" name="availableDate" class="form-control" placeholder="Need Date"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                           </div>
+                         </div>
+                     </div>
+                     <div class="col-sm-4">
                          <div class="form-group">
              <?php if ($_SESSION['entityid'] > 0) { ?>
                             <input type="hidden" id="entityID" name="entityID" value="<?php echo $_SESSION['entityid']; ?>" />
@@ -931,6 +945,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
     var tableContact = $("#datatable-table-contact").DataTable();
     var tableDataPoints = $("#datatable-table-datapoints").DataTable();
 
+    $('.datepicker').datepicker({
+        autoclose: true,
+        todayHighlight: true,
+        format: "yyyy-mm-dd"
+    });
+
     $("#addNeed").click(function(){
       var li = '';
       var checked = '';
@@ -938,6 +958,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       var dpchecked = '';
       $("#id").val('');
       $("#qty").val('');
+      $("#availableDate").val('');
       $("#originationCity").val('');
       $("#originationState").val('');
       $("#originationZip").val('');
@@ -975,6 +996,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             $("#id").val(data["id"]);
             $("#entityID").val(data["entityID"]);
             $("#qty").val(data["qty"]);
+            $("#availableDate").val(data["availableDate"]);
             $("#originationCity").val(data["originationCity"]);
             $("#originationState").val(data["originationState"]);
             $("#originationZip").val(data["originationZip"]);
