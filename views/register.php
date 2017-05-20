@@ -262,7 +262,7 @@
 
 <!-- common app js -->
 <script src="js/settings.js"></script>
-<script src="js/app.js"></script>
+<!--script src="js/app.js"></script-->
 
 <!-- page specific libs -->
 <script src="vendor/parsleyjs/dist/parsley.min.js"></script>
@@ -271,9 +271,7 @@
 <script>
 $(function() {
     $( "#state" ).select2();
-
     loadStates();
-
 });
 </script>
 
