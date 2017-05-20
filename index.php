@@ -322,5 +322,20 @@ $app->route('POST /carrierneedsnotification', function() {
     }
 });
 
+/*****************************************************************************/
+// Carrier Needs Processes
+/*****************************************************************************/
+$app->route('POST /customerneedsnotification', function() {
+    $customerneedid = Flight::request()->data->id;
+    $customerneed = Flight::customerneed();
+    $notificationresult = $customerneed->sendNotification(API_HOST,$customerneedid);
+    if ($notificationresult) {
+        print_r($notificationresult);
+        //echo "success";
+    } else {
+        print_r($notificationresult);
+    }
+});
+
 // Start the framework
 $app->start();
