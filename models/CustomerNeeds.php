@@ -149,7 +149,12 @@ class CustomerNeed
             );
             $templatecontext  = stream_context_create($templateoptions);
             $templateresult = json_decode(file_get_contents($templateurl,false,$templatecontext),true);
-            $subject = $templateresult['email_templates'][0]['subject'];
+            if (count($templateresult) > 0) {
+                $subject = $templateresult['email_templates'][0]['subject'];
+            } else {
+                $subject = "Nationwide Equipment Control - Trailer Availability Notification";
+            }
+
 
             $from = array("operations@nationwide-equipment.com" => "Nationwide Operations Control Manager");
             $numSent = 0;
