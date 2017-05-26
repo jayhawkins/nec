@@ -938,7 +938,7 @@ $cnresult = file_get_contents($cnurl,false,$cncontext);
 
 
 <!-- page specific js -->
-<script src="js/index.js"></script>
+<!--script src="js/index.js"></script-->
 
 <script type="text/javascript">
 
