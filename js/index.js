@@ -255,9 +255,9 @@ $(function(){
 
     function pjaxPageLoad(){
         $('.widget').widgster();
-        initMap();
-        initCalendar();
-        initRickshaw();
+        //initMap();
+        //initCalendar();
+        //initRickshaw();
         initAnimations();
     }
 

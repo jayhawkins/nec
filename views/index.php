@@ -4,6 +4,20 @@ $member = json_decode(file_get_contents(API_HOST.'/api/users?include=members&fil
 $firstName = $member->members->records[0][3];
 $lastName = $member->members->records[0][4];
 
+$cnargs = array(
+      "transform"=>"1"
+);
+
+$cnurl = API_HOST."/api/customer_needs?".http_build_query($cnargs);
+$cnoptions = array(
+    'http' => array(
+        'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+        'method'  => 'GET'
+    )
+);
+$cncontext  = stream_context_create($cnoptions);
+$cnresult = file_get_contents($cnurl,false,$cncontext);
+
  ?>
 
 <!DOCTYPE html>
@@ -28,12 +42,40 @@ $lastName = $member->members->records[0][4];
     <meta name="author" content="">
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <style type="text/css">
+
+        /* Specific mapael css class are below
+         * 'mapael' class is added by plugin
+        */
+
+        .mapael .map {
+            position: relative;
+        }
+
+        .mapael .mapTooltip {
+            position: absolute;
+            background-color: #fff;
+            moz-opacity: 0.70;
+            opacity: 0.70;
+            filter: alpha(opacity=70);
+            border-radius: 10px;
+            padding: 10px;
+            z-index: 1000;
+            max-width: 200px;
+            display: none;
+            color: #343434;
+        }
+
+    </style>
+
     <script>
         /* yeah we need this empty stylesheet here. It's cool chrome & chromium fix
          chrome fix https://code.google.com/p/chromium/issues/detail?id=167083
          https://code.google.com/p/chromium/issues/detail?id=332189
          */
 
+         // Main call to change main content area based on menu item selected
          function ajaxFormCall(form) {
            var host = location.protocol+'//'+window.location.hostname;
            var url = host+'/views/'+form+'.php';
@@ -731,14 +773,10 @@ $lastName = $member->members->records[0][4];
                 <section class="widget bg-transparent">
                     <!-- .widget-body is a mostly semantic class. may be a sibling to .widget>header or .widget>footer -->
                     <div class="widget-body">
-                        <div id="map" class="mapael">
-                            <div class="stats">
-                                <h6 class="text-white m-t-1">GEO-LOCATIONS</h6>
-                                <p class="h3 text-warning no-margin"><strong id="geo-locations-number">1 656 843</strong> <i class="fa fa-map-marker"></i></p>
-                            </div>
-                            <div class="map">
-                                <span>Alternative content for the map</span>
-                            </div>
+                        <div class="mapcontainer">
+                              <div class="map">
+                                  <span>Prepare map...</span>
+                              </div>
                         </div>
                     </div>
                 </section>
@@ -863,13 +901,13 @@ $lastName = $member->members->records[0][4];
 <!-- page specific libs -->
 <script id="test" src="vendor/underscore/underscore.js"></script>
 <script src="vendor/jquery.sparkline/index.js"></script>
-<script src="vendor/jquery.sparkline/index.js"></script>
 <script src="vendor/d3/d3.min.js"></script>
 <script src="vendor/rickshaw/rickshaw.min.js"></script>
-<script src="vendor/raphael/raphael-min.js"></script>
-<script src="vendor/jQuery-Mapael/js/jquery.mapael.js"></script>
-<script src="vendor/jQuery-Mapael/js/maps/usa_states.js"></script>
-<script src="vendor/jQuery-Mapael/js/maps/world_countries.js"></script>
+<!--script src="vendor/raphael/raphael-min.js"></script-->
+<script src="vendor/jQuery-Mapael/js/raphael/raphael-min.js" charset="utf-8"></script>
+<script src="vendor/jQuery-Mapael/js/jquery.mapael.js" charset="utf-8"></script>
+<script src="vendor/jQuery-Mapael/js/maps/usa_states.js" charset="utf-8"></script>
+<script src="vendor/jQuery-Mapael/js/maps/world_countries.js" charset="utf-8"></script>
 <script src="vendor/bootstrap/js/dist/popover.js"></script>
 <script src="vendor/bootstrap_calendar/bootstrap_calendar/js/bootstrap_calendar.min.js"></script>
 <script src="vendor/jquery-animateNumber/jquery.animateNumber.min.js"></script>
@@ -887,6 +925,7 @@ $lastName = $member->members->records[0][4];
 
 <script type="text/javascript" src="https://cdn.datatables.net/v/dt/b-1.2.4/datatables.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/1.1.1/chroma.min.js" charset="utf-8"></script>
 
 
 <!-- Can't use or the settings gear dropdown won't work -->
@@ -894,11 +933,148 @@ $lastName = $member->members->records[0][4];
 
 <!-- page specific js -->
 <script src="js/tables-dynamic.js"></script>
-<script src="vendor/select2/select2.min.js"></script>
+<script src="vendor/select2/select2.min.js"></script>map
 <script src="vendor/parsleyjs/dist/parsley.min.js"></script>
 
 
 <!-- page specific js -->
 <script src="js/index.js"></script>
+
+<script type="text/javascript">
+
+$(function() {
+
+   // Show loading message
+   $(".mapcontainer span").html("Loading Customer Needs Locations").css({"color":"blue"});
+
+   // Assign JS var to PHP customer needs JSON list
+   var cnresult = <?php echo $cnresult; ?>;
+
+   // We need a setTimeout (~200ms) in order to allow the UI to be refreshed for the message to be shown
+   setTimeout(function(){
+            var data = cnresult;
+
+           // This variable will hold all the plots of our map
+           var plots = {};
+           var plotsColors = chroma.scale("Blues");
+
+           // Parse each elements
+           $.each(data.customer_needs, function (index, value) {
+/*
+              plots:{
+                     'ny' : {
+                         latitude: 40.717079,
+                         longitude: -74.00116,
+                         tooltip: {content : "New York"}
+                     },
+                     'on' : {
+                         latitude: 33.145235,
+                         longitude: -83.811834,
+                         size: 18,
+                         tooltip: {content : "Oconee National Forest"}
+                     }
+               }
+*/
+               // Check if we have the GPS position of the element
+               if (value.originationLat) {
+                   // Will hold the plot information
+                   var plot = {};
+                   // Assign position
+                   plot.latitude = parseFloat(value.originationLat);
+                   plot.longitude = parseFloat(value.originationLng);
+                   plot.size = 22;
+                   plot.type = "circle";
+                   // Assign some information inside the tooltip
+                   plot.tooltip = {
+                       content: "<span style='font-weight:bold;'>" +
+                                   value.originationCity + " (" + value.originationZip + ")" +
+                                "</span>"
+                   };
+
+                   plot.text = {
+                        content: value.qty,
+                        position: "inner",
+                        attrs: {
+                            "font-size": 16,
+                            "font-weight": "bold",
+                            "fill": "#fff"
+                        }
+                   };
+
+                   // Assign the background color randomize from a scale
+                   plot.attrs = {
+                       fill: plotsColors(Math.random())
+                   };
+
+                   // Set plot element to array
+                   plots["'" + value.id+'-'+value.originationCity + "'"] = plot;
+               } else {
+                   console.warn("Ignored element " + id + " without GPS position");
+               }
+           });
+
+           // Create map
+           var $map = $('.mapcontainer');//,
+               //state;
+           $map.mapael({
+               map:{
+                   name : "usa_states",
+                   defaultArea : {
+                       attrsHover : {
+                           fill : '#242424',
+                           animDuration : 100
+                       },
+                       tooltip: {
+                           content: function(){
+                               return '<strong>' + state + '</strong>';
+                           }
+                       },
+                       eventHandlers: {
+                           mouseover: function(e, id){
+                               state = id;
+                           }
+                       }
+                   },
+                   defaultPlot:{
+                       size: 17,
+                       attrs : {
+                           fill : Sing.colors['brand-warning'],
+                           stroke : "#fff",
+                           "stroke-width" : 0,
+                           "stroke-linejoin" : "round"
+                       },
+                       attrsHover : {
+                           "stroke-width" : 1,
+                           animDuration : 100
+                       }
+                   },
+                   zoom : {
+                       enabled : true,
+                       step : 0.75
+                   }
+               },
+               plots: plots
+
+           });
+
+           //ie svg height fix
+           function _fixMapHeight(){
+               $map.find('svg').css('height', function(){
+                   return $(this).attr('height') + 'px';
+               });
+           }
+
+           _fixMapHeight();
+           SingApp.onResize(function(){
+               setTimeout(function(){
+                   _fixMapHeight();
+               }, 100)
+           });
+
+   }, 200);
+
+});
+
+</script>
 </body>
 </html>
