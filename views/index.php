@@ -4,6 +4,30 @@ $member = json_decode(file_get_contents(API_HOST.'/api/users?include=members&fil
 $firstName = $member->members->records[0][3];
 $lastName = $member->members->records[0][4];
 
+$eargs = array(
+      "transform"=>"1",
+      "columns"=>"entityTypeID,name",
+      "filter[]"=> "id,eq,".$_SESSION['entityid']
+);
+
+$eurl = API_HOST."/api/entities?".http_build_query($eargs);
+$eoptions = array(
+    'http' => array(
+        'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+        'method'  => 'GET'
+    )
+);
+$econtext  = stream_context_create($eoptions);
+$eresult = json_decode(file_get_contents($eurl,false,$econtext), true);
+
+if ( $eresult['entities'][0]['entityTypeID'] == 1 ) {
+    $entityname = $eresult['entities'][0]['name'] . " - (Carrier)";
+} elseif ( $eresult['entities'][0]['entityTypeID'] == 2 ) {
+    $entityname = $eresult['entities'][0]['name'] . " - (Customer)";
+} else {
+    $entityname = $eresult['entities'][0]['name'] . " - (Admin)";
+}
+
 $cnargs = array(
       "transform"=>"1"
 );
@@ -162,7 +186,7 @@ $cnresult = file_get_contents($cnurl,false,$cncontext);
                     <span class="icon">
                         <i class="fa fa-users"></i>
                     </span>
-                    Available Trailers
+                    Availablity
                     <span class="label label-danger">
                         9
                     </span>
@@ -179,7 +203,7 @@ $cnresult = file_get_contents($cnurl,false,$cncontext);
                      <span class="icon">
                          <i class="fa fa-truck"></i>
                      </span>
-                     I Need Trailers
+                     Needs
                      <span class="label label-danger">
                          9
                      </span>
@@ -193,7 +217,7 @@ $cnresult = file_get_contents($cnurl,false,$cncontext);
                     <span class="icon">
                         <i class="fa fa-check-square-o"></i>
                     </span>
-                    Requisitions
+                    Orders
                     <span class="label label-danger">
                         9
                     </span>
@@ -360,7 +384,11 @@ $cnresult = file_get_contents($cnurl,false,$cncontext);
                     </div>
                 </div>
             </form>
+
             <ul class="nav navbar-nav pull-xs-right">
+                <li class="nav navbar-form pull-xs-left">
+                    <span class="form-control"><strong><?php echo $entityname; ?></strong></span>&nbsp;&nbsp;
+                </li>
                 <li class="dropdown nav-item">
                     <a href="#" class="dropdown-toggle dropdown-toggle-notifications nav-link" id="notifications-dropdown-toggle" data-toggle="dropdown">
                         <span class="thumb-sm avatar pull-xs-left">
@@ -818,8 +846,8 @@ $cnresult = file_get_contents($cnurl,false,$cncontext);
                         </div>
                         <div class="row progress-stats">
                             <div class="col-md-9">
-                                <h6 class="name m-t-1">Requisitions (Orders)</h6>
-                                <p class="description deemphasize">current open requisitions (orders)</p>
+                                <h6 class="name m-t-1">Orders</h6>
+                                <p class="description deemphasize">current open orders</p>
                                 <div class="bg-white progress-bar">
                                     <progress class="progress progress-sm progress-success js-progress-animate" value="100" max="100" style="width: 0%" data-width="12%"></progress>
                                 </div>
@@ -834,7 +862,7 @@ $cnresult = file_get_contents($cnurl,false,$cncontext);
                         <div class="row progress-stats">
                             <div class="col-md-9">
                                 <h6 class="name m-t-1">Availablity</h6>
-                                <p class="description deemphasize">available</p>
+                                <p class="description deemphasize">available trailers</p>
                                 <div class="bg-white progress-bar">
                                     <progress class="progress progress-sm progress-warning js-progress-animate" value="100" max="100" style="width: 0%" data-width="50%"></progress>
                                 </div>

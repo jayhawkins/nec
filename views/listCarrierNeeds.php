@@ -26,7 +26,7 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
     $loccon[$locations_contacts->locations_contacts->records[$lc][0]] = $locations_contacts->locations_contacts->records[$lc][1];
 }
 
-$dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_points?include=object_type_data_point_values&transform=1&columns=id,columnName,title,status,object_type_data_point_values.value&filter[]=entityID,in,(0," . $_SESSION['entityid'] . ")&filter[]=status,eq,Active" ));
+$dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_points?include=object_type_data_point_values&transform=1&columns=id,columnName,title,status,object_type_data_point_values.value&filter[]=entityID,in,(0," . $_SESSION['entityid'] . ")&filter[]=status,eq,Active&order=sort_order" ));
 
 
 // No longer needed. We don't load via PHP anymore. All handled in JS function.
@@ -66,71 +66,82 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
       function post() {
 
-          var result = true;
+          if ( $('#formNeed').parsley().validate() ) {
 
-          var params = {
-                city: $("#originationCity").val(),
-                state: $("#originationState").val(),
-                zip: $("#originationZip").val(),
-                entityID: $("#entityID").val(),
-                locationType: "Origination"
-          };
-          //alert(JSON.stringify(params));
-          $.ajax({
-             url: '<?php echo HTTP_HOST."/getlocationbycitystatezip" ?>',
-             type: 'POST',
-             data: JSON.stringify(params),
-             contentType: "application/json",
-             async: false,
-             success: function(response){
-                if (response == "success") {
-                    var params = {
-                          city: $("#destinationCity").val(),
-                          state: $("#destinationState").val(),
-                          zip: $("#destinationZip").val(),
-                          entityID: $("#entityID").val(),
-                          locationType: "Destination"
-                    };
-                    //alert(JSON.stringify(params));
-                    $.ajax({
-                       url: '<?php echo HTTP_HOST."/getlocationbycitystatezip" ?>',
-                       type: 'POST',
-                       data: JSON.stringify(params),
-                       contentType: "application/json",
-                       async: false,
-                       success: function(response){
-                          if (response == "success") {
-                          } else {
-                              alert("1: " + response);
-                              result = false;
-                              //alert('Preparation Failed!');
-                          }
-                       },
-                       error: function(response) {
-                          alert("2: " + response);
+                var result = true;
+
+                var params = {
+                      city: $("#originationCity").val(),
+                      state: $("#originationState").val(),
+                      zip: $("#originationZip").val(),
+                      entityID: $("#entityID").val(),
+                      locationType: "Origination"
+                };
+                //alert(JSON.stringify(params));
+                $.ajax({
+                   url: '<?php echo HTTP_HOST."/getlocationbycitystatezip" ?>',
+                   type: 'POST',
+                   data: JSON.stringify(params),
+                   contentType: "application/json",
+                   async: false,
+                   success: function(response){
+                      if (response == "success") {
+                          var params = {
+                                city: $("#destinationCity").val(),
+                                state: $("#destinationState").val(),
+                                zip: $("#destinationZip").val(),
+                                entityID: $("#entityID").val(),
+                                locationType: "Destination"
+                          };
+                          //alert(JSON.stringify(params));
+                          $.ajax({
+                             url: '<?php echo HTTP_HOST."/getlocationbycitystatezip" ?>',
+                             type: 'POST',
+                             data: JSON.stringify(params),
+                             contentType: "application/json",
+                             async: false,
+                             success: function(response){
+                                if (response == "success") {
+                                } else {
+                                    alert("1: " + response);
+                                    result = false;
+                                    //alert('Preparation Failed!');
+                                }
+                             },
+                             error: function(response) {
+                                alert("2: " + response);
+                                result = false;
+                                //alert('Failed Searching for Destination Location! - Notify NEC of this failure.');
+                             }
+                          });
+                      } else {
+                          alert("3: " + response);
                           result = false;
-                          //alert('Failed Searching for Destination Location! - Notify NEC of this failure.');
-                       }
-                    });
-                } else {
-                    alert("3: " + response);
-                    result = false;
-                    //alert('Preparation Failed!');
-                }
-             },
-             error: function(response) {
-                alert("4: " + JSON.stringify(response));
-                result = false;
-                //alert('Failed Searching for Origination Location! - Notify NEC of this failure.');
-             }
-          });
+                          //alert('Preparation Failed!');
+                      }
+                   },
+                   error: function(response) {
+                      alert("4: " + JSON.stringify(response));
+                      result = false;
+                      //alert('Failed Searching for Origination Location! - Notify NEC of this failure.');
+                   }
+                });
 
-          if (result) { verifyAndPost(); } else { return false; }
+                if (result) {
+                  verifyAndPost();
+                } else {
+                  return false;
+                }
+
+          } else {
+
+              return false;
+
+          }
+
       }
 
       function verifyAndPost() {
-
-          if ( $('#formNeed').parsley().validate() ) {
 
                 var passValidation = false;
                 var type = "";
@@ -270,64 +281,101 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
                 return passValidation;
 
-            } else {
-
-                return false;
-
-            }
-
       }
 
       function loadTableAJAX() {
-        myApp.showPleaseWait();
+        //myApp.showPleaseWait();
         if (<?php echo $_SESSION['entityid']; ?> > 0) {
             var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,availableDate,originationCity,originationState,originationZip,originationLat,originationLng,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&filter[]=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&satisfy=all&order[]=availableDate,desc&transform=1';
+            var example_table = $('#datatable-table').DataTable({
+                retrieve: true,
+                processing: true,
+                ajax: {
+                    url: url,
+                    dataSrc: 'carrier_needs'
+                },
+                columns: [
+                    { data: "entities[0].name", visible: false },
+                    { data: "id", visible: false },
+                    { data: "entityID", visible: false },
+                    { data: "qty" },
+                    { data: "availableDate", visible: false },
+                    { data: "originationCity" },
+                    { data: "originationState" },
+                    { data: "originationZip", visible: false },
+                    { data: "originationLat", visible: false },
+                    { data: "originationLng", visible: false },
+                    { data: "destinationCity" },
+                    { data: "destinationState" },
+                    { data: "destinationZip", visible: false },
+                    { data: "destinationLat", visible: false },
+                    { data: "destinationLng", visible: false },
+                    { data: "needsDataPoints", visible: false },
+                    { data: "contactEmails", visible: false },
+                    {
+                        data: null,
+                        "bSortable": false,
+                        "mRender": function (o) {
+                            var buttons = '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text-info\"></i> <span class=\"text-info\">Edit</span></button>';
+
+                            if (o.status == "Open") {
+                                      buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text-info\"></i> <span class=\"text-info\">Close</span></button>";
+                            } else {
+                                      buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text-info\"></i> <span class=\"text-info\">Open</span></button>";
+                            }
+
+                            return buttons;
+                        }
+                    }
+                ]
+              });
         } else {
             var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,availableDate,originationCity,originationState,originationZip,originationLat,originationLng,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&satisfy=all&order[]=entityID&order[]=availableDate,desc&transform=1';
+            var example_table = $('#datatable-table').DataTable({
+                retrieve: true,
+                processing: true,
+                ajax: {
+                    url: url,
+                    dataSrc: 'carrier_needs'
+                },
+                columns: [
+                    { data: "entities[0].name" },
+                    { data: "id", visible: false },
+                    { data: "entityID", visible: false },
+                    { data: "qty" },
+                    { data: "availableDate", visible: false },
+                    { data: "originationCity" },
+                    { data: "originationState" },
+                    { data: "originationZip", visible: false },
+                    { data: "originationLat", visible: false },
+                    { data: "originationLng", visible: false },
+                    { data: "destinationCity" },
+                    { data: "destinationState" },
+                    { data: "destinationZip", visible: false },
+                    { data: "destinationLat", visible: false },
+                    { data: "destinationLng", visible: false },
+                    { data: "needsDataPoints", visible: false },
+                    { data: "contactEmails", visible: false },
+                    {
+                        data: null,
+                        "bSortable": false,
+                        "mRender": function (o) {
+                            var buttons = '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text-info\"></i> <span class=\"text-info\">Edit</span></button>';
+
+                            if (o.status == "Open") {
+                                      buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text-info\"></i> <span class=\"text-info\">Close</span></button>";
+                            } else {
+                                      buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text-info\"></i> <span class=\"text-info\">Open</span></button>";
+                            }
+
+                            return buttons;
+                        }
+                    }
+                ]
+              });
         }
 
-        var example_table = $('#datatable-table').DataTable({
-            retrieve: true,
-            processing: true,
-            ajax: {
-                url: url,
-                dataSrc: 'carrier_needs'
-            },
-            columns: [
-                { data: "entities[0].name" },
-                { data: "id", visible: false },
-                { data: "entityID", visible: false },
-                { data: "qty" },
-                { data: "availableDate", visible: false },
-                { data: "originationCity" },
-                { data: "originationState" },
-                { data: "originationZip", visible: false },
-                { data: "originationLat", visible: false },
-                { data: "originationLng", visible: false },
-                { data: "destinationCity" },
-                { data: "destinationState" },
-                { data: "destinationZip", visible: false },
-                { data: "destinationLat", visible: false },
-                { data: "destinationLng", visible: false },
-                { data: "needsDataPoints", visible: false },
-                { data: "contactEmails", visible: false },
-                {
-                    data: null,
-                    "bSortable": false,
-                    "mRender": function (o) {
-                        var buttons = '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text-info\"></i> <span class=\"text-info\">Edit</span></button>';
 
-                        if (o.status == "Open") {
-                                  buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text-info\"></i> <span class=\"text-info\">Close</span></button>";
-                        } else {
-                                  buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text-info\"></i> <span class=\"text-info\">Open</span></button>";
-                        }
-
-                        return buttons;
-                    }
-                }
-            ]
-          });
 
           example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
 
@@ -335,7 +383,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
           //See DataTables.net for more information about the reload method
           example_table.ajax.reload();
           $("#entityID").prop('disabled', false);
-          myApp.hidePleaseWait();
+          //myApp.hidePleaseWait();
 
       }
 
@@ -682,11 +730,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
  <ol class="breadcrumb">
    <li>ADMIN</li>
-   <li class="active">Carrier Needs Maintenance</li>
+   <li class="active">Manage Carrier Needs</li>
  </ol>
  <section class="widget">
      <header>
-         <h4><span class="fw-semi-bold">Need</span></h4>
+         <h4><span class="fw-semi-bold">My Needs</span></h4>
          <div class="widget-controls">
              <a data-widgster="expand" title="Expand" href="#"><i class="glyphicon glyphicon-chevron-up"></i></a>
              <a data-widgster="collapse" title="Collapse" href="#"><i class="glyphicon glyphicon-chevron-down"></i></a>
@@ -698,13 +746,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
              Column sorting, live search, pagination. Built with
              <a href="http://www.datatables.net/" target="_blank">jQuery DataTables</a>
          </p -->
-         <button type="button" id="addNeed" class="btn btn-primary pull-xs-right" data-target="#myModal">Add Need</button>
+         <button type="button" id="addNeed" class="btn btn-primary pull-xs-right" data-target="#myModal">Add New Need</button>
          <br /><br />
          <div id="dataTable" class="mt">
              <table id="datatable-table" class="table table-striped table-hover">
                  <thead>
                  <tr>
-                     <th>Organization</th>
+                     <th>Company</th>
                      <th>ID</th>
                      <th>Entity ID</th>
                      <th>Quantity</th>
@@ -758,7 +806,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                          <div class="form-group">
                            <!--input type="text" id="policyExpirationDate" name="policyExpirationDate" class="form-control mb-sm" placeholder="Policy Expiration Date (YYYY-MM-DD)" required="required" /-->
                            <div id="sandbox-container" class="input-group date  datepicker">
-                              <input type="text" id="availableDate" name="availableDate" class="form-control" placeholder="Need Date"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                              <input type="text" id="availableDate" name="availableDate" class="form-control" placeholder="Need Date" required="required"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
                            </div>
                          </div>
                      </div>
@@ -854,7 +902,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                             </div>
                         </div>
                         <div class="col-xs-6">
-                             <h5 class="text-center"><strong>Contacts For This Need:</strong></h5>
+                             <h5 class="text-center"><strong>Company Contacts</strong></h5>
                              <div class="well" style="max-height: 200px;overflow: auto;">
                                  <ul id="check-list-box" class="list-group checked-list-box">
 
@@ -971,17 +1019,19 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       $("#check-list-box").html(li);
       for (var i = 0; i < dataPoints.object_type_data_points.length; i++) {
           dpli += '<li>' + dataPoints.object_type_data_points[i].title +
-                  ' <select class="form-control mb-sm" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '">';
+                  ' <select class="form-control mb-sm" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '">\n' +
+                  ' <option value="">-Select One-</option>\n';
           for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
               dpli += '<option>' + dataPoints.object_type_data_points[i].object_type_data_point_values[v].value + '</option>\n';
           }
-          dpli += '</select>' +
+          dpli += '</select>\n' +
                   '</li>\n';
       }
       $("#dp-check-list-box").html(dpli);
       formatListBox();
       formatListBoxDP();
       $("#entityID").prop('disabled', false);
+      $("#exampleModalLabel").html('Add New Need');
   		$("#myModal").modal('show');
   	});
 
@@ -1050,7 +1100,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 });
 
                 dpli += '<li>' + dataPoints.object_type_data_points[i].title +
-                        ' <select class="form-control mb-sm" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '">';
+                        ' <select class="form-control mb-sm" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '">\n' +
+                        ' <option value="">-Select One-</option>\n';
                 for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
 
                     if (dataPoints.object_type_data_points[i].object_type_data_point_values[v].value === value) {
@@ -1063,13 +1114,14 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
                 }
 
-                dpli += '</select>' +
+                dpli += '</select>\n' +
                         '</li>\n';
             }
             $("#dp-check-list-box").html(dpli);
             formatListBox();
             formatListBoxDP();
             $("#entityID").prop('disabled', true);
+            $("#exampleModalLabel").html('Edit Need');
             $("#myModal").modal('show');
         } else {
             $("#id").val(data["id"]);
