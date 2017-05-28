@@ -336,6 +336,7 @@ AUTO_INCREMENT = 1;
 ALTER TABLE object_type_data_points MODIFY objectTypeID Int( 11 ) UNSIGNED NOT NULL;
 ALTER TABLE object_type_data_points ADD COLUMN entityID INT(11) UNSIGNED DEFAULT 0 AFTER id;
 ALTER TABLE object_type_data_points ADD COLUMN status VARCHAR(255) NOT NULL DEFAULT 'Active' AFTER title ;
+ALTER TABLE object_type_data_points ADD COLUMN sort_order TINYINT(3) UNSIGNED DEFAULT 0 AFTER status ;
 -- ---------------------------------------------------------
 
 -- CREATE TABLE "object_type_data_point_values" ----------------
