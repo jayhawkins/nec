@@ -20,19 +20,21 @@ $eoptions = array(
 $econtext  = stream_context_create($eoptions);
 $eresult = json_decode(file_get_contents($eurl,false,$econtext), true);
 
-if ( $eresult['entities'][0]['entityTypeID'] == 1 ) {
-    $entityname = $eresult['entities'][0]['name'] . " - (Carrier)";
-} elseif ( $eresult['entities'][0]['entityTypeID'] == 2 ) {
-    $entityname = $eresult['entities'][0]['name'] . " - (Customer)";
-} else {
-    $entityname = $eresult['entities'][0]['name'] . " - (Admin)";
-}
-
 $cnargs = array(
       "transform"=>"1"
 );
 
-$cnurl = API_HOST."/api/customer_needs?".http_build_query($cnargs);
+if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
+    $entityname = $eresult['entities'][0]['name'] . " - (Customer)";
+    $cnurl = API_HOST."/api/carrier_needs?".http_build_query($cnargs);
+} elseif ( $eresult['entities'][0]['entityTypeID'] == 2 ) { // Carrier
+    $entityname = $eresult['entities'][0]['name'] . " - (Carrier)";
+    $cnurl = API_HOST."/api/customer_needs?".http_build_query($cnargs);
+} else {
+    $entityname = $eresult['entities'][0]['name'] . " - (Admin)";
+    $cnurl = API_HOST."/api/customer_needs?".http_build_query($cnargs);
+}
+
 $cnoptions = array(
     'http' => array(
         'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -41,8 +43,16 @@ $cnoptions = array(
 );
 $cncontext  = stream_context_create($cnoptions);
 $cnresult = file_get_contents($cnurl,false,$cncontext);
+$cnresult2 = json_decode($cnresult,true);
+if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
+    $cncount = count($cnresult2['carrier_needs']);
+} elseif ( $eresult['entities'][0]['entityTypeID'] == 2 ) { // Carrier
+    $cncount = count($cnresult2['customer_needs']);
+} else {
+    $cncount = count($cnresult2['customer_needs']);
+}
 
- ?>
+?>
 
 <!DOCTYPE html>
 <html>
@@ -188,7 +198,7 @@ $cnresult = file_get_contents($cnurl,false,$cncontext);
                     </span>
                     Availablity
                     <span class="label label-danger">
-                        9
+                        <?php echo $cncount; ?>
                     </span>
                 </a>
             </li>
@@ -205,7 +215,7 @@ $cnresult = file_get_contents($cnurl,false,$cncontext);
                      </span>
                      Needs
                      <span class="label label-danger">
-                         9
+                         <?php echo $cncount; ?>
                      </span>
                  </a>
              </li>
@@ -977,6 +987,15 @@ $(function() {
 
    // Assign JS var to PHP customer needs JSON list
    var cnresult = <?php echo $cnresult; ?>;
+   var entityTypeID = <?php echo $eresult['entities'][0]['entityTypeID']; ?>;
+
+   if ( entityTypeID == 1 ) { // Customer
+       cnresult = cnresult['carrier_needs'];
+   } else if ( entityTypeID == 2 ) { // Carrier
+       cnresult = cnresult['customer_needs'];
+   } else {
+       cnresult = cnresult['customer_needs'];
+   }
 
    // We need a setTimeout (~200ms) in order to allow the UI to be refreshed for the message to be shown
    setTimeout(function(){
@@ -987,7 +1006,7 @@ $(function() {
            var plotsColors = chroma.scale("Blues");
 
            // Parse each elements
-           $.each(data.customer_needs, function (index, value) {
+           $.each(data, function (index, value) {
 /*
               plots:{
                      'ny' : {
