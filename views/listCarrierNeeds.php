@@ -1032,6 +1032,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       formatListBoxDP();
       $("#entityID").prop('disabled', false);
       $("#exampleModalLabel").html('Add New Need');
+      $("#suggesstion-box").hide();
   		$("#myModal").modal('show');
   	});
 
@@ -1122,6 +1123,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             formatListBoxDP();
             $("#entityID").prop('disabled', true);
             $("#exampleModalLabel").html('Edit Need');
+            $("#suggesstion-box").hide();
             $("#myModal").modal('show');
         } else {
             $("#id").val(data["id"]);
@@ -1221,6 +1223,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         });
     }
 
+    $("#originationCity").blur(function() {
+        $("#suggesstion-box").hide();
+    });
+
     $("#destinationCity").keyup(function(){
         $("#destinationCity").css("background","#FFF url(img/loaderIcon.gif) no-repeat 165px");
 
@@ -1267,6 +1273,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
            }
         });
     }
+
+    $("#destinationCity").blur(function() {
+        $("#suggesstion-box").hide();
+    });
 
     $("#myModal").on("hidden.bs.modal", function () {
         $("#entityID").prop('disabled', false);
