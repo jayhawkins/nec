@@ -219,10 +219,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
                               if (type == "PUT") {
                                   var date = today;
-                                  var data = {qty: $("#qty").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, contactEmails: $contacts, availableDate: $("#availableDate").val(), updatedAt: date};
+                                  var data = {qty: $("#qty").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, contactEmails: $contacts, availableDate: $("#availableDate").val(), expirationDate: $("#expirationDate").val(), updatedAt: date};
                               } else {
                                   var date = today;
-                                  var data = {entityID: $("#entityID").val(), qty: $("#qty").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, contactEmails: $contacts, availableDate: $("#availableDate").val(), createdAt: date};
+                                  var data = {entityID: $("#entityID").val(), qty: $("#qty").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, contactEmails: $contacts, availableDate: $("#availableDate").val(), expirationDate: $("#expirationDate").val(), createdAt: date};
                               }
 
                               $.ajax({
@@ -254,6 +254,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                                       $("#id").val('');
                                       $("#qty").val('');
                                       $("#availableDate").val('');
+                                      $("#expirationDate").val('');
                                       $("#originationCity").val('');
                                       $("#originationState").val('');
                                       $("#originationZip").val('');
@@ -286,10 +287,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       function loadTableAJAX() {
             //myApp.showPleaseWait();
             if (<?php echo $_SESSION['entityid']; ?> > 0) {
-                var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?columns=id,entityID,qty,availableDate,originationCity,originationState,originationZip,originationLat,originationLng,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&order[]=availableDate,desc&transform=1';
+                var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,availableDate,expirationDate,originationCity,originationState,originationZip,originationLat,originationLng,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&order[]=availableDate,desc&transform=1';
                 var show = false;
             } else {
-                var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,availableDate,originationCity,originationState,originationZip,originationLat,originationLng,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&satisfy=all&order[]=entityID&order[]=availableDate,desc&transform=1';
+                var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,availableDate,expirationDate,originationCity,originationState,originationZip,originationLat,originationLng,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&satisfy=all&order[]=entityID&order[]=availableDate,desc&transform=1';
                 var show = true;
             }
 
@@ -306,6 +307,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     { data: "entityID", visible: false },
                     { data: "qty" },
                     { data: "availableDate", visible: false },
+                    { data: "expirationDate", visible: false },
                     { data: "originationCity" },
                     { data: "originationState" },
                     { data: "originationZip", visible: false },
@@ -322,7 +324,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                         data: null,
                         "bSortable": false,
                         "mRender": function (o) {
-                            var buttons = '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text-info\"></i> <span class=\"text-info\">Edit</span></button>';
+                            var buttons = '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text-info\"></i> <span class=\"text-info\">View</span></button>';
 /*
                             if (o.status == "Open") {
                                       buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text-info\"></i> <span class=\"text-info\">Close</span></button>";
@@ -335,17 +337,15 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     }
                 ]
               });
-        }
 
 
+              example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
 
-          example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
-
-          //To Reload The Ajax
-          //See DataTables.net for more information about the reload method
-          example_table.ajax.reload();
-          $("#entityID").prop('disabled', false);
-          //myApp.hidePleaseWait();
+              //To Reload The Ajax
+              //See DataTables.net for more information about the reload method
+              example_table.ajax.reload();
+              $("#entityID").prop('disabled', false);
+              //myApp.hidePleaseWait();
 
       }
 
@@ -708,7 +708,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
              Column sorting, live search, pagination. Built with
              <a href="http://www.datatables.net/" target="_blank">jQuery DataTables</a>
          </p -->
-         <button type="button" id="addNeed" class="btn btn-primary pull-xs-right" data-target="#myModal">Add New Need</button>
+         <!--button type="button" id="addNeed" class="btn btn-primary pull-xs-right" data-target="#myModal">Add New Need</button-->
          <br /><br />
          <div id="dataTable" class="mt">
              <table id="datatable-table" class="table table-striped table-hover">
@@ -719,6 +719,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                      <th>Entity ID</th>
                      <th>Quantity</th>
                      <th>Available Date</th>
+                     <th>Expiration Date</th>
                      <th class="hidden-sm-down">Orig. City</th>
                      <th class="hidden-sm-down">Orig. State</th>
                      <th class="hidden-sm-down">Orig. Zip</th>
@@ -758,97 +759,51 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                  <div class="row">
                      <div class="col-sm-4">
                          <label for="qty"># of Trailers Looking For:</label>
-                         <div class="form-group">
-                           <input type="text" id="qty" name="qty" class="form-control mb-sm" placeholder="# of Trailers Looking For"
-                           required="required" />
+                         <div id="qty" class="form-group">
                          </div>
                      </div>
                      <div class="col-sm-4">
                          <label for="availableDate">Need Date</label>
-                         <div class="form-group">
-                           <!--input type="text" id="policyExpirationDate" name="policyExpirationDate" class="form-control mb-sm" placeholder="Policy Expiration Date (YYYY-MM-DD)" required="required" /-->
-                           <div id="sandbox-container" class="input-group date  datepicker">
-                              <input type="text" id="availableDate" name="availableDate" class="form-control" placeholder="Need Date" required="required"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
-                           </div>
+                         <div id="availableDate" class="form-group">
                          </div>
                      </div>
                      <div class="col-sm-4">
-                         <div class="form-group">
-             <?php if ($_SESSION['entityid'] > 0) { ?>
-                            <input type="hidden" id="entityID" name="entityID" value="<?php echo $_SESSION['entityid']; ?>" />
-             <?php } else { ?>
-                             <label for="entityID">Carrier:</label>
-                             <select id="entityID" name="entityID" data-placeholder="Carrier" class="form-control chzn-select" required="required">
-                               <option value="">*Select Carrier...</option>
-              <?php
-                               foreach($entities->entities->records as $value) {
-                                   $selected = ($value[0] == $entity) ? 'selected=selected':'';
-                                   echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
-                               }
-              ?>
-                             </select>
-              <?php } ?>
+                         <div id="entityID" class="form-group">
                          </div>
                      </div>
                  </div>
                  <div class="row">
                      <div class="col-sm-7">
                          <label for="originationCity">Origination City</label>
-                         <div class="form-group">
-                           <input type="text" id="originationCity" name="originationCity" class="form-control mb-sm" placeholder="Origin City"
-                           required="required" />
+                         <div id="originationCity" class="form-group">
                          </div>
                          <div id="suggesstion-box" class="frmSearch"></div>
                      </div>
                      <div class="col-sm-3">
                          <label for="originationState">Origination State</label>
-                         <div class="form-group">
-                           <select id="originationState" name="origitnaionState" data-placeholder="Origin State" class="form-control chzn-select" data-ui-jq="select2" required="required">
-                             <option value="">*Select State...</option>
-            <?php
-                             foreach($states->states->records as $value) {
-                                 $selected = ($value[0] == $state) ? 'selected=selected':'';
-                                 echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
-                             }
-            ?>
-                           </select>
+                         <div id="originationState" class="form-group">
                          </div>
                      </div>
                      <div class="col-sm-2">
                          <label for="originationZip">Origination Zip</label>
-                         <div class="form-group">
-                           <input type="text" id="originationZip" name="originationZip" class="form-control mb-sm" placeholder="Origin Zip"
-                           required="required" />
+                         <div id="originationZip" class="form-group">
                          </div>
                      </div>
                  </div>
                  <div class="row">
                    <div class="col-sm-7">
                        <label for="DestinationCity">Destination City</label>
-                       <div class="form-group">
-                         <input type="text" id="destinationCity" name="destinationCity" class="form-control mb-sm" placeholder="Dest. City"
-                         required="required" />
+                       <div id="destinationCity" class="form-group">
                        </div>
                    </div>
                    <div class="col-sm-3">
                        <label for="destinationState">Destination State</label>
-                       <div class="form-group">
-                         <select id="destinationState" name="destinationState" data-placeholder="Dest. State" class="form-control chzn-select" data-ui-jq="select2" required="required">
-                           <option value="">*Select State...</option>
-          <?php
-                           foreach($states->states->records as $value) {
-                               $selected = ($value[0] == $state) ? 'selected=selected':'';
-                               echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
-                           }
-          ?>
-                         </select>
+                       <div id="destinationState" class="form-group">
                        </div>
                    </div>
                    <div class="col-sm-2">
                        <label for="destinationZip">Destination Zip</label>
-                       <div class="form-group">
-                         <input type="text" id="destinationZip" name="destinationZip" class="form-control mb-sm" placeholder="Dest. Zip"
-                         required="required" />
+                       <div id="destinationZip" class="form-group">
                        </div>
                    </div>
                  </div>
@@ -864,13 +819,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                             </div>
                         </div>
                         <div class="col-xs-6">
-                             <h5 class="text-center"><strong>Company Contacts</strong></h5>
-                             <div class="well" style="max-height: 200px;overflow: auto;">
-                                 <ul id="check-list-box" class="list-group checked-list-box">
-
-                                 </ul>
-                             </div>
-                         </div>
+                        </div>
                      </div>
                  </div>
                 </form>
@@ -969,6 +918,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       $("#id").val('');
       $("#qty").val('');
       $("#availableDate").val('');
+      $("#expirationDate").val('');
       $("#originationCity").val('');
       $("#originationState").val('');
       $("#originationZip").val('');
@@ -1001,21 +951,22 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
     $('#datatable-table tbody').on( 'click', 'button', function () {
         var data = table.row( $(this).parents('tr') ).data();
 
-        if (this.textContent.indexOf("Edit") > -1) {
+        if (this.textContent.indexOf("View") > -1) {
             var li = '';
             var checked = '';
             var dpli = '';
             var dpchecked = '';
-            $("#id").val(data["id"]);
-            $("#entityID").val(data["entityID"]);
-            $("#qty").val(data["qty"]);
-            $("#availableDate").val(data["availableDate"]);
-            $("#originationCity").val(data["originationCity"]);
-            $("#originationState").val(data["originationState"]);
-            $("#originationZip").val(data["originationZip"]);
-            $("#destinationCity").val(data["destinationCity"]);
-            $("#destinationState").val(data["destinationState"]);
-            $("#destinationZip").val(data["destinationZip"]);
+            $("#id").html(data["id"]);
+            $("#entityID").html(data["entityID"]);
+            $("#qty").html(data["qty"]);
+            $("#availableDate").html(data["availableDate"]);
+            $("#expirationDate").html(data["expirationDate"]);
+            $("#originationCity").html(data["originationCity"]);
+            $("#originationState").html(data["originationState"]);
+            $("#originationZip").html(data["originationZip"]);
+            $("#destinationCity").html(data["destinationCity"]);
+            $("#destinationState").html(data["destinationState"]);
+            $("#destinationZip").html(data["destinationZip"]);
             var ndp = data["needsDataPoints"];
             var con = data["contactEmails"];
 
@@ -1069,11 +1020,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
                     if (dataPoints.object_type_data_points[i].object_type_data_point_values[v].value === value) {
                         selected = ' selected ';
+                        dpli += ' => <strong>' + dataPoints.object_type_data_points[i].object_type_data_point_values[v].value + '</strong>\n';
                     } else {
                         selected = '';
                     }
 
-                    dpli += '<option' + selected + '>' + dataPoints.object_type_data_points[i].object_type_data_point_values[v].value + '</option>\n';
+                    //dpli += '<option' + selected + '>' + dataPoints.object_type_data_points[i].object_type_data_point_values[v].value + '</option>\n';
 
                 }
 
@@ -1185,10 +1137,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         });
     }
 
-    $("#originationCity").blur(function() {
-        $("#suggesstion-box").hide();
-    });
-
     $("#destinationCity").keyup(function(){
         $("#destinationCity").css("background","#FFF url(img/loaderIcon.gif) no-repeat 165px");
 
@@ -1235,10 +1183,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
            }
         });
     }
-
-    $("#destinationCity").blur(function() {
-        $("#suggesstion-box").hide();
-    });
 
     $("#myModal").on("hidden.bs.modal", function () {
         $("#entityID").prop('disabled', false);

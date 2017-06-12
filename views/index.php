@@ -192,11 +192,11 @@ if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
     if ($_SESSION['entitytype'] == 1 || $_SESSION['entityid'] == 0) {
 ?>
             <li>
-                <a href="#" onclick="ajaxFormCall('listCustomerNeeds');">
+                <a href="#" onclick="ajaxFormCall('listNeeds');">
                     <span class="icon">
-                        <i class="fa fa-users"></i>
+                        <i class="fa fa-truck"></i>
                     </span>
-                    Availablity
+                    Needs
                     <span class="label label-danger">
                         <?php echo $cncount; ?>
                     </span>
@@ -209,11 +209,11 @@ if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
     if ($_SESSION['entitytype'] == 2 || $_SESSION['entityid'] == 0) {
  ?>
              <li>
-                 <a href="#" onclick="ajaxFormCall('listCarrierNeeds');">
+                 <a href="#" onclick="ajaxFormCall('listAvailability');">
                      <span class="icon">
-                         <i class="fa fa-truck"></i>
+                         <i class="fa fa-users"></i>
                      </span>
-                     Needs
+                     Availability
                      <span class="label label-danger">
                          <?php echo $cncount; ?>
                      </span>
@@ -300,6 +300,37 @@ if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
                     <li><a href="#" onclick="ajaxFormCall('listLinks');">Links</a></li>
                 </ul>
             </li>
+
+            <?php
+                if ($_SESSION['entitytype'] == 1 || $_SESSION['entityid'] == 0) {
+            ?>
+                        <li>
+                            <a href="#" onclick="ajaxFormCall('listCustomerNeeds');">
+                                <span class="icon">
+                                    <i class="fa fa-users"></i>
+                                </span>
+                                Availablity
+                            </a>
+                        </li>
+            <?php
+                }
+
+
+                if ($_SESSION['entitytype'] == 2 || $_SESSION['entityid'] == 0) {
+             ?>
+                         <li>
+                             <a href="#" onclick="ajaxFormCall('listCarrierNeeds');">
+                                 <span class="icon">
+                                     <i class="fa fa-truck"></i>
+                                 </span>
+                                 Needs
+                             </a>
+                         </li>
+             <?php
+                }
+             ?>
+
+
             <li>
                 <a class="collapsed" href="#sidebar-maps" data-toggle="collapse" data-parent="#sidebar">
                     <span class="icon">

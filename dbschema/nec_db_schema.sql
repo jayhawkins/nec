@@ -43,6 +43,7 @@ AUTO_INCREMENT = 1;
 -- -------------------------------------------------------------
 ALTER TABLE carrier_needs ADD COLUMN qty SMALLINT(5) UNSIGNED DEFAULT 0 AFTER `status`;
 ALTER TABLE carrier_needs ADD COLUMN availableDate DATE NULL;
+ALTER TABLE carrier_needs ADD COLUMN expirationDate DATE NULL;
 -- -------------------------------------------------------------
 
 
@@ -114,6 +115,7 @@ AUTO_INCREMENT = 1;
 -- -------------------------------------------------------------
 ALTER TABLE customer_needs ADD COLUMN qty SMALLINT(5) UNSIGNED DEFAULT 0 AFTER `status`;
 ALTER TABLE customer_needs ADD COLUMN availableDate DATE NULL;
+ALTER TABLE customer_needs ADD COLUMN expirationDate DATE NULL;
 -- -------------------------------------------------------------
 
 

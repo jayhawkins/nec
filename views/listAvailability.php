@@ -253,7 +253,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     data: null,
                     "bSortable": false,
                     "mRender": function (o) {
-                        var buttons = '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text-info\"></i> <span class=\"text-info\">Commit</span></button>';
+                        var buttons = '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text-info\"></i> <span class=\"text-info\">View</span></button>';
 /*
                         if (o.status == "Open") {
                                   buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text-info\"></i> <span class=\"text-info\">Close</span></button>";
@@ -636,7 +636,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
              Column sorting, live search, pagination. Built with
              <a href="http://www.datatables.net/" target="_blank">jQuery DataTables</a>
          </p -->
-         <button type="button" id="addNeed" class="btn btn-primary pull-xs-right" data-target="#myModal">Add Need</button>
+         <!--button type="button" id="addNeed" class="btn btn-primary pull-xs-right" data-target="#myModal">Add Need</button-->
          <br /><br />
          <div id="dataTable" class="mt">
              <table id="datatable-table" class="table table-striped table-hover">
@@ -675,7 +675,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
    <div class="modal-dialog modal-lg" role="document">
      <div class="modal-content">
        <div class="modal-header">
-         <h5 class="modal-title" id="exampleModalLabel"><strong>Need</strong></h5>
+         <h5 class="modal-title" id="exampleModalLabel"><strong>Availablity</strong></h5>
          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
            <span aria-hidden="true">&times;</span>
          </button>
@@ -686,97 +686,50 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                  <div class="row">
                      <div class="col-sm-4">
                          <label for="qty"># of Trailers Available:</label>
-                         <div class="form-group">
-                           <input type="text" id="qty" name="qty" class="form-control mb-sm" placeholder="# of Trailers Available"
-                           required="required" />
+                         <div id="qty" class="form-group">
                          </div>
                      </div>
                      <div class="col-sm-4">
                          <label for="availableDate">Available Date</label>
-                         <div class="form-group">
-                           <!--input type="text" id="policyExpirationDate" name="policyExpirationDate" class="form-control mb-sm" placeholder="Policy Expiration Date (YYYY-MM-DD)" required="required" /-->
-                           <div id="sandbox-container" class="input-group date  datepicker">
-                              <input type="text" id="availableDate" name="availableDate" class="form-control" placeholder="Available Date"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
-                           </div>
+                         <div id="availableDate" class="form-group">
                          </div>
                      </div>
                      <div class="col-sm-4">
-                         <div class="form-group">
-             <?php if ($_SESSION['entityid'] > 0) { ?>
-                            <input type="hidden" id="entityID" name="entityID" value="<?php echo $_SESSION['entityid']; ?>" />
-             <?php } else { ?>
-                             <label for="entityID">Customer:</label>
-                             <select id="entityID" name="entityID" data-placeholder="Carrier" class="form-control chzn-select" required="required">
-                               <option value="">*Select Customer...</option>
-              <?php
-                               foreach($entities->entities->records as $value) {
-                                   $selected = ($value[0] == $entity) ? 'selected=selected':'';
-                                   echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
-                               }
-              ?>
-                             </select>
-              <?php } ?>
+                         <div id="entityID" class="form-group">
                          </div>
                      </div>
                  </div>
                  <div class="row">
                      <div class="col-sm-7">
                          <label for="originationCity">Origination City</label>
-                         <div class="form-group">
-                           <input type="text" id="originationCity" name="originationCity" class="form-control mb-sm" placeholder="Origin City"
-                           required="required" />
+                         <div id="originationCity" class="form-group">
                          </div>
-                         <div id="suggesstion-box" class="frmSearch"></div>
                      </div>
                      <div class="col-sm-3">
                          <label for="originationState">Origination State</label>
-                         <div class="form-group">
-                           <select id="originationState" name="origitnaionState" data-placeholder="Origin State" class="form-control chzn-select" data-ui-jq="select2" required="required">
-                             <option value="">*Select State...</option>
-            <?php
-                             foreach($states->states->records as $value) {
-                                 $selected = ($value[0] == $state) ? 'selected=selected':'';
-                                 echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
-                             }
-            ?>
-                           </select>
+                         <div id="originationState" class="form-group">
                          </div>
                      </div>
                      <div class="col-sm-2">
                          <label for="originationZip">Origination Zip</label>
-                         <div class="form-group">
-                           <input type="text" id="originationZip" name="originationZip" class="form-control mb-sm" placeholder="Origin Zip"
-                           required="required" />
+                         <div id="originationZip" class="form-group">
                          </div>
                      </div>
                  </div>
                  <div class="row">
                    <div class="col-sm-7">
                        <label for="DestinationCity">Destination City</label>
-                       <div class="form-group">
-                         <input type="text" id="destinationCity" name="destinationCity" class="form-control mb-sm" placeholder="Dest. City"
-                         required="required" />
+                       <div id="destinationCity" class="form-group">
                        </div>
                    </div>
                    <div class="col-sm-3">
                        <label for="destinationState">Destination State</label>
-                       <div class="form-group">
-                         <select id="destinationState" name="destinationState" data-placeholder="Dest. State" class="form-control chzn-select" data-ui-jq="select2" required="required">
-                           <option value="">*Select State...</option>
-          <?php
-                           foreach($states->states->records as $value) {
-                               $selected = ($value[0] == $state) ? 'selected=selected':'';
-                               echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
-                           }
-          ?>
-                         </select>
+                       <div id="destinationState" class="form-group">
                        </div>
                    </div>
                    <div class="col-sm-2">
                        <label for="destinationZip">Destination Zip</label>
-                       <div class="form-group">
-                         <input type="text" id="destinationZip" name="destinationZip" class="form-control mb-sm" placeholder="Dest. Zip"
-                         required="required" />
+                       <div id="destinationZip" class="form-group">
                        </div>
                    </div>
                  </div>
@@ -792,13 +745,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                             </div>
                         </div>
                         <div class="col-xs-6">
-                             <h5 class="text-center"><strong>Contacts For This Need:</strong></h5>
-                             <div class="well" style="max-height: 200px;overflow: auto;">
-                                 <ul id="check-list-box" class="list-group checked-list-box">
-
-                                 </ul>
-                             </div>
-                         </div>
+                        </div>
                      </div>
                  </div>
                 </form>
@@ -926,54 +873,23 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
     $('#datatable-table tbody').on( 'click', 'button', function () {
         var data = table.row( $(this).parents('tr') ).data();
 
-        if (this.textContent.indexOf("Edit") > -1) {
+        if (this.textContent.indexOf("View") > -1) {
             var li = '';
             var checked = '';
             var dpli = '';
             var dpchecked = '';
             $("#id").val(data["id"]);
             $("#entityID").val(data["entityID"]);
-            $("#qty").val(data["qty"]);
-            $("#availableDate").val(data["availableDate"]);
-            $("#originationCity").val(data["originationCity"]);
-            $("#originationState").val(data["originationState"]);
-            $("#originationZip").val(data["originationZip"]);
-            $("#destinationCity").val(data["destinationCity"]);
-            $("#destinationState").val(data["destinationState"]);
-            $("#destinationZip").val(data["destinationZip"]);
+            $("#qty").html(data["qty"]);
+            $("#availableDate").html(data["availableDate"]);
+            $("#originationCity").html(data["originationCity"]);
+            $("#originationState").html(data["originationState"]);
+            $("#originationZip").html(data["originationZip"]);
+            $("#destinationCity").html(data["destinationCity"]);
+            $("#destinationState").html(data["destinationState"]);
+            $("#destinationZip").html(data["destinationZip"]);
             var ndp = data["needsDataPoints"];
             var con = data["contactEmails"];
-
-            var params = {id: $("#entityID").val()};
-            $.ajax({
-               url: '<?php echo HTTP_HOST."/getcontactsbycarrier" ?>',
-               type: 'POST',
-               data: JSON.stringify(params),
-               contentType: "application/json",
-               async: false,
-               success: function(response){
-                 response = JSON.parse(response);
-                 var li = '';
-                 for (var i = 0; i < response.contacts.length; i++) {
-                     checked = '';
-                     for (var l = 0; l < con.length; l++) {
-                         $.each(con, function(idx, obj) {
-                           $.each(obj, function(key, val) {
-                             if (response.contacts[i].id == key) {
-                                 checked = 'data-checked="true"';
-                             }
-                           })
-                         });
-                     }
-                     li += '<li id=\"' + response.contacts[i].id + '\" class=\"list-group-item\" ' + checked + '>' + response.contacts[i].firstName + ' ' + response.contacts[i].lastName + '</li>\n';
-                 }
-                 $("#check-list-box").html(li);
-                 formatListBox();
-               },
-               error: function() {
-                  alert('Failed Getting Contacts! - Notify NEC of this failure.');
-               }
-            });
 
             for (var i = 0; i < dataPoints.object_type_data_points.length; i++) {
                 var selected = '';
@@ -987,22 +903,19 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                   })
                 });
 
-                dpli += '<li>' + dataPoints.object_type_data_points[i].title +
-                        ' <select class="form-control mb-sm" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '">';
+                dpli += '<li>' + dataPoints.object_type_data_points[i].title;
                 for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
 
                     if (dataPoints.object_type_data_points[i].object_type_data_point_values[v].value === value) {
                         selected = ' selected ';
+                        //dpli += '<option' + selected + '>' + dataPoints.object_type_data_points[i].object_type_data_point_values[v].value + '</option>\n';
+                        dpli += ' => <strong>' + dataPoints.object_type_data_points[i].object_type_data_point_values[v].value + '</strong>\n';
                     } else {
                         selected = '';
                     }
-
-                    dpli += '<option' + selected + '>' + dataPoints.object_type_data_points[i].object_type_data_point_values[v].value + '</option>\n';
-
                 }
 
-                dpli += '</select>' +
-                        '</li>\n';
+                dpli += '</li>\n';
             }
             $("#dp-check-list-box").html(dpli);
             formatListBox();
