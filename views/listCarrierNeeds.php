@@ -71,6 +71,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 var result = true;
 
                 var params = {
+                      address1: $("#originationAddress1").val(),
                       city: $("#originationCity").val(),
                       state: $("#originationState").val(),
                       zip: $("#originationZip").val(),
@@ -87,6 +88,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                    success: function(response){
                       if (response == "success") {
                           var params = {
+                                address1: $("#destinationAddress1").val(),
                                 city: $("#destinationCity").val(),
                                 state: $("#destinationState").val(),
                                 zip: $("#destinationZip").val(),
@@ -173,7 +175,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
 
                 var geocoder = new google.maps.Geocoder();
-                var originationaddress = $("#originationCity").val() + ' ' + $("#originationState").val() + ' ' + $("#originationZip").val();
+                var originationaddress = $("#originationAddress1").val() + ' ' + $("#originationCity").val() + ' ' + $("#originationState").val() + ' ' + $("#originationZip").val();
 
                 geocoder.geocode( { 'address': originationaddress}, function(originationresults, status) {
 
@@ -182,7 +184,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     var originationlat = originationresults[0].geometry.location.lat();
                     var originationlng = originationresults[0].geometry.location.lng();
 
-                      var destinationaddress = $("#destinationCity").val() + ' ' + $("#destinationState").val() + ' ' + $("#destinationZip").val();
+                      var destinationaddress = $("#destinationAddress1").val() + ' ' + $("#destinationCity").val() + ' ' + $("#destinationState").val() + ' ' + $("#destinationZip").val();
                       geocoder.geocode( { 'address': destinationaddress}, function(destinationresults, status) {
 
                           if (status == google.maps.GeocoderStatus.OK) {
@@ -219,10 +221,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
                               if (type == "PUT") {
                                   var date = today;
-                                  var data = {qty: $("#qty").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, contactEmails: $contacts, availableDate: $("#availableDate").val(), expirationDate: $("#expirationDate").val(), updatedAt: date};
+                                  var data = {qty: $("#qty").val(), originationAddress1: $("#originationAddress1").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress1: $("#destinationAddress1").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, contactEmails: $contacts, availableDate: $("#availableDate").val(), expirationDate: $("#expirationDate").val(), updatedAt: date};
                               } else {
                                   var date = today;
-                                  var data = {entityID: $("#entityID").val(), qty: $("#qty").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, contactEmails: $contacts, availableDate: $("#availableDate").val(), expirationDate: $("#expirationDate").val(), createdAt: date};
+                                  var recStatus = 'Available';
+                                  var data = {entityID: $("#entityID").val(), qty: $("#qty").val(), originationAddress1: $("#originationAddress1").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress1: $("#destinationAddress1").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, status: recStatus, contactEmails: $contacts, availableDate: $("#availableDate").val(), expirationDate: $("#expirationDate").val(), createdAt: date};
                               }
 
                               $.ajax({
@@ -255,15 +258,17 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                                       $("#qty").val('');
                                       $("#availableDate").val('');
                                       $("#expirationDate").val('');
+                                      $("#originationAddress1").val('');
                                       $("#originationCity").val('');
                                       $("#originationState").val('');
                                       $("#originationZip").val('');
+                                      $("#destinationAddress1").val('');
                                       $("#destinationCity").val('');
                                       $("#destinationState").val('');
                                       $("#destinationZip").val('');
                                       passValidation = true;
                                     } else {
-                                      alert("Adding Need Failed!");
+                                      alert("Adding Need Failed! Invalid Data...");
                                     }
                                  },
                                  error: function() {
@@ -272,11 +277,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                               });
 
                           } else {
-                              alert("ERROR Geo-Coding Address!");
+                              alert("ERROR Geo-Coding Destination Address!");
                           }
                       });
                   } else {
-                      alert("ERROR Geo-Coding Address!");
+                      alert("ERROR Geo-Coding Origination Address!");
                   }
                 });
 
@@ -287,7 +292,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       function loadTableAJAX() {
         //myApp.showPleaseWait();
         if (<?php echo $_SESSION['entityid']; ?> > 0) {
-            var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,availableDate,expirationDate,originationCity,originationState,originationZip,originationLat,originationLng,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&filter[]=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&satisfy=all&order[]=availableDate,desc&transform=1';
+            var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&filter[]=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&satisfy=all&order[]=availableDate,desc&transform=1';
             var example_table = $('#datatable-table').DataTable({
                 retrieve: true,
                 processing: true,
@@ -302,11 +307,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     { data: "qty" },
                     { data: "availableDate", visible: false },
                     { data: "expirationDate", visible: false },
+                    { data: "originationAddress1", visible: false },
                     { data: "originationCity" },
                     { data: "originationState" },
                     { data: "originationZip", visible: false },
                     { data: "originationLat", visible: false },
                     { data: "originationLng", visible: false },
+                    { data: "destinationAddress1", visible: false },
                     { data: "destinationCity" },
                     { data: "destinationState" },
                     { data: "destinationZip", visible: false },
@@ -320,10 +327,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                         "mRender": function (o) {
                             var buttons = '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text-info\"></i> <span class=\"text-info\">Edit</span></button>';
 
-                            if (o.status == "Open") {
-                                      buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text-info\"></i> <span class=\"text-info\">Close</span></button>";
+                            if (o.status == "Available") {
+                                      buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text-info\"></i> <span class=\"text-info\">Available</span></button>";
                             } else {
-                                      buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text-info\"></i> <span class=\"text-info\">Open</span></button>";
+                                      buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text-info\"></i> <span class=\"text-info\">Unavailable</span></button>";
                             }
 
                             return buttons;
@@ -347,11 +354,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     { data: "qty" },
                     { data: "availableDate", visible: false },
                     { data: "expirationDate", visible: false },
+                    { data: "originationAddress1", visible: false },
                     { data: "originationCity" },
                     { data: "originationState" },
                     { data: "originationZip", visible: false },
                     { data: "originationLat", visible: false },
                     { data: "originationLng", visible: false },
+                    { data: "destinationAddress1", visible: false },
                     { data: "destinationCity" },
                     { data: "destinationState" },
                     { data: "destinationZip", visible: false },
@@ -365,10 +374,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                         "mRender": function (o) {
                             var buttons = '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text-info\"></i> <span class=\"text-info\">Edit</span></button>';
 
-                            if (o.status == "Open") {
-                                      buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text-info\"></i> <span class=\"text-info\">Close</span></button>";
+                            if (o.status == "Available") {
+                                      buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text-info\"></i> <span class=\"text-info\">Available</span></button>";
                             } else {
-                                      buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text-info\"></i> <span class=\"text-info\">Open</span></button>";
+                                      buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text-info\"></i> <span class=\"text-info\">Unavailable</span></button>";
                             }
 
                             return buttons;
@@ -393,15 +402,15 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       function recordEnableDisable(status) {
           var passValidation = false;
 
-          if (status == "Disable") {
-              var newStatus = 'Inactive';
+          if (status == "Make Unavailable") {
+              var newStatus = 'Unavailable';
               var myDialog = "#myDisableDialog";
-          } else if (status == "Enable") {
+          } else if (status == "Make Available") {
               var myDialog = "#myEnableDialog";
-              var newStatus = 'Active';
+              var newStatus = 'Available';
           } else {
               var myDialog = "#myEnableDialog";
-              var newStatus = 'Active';
+              var newStatus = 'Available';
           }
 
           var data = {status: newStatus};
@@ -761,11 +770,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                      <th>Quantity</th>
                      <th>Available Date</th>
                      <th>Expiration Date</th>
+                     <th class="hidden-sm-down">Orig. Address</th>
                      <th class="hidden-sm-down">Orig. City</th>
                      <th class="hidden-sm-down">Orig. State</th>
                      <th class="hidden-sm-down">Orig. Zip</th>
                      <th class="hidden-sm-down">Orig. Lat.</th>
                      <th class="hidden-sm-down">Orig. Long.</th>
+                     <th class="hidden-sm-down">Dest. Address</th>
                      <th class="hidden-sm-down">Dest. City</th>
                      <th class="hidden-sm-down">Dest. State</th>
                      <th class="hidden-sm-down">Dest. Zip</th>
@@ -843,7 +854,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                      </div>
                  </div>
                  <div class="row">
-                     <div class="col-sm-7">
+                     <div class="col-sm-3">
                          <label for="originationCity">Origination City</label>
                          <div class="form-group">
                            <input type="hidden" id="originationLocationID" name="originationLocationID" />
@@ -851,6 +862,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                            required="required" />
                          </div>
                          <div id="suggesstion-box" class="frmSearch"></div>
+                     </div>
+                     <div class="col-sm-4">
+                         <label for="originationAddress1">Origination Address</label>
+                         <div class="form-group">
+                           <input type="text" id="originationAddress1" name="originationAddress1" class="form-control mb-sm" placeholder="Origin Address"
+                           required="required" />
+                         </div>
                      </div>
                      <div class="col-sm-3">
                          <label for="originationState">Origination State</label>
@@ -875,10 +893,17 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                      </div>
                  </div>
                  <div class="row">
-                   <div class="col-sm-7">
+                   <div class="col-sm-3">
                        <label for="DestinationCity">Destination City</label>
                        <div class="form-group">
                          <input type="text" id="destinationCity" name="destinationCity" class="form-control mb-sm" placeholder="Dest. City"
+                         required="required" />
+                       </div>
+                   </div>
+                   <div class="col-sm-4">
+                       <label for="destinationAddress1">Destination Address</label>
+                       <div class="form-group">
+                         <input type="text" id="destinationAddress1" name="destinationAddress1" class="form-control mb-sm" placeholder="Destination Address"
                          required="required" />
                        </div>
                    </div>
@@ -952,7 +977,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                   <div class="row">
                       <div class="col-sm-12">
                           <div class="form-group">
-                            <h5>Do you wish to close this need?</h5>
+                            <h5>Do you wish to make this need UNAVAILABLE?</h5>
                           </div>
                       </div>
                   </div>
@@ -960,7 +985,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         </div>
          <div class="modal-footer">
            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-           <button type="button" class="btn btn-primary" onclick="return recordEnableDisable('Close');">Close Need</button>
+           <button type="button" class="btn btn-primary" onclick="return recordEnableDisable('Make Unavailable');">Make Unavailable</button>
          </div>
        </div>
      </div>
@@ -982,7 +1007,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                    <div class="row">
                        <div class="col-sm-12">
                            <div class="form-group">
-                             <h5>Do you wish to open this need?</h5>
+                             <h5>Do you wish to make this need AVAILABLE?</h5>
                            </div>
                        </div>
                    </div>
@@ -990,7 +1015,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
          </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary" onclick="return recordEnableDisable('Enable');">Open Need</button>
+            <button type="button" class="btn btn-primary" onclick="return recordEnableDisable('Make Available');">Make Available</button>
           </div>
         </div>
       </div>
@@ -1022,9 +1047,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       $("#qty").val('');
       $("#availableDate").val('');
       $("#expirationDate").val('');
+      $("#originationAddress1").val('');
       $("#originationCity").val('');
       $("#originationState").val('');
       $("#originationZip").val('');
+      $("#destinationAddress1").val('');
       $("#destinationCity").val('');
       $("#destinationState").val('');
       $("#destinationZip").val('');
@@ -1065,9 +1092,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             $("#qty").val(data["qty"]);
             $("#availableDate").val(data["availableDate"]);
             $("#expirationDate").val(data["expirationDate"]);
+            $("#originationAddress1").val(data["originationAddress1"]);
             $("#originationCity").val(data["originationCity"]);
             $("#originationState").val(data["originationState"]);
             $("#originationZip").val(data["originationZip"]);
+            $("#destinationAddress1").val(data["destinationAddress1"]);
             $("#destinationCity").val(data["destinationCity"]);
             $("#destinationState").val(data["destinationState"]);
             $("#destinationZip").val(data["destinationZip"]);
@@ -1144,13 +1173,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             $("#myModal").modal('show');
         } else {
             $("#id").val(data["id"]);
-            if (this.textContent.indexOf("Close") > -1) {
-              $("#disableDialogLabel").html('Close <strong>' + data['name'] + '</strong>');
-              $("#myDisableDialog").modal('show');
+            if (this.textContent.indexOf("Unavailable") > -1) {
+              $("#enableDialogLabel").html('Make <strong>Need</strong> Available?');
+              $("#myEnableDialog").modal('show');
             } else {
-              if (this.textContent.indexOf("Open") > -1) {
-                $("#enableDialogLabel").html('Open <strong>' + data['name'] + '</strong>');
-                $("#myEnableDialog").modal('show');
+              if (this.textContent.indexOf("Available") > -1) {
+                $("#disableDialogLabel").html('Make <strong>Need</strong> Unavailable?');
+                $("#myDisableDialog").modal('show');
               }
             }
         }
@@ -1230,6 +1259,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
              //response = JSON.stringify(JSON.parse(response));
              response = JSON.parse(response);
              $("#originationLocationID").val(response.id);
+             $("#originationAddress1").val(response.address1);
              $("#originationCity").val(response.city);
              $("#originationState").val(response.state);
              $("#originationZip").val(response.zip);
@@ -1280,6 +1310,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
            success: function(response){
              //response = JSON.stringify(JSON.parse(response));
              response = JSON.parse(response);
+             $("#destinationAddress1").val(response.address1);
              $("#destinationCity").val(response.city);
              $("#destinationState").val(response.state);
              $("#destinationZip").val(response.zip);

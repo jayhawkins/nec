@@ -309,7 +309,7 @@ if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
                                 <span class="icon">
                                     <i class="fa fa-users"></i>
                                 </span>
-                                Availablity
+                                My Availablity
                             </a>
                         </li>
             <?php
@@ -323,7 +323,7 @@ if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
                                  <span class="icon">
                                      <i class="fa fa-truck"></i>
                                  </span>
-                                 Needs
+                                 My Needs
                              </a>
                          </li>
              <?php

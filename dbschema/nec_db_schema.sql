@@ -44,6 +44,10 @@ AUTO_INCREMENT = 1;
 ALTER TABLE carrier_needs ADD COLUMN qty SMALLINT(5) UNSIGNED DEFAULT 0 AFTER `status`;
 ALTER TABLE carrier_needs ADD COLUMN availableDate DATE NULL;
 ALTER TABLE carrier_needs ADD COLUMN expirationDate DATE NULL;
+ALTER TABLE carrier_needs ADD COLUMN originationAddress1 VarChar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL AFTER entityID;
+ALTER TABLE carrier_needs ADD COLUMN originationAddress2 VarChar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL AFTER originationAddress1;
+ALTER TABLE carrier_needs ADD COLUMN destinationAddress1 VarChar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL AFTER originationZip;
+ALTER TABLE carrier_needs ADD COLUMN destinationAddress2 VarChar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL AFTER destinationAddress1;
 -- -------------------------------------------------------------
 
 
@@ -116,6 +120,10 @@ AUTO_INCREMENT = 1;
 ALTER TABLE customer_needs ADD COLUMN qty SMALLINT(5) UNSIGNED DEFAULT 0 AFTER `status`;
 ALTER TABLE customer_needs ADD COLUMN availableDate DATE NULL;
 ALTER TABLE customer_needs ADD COLUMN expirationDate DATE NULL;
+ALTER TABLE customer_needs ADD COLUMN originationAddress1 VarChar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL AFTER entityID;
+ALTER TABLE customer_needs ADD COLUMN originationAddress2 VarChar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL AFTER originationAddress1;
+ALTER TABLE customer_needs ADD COLUMN destinationAddress1 VarChar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL AFTER originationZip;
+ALTER TABLE customer_needs ADD COLUMN destinationAddress2 VarChar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL AFTER destinationAddress1;
 -- -------------------------------------------------------------
 
 
