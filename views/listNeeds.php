@@ -306,8 +306,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     { data: "id", visible: false },
                     { data: "entityID", visible: false },
                     { data: "qty" },
-                    { data: "availableDate", visible: false },
-                    { data: "expirationDate", visible: false },
+                    { data: "availableDate" },
+                    { data: "expirationDate" },
                     { data: "originationCity" },
                     { data: "originationState" },
                     { data: "originationZip", visible: false },
@@ -320,11 +320,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     { data: "destinationLng", visible: false },
                     { data: "needsDataPoints", visible: false },
                     { data: "contactEmails", visible: false },
+                    { data: "status" },
                     {
                         data: null,
                         "bSortable": false,
                         "mRender": function (o) {
-                            var buttons = '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text-info\"></i> <span class=\"text-info\">View</span></button>';
+                            var buttons = '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text-info\"></i> <span class=\"text-info\">View Details</span></button>';
 /*
                             if (o.status == "Open") {
                                       buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text-info\"></i> <span class=\"text-info\">Close</span></button>";
@@ -696,7 +697,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
  </ol>
  <section class="widget">
      <header>
-         <h4><span class="fw-semi-bold">My Needs</span></h4>
+         <h4><span class="fw-semi-bold">Current Carrier Needs</span></h4>
          <div class="widget-controls">
              <a data-widgster="expand" title="Expand" href="#"><i class="glyphicon glyphicon-chevron-up"></i></a>
              <a data-widgster="collapse" title="Collapse" href="#"><i class="glyphicon glyphicon-chevron-down"></i></a>
@@ -732,6 +733,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                      <th class="hidden-sm-down">Dest. Long.</th>
                      <th class="hidden-sm-down">Data Points</th>
                      <th class="hidden-sm-down">Contact</th>
+                     <th>Status</th>
                      <th class="no-sort pull-right">&nbsp;</th>
                  </tr>
                  </thead>
@@ -757,53 +759,58 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                <form id="formNeed" class="register-form mt-lg">
                  <input type="hidden" id="id" name="id" value="" />
                  <div class="row">
-                     <div class="col-sm-4">
-                         <label for="qty"># of Trailers Looking For:</label>
-                         <div id="qty" class="form-group">
+                     <div class="col-sm-2">
+                         <label for="qty"># Looking For:</label>
+                         <div id="qty" class="form-group form-control mb-sm">
                          </div>
                      </div>
-                     <div class="col-sm-4">
+                     <div class="col-sm-3">
                          <label for="availableDate">Need Date</label>
-                         <div id="availableDate" class="form-group">
+                         <div id="availableDate" class="form-group form-control mb-sm">
+                         </div>
+                     </div>
+                     <div class="col-sm-3">
+                         <label for="expirationDate">Expiration Date</label>
+                         <div id="expirationDate" class="form-group form-control mb-sm">
                          </div>
                      </div>
                      <div class="col-sm-4">
-                         <div id="entityID" class="form-group">
+                         <div class="form-group">
                          </div>
                      </div>
                  </div>
                  <div class="row">
                      <div class="col-sm-7">
                          <label for="originationCity">Origination City</label>
-                         <div id="originationCity" class="form-group">
+                         <div id="originationCity" class="form-group form-control mb-sm">
                          </div>
                          <div id="suggesstion-box" class="frmSearch"></div>
                      </div>
                      <div class="col-sm-3">
                          <label for="originationState">Origination State</label>
-                         <div id="originationState" class="form-group">
+                         <div id="originationState" class="form-group form-control mb-sm">
                          </div>
                      </div>
                      <div class="col-sm-2">
                          <label for="originationZip">Origination Zip</label>
-                         <div id="originationZip" class="form-group">
+                         <div id="originationZip" class="form-group form-control mb-sm">
                          </div>
                      </div>
                  </div>
                  <div class="row">
                    <div class="col-sm-7">
                        <label for="DestinationCity">Destination City</label>
-                       <div id="destinationCity" class="form-group">
+                       <div id="destinationCity" class="form-group form-control mb-sm">
                        </div>
                    </div>
                    <div class="col-sm-3">
                        <label for="destinationState">Destination State</label>
-                       <div id="destinationState" class="form-group">
+                       <div id="destinationState" class="form-group form-control mb-sm">
                        </div>
                    </div>
                    <div class="col-sm-2">
                        <label for="destinationZip">Destination Zip</label>
-                       <div id="destinationZip" class="form-group">
+                       <div id="destinationZip" class="form-group form-control mb-sm">
                        </div>
                    </div>
                  </div>
@@ -826,7 +833,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
        </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" onclick="return post();">Save Changes</button>
+          <button type="button" class="btn btn-primary" onclick="return post();">Request Carrier</button>
         </div>
       </div>
     </div>
@@ -951,13 +958,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
     $('#datatable-table tbody').on( 'click', 'button', function () {
         var data = table.row( $(this).parents('tr') ).data();
 
-        if (this.textContent.indexOf("View") > -1) {
+        if (this.textContent.indexOf("View Details") > -1) {
             var li = '';
             var checked = '';
             var dpli = '';
             var dpchecked = '';
             $("#id").html(data["id"]);
-            $("#entityID").html(data["entityID"]);
+            //$("#entityID").html(data["entityID"]);
             $("#qty").html(data["qty"]);
             $("#availableDate").html(data["availableDate"]);
             $("#expirationDate").html(data["expirationDate"]);
@@ -1013,9 +1020,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                   })
                 });
 
-                dpli += '<li>' + dataPoints.object_type_data_points[i].title +
-                        ' <select class="form-control mb-sm" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '">\n' +
-                        ' <option value="">-Select One-</option>\n';
+                dpli += '<li>' + dataPoints.object_type_data_points[i].title;
                 for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
 
                     if (dataPoints.object_type_data_points[i].object_type_data_point_values[v].value === value) {
@@ -1029,14 +1034,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
                 }
 
-                dpli += '</select>\n' +
-                        '</li>\n';
+                dpli += '</li>\n';
             }
             $("#dp-check-list-box").html(dpli);
             formatListBox();
             formatListBoxDP();
             $("#entityID").prop('disabled', true);
-            $("#exampleModalLabel").html('Edit Need');
+            $("#exampleModalLabel").html('Carrier Need');
             $("#suggesstion-box").hide();
             $("#myModal").modal('show');
         } else {
