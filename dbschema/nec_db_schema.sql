@@ -126,6 +126,36 @@ ALTER TABLE customer_needs ADD COLUMN destinationAddress1 VarChar(255) CHARACTER
 ALTER TABLE customer_needs ADD COLUMN destinationAddress2 VarChar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL AFTER destinationAddress1;
 -- -------------------------------------------------------------
 
+-- CREATE TABLE "customer_needs_commit" -------------------------------
+CREATE TABLE `customer_needs_commit` (
+	`id` Int( 11 ) UNSIGNED AUTO_INCREMENT NOT NULL,
+	`entityID` Int( 11 ) UNSIGNED NOT NULL,
+	`originationAddress1` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	`originationCity` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	`originationState` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	`originationZip` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	`destinationAddress1` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
+	`destinationCity` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
+	`destinationState` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
+	`destinationZip` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
+	`originationLng` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	`originationLat` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	`destinationLng` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
+	`destinationLat` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
+	`status` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'Open',
+	`qty` Smallint( 5 ) UNSIGNED NULL DEFAULT '0',
+	`rate` float( 7,2 ) UNSIGNED NULL DEFAULT '0.00',
+	`pickupDate` Date NULL,
+	`deliveryDate` Date NULL,
+	`createdAt` DateTime NOT NULL,
+	`updatedAt` DateTime NOT NULL,
+	CONSTRAINT `unique_id` UNIQUE( `id` ) )
+CHARACTER SET = utf8
+COLLATE = utf8_general_ci
+ENGINE = InnoDB
+AUTO_INCREMENT = 1;
+-- -------------------------------------------------------------
+
 
 -- CREATE TABLE "documents" --------------------------------
 -- CREATE TABLE "documents" ------------------------------------
@@ -185,6 +215,7 @@ AUTO_INCREMENT = 1;
 -- -------------------------------------------------------------
 ALTER TABLE entities ADD COLUMN createdAt DateTime NOT NULL AFTER assignedMemberID;
 ALTER TABLE entities ADD COLUMN updatedAt DateTime NOT NULL AFTER createdAt;
+ALTER TABLE entities ADD COLUMN contactID int(11) unsigned DEFAULT 0 AFTER assignedMemberID ;
 -- ---------------------------------------------------------
 
 
@@ -613,6 +644,10 @@ CREATE INDEX `index_entityID10` USING BTREE ON `carrier_needs`( `entityID` );
 CREATE INDEX `lnk_entities_customer_needs` USING BTREE ON `customer_needs`( `entityID` );
 -- -------------------------------------------------------------
 
+-- CREATE INDEX "lnk_entities_customer_needs_commit" ------------------
+CREATE INDEX `lnk_entities_customer_needs_commit` USING BTREE ON `customer_needs_commit`( `entityID` );
+-- -------------------------------------------------------------
+
 -- Link/Foreign Key Relationships for utilizing PHP REST API script
 -- After Everything has been checked --
 ALTER TABLE `locations`
@@ -672,6 +707,18 @@ ALTER TABLE `carrier_needs`
 ALTER TABLE `customer_needs`
 	ADD CONSTRAINT `lnk_entities_customer_needs` FOREIGN KEY ( `entityID` )
 	REFERENCES `entities`( `id` )
+	ON DELETE No Action
+	ON UPDATE No Action;
+
+ALTER TABLE `customer_needs_commit`
+	ADD CONSTRAINT `lnk_entities_customer_needs_commit` FOREIGN KEY ( `entityID` )
+	REFERENCES `entities`( `id` )
+	ON DELETE No Action
+	ON UPDATE No Action;
+
+ALTER TABLE `entities`
+	ADD CONSTRAINT `lnk_contacts_entities` FOREIGN KEY ( `id` )
+	REFERENCES `contacts`( `entityID` )
 	ON DELETE No Action
 	ON UPDATE No Action;
 

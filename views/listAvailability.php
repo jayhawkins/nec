@@ -164,7 +164,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
 
                 var geocoder = new google.maps.Geocoder();
-                var originationaddress = $("#originationCity").val() + ' ' + $("#originationState").val() + ' ' + $("#originationZip").val();
+                var originationaddress = $("#originationAddress1").val() + ' ' + $("#originationCity").val() + ' ' + $("#originationState").val() + ' ' + $("#originationZip").val();
 
                 geocoder.geocode( { 'address': originationaddress}, function(originationresults, status) {
 
@@ -173,48 +173,17 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     var originationlat = originationresults[0].geometry.location.lat();
                     var originationlng = originationresults[0].geometry.location.lng();
 
-                      var destinationaddress = $("#destinationCity").val() + ' ' + $("#destinationState").val() + ' ' + $("#destinationZip").val();
+                      var destinationaddress = $("#destinationAddress1").val() + ' ' + $("#destinationCity").val() + ' ' + $("#destinationState").val() + ' ' + $("#destinationZip").val();
                       geocoder.geocode( { 'address': destinationaddress}, function(destinationresults, status) {
 
                           if (status == google.maps.GeocoderStatus.OK) {
                               var destinationlat = destinationresults[0].geometry.location.lat();
                               var destinationlng = destinationresults[0].geometry.location.lng();
 
-                              if ($("#id").val() > '') {
-                                  var url = '<?php echo API_HOST."/api/customer_needs" ?>/' + $("#id").val();
-                                  type = "PUT";
-                              } else {
-                                  var url = '<?php echo API_HOST."/api/customer_needs" ?>';
-                                  type = "POST";
-                              }
-
-                              // Build the contacts
-                              var contactsarray = [];
-                              var obj = $("#check-list-box li.active");
-                              for (var i = 0; i < obj.length; i++) {
-                                  item = {};
-                                  item[obj[i].id] = obj[i].innerText;
-                                  contactsarray.push(item);
-                              }
-                              var $contacts = contactsarray;
-
-                              // Build the needsDataPoints
-                              var needsarray = [];
-                              var obj = $("#dp-check-list-box li select");
-                              for (var i = 0; i < obj.length; i++) {
-                                  item = {};
-                                  item[obj[i].id] = obj[i].value;
-                                  needsarray.push(item);
-                              }
-                              var needsdatapoints = needsarray;
-
-                              if (type == "PUT") {
-                                  var date = today;
-                                  var data = {qty: $("#qty").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, contactEmails: $contacts, availableDate: $("#availableDate").val(), updatedAt: date};
-                              } else {
-                                  var date = today;
-                                  var data = {entityID: $("#entityID").val(), qty: $("#qty").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, contactEmails: $contacts, availableDate: $("#availableDate").val(), createdAt: date};
-                              }
+                              var url = '<?php echo API_HOST."/api/customer_needs_commit" ?>';
+                              type = "POST";
+                              var date = today;
+                              var data = {customerNeedsID: $("#id").val(), entityID: $("#entityID").val(), qty: $("#qty").val(), originationAddress1: $("#originationAddress1").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress1: $("#destinationAddress1").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, rate: $("#rate").val(), pickupDate: $("#pickupDate").val(), deliveryDate: $("#deliveryDate").val(), createdAt: date};
 
                               $.ajax({
                                  url: url,
@@ -225,9 +194,9 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                                  success: function(data){
                                     if (data > 0) {
                                       if (type == 'POST') {
-                                        var params = {id: data};
+                                        var params = {id: data}; // Send customer needs commit id so we can gather who to send notification to at NEC
                                         $.ajax({
-                                           url: '<?php echo HTTP_HOST."/customerneedsnotification" ?>',
+                                           url: '<?php echo HTTP_HOST."/customerneedscommitnotification" ?>',
                                            type: 'POST',
                                            data: JSON.stringify(params),
                                            contentType: "application/json",
@@ -244,16 +213,20 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                                       loadTableAJAX();
                                       $("#id").val('');
                                       $("#qty").val('');
-                                      $("#availableDate").val('');
+                                      $("#pickupDate").val('');
+                                      $("#deliveryDate").val('');
+                                      $("#originationAddress1").val('');
                                       $("#originationCity").val('');
                                       $("#originationState").val('');
                                       $("#originationZip").val('');
+                                      $("#destinationAddress1").val('');
                                       $("#destinationCity").val('');
                                       $("#destinationState").val('');
                                       $("#destinationZip").val('');
+                                      $("#rate").val('');
                                       passValidation = true;
                                     } else {
-                                      alert("Adding Need Failed!");
+                                      alert("Adding Need Failed!\n\n" + data);
                                     }
                                  },
                                  error: function() {
@@ -854,13 +827,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                  </div>
                 </form>
        </div>
-        <div class="modal-footer">
+       <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           <!--button type="button" class="btn btn-primary" id="btnCommit">Commit To Need</button-->
-        </div>
-      </div>
-    </div>
-  </div>
+       </div>
+     </div>
+   </div>
+ </div>
 
   <!-- Modal -->
   <div class="modal fade" id="myModalCommit" tabindex="-1" aria-hidden="true" aria-label="exampleModalCommitLabel">
@@ -1282,6 +1255,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
            success: function(response){
              //response = JSON.stringify(JSON.parse(response));
              response = JSON.parse(response);
+             $("#originationAddress1").val(response.address1);
              $("#originationCity").val(response.city);
              $("#originationState").val(response.state);
              $("#originationZip").val(response.zip);
@@ -1329,6 +1303,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
            success: function(response){
              //response = JSON.stringify(JSON.parse(response));
              response = JSON.parse(response);
+             $("#destinationAddress1").val(response.address1);
              $("#destinationCity").val(response.city);
              $("#destinationState").val(response.state);
              $("#destinationZip").val(response.zip);

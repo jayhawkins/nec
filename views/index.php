@@ -274,7 +274,17 @@ if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
                     <i class="toggle fa fa-angle-down"></i>
                 </a>
                 <ul id="sidebar-forms" class="collapse">
+<?php
+if ($_SESSION['entityid'] == 0) {
+?>
+                    <li><a href="#" onclick="ajaxFormCall('listBusinesses');">Businesses</a></li>
+<?php
+} else {
+?>
                     <li><a href="#" onclick="ajaxFormCall('businessProfile');">Business</a></li>
+<?php
+}
+?>
                     <li><a href="#" onclick="ajaxFormCall('listContacts');">Contacts</a></li>
                     <li><a class="collapsed" href="#sidebar-sub-levels" data-toggle="collapse" data-parent="#sidebar-levels">
                               Location
