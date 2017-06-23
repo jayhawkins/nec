@@ -216,6 +216,8 @@ AUTO_INCREMENT = 1;
 ALTER TABLE entities ADD COLUMN createdAt DateTime NOT NULL AFTER assignedMemberID;
 ALTER TABLE entities ADD COLUMN updatedAt DateTime NOT NULL AFTER createdAt;
 ALTER TABLE entities ADD COLUMN contactID int(11) unsigned DEFAULT 0 AFTER assignedMemberID ;
+ALTER TABLE entities ADD COLUMN rateType varchar(64) AFTER contactID ;
+ALTER TABLE entities ADD COLUMN negotiatedRate float(7,2) unsigned DEFAULT 0.00 AFTER rateType ;
 -- ---------------------------------------------------------
 
 

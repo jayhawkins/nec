@@ -69,7 +69,7 @@ $contacts = file_get_contents(API_HOST.'/api/contacts?columns=id,firstName,lastN
 
                 if (type == "PUT") {
                     var date = today;
-                    var data = {contactID: $("#contactID").val(), entityRating: $("#entityRating").val(), updatedAt: date};
+                    var data = {contactID: $("#contactID").val(), entityRating: $("#entityRating").val(), rateType: $("input[name='rateType']:checked").val(), negotiatedRate: $("#negotiatedRate").val(), updatedAt: date};
                 } else {
                     // Should never do this at this point
                     //var date = today;
@@ -91,9 +91,11 @@ $contacts = file_get_contents(API_HOST.'/api/contacts?columns=id,firstName,lastN
                         $("#name").val('');
                         $("#contactID").val('');
                         $("#entityRating").val('');
+                        $("#rateType").val('');
+                        $("#negotiatedRate").val('');
                         passValidation = true;
                       } else {
-                        alert("Adding Business Failed!");
+                        alert("Updating Business Information Failed!");
                       }
                    },
                    error: function() {
@@ -113,7 +115,7 @@ $contacts = file_get_contents(API_HOST.'/api/contacts?columns=id,firstName,lastN
 
       function loadTableAJAX() {
         myApp.showPleaseWait();
-        var url = '<?php echo API_HOST; ?>' + '/api/entities?columns=id,entityTypeID,name,entityRating,status&order=name&transform=1';
+        var url = '<?php echo API_HOST; ?>' + '/api/entities?columns=id,entityTypeID,name,entityRating,status,rateType,negotiatedRate&order=name&transform=1';
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
             processing: true,
@@ -126,6 +128,8 @@ $contacts = file_get_contents(API_HOST.'/api/contacts?columns=id,firstName,lastN
                 { data: "entityTypeID", visible: false },
                 { data: "name" },
                 { data: "entityRating" },
+                { data: "rateType" },
+                { data: "negotiatedRate", render: $.fn.dataTable.render.number(',', '.', 2, '$') },
                 {
                     data: null,
                     "bSortable": false,
@@ -226,6 +230,8 @@ $contacts = file_get_contents(API_HOST.'/api/contacts?columns=id,firstName,lastN
                      <th>Entity Type</th>
                      <th class="hidden-sm-down">Name</th>
                      <th class="hidden-sm-down">Rating</th>
+                     <th class="hidden-sm-down">Rate Type</th>
+                     <th class="hidden-sm-down">Negotiated Rate</th>
                      <th class="no-sort pull-right">&nbsp;</th>
                  </tr>
                  </thead>
@@ -267,6 +273,24 @@ $contacts = file_get_contents(API_HOST.'/api/contacts?columns=id,firstName,lastN
                    <div class="form-group">
                      <input type="text" id="entityRating" name="entityRating" class="form-control mb-sm" placeholder="Rating" />
                    </div>
+               </div>
+           </div>
+           <div class="row">
+               <div class="col-sm-4">
+                   <label for="negotiatedRate">NEC Negotiated Rate</label>
+                   <div class="form-group">
+                     <input type="text" id="negotiatedRate" name="negotiatedRate" class="form-control mb-sm" placeholder="Negotiated Rate" />
+                   </div>
+               </div>
+               <div class="col-sm-4">
+                   <label for="negotiatedRate">Rate Type</label>
+                   <div class="form-group" style="align: middle">
+                     <input type="radio" id="rateType" name="rateType" value="Flat Rate"> Flat Rate
+                     &nbsp;&nbsp;
+                     <input type="radio" id="rateType" name="rateType" value="Mileage"> Mileage
+                   </div>
+               </div>
+               <div class="col-sm-4">
                </div>
            </div>
            <div class="modal-footer">
@@ -365,6 +389,9 @@ $contacts = file_get_contents(API_HOST.'/api/contacts?columns=id,firstName,lastN
           $("#id").val(data["id"]);
           $("#name").html(data["name"]);
           $("#entityRating").val(data["entityRating"]);
+          $('input[id="rateType"]').attr('checked', false);
+          $('input:radio[name="rateType"]').val([data["rateType"]]);
+          $("#negotiatedRate").val(data["negotiatedRate"]);
           contactdropdown += '<select id="contactID" name="contactID" data-placeholder="NEC Rep" class="form-control chzn-select" data-ui-jq="select2" required="required">';
           for (var i = 0; i < contacts.contacts.length; i++) {
               selected = (contacts.contacts[i].id == data["contactID"]) ? 'selected=selected':'';
@@ -387,7 +414,5 @@ $contacts = file_get_contents(API_HOST.'/api/contacts?columns=id,firstName,lastN
         }
 
     } );
-
-
 
  </script>
