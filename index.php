@@ -340,7 +340,7 @@ $app->route('POST /customerneedsnotification', function() {
 $app->route('POST /customerneedscommitnotification', function() {
     $customerneedid = Flight::request()->data->id;
     $customerneedcommit = Flight::customerneedcommit();
-    $notificationresult = $customerneedcommit->sendNotification(API_HOST,$customerneedid);
+    $notificationresult = $customerneedcommit->sendRepNotification(API_HOST,$customerneedid);
     if ($notificationresult) {
         print_r($notificationresult);
         //echo "success";

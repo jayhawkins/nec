@@ -5,9 +5,11 @@ class CustomerNeedCommit
 
     private $customerNeedsID;
     private $entityID;
+    private $originationAddress1;
     private $originationCity;
     private $originationState;
     private $originationZip;
+    private $destinationAddress1;
     private $destinationCity;
     private $destinationState;
     private $destinationZip;
@@ -15,12 +17,11 @@ class CustomerNeedCommit
     private $originationLng;
     private $destinationLat;
     private $destinationLng;
-    private $needsDataPoints;
     private $status;
     private $qty;
     private $rate;
     private $pickupDate;
-    private $expirationDate;
+    private $deliveryDate;
 
     public function __construct() {
 
@@ -46,11 +47,13 @@ class CustomerNeedCommit
       $context  = stream_context_create($options);
       $result = json_decode(file_get_contents($url,false,$context),true);
 
-      $this->CustomerNeedsID = $result["CustomerNeedsID"];
+      $this->customerNeedsID = $result["customerNeedsID"];
       $this->entityID = $result["entityID"];
+      $this->originationAddress1 = $result["originationAddress1"];
       $this->originationCity = $result["originationCity"];
       $this->originationState = $result["originationState"];
       $this->originationZip = $result["originationZip"];
+      $this->destinationAddress1 = $result["destinationAddress1"];
       $this->destinationCity = $result["destinationCity"];
       $this->destinationState = $result["destinationState"];
       $this->destinationZip = $result["destinationZip"];
@@ -58,12 +61,11 @@ class CustomerNeedCommit
       $this->originationLng = $result["originationLng"];
       $this->destinationLat = $result["destinationLat"];
       $this->destinationLng = $result["destinationLng"];
-      $this->needsDataPoints = $result["needsDataPoints"];
       $this->status = $result["status"];
       $this->qty = $result["qty"];
       $this->rate = $result["rate"];
       $this->pickupDate = $result["pickupDate"];
-      $this->expirationDate = $result["expirationDate"];
+      $this->deliveryDate = $result["deliveryDate"];
 
     }
 
@@ -118,26 +120,37 @@ class CustomerNeedCommit
         }
     }
 
-    public function sendNotification($api_host,$id) {
+    public function sendRepNotification($api_host,$id) {
         // Load the carrier need data to send notification
         $this->load($api_host,$id);
 
-        if ($this->contactNeedsID > 0) {
+        if ($this->customerNeedsID > 0) {
 
-            $entityFilter = "id,in,(".$this->contactNeedsID.")";
-            $entitycontactargs = array(
-                "transform"=>1,
-                "filter"=>$entityFilter
+            $entityargs = array(
+                "transform"=>1
             );
-            $entitycontacturl = API_HOST."/api/contacts?".http_build_query($entitycontactargs);
-            $entitycontactoptions = array(
+            $entityurl = API_HOST."/api/entities/".$this->entityID."?".http_build_query($entityargs);
+            $entityoptions = array(
                 'http' => array(
                     'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
                     'method'  => 'GET'
                 )
             );
-            $entitycontactcontext  = stream_context_create($entitycontactoptions);
-            $entitycontactresult = json_decode(file_get_contents($entitycontacturl,false,$entitycontactcontext),true);
+            $entitycontext  = stream_context_create($entityoptions);
+            $entityresult = json_decode(file_get_contents($entityurl,false,$entitycontext),true);
+
+            $contactargs = array(
+                "transform"=>1
+            );
+            $contacturl = API_HOST."/api/contacts/".$entityresult['contactID']."?".http_build_query($contactargs);
+            $contactoptions = array(
+                'http' => array(
+                    'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                    'method'  => 'GET'
+                )
+            );
+            $contactcontext  = stream_context_create($contactoptions);
+            $contactresult = json_decode(file_get_contents($contacturl,false,$contactcontext),true);
 
             $templateargs = array(
                 "transform"=>1,
@@ -164,18 +177,15 @@ class CustomerNeedCommit
 
             if (count($templateresult) > 0) {
               try {
-                  for ($ec=0;$ec<count($entitycontactresult['contacts']);$ec++) {
+                    $to = array($contactresult['emailAddress'] => $contactresult['firstName'] . " " . $contactresult['lastName']);
 
-                      $to = array($entitycontactresult['contacts'][$ec]['emailAddress'] => $entitycontactresult['contacts'][$ec]['firstName'] . " " . $entitycontactresult['contacts'][$ec]['lastName']);
-
-                      $body = "Hello " . $entitycontactresult['contacts'][$ec]['firstName'] . ",<br /><br />";
-                      $body .= $templateresult['email_templates'][0]['body'];
-                      if (sendmail($to, $subject, $body, $from)) {
-                          $numSent++;
-                      } else {
-                          return $mailex;
-                      }
-                  }
+                    $body = "Hello " . $contactresult['firstName'] . ",<br /><br />";
+                    $body .= $templateresult['email_templates'][0]['body'];
+                    if (sendmail($to, $subject, $body, $from)) {
+                        $numSent++;
+                    } else {
+                        return $mailex;
+                    }
               } catch (Exception $mailex) {
                 return $mailex;
               }

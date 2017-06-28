@@ -50,6 +50,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
      var dataPoints = <?php echo json_encode($dataPoints); ?>;
      //console.log(dataPoints);
 
+     var entityid = <?php echo $_SESSION['entityid']; ?>;
+
      var myApp;
       myApp = myApp || (function () {
        var pleaseWaitDiv = $('<div class="modal hide" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false"><div class="modal-header"><h1>Processing...</h1></div><div class="modal-body"><div class="progress progress-striped active"><div class="bar" style="width: 100%;"></div></div></div></div>');
@@ -256,10 +258,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       function loadTableAJAX() {
         myApp.showPleaseWait();
         if (<?php echo $_SESSION['entityid']; ?> > 0) {
-            var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?&columns=id,entityID,qty,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&order[]=availableDate,desc&transform=1';
+            var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=customer_needs_commit,entities&columns=id,entityID,qty,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,customer_needs_commit.status,customer_needs_commit.rate,entities.name,entities.rate,entities.negotiatedRate&order[]=availableDate,desc&transform=1';
             var show = false;
         } else {
-            var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=entities&columns=entities.name,id,entityID,qty,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&satisfy=all&order[]=entityID&order[]=availableDate,desc&transform=1';
+            var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=customer_needs_commit,entities&columns=id,entityID,qty,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,customer_needs_commit.status,customer_needs_commit.rate,entities.name,entities.rate,entities.negotiatedRate&satisfy=all&order[]=entityID&order[]=availableDate,desc&transform=1';
             var show = true;
         }
 
@@ -277,7 +279,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     "data":           null,
                     "defaultContent": ''
                 },
-                { data: "entities[0].name", visible: show },
                 { data: "id", visible: false },
                 { data: "entityID", visible: false },
                 { data: "qty" },
@@ -296,8 +297,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 { data: "destinationLat", visible: false },
                 { data: "destinationLng", visible: false },
                 { data: "needsDataPoints", visible: false },
-                { data: "contactEmails", visible: false },
                 { data: "status" },
+                { data: "customer_needs_commit[0].status", visible: false },
+                { data: "customer_needs_commit[0].rate", visible: false },
+                { data: "entities[0].name", visible: show },
+                { data: "entities[0].rateType", visible: false },
+                { data: "entities[0].negotiatedRate", render: $.fn.dataTable.render.number( ',', '.', 2, '$' ) },
                 {
                     data: null,
                     "bSortable": false,
@@ -305,8 +310,20 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                         var buttons = '';
                         //var buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text-info\"></i> <span class=\"text-info\">View Details</span></button>';
 
-                        if (o.status != "Committed") {
+                        if (o.status != "Committed" && o.customer_needs_commit.length == 0) {
                                   buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-plus text-info\"></i> <span class=\"text-info\">Commit</span></button>";
+                        } else if (o.customer_needs_commit.length > 0) {
+                                  var showAmount = o.customer_needs_commit[0].rate.toString().split(".");
+                                  showAmount[0] = showAmount[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                  if (showAmount.length > 1) {
+                                      if (showAmount[1].length < 2) {
+                                          showAmount[1] = showAmount[1] + '0';
+                                      }
+                                      showAmount = "$" + showAmount[0] + "." + showAmount[1];
+                                  } else {
+                                      showAmount = "$" + showAmount[0] + ".00";
+                                  }
+                                  buttons += " &nbsp;<div style='display: inline' class=\"btn btn-primary btn-xs top\"><i class=\"glyphicon glyphicon-flag text-info\"></i> <span class=\"btn-primary\">Commit Rate: " + showAmount + "</span></div>";
                         } else {
                                   buttons += "No Longer Available";
                         }
@@ -709,8 +726,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
              <table id="datatable-table" class="table table-striped table-hover">
                  <thead>
                  <tr>
-                     <th></th>
-                     <th>Company</th>
+                     <th>&nbsp;</th>
                      <th>ID</th>
                      <th>Entity ID</th>
                      <th>Quantity</th>
@@ -731,6 +747,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                      <th class="hidden-sm-down">Data Points</th>
                      <th class="hidden-sm-down">Contact</th>
                      <th>Status</th>
+                     <th>Commit Status</th>
+                     <th>Commit Rate</th>
+                     <th>Company</th>
+                     <th>Rate Type</th>
+                     <th>Negotiated Rate</th>
                      <th class="no-sort pull-right">&nbsp;</th>
                  </tr>
                  </thead>
@@ -1159,7 +1180,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             var qtyselect = '<select id="qty" class="form-control mb-sm">\n';
             var dpchecked = '';
             $("#id").val(data["id"]);
-            $("#entityID").val(data["entityID"]);
+            //$("#entityID").val(data["entityID"]); Use the session entity id of the logged in user, not from the customer_needs record
+            $("#entityID").val(entityid);
             $("#qty").val(data["qty"]);
             $("#originationAddress1").val(data["originationAddress1"]);
             $("#originationCity").val(data["originationCity"]);
@@ -1169,9 +1191,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             $("#destinationCity").val(data["destinationCity"]);
             $("#destinationState").val(data["destinationState"]);
             $("#destinationZip").val(data["destinationZip"]);
-
+            $("#rate").val(data["entities"][0].negotiatedRate.toFixed(2));
             for (var i = 1; i <= data['qty']; i++) {
-                qtyselect += '<option>' + i + '</option>\n';
+                if (i == data['qty']) {
+                    dpchecked = "selected=selected";
+                }
+                qtyselect += '<option ' + dpchecked + '>' + i + '</option>\n';
             }
             qtyselect += '</select>\n';
             $("#qtyDiv").html(qtyselect);

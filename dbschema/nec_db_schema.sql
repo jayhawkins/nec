@@ -713,8 +713,8 @@ ALTER TABLE `customer_needs`
 	ON UPDATE No Action;
 
 ALTER TABLE `customer_needs_commit`
-	ADD CONSTRAINT `lnk_entities_customer_needs_commit` FOREIGN KEY ( `entityID` )
-	REFERENCES `entities`( `id` )
+	ADD CONSTRAINT `lnk_customer_needs_customer_needs_commit` FOREIGN KEY ( `customerNeedsID` )
+	REFERENCES `customer_needs`( `id` )
 	ON DELETE No Action
 	ON UPDATE No Action;
 
