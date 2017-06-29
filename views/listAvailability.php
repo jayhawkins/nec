@@ -79,6 +79,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 locationType: "Origination"
           };
           //alert(JSON.stringify(params));
+
           $.ajax({
              url: '<?php echo HTTP_HOST."/getlocationbycitystatezip" ?>',
              type: 'POST',
@@ -129,7 +130,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
              }
           });
 
-          if (result) { verifyAndPost(); } else { return false; }
+          if (result) {
+              verifyAndPost();
+          } else {
+              return false;
+          }
       }
 
       function verifyAndPost() {
@@ -211,7 +216,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                                            }
                                         });
                                       }
-                                      $("#myModal").modal('hide');
+                                      $("#myModalCommit").modal('hide');
                                       loadTableAJAX();
                                       $("#id").val('');
                                       $("#qty").val('');
@@ -256,7 +261,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       }
 
       function loadTableAJAX() {
-        myApp.showPleaseWait();
+
         if (<?php echo $_SESSION['entityid']; ?> > 0) {
             var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=customer_needs_commit,entities&columns=id,entityID,qty,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,customer_needs_commit.status,customer_needs_commit.rate,entities.name,entities.rate,entities.negotiatedRate&order[]=availableDate,desc&transform=1';
             var show = false;
@@ -340,7 +345,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
           //See DataTables.net for more information about the reload method
           example_table.ajax.reload();
           $("#entityID").prop('disabled', false);
-          myApp.hidePleaseWait();
 
       }
 
@@ -1003,7 +1007,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         </div>
          <div class="modal-footer">
            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-           <button type="button" class="btn btn-primary" onclick="return post();">Commit</button>
+           <button type="button" class="btn btn-primary btn-md" onclick="return post();" id="load" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Committing Now">Commit</button>
          </div>
        </div>
      </div>
@@ -1068,6 +1072,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
           </div>
         </div>
       </div>
+    </div>
+
+    <div class="loader_modal" style="display: none">
+       <div class="loader_center">
+         <img alt="" src="../img/loaderIcon.gif" />
+       </div>
     </div>
 
  <script>
