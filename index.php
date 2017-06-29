@@ -337,5 +337,17 @@ $app->route('POST /customerneedsnotification', function() {
     }
 });
 
+$app->route('POST /customerneedscommitnotification', function() {
+    $customerneedid = Flight::request()->data->id;
+    $customerneedcommit = Flight::customerneedcommit();
+    $notificationresult = $customerneedcommit->sendRepNotification(API_HOST,$customerneedid);
+    if ($notificationresult) {
+        print_r($notificationresult);
+        //echo "success";
+    } else {
+        print_r($notificationresult);
+    }
+});
+
 // Start the framework
 $app->start();

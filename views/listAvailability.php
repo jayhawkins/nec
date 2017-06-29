@@ -50,6 +50,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
      var dataPoints = <?php echo json_encode($dataPoints); ?>;
      //console.log(dataPoints);
 
+     var entityid = <?php echo $_SESSION['entityid']; ?>;
+
      var myApp;
       myApp = myApp || (function () {
        var pleaseWaitDiv = $('<div class="modal hide" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false"><div class="modal-header"><h1>Processing...</h1></div><div class="modal-body"><div class="progress progress-striped active"><div class="bar" style="width: 100%;"></div></div></div></div>');
@@ -77,6 +79,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 locationType: "Origination"
           };
           //alert(JSON.stringify(params));
+
           $.ajax({
              url: '<?php echo HTTP_HOST."/getlocationbycitystatezip" ?>',
              type: 'POST',
@@ -127,7 +130,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
              }
           });
 
-          if (result) { verifyAndPost(); } else { return false; }
+          if (result) {
+              verifyAndPost();
+          } else {
+              return false;
+          }
       }
 
       function verifyAndPost() {
@@ -164,7 +171,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
 
                 var geocoder = new google.maps.Geocoder();
-                var originationaddress = $("#originationCity").val() + ' ' + $("#originationState").val() + ' ' + $("#originationZip").val();
+                var originationaddress = $("#originationAddress1").val() + ' ' + $("#originationCity").val() + ' ' + $("#originationState").val() + ' ' + $("#originationZip").val();
 
                 geocoder.geocode( { 'address': originationaddress}, function(originationresults, status) {
 
@@ -173,48 +180,17 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     var originationlat = originationresults[0].geometry.location.lat();
                     var originationlng = originationresults[0].geometry.location.lng();
 
-                      var destinationaddress = $("#destinationCity").val() + ' ' + $("#destinationState").val() + ' ' + $("#destinationZip").val();
+                      var destinationaddress = $("#destinationAddress1").val() + ' ' + $("#destinationCity").val() + ' ' + $("#destinationState").val() + ' ' + $("#destinationZip").val();
                       geocoder.geocode( { 'address': destinationaddress}, function(destinationresults, status) {
 
                           if (status == google.maps.GeocoderStatus.OK) {
                               var destinationlat = destinationresults[0].geometry.location.lat();
                               var destinationlng = destinationresults[0].geometry.location.lng();
 
-                              if ($("#id").val() > '') {
-                                  var url = '<?php echo API_HOST."/api/customer_needs" ?>/' + $("#id").val();
-                                  type = "PUT";
-                              } else {
-                                  var url = '<?php echo API_HOST."/api/customer_needs" ?>';
-                                  type = "POST";
-                              }
-
-                              // Build the contacts
-                              var contactsarray = [];
-                              var obj = $("#check-list-box li.active");
-                              for (var i = 0; i < obj.length; i++) {
-                                  item = {};
-                                  item[obj[i].id] = obj[i].innerText;
-                                  contactsarray.push(item);
-                              }
-                              var $contacts = contactsarray;
-
-                              // Build the needsDataPoints
-                              var needsarray = [];
-                              var obj = $("#dp-check-list-box li select");
-                              for (var i = 0; i < obj.length; i++) {
-                                  item = {};
-                                  item[obj[i].id] = obj[i].value;
-                                  needsarray.push(item);
-                              }
-                              var needsdatapoints = needsarray;
-
-                              if (type == "PUT") {
-                                  var date = today;
-                                  var data = {qty: $("#qty").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, contactEmails: $contacts, availableDate: $("#availableDate").val(), updatedAt: date};
-                              } else {
-                                  var date = today;
-                                  var data = {entityID: $("#entityID").val(), qty: $("#qty").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, contactEmails: $contacts, availableDate: $("#availableDate").val(), createdAt: date};
-                              }
+                              var url = '<?php echo API_HOST."/api/customer_needs_commit" ?>';
+                              type = "POST";
+                              var date = today;
+                              var data = {customerNeedsID: $("#id").val(), entityID: $("#entityID").val(), qty: $("#qty").val(), originationAddress1: $("#originationAddress1").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress1: $("#destinationAddress1").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, rate: $("#rate").val(), pickupDate: $("#pickupDate").val(), deliveryDate: $("#deliveryDate").val(), createdAt: date};
 
                               $.ajax({
                                  url: url,
@@ -225,9 +201,9 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                                  success: function(data){
                                     if (data > 0) {
                                       if (type == 'POST') {
-                                        var params = {id: data};
+                                        var params = {id: data}; // Send customer needs commit id so we can gather who to send notification to at NEC
                                         $.ajax({
-                                           url: '<?php echo HTTP_HOST."/customerneedsnotification" ?>',
+                                           url: '<?php echo HTTP_HOST."/customerneedscommitnotification" ?>',
                                            type: 'POST',
                                            data: JSON.stringify(params),
                                            contentType: "application/json",
@@ -240,20 +216,24 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                                            }
                                         });
                                       }
-                                      $("#myModal").modal('hide');
+                                      $("#myModalCommit").modal('hide');
                                       loadTableAJAX();
                                       $("#id").val('');
                                       $("#qty").val('');
-                                      $("#availableDate").val('');
+                                      $("#pickupDate").val('');
+                                      $("#deliveryDate").val('');
+                                      $("#originationAddress1").val('');
                                       $("#originationCity").val('');
                                       $("#originationState").val('');
                                       $("#originationZip").val('');
+                                      $("#destinationAddress1").val('');
                                       $("#destinationCity").val('');
                                       $("#destinationState").val('');
                                       $("#destinationZip").val('');
+                                      $("#rate").val('');
                                       passValidation = true;
                                     } else {
-                                      alert("Adding Need Failed!");
+                                      alert("Adding Need Failed!\n\n" + data);
                                     }
                                  },
                                  error: function() {
@@ -281,12 +261,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       }
 
       function loadTableAJAX() {
-        myApp.showPleaseWait();
+
         if (<?php echo $_SESSION['entityid']; ?> > 0) {
-            var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?&columns=id,entityID,qty,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&order[]=availableDate,desc&transform=1';
+            var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=customer_needs_commit,entities&columns=id,entityID,qty,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,customer_needs_commit.status,customer_needs_commit.rate,entities.name,entities.rate,entities.negotiatedRate&order[]=availableDate,desc&transform=1';
             var show = false;
         } else {
-            var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=entities&columns=entities.name,id,entityID,qty,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&satisfy=all&order[]=entityID&order[]=availableDate,desc&transform=1';
+            var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=customer_needs_commit,entities&columns=id,entityID,qty,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,customer_needs_commit.status,customer_needs_commit.rate,entities.name,entities.rate,entities.negotiatedRate&satisfy=all&order[]=entityID&order[]=availableDate,desc&transform=1';
             var show = true;
         }
 
@@ -304,7 +284,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     "data":           null,
                     "defaultContent": ''
                 },
-                { data: "entities[0].name", visible: show },
                 { data: "id", visible: false },
                 { data: "entityID", visible: false },
                 { data: "qty" },
@@ -323,8 +302,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 { data: "destinationLat", visible: false },
                 { data: "destinationLng", visible: false },
                 { data: "needsDataPoints", visible: false },
-                { data: "contactEmails", visible: false },
                 { data: "status" },
+                { data: "customer_needs_commit[0].status", visible: false },
+                { data: "customer_needs_commit[0].rate", visible: false },
+                { data: "entities[0].name", visible: show },
+                { data: "entities[0].rateType", visible: false },
+                { data: "entities[0].negotiatedRate", render: $.fn.dataTable.render.number( ',', '.', 2, '$' ) },
                 {
                     data: null,
                     "bSortable": false,
@@ -332,8 +315,20 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                         var buttons = '';
                         //var buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text-info\"></i> <span class=\"text-info\">View Details</span></button>';
 
-                        if (o.status != "Committed") {
+                        if (o.status != "Committed" && o.customer_needs_commit.length == 0) {
                                   buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-plus text-info\"></i> <span class=\"text-info\">Commit</span></button>";
+                        } else if (o.customer_needs_commit.length > 0) {
+                                  var showAmount = o.customer_needs_commit[0].rate.toString().split(".");
+                                  showAmount[0] = showAmount[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                  if (showAmount.length > 1) {
+                                      if (showAmount[1].length < 2) {
+                                          showAmount[1] = showAmount[1] + '0';
+                                      }
+                                      showAmount = "$" + showAmount[0] + "." + showAmount[1];
+                                  } else {
+                                      showAmount = "$" + showAmount[0] + ".00";
+                                  }
+                                  buttons += " &nbsp;<div style='display: inline' class=\"btn btn-primary btn-xs top\"><i class=\"glyphicon glyphicon-flag text-info\"></i> <span class=\"btn-primary\">Commit Rate: " + showAmount + "</span></div>";
                         } else {
                                   buttons += "No Longer Available";
                         }
@@ -350,7 +345,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
           //See DataTables.net for more information about the reload method
           example_table.ajax.reload();
           $("#entityID").prop('disabled', false);
-          myApp.hidePleaseWait();
 
       }
 
@@ -736,8 +730,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
              <table id="datatable-table" class="table table-striped table-hover">
                  <thead>
                  <tr>
-                     <th></th>
-                     <th>Company</th>
+                     <th>&nbsp;</th>
                      <th>ID</th>
                      <th>Entity ID</th>
                      <th>Quantity</th>
@@ -758,6 +751,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                      <th class="hidden-sm-down">Data Points</th>
                      <th class="hidden-sm-down">Contact</th>
                      <th>Status</th>
+                     <th>Commit Status</th>
+                     <th>Commit Rate</th>
+                     <th>Company</th>
+                     <th>Rate Type</th>
+                     <th>Negotiated Rate</th>
                      <th class="no-sort pull-right">&nbsp;</th>
                  </tr>
                  </thead>
@@ -854,13 +852,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                  </div>
                 </form>
        </div>
-        <div class="modal-footer">
+       <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           <!--button type="button" class="btn btn-primary" id="btnCommit">Commit To Need</button-->
-        </div>
-      </div>
-    </div>
-  </div>
+       </div>
+     </div>
+   </div>
+ </div>
 
   <!-- Modal -->
   <div class="modal fade" id="myModalCommit" tabindex="-1" aria-hidden="true" aria-label="exampleModalCommitLabel">
@@ -1009,7 +1007,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         </div>
          <div class="modal-footer">
            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-           <button type="button" class="btn btn-primary" onclick="return post();">Commit</button>
+           <button type="button" class="btn btn-primary btn-md" onclick="return post();" id="load" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Committing Now">Commit</button>
          </div>
        </div>
      </div>
@@ -1074,6 +1072,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
           </div>
         </div>
       </div>
+    </div>
+
+    <div class="loader_modal" style="display: none">
+       <div class="loader_center">
+         <img alt="" src="../img/loaderIcon.gif" />
+       </div>
     </div>
 
  <script>
@@ -1186,7 +1190,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             var qtyselect = '<select id="qty" class="form-control mb-sm">\n';
             var dpchecked = '';
             $("#id").val(data["id"]);
-            $("#entityID").val(data["entityID"]);
+            //$("#entityID").val(data["entityID"]); Use the session entity id of the logged in user, not from the customer_needs record
+            $("#entityID").val(entityid);
             $("#qty").val(data["qty"]);
             $("#originationAddress1").val(data["originationAddress1"]);
             $("#originationCity").val(data["originationCity"]);
@@ -1196,9 +1201,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             $("#destinationCity").val(data["destinationCity"]);
             $("#destinationState").val(data["destinationState"]);
             $("#destinationZip").val(data["destinationZip"]);
-
+            $("#rate").val(data["entities"][0].negotiatedRate.toFixed(2));
             for (var i = 1; i <= data['qty']; i++) {
-                qtyselect += '<option>' + i + '</option>\n';
+                if (i == data['qty']) {
+                    dpchecked = "selected=selected";
+                }
+                qtyselect += '<option ' + dpchecked + '>' + i + '</option>\n';
             }
             qtyselect += '</select>\n';
             $("#qtyDiv").html(qtyselect);
@@ -1282,6 +1290,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
            success: function(response){
              //response = JSON.stringify(JSON.parse(response));
              response = JSON.parse(response);
+             $("#originationAddress1").val(response.address1);
              $("#originationCity").val(response.city);
              $("#originationState").val(response.state);
              $("#originationZip").val(response.zip);
@@ -1329,6 +1338,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
            success: function(response){
              //response = JSON.stringify(JSON.parse(response));
              response = JSON.parse(response);
+             $("#destinationAddress1").val(response.address1);
              $("#destinationCity").val(response.city);
              $("#destinationState").val(response.state);
              $("#destinationZip").val(response.zip);
