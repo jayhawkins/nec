@@ -131,7 +131,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
           });
 
           if (result) {
-              verifyAndPost();
+              verifyAndPost(function() {
+                $("#load").html("Commit");
+                $("#load").prop("disabled", false);
+              });
           } else {
               return false;
           }
@@ -140,6 +143,9 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       function verifyAndPost() {
 
           if ( $('#formNeed').parsley().validate() ) {
+
+                $("#load").html("<i class='fa fa-spinner fa-spin'></i> Committing Now");
+                $("#load").prop("disabled", true);
 
                 var passValidation = false;
                 var type = "";
@@ -345,6 +351,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
           //See DataTables.net for more information about the reload method
           example_table.ajax.reload();
           $("#entityID").prop('disabled', false);
+          $("#load").html("Commit");
+          $("#load").prop("disabled", false);
 
       }
 
@@ -1007,7 +1015,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         </div>
          <div class="modal-footer">
            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-           <button type="button" class="btn btn-primary btn-md" onclick="return post();" id="load" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Committing Now">Commit</button>
+           <button type="button" class="btn btn-primary btn-md" onclick="return post();" id="load">Commit</button>
          </div>
        </div>
      </div>
@@ -1072,12 +1080,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
           </div>
         </div>
       </div>
-    </div>
-
-    <div class="loader_modal" style="display: none">
-       <div class="loader_center">
-         <img alt="" src="../img/loaderIcon.gif" />
-       </div>
     </div>
 
  <script>
