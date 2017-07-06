@@ -726,6 +726,12 @@ ALTER TABLE `entities`
 	ON DELETE No Action
 	ON UPDATE No Action;
 
+ALTER TABLE `entities`
+	ADD CONSTRAINT `lnk_entity_types_entities` FOREIGN KEY ( `entityTypeID` )
+	REFERENCES `entity_types`( `id` )
+	ON DELETE No Action
+	ON UPDATE No Action;
+
 
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

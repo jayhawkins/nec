@@ -266,7 +266,7 @@ $app->route('POST /getlocationbycitystatezip', function() {
         $resp = json_decode($resp_json, true);
 
         // response status will be 'OK', if able to geocode given address
-        if($resp['status']=='OK'){
+        if($resp['status']=='OK') {
 
             if ($locationType == "Origination") {
                 $locationTypeID = 2;
@@ -283,6 +283,8 @@ $app->route('POST /getlocationbycitystatezip', function() {
 
             echo $result;
 
+        } else {
+            echo $resp['status'];
         }
     } else {
         if ( $result > 0 ) {
