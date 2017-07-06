@@ -115,7 +115,7 @@ $contacts = file_get_contents(API_HOST.'/api/contacts?columns=id,firstName,lastN
 
       function loadTableAJAX() {
         myApp.showPleaseWait();
-        var url = '<?php echo API_HOST; ?>' + '/api/entities?columns=id,entityTypeID,name,entityRating,status,rateType,negotiatedRate&order=name&transform=1';
+        var url = '<?php echo API_HOST; ?>' + '/api/entities?include=entity_types&columns=id,entityTypeID,entity_types.name,name,entityRating,status,rateType,negotiatedRate&order=name&transform=1';
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
             processing: true,
@@ -126,6 +126,7 @@ $contacts = file_get_contents(API_HOST.'/api/contacts?columns=id,firstName,lastN
             columns: [
                 { data: "id", visible: false },
                 { data: "entityTypeID", visible: false },
+                { data: "entity_types[0].name" },
                 { data: "name" },
                 { data: "entityRating" },
                 { data: "rateType" },
@@ -228,6 +229,7 @@ $contacts = file_get_contents(API_HOST.'/api/contacts?columns=id,firstName,lastN
                  <tr>
                      <th>ID</th>
                      <th>Entity Type</th>
+                     <th class="hidden-sm-down">Type</th>
                      <th class="hidden-sm-down">Name</th>
                      <th class="hidden-sm-down">Rating</th>
                      <th class="hidden-sm-down">Rate Type</th>

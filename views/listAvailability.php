@@ -87,6 +87,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
              contentType: "application/json",
              async: false,
              success: function(response){
+                //alert("Origination " + response);
                 if (response == "success") {
                     var params = {
                           address1: $("#destinationAddress1").val(),
@@ -104,37 +105,52 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                        contentType: "application/json",
                        async: false,
                        success: function(response){
+                          //alert("Destination " + response);
                           if (response == "success") {
                           } else {
-                              alert("1: " + response);
+                              if (response == "ZERO_RESULTS") {
+                                  alert("Destination Address does not exist!");
+                              } else {
+                                  alert("Destination Address Error: " + JSON.stringify(response));
+                              }
                               result = false;
                               //alert('Preparation Failed!');
                           }
                        },
                        error: function(response) {
-                          alert("2: " + response);
+                          if (response == "ZERO_RESULTS") {
+                              alert("Destination Address does not exist!");
+                          } else {
+                              alert("Destination Address Error: " + JSON.stringify(response));
+                          }
                           result = false;
                           //alert('Failed Searching for Destination Location! - Notify NEC of this failure.');
                        }
                     });
                 } else {
-                    alert("3: " + response);
+                    if (response == "ZERO_RESULTS") {
+                        alert("Origination Address does not exist!");
+                    } else {
+                        alert("Origination Address Error: " + JSON.stringify(response));
+                    }
                     result = false;
                     //alert('Preparation Failed!');
                 }
              },
              error: function(response) {
-                alert("4: " + JSON.stringify(response));
+                alert("Issue With Origination Address: " + JSON.stringify(response));
                 result = false;
                 //alert('Failed Searching for Origination Location! - Notify NEC of this failure.');
              }
           });
 
           if (result) {
-              verifyAndPost(function() {
+              verifyAndPost(function(data) {
+                alert(data);
                 $("#load").html("Commit");
                 $("#load").prop("disabled", false);
               });
+              return true;
           } else {
               return false;
           }
@@ -147,7 +163,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 $("#load").html("<i class='fa fa-spinner fa-spin'></i> Committing Now");
                 $("#load").prop("disabled", true);
 
-                var passValidation = false;
+                var returnMessage = "";
                 var type = "";
                 var today = new Date();
                 var dd = today.getDate();
@@ -215,10 +231,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                                            contentType: "application/json",
                                            async: false,
                                            success: function(notification){
-                                              alert(notification);
+                                             alert(notification);
+                                              returnMessage = notification;
                                            },
                                            error: function() {
-                                              alert('Failed Sending Notifications! - Notify NEC of this failure.');
+                                             alert("Failed");
+                                              returnMessage = 'Failed Sending Notifications! - Notify NEC of this failure.';
                                            }
                                         });
                                       }
@@ -237,32 +255,31 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                                       $("#destinationState").val('');
                                       $("#destinationZip").val('');
                                       $("#rate").val('');
-                                      passValidation = true;
                                     } else {
-                                      alert("Adding Need Failed!\n\n" + data);
+                                      returnMessage = "Adding Need Failed!\n\n" + data;
                                     }
                                  },
                                  error: function() {
-                                    alert("There Was An Error Adding Location!");
+                                    returnMessage = "There Was An Error Adding Location!";
                                  }
                               });
 
                           } else {
-                              alert("ERROR Geo-Coding Address!");
+                              returnMessage = "ERROR Geo-Coding Address!";
                           }
                       });
                   } else {
-                      alert("ERROR Geo-Coding Address!");
+                      returnMessage = "ERROR Geo-Coding Address!";
                   }
                 });
 
-                return passValidation;
+                return returnMessage;
 
-            } else {
+          } else {
 
-                return false;
+                return "Error";
 
-            }
+          }
 
       }
 
