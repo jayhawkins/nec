@@ -103,18 +103,21 @@
                         </div>
                         <div class="row">
                             <div class="col-sm-4">
+                                <label for="rate">First Name</label>
                                 <div class="form-group">
                                   <input type="text" class="form-control" id="firstName" name="firstName" placeholder="*First Name"
                                           required="required" />
                                 </div>
                             </div>
                             <div class="col-sm-4">
+                                <label for="rate">Last Name</label>
                                 <div class="form-group">
                                   <input type="text" id="lastName" name="lastName" class="form-control" placeholder="*Last Name"
                                          required="required" />
                                 </div>
                             </div>
                             <div class="col-sm-4">
+                              <label for="rate">Title</label>
                               <div class="form-group">
                                 <input type="text" id="title" name="title" class="form-control" placeholder="Title" />
                               </div>
@@ -122,6 +125,7 @@
                         </div>
                         <div class="row">
                             <div class="col-sm-8">
+                                <label for="rate">Company Name</label>
                                 <div class="form-group">
                                   <input type="text" id="entityName" name="entityName" class="form-control" placeholder="*Company Name"
                                          required="required" />
@@ -132,11 +136,13 @@
                         </div>
                         <div class="row">
                             <div class="col-sm-6">
+                                <label for="rate">Company Address</label>
                                 <div class="form-group">
                                   <input type="text" id="address1" name="address1" class="form-control mb-sm" placeholder="Company Address" />
                                 </div>
                             </div>
                             <div class="col-sm-6">
+                                <label for="rate">Bldg./Suite #</label>
                                 <div class="form-group">
                                   <input type="text" id="address2" name="address2" class="form-control mb-sm" placeholder="Bldg. Number/Suite" />
                                 </div>
@@ -144,19 +150,22 @@
                         </div>
                         <div class="row">
                             <div class="col-sm-4">
+                                <label for="rate">City</label>
                                 <div class="form-group">
                                   <input type="text" id="city" name="city" class="form-control" placeholder="*City"
                                          required="required" />
                                 </div>
                             </div>
                             <div class="col-sm-4">
+                                <label for="rate">State</label>
                                 <div class="form-group">
-                                  <select id="state" name="state" data-placeholder="State" class="form-control chzn-select" data-ui-jq="select2" required="required">
+                                  <select id="state" name="state" data-placeholder="State" class="form-control chzn-select" required="required">
                                     <option value="">*Select State...</option>
                                   </select>
                                 </div>
                             </div>
                             <div class="col-sm-4">
+                                <label for="rate">Zip</label>
                                 <div class="form-group">
                                   <input type="text" id="zip" name="zip" class="form-control mb-sm" placeholder="Zip" />
                                 </div>
@@ -164,12 +173,14 @@
                         </div>
                         <div class="row">
                             <div class="col-sm-4">
+                                <label for="rate">Phone</label>
                                 <div class="form-group">
                                     <input type="text" id="phone" name="phone" class="form-control" placeholder="*Phone"
                                            required="required" />
                                 </div>
                             </div>
                             <div class="col-sm-4">
+                                <label for="rate">Fax</label>
                                 <div class="form-group">
                                     <input type="text" id="fax" name="fax" class="form-control" placeholder="Fax" />
                                 </div>
@@ -179,6 +190,7 @@
                         </div>
                         <div class="row">
                             <div class="col-sm-4">
+                                <label for="rate">Email Address</label>
                                 <div class="form-group">
                                   <input type="email" id="email" name="email" class="form-control" placeholder="*Email Address"
                                          data-parsley-trigger="change"
@@ -186,6 +198,7 @@
                                 </div>
                             </div>
                             <div class="col-sm-4">
+                                <label for="rate">Confirm Email Address</label>
                                 <div class="form-group">
                                   <input type="email" id="email2" name="email_templates2" class="form-control" placeholder="*Confirm Email"
                                          data-parsley-trigger="change"
@@ -198,6 +211,7 @@
                         </div>
                         <div class="row">
                             <div class="col-sm-4">
+                                <label for="rate">Password</label>
                                 <div class="form-group">
                                   <input type="password" id="password" name="password" class="form-control" placeholder="*Password"
                                          data-parsley-trigger="change"
@@ -206,6 +220,7 @@
                                 </div>
                             </div>
                             <div class="col-sm-4">
+                                <label for="rate">Confirm Password</label>
                                 <div class="form-group">
                                   <input type="password" id="password2" name="password2" class="form-control" placeholder="*Confirm Password"
                                          data-parsley-trigger="change"
@@ -232,8 +247,10 @@
             </div>
         </div>
     </main>
-    <footer class="page-footer">
-        2017 &copy; Admin Dashboard
+    <footer>
+      <div style="text-align: center">
+        2017 &copy; Nationwide Equipment Control - Registration
+      </div>
     </footer>
 </div>
 <!-- The Loader. Is shown when pjax happens -->
@@ -270,7 +287,7 @@
 
 <script>
 $(function() {
-    $( "#state" ).select2();
+    //$( "#state" ).select2();
     loadStates();
 });
 </script>
