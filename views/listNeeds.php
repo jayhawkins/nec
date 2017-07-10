@@ -677,13 +677,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
     .orgSearch {z-index: 9999}
     .destSearch {z-index: 9999}
 
-    #origination-list{float:left;list-style:none;margin-top:-3px;padding:0;width:250px;position: absolute;}
+    #origination-list{float:left;list-style:none;margin-top:-3px;padding:0;width:250px;position: inherit;}
 
     #origination-list li{padding: 10px; background: #f0f0f0; border-bottom: #bbb9b9 1px solid;}
 
     #origination-list li:hover{background:#ece3d2;cursor: pointer;}
 
-    #destination-list{float:left;list-style:none;margin-top:-3px;padding:0;width:250px;position: absolute;}
+    #destination-list{float:left;list-style:none;margin-top:-3px;padding:0;width:250px;position: relative;}
 
     #destination-list li{padding: 10px; background: #f0f0f0; border-bottom: #bbb9b9 1px solid;}
 
@@ -693,7 +693,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
  <ol class="breadcrumb">
    <li>ADMIN</li>
-   <li class="active">Manage Carrier Needs</li>
+   <li class="active">View Carrier Needs</li>
  </ol>
  <section class="widget">
      <header>
