@@ -274,11 +274,17 @@ class User
                             $updateentitycontext  = stream_context_create($updateentityoptions);
                             $updateentityresult = file_get_contents($updateentityurl, false, $updateentitycontext);
                         }
+                    } else {
+                        return "There was an issue with your member information. Please verify your information.";  // There was an issue, let the router know something failed!
                     }
+                } else {
+                    return "There was an issue with your Username information. Please verify you are using a valid email address.";  // There was an issue, let the router know something failed!
                 }
+
                 return "success"; // Return true to the router so it knows everything was created!
+                
             } else {
-              return "There was an issue with creating the information. Please contact NEC!";  // There was an issue, let the router know something failed!
+              return "There was a possible issue with your location information. Please verify you are using a valid address.";  // There was an issue, let the router know something failed!
             }
       } catch (Exception $e) { // The authorization query failed verification
             header('HTTP/1.1 401 Unauthorized');
