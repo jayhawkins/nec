@@ -124,6 +124,7 @@ ALTER TABLE customer_needs ADD COLUMN originationAddress1 VarChar(255) CHARACTER
 ALTER TABLE customer_needs ADD COLUMN originationAddress2 VarChar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL AFTER originationAddress1;
 ALTER TABLE customer_needs ADD COLUMN destinationAddress1 VarChar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL AFTER originationZip;
 ALTER TABLE customer_needs ADD COLUMN destinationAddress2 VarChar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL AFTER destinationAddress1;
+ALTER TABLE customer_needs ADD COLUMN payout FLOAT(7,2) UNSIGNED DEFAULT 0.00 AFTER qty;
 -- -------------------------------------------------------------
 
 -- CREATE TABLE "customer_needs_commit" -------------------------------
@@ -156,6 +157,8 @@ ENGINE = InnoDB
 AUTO_INCREMENT = 1;
 -- -------------------------------------------------------------
 ALTER TABLE customer_needs_commit ADD COLUMN customerNeedsID int(11) unsigned DEFAULT 0 AFTER id ;
+ALTER TABLE customer_needs_commit ADD COLUMN transportation_mode VARCHAR(64) DEFAULT 'Flat Rate' AFTER rate;
+ALTER TABLE customer_needs_commit ADD COLUMN transportation_type VARCHAR(64) DEFAULT 'Tow Empty' AFTER transportation_mode;
 -- -------------------------------------------------------------
 
 
@@ -220,6 +223,9 @@ ALTER TABLE entities ADD COLUMN updatedAt DateTime NOT NULL AFTER createdAt;
 ALTER TABLE entities ADD COLUMN contactID int(11) unsigned DEFAULT 0 AFTER assignedMemberID ;
 ALTER TABLE entities ADD COLUMN rateType varchar(64) AFTER contactID ;
 ALTER TABLE entities ADD COLUMN negotiatedRate float(7,2) unsigned DEFAULT 0.00 AFTER rateType ;
+ALTER TABLE entities ADD COLUMN towAwayRate Float(6,2) DEFAULT '0.00' AFTER negotiatedRate;
+ALTER TABLE entities ADD COLUMN loadOutRate Float(7,2) DEFAULT '0.00' AFTER towAwayRate;
+ALTER TABLE entities ADD COLUMN loadOutRateType VARCHAR(64) DEFAULT 'Flat Rate' AFTER loadOutRate;
 -- ---------------------------------------------------------
 
 

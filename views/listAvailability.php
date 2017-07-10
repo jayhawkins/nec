@@ -8,6 +8,9 @@ require '../lib/common.php';
 $state = '';
 $states = json_decode(file_get_contents(API_HOST.'/api/states?columns=abbreviation,name&order=name'));
 
+$entity = '';
+$entity = json_decode(file_get_contents(API_HOST.'/api/entities?columns=rateType,negotiatedRate&filter[]=id,eq,' . $_SESSION['entityid']));
+
 $entities = '';
 $entities = json_decode(file_get_contents(API_HOST.'/api/entities?columns=id,name&order=name&filter[]=id,gt,0&filter[]=entityTypeID,eq,1'));
 
@@ -49,6 +52,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
      var dataPoints = <?php echo json_encode($dataPoints); ?>;
      //console.log(dataPoints);
+
+     var entity = <?php echo json_encode($entity); ?>;
+     //alert(JSON.stringify(entity));
+     //console.log(JSON.stringify(entity.entities.records[0][1]));
 
      var entityid = <?php echo $_SESSION['entityid']; ?>;
 
@@ -209,10 +216,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                               var destinationlat = destinationresults[0].geometry.location.lat();
                               var destinationlng = destinationresults[0].geometry.location.lng();
 
+                              console.log($("#transportationType").val());
+
                               var url = '<?php echo API_HOST."/api/customer_needs_commit" ?>';
                               type = "POST";
                               var date = today;
-                              var data = {customerNeedsID: $("#id").val(), entityID: $("#entityID").val(), qty: $("#qty").val(), originationAddress1: $("#originationAddress1").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress1: $("#destinationAddress1").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, rate: $("#rate").val(), pickupDate: $("#pickupDate").val(), deliveryDate: $("#deliveryDate").val(), createdAt: date};
+                              var data = {customerNeedsID: $("#id").val(), entityID: $("#entityID").val(), qty: $("#qty").val(), originationAddress1: $("#originationAddress1").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress1: $("#destinationAddress1").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, rate: $("#rate").val(), transportation_mode: $("#transportationMode").val(), transportation_type: $("#transportationType").val(), pickupDate: $("#pickupDate").val(), deliveryDate: $("#deliveryDate").val(), createdAt: date};
 
                               $.ajax({
                                  url: url,
@@ -286,10 +295,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       function loadTableAJAX() {
 
         if (<?php echo $_SESSION['entityid']; ?> > 0) {
-            var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=customer_needs_commit,entities&columns=id,entityID,qty,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,customer_needs_commit.status,customer_needs_commit.rate,entities.name,entities.rate,entities.negotiatedRate&order[]=availableDate,desc&transform=1';
+            var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=customer_needs_commit,entities&columns=id,entityID,qty,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate&order[]=availableDate,desc&transform=1';
             var show = false;
         } else {
-            var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=customer_needs_commit,entities&columns=id,entityID,qty,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,customer_needs_commit.status,customer_needs_commit.rate,entities.name,entities.rate,entities.negotiatedRate&satisfy=all&order[]=entityID&order[]=availableDate,desc&transform=1';
+            var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=customer_needs_commit,entities&columns=id,entityID,qty,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate&satisfy=all&order[]=entityID&order[]=availableDate,desc&transform=1';
             var show = true;
         }
 
@@ -700,13 +709,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
     .orgSearch {z-index: 9999}
     .destSearch {z-index: 9999}
 
-    #origination-list{float:left;list-style:none;margin-top:-3px;padding:0;width:250px;position: absolute;}
+    #origination-list{float:left;list-style:none;margin-top:-3px;padding:0;width:250px;position: inherit;}
 
     #origination-list li{padding: 10px; background: #f0f0f0; border-bottom: #bbb9b9 1px solid;}
 
     #origination-list li:hover{background:#ece3d2;cursor: pointer;}
 
-    #destination-list{float:left;list-style:none;margin-top:-3px;padding:0;width:250px;position: absolute;}
+    #destination-list{float:left;list-style:none;margin-top:-3px;padding:0;width:250px;position: realtive;}
 
     #destination-list li{padding: 10px; background: #f0f0f0; border-bottom: #bbb9b9 1px solid;}
 
@@ -1019,24 +1028,36 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                   </div>
                   <hr/>
                   <div class="row">
-                      <div class="col-sm-4">
-                          <label for="rate">Rate to Transport Quantity Selected:</label>
+                      <div class="col-sm-3">
+                          <label for="rate">Rate to Transport:</label>
                           <div class="form-group">
                             <input type="text" id="rate" name="rate" class="form-control mb-sm" placeholder="$ Rate to Transport"
                             required="required" />
                           </div>
                       </div>
-                      <div class="col-sm-9">
+                      <div class="col-sm-3">
+                          <label for="rate">Transportation Mode:</label>
+                          <div class="form-group">
+                            <div class="d-inline-block"><input type="radio" id="transportionMode" name="transportationMode" value="Flat Rate" /> Flat Rate
+                            &nbsp;&nbsp;<input type="radio" id="transportionMode" name="transportationMode" value="Mileage" /> Mileage</div>
+                          </div>
+                      </div>
+                      <div class="col-sm-3">
+                        <label for="transportationTypeDiv">Transportation Type:</label>
+                        <div id="transportationTypeDiv" class="form-group">
+                        </div>
+                      </div>
+                      <div class="col-sm-3">
                       </div>
                   </div>
         </div>
-         <div class="modal-footer">
+        <div class="modal-footer">
            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
            <button type="button" class="btn btn-primary btn-md" onclick="return post();" id="load">Commit</button>
-         </div>
-       </div>
-     </div>
-   </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Modal -->
   <div class="modal fade" id="myDisableDialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -1207,6 +1228,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             var li = '';
             var checked = '';
             var qtyselect = '<select id="qty" class="form-control mb-sm">\n';
+            var transportationtypeselect = '<select id="transportationType" class="form-control mb-sm" required="required">\n';
             var dpchecked = '';
             $("#id").val(data["id"]);
             //$("#entityID").val(data["entityID"]); Use the session entity id of the logged in user, not from the customer_needs record
@@ -1220,7 +1242,9 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             $("#destinationCity").val(data["destinationCity"]);
             $("#destinationState").val(data["destinationState"]);
             $("#destinationZip").val(data["destinationZip"]);
-            $("#rate").val(data["entities"][0].negotiatedRate.toFixed(2));
+            //$("#rate").val(data["entities"][0].negotiatedRate.toFixed(2));
+            $("#rate").val(entity.entities.records[0][1].toFixed(2));
+
             for (var i = 1; i <= data['qty']; i++) {
                 if (i == data['qty']) {
                     dpchecked = "selected=selected";
@@ -1229,6 +1253,30 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             }
             qtyselect += '</select>\n';
             $("#qtyDiv").html(qtyselect);
+
+            if (entity.entities.records[0][0] == "Flat Rate") {
+                $('input[name="transportationMode"][value="Flat Rate"]').prop('checked', true);
+            } else {
+                $('input[name="transportationMode"][value="Mileage"]').prop('checked', true);
+            }
+
+            for (var i = 0; i < data['needsDataPoints'].length; i++) {
+                for (var key in data['needsDataPoints'][i]) {
+                    if (key == "transportation_type") {
+                        if (data['needsDataPoints'][i][key] == "Tow Empty") {
+                            transportationtypeselect += '<option>Tow Empty</option>\n';
+                        } else {
+                            transportationtypeselect += '<option>Tow Empty</option>\n';
+                            transportationtypeselect += '<option>Load Out</option>\n';
+                            transportationtypeselect += '<option>Either (Empty or Load Out)</option>\n';
+                        }
+                        i = data['needsDataPoints'].length; // Get out of the loop - we already did what we needed to do.
+                    }
+                }
+            }
+            transportationtypeselect += '</select>\n';
+            $("#transportationTypeDiv").html(transportationtypeselect);
+
             $("#entityID").prop('disabled', true);
             $("#myModalCommit").modal('show');
           } else {

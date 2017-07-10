@@ -26,7 +26,7 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
     $loccon[$locations_contacts->locations_contacts->records[$lc][0]] = $locations_contacts->locations_contacts->records[$lc][1];
 }
 
-$dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_points?include=object_type_data_point_values&transform=1&columns=id,columnName,title,status,object_type_data_point_values.value&filter[]=entityID,in,(0," . $_SESSION['entityid'] . ")&filter[]=status,eq,Active" ));
+$dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_points?include=object_type_data_point_values&transform=1&columns=id,columnName,title,status,object_type_data_point_values.value&filter[]=entityID,in,(0," . $_SESSION['entityid'] . ")&filter[]=status,eq,Active&order[]=sort_order" ));
 
 
 // No longer needed. We don't load via PHP anymore. All handled in JS function.
@@ -210,11 +210,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
                               if (type == "PUT") {
                                   var date = today;
-                                  var data = {qty: $("#qty").val(), originationAddress1: $("#originationAddress1").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress1: $("#destinationAddress1").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, contactEmails: $contacts, availableDate: $("#availableDate").val(), expirationDate: $("#expirationDate").val(), updatedAt: date};
+                                  var data = {qty: $("#qty").val(), payout: $("#payout").val(), originationAddress1: $("#originationAddress1").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress1: $("#destinationAddress1").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, contactEmails: $contacts, availableDate: $("#availableDate").val(), expirationDate: $("#expirationDate").val(), updatedAt: date};
                               } else {
                                   var date = today;
                                   var recStatus = 'Available';
-                                  var data = {entityID: $("#entityID").val(), qty: $("#qty").val(), originationAddress1: $("#originationAddress1").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress1: $("#destinationAddress1").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, status: recStatus, contactEmails: $contacts, availableDate: $("#availableDate").val(), expirationDate: $("#expirationDate").val(), createdAt: date};
+                                  var data = {entityID: $("#entityID").val(), qty: $("#qty").val(), payout: $("#payout").val(), originationAddress1: $("#originationAddress1").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress1: $("#destinationAddress1").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, status: recStatus, contactEmails: $contacts, availableDate: $("#availableDate").val(), expirationDate: $("#expirationDate").val(), createdAt: date};
                               }
 
                               $.ajax({
@@ -245,6 +245,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                                       loadTableAJAX();
                                       $("#id").val('');
                                       $("#qty").val('');
+                                      $("#payout").val('');
                                       $("#availableDate").val('');
                                       $("#expirationDate").val('');
                                       $("#originationAddress1").val('');
@@ -287,10 +288,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       function loadTableAJAX() {
         myApp.showPleaseWait();
         if (<?php echo $_SESSION['entityid']; ?> > 0) {
-            var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=entities&columns=entities.name,id,entityID,qty,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&filter[]=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&satisfy=all&order[]=availableDate,desc&transform=1';
+            var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=entities&columns=entities.name,id,entityID,qty,payout,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&filter[]=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&satisfy=all&order[]=availableDate,desc&transform=1';
             var show = false;
         } else {
-            var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=entities&columns=entities.name,id,entityID,qty,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&satisfy=all&order[]=entityID&order[]=availableDate,desc&transform=1';
+            var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=entities&columns=entities.name,id,entityID,qty,payout,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&satisfy=all&order[]=entityID&order[]=availableDate,desc&transform=1';
             var show = true;
         }
 
@@ -306,6 +307,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 { data: "id", visible: false },
                 { data: "entityID", visible: false },
                 { data: "qty" },
+                { data: "payout", render: $.fn.dataTable.render.number(',', '.', 2, '$')  },
                 { data: "availableDate", visible: false },
                 { data: "expirationDate", visible: false },
                 { data: "originationAddress1", visible: false },
@@ -677,13 +679,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
     .orgSearch {z-index: 9999}
     .destSearch {z-index: 9999}
 
-    #origination-list{float:left;list-style:none;margin-top:-3px;padding:0;width:250px;position: absolute;}
+    #origination-list{float:left;list-style:none;margin-top:-3px;padding:0;width:250px;position: inherit;}
 
     #origination-list li{padding: 10px; background: #f0f0f0; border-bottom: #bbb9b9 1px solid;}
 
     #origination-list li:hover{background:#ece3d2;cursor: pointer;}
 
-    #destination-list{float:left;list-style:none;margin-top:-3px;padding:0;width:250px;position: absolute;}
+    #destination-list{float:left;list-style:none;margin-top:-3px;padding:0;width:250px;position: relative;}
 
     #destination-list li{padding: 10px; background: #f0f0f0; border-bottom: #bbb9b9 1px solid;}
 
@@ -719,6 +721,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                      <th>ID</th>
                      <th>Entity ID</th>
                      <th>Quantity</th>
+                     <th>Payout</th>
                      <th>Available Date</th>
                      <th>Expiration Date</th>
                      <th class="hidden-sm-down">Orig. Address</th>
@@ -881,6 +884,19 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                    </div>
                  </div>
                  <hr />
+                 <div class="row">
+                     <div class="col-sm-3">
+                         <label for="payout">Payout to Transport:</label>
+                         <div class="form-group">
+                           <input type="text" id="payout" name="payout" class="form-control mb-sm" placeholder="Payout $"
+                           required="required" data-parsley-type="number" />
+                         </div>
+                     </div>
+                     <div class="col-sm-9">
+                         &nbsp;
+                     </div>
+                 </div>
+                 <hr />
                  <div class="container" style="margin-top:20px;">
                      <div class="row">
                        <div class="col-xs-6">
@@ -996,6 +1012,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       var dpchecked = '';
       $("#id").val('');
       $("#qty").val('');
+      $("#payout").val('0.00');
+      $("#payout").prop("disabled", false);
       $("#availableDate").val('');
       $("#expirationDate").val('');
       $("#originationAddress1").val('');
@@ -1037,6 +1055,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             $("#id").val(data["id"]);
             $("#entityID").val(data["entityID"]);
             $("#qty").val(data["qty"]);
+            $("#payout").val(data["payout"].toFixed(2));
+<?php if ($_SESSION['entityid'] > 0) { ?>
+            $("#payout").prop("disabled", true);
+<?php } ?>
             $("#availableDate").val(data["availableDate"]);
             $("#expirationDate").val(data["expirationDate"]);
             $("#originationAddress1").val(data["originationAddress1"]);

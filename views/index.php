@@ -297,6 +297,15 @@ if ($_SESSION['entityid'] == 0) {
                     </li>
 
                     <?php
+                        if ($_SESSION['entitytype'] > 0) {
+                          echo "<li><a href=\"#\" onclick=\"ajaxFormCall('ratesProfile');\">Rates</a></li>";
+                        } else {
+                          // Must be NEC Admin So Show it all...
+                          echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listRates');\">Rates</a></li>";
+                        }
+                    ?>
+
+                    <?php
                         if ($_SESSION['entitytype'] == 1) {
                           echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listTrailers');\">Trailers</a></li>";
                         } else if ($_SESSION['entitytype'] == 2) {
@@ -338,6 +347,7 @@ if ($_SESSION['entityid'] == 0) {
                          </li>
              <?php
                 }
+
              ?>
 
 
