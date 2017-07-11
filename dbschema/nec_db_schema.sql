@@ -727,12 +727,6 @@ ALTER TABLE `customer_needs_commit`
 	ON UPDATE No Action;
 
 ALTER TABLE `entities`
-	ADD CONSTRAINT `lnk_contacts_entities` FOREIGN KEY ( `id` )
-	REFERENCES `contacts`( `entityID` )
-	ON DELETE No Action
-	ON UPDATE No Action;
-
-ALTER TABLE `entities`
 	ADD CONSTRAINT `lnk_entity_types_entities` FOREIGN KEY ( `entityTypeID` )
 	REFERENCES `entity_types`( `id` )
 	ON DELETE No Action
