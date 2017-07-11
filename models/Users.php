@@ -119,7 +119,7 @@ class User
                         "status" => "Active",
                         "entityRating" => 0,
                         "createdAt" => date('Y-m-d H:i:s'),
-                        "updatedAt" => '0000-00-00 00:00:00'
+                        "updatedAt" => date('Y-m-d H:i:s')
             );
             // use key 'http' even if you send the request to https://...
             $entityoptions = array(
@@ -146,7 +146,7 @@ class User
                         "longitude" => $data_arr[1],
                         "timeZone" => '',
                         "createdAt" => date('Y-m-d H:i:s'),
-                        "updatedAt" => '0000-00-00 00:00:00'
+                        "updatedAt" => date('Y-m-d H:i:s')
             );
             // use key 'http' even if you send the request to https://...
             $locationoptions = array(
@@ -166,7 +166,7 @@ class User
                           "password" => password_hash($password, PASSWORD_BCRYPT),
                           "status" => "Inactive",
                           "createdAt" => date('Y-m-d H:i:s'),
-                          "updatedAt" => '0000-00-00 00:00:00'
+                          "updatedAt" => date('Y-m-d H:i:s')
                 );
                 // use key 'http' even if you send the request to https://...
                 $useroptions = array(
@@ -189,7 +189,7 @@ class User
                                 "userID" => $user_id,
                                 "entityID" => $entity_id,
                                 "createdAt" => date('Y-m-d H:i:s'),
-                                "updatedAt" => '0000-00-00 00:00:00'
+                                "updatedAt" => date('Y-m-d H:i:s')
                     );
                     // use key 'http' even if you send the request to https://...
                     $memberoptions = array(
@@ -215,7 +215,7 @@ class User
                                 "fax" => $fax,
                                 "contactRating" => 0,
                                 "createdAt" => date('Y-m-d H:i:s'),
-                                "updatedAt" => '0000-00-00 00:00:00'
+                                "updatedAt" => date('Y-m-d H:i:s')
                     );
                     // use key 'http' even if you send the request to https://...
                     $contactoptions = array(
@@ -282,7 +282,7 @@ class User
                 }
 
                 return "success"; // Return true to the router so it knows everything was created!
-                
+
             } else {
               return "There was a possible issue with your location information. Please verify you are using a valid address.";  // There was an issue, let the router know something failed!
             }
