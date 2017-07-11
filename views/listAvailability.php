@@ -221,7 +221,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                               var url = '<?php echo API_HOST."/api/customer_needs_commit" ?>';
                               type = "POST";
                               var date = today;
-                              var data = {customerNeedsID: $("#id").val(), entityID: $("#entityID").val(), qty: $("#qty").val(), originationAddress1: $("#originationAddress1").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress1: $("#destinationAddress1").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, rate: $("#rate").val(), transportation_mode: $("#transportationMode").val(), transportation_type: $("#transportationType").val(), pickupDate: $("#pickupDate").val(), deliveryDate: $("#deliveryDate").val(), createdAt: date};
+                              var data = {customerNeedsID: $("#id").val(), entityID: $("#entityID").val(), qty: $("#qty").val(), originationAddress1: $("#originationAddress1").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress1: $("#destinationAddress1").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, rate: $("#rate").val(), transportation_mode: $("#transportationMode").val(), transportation_type: $('input[name="transportationType"]').prop('checked', true).val(), pickupDate: $("#pickupDate").val(), deliveryDate: $("#deliveryDate").val(), createdAt: date, updatedAt: date};
 
                               $.ajax({
                                  url: url,
@@ -339,7 +339,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 { data: "customer_needs_commit[0].rate", visible: false },
                 { data: "entities[0].name", visible: show },
                 { data: "entities[0].rateType", visible: false },
-                { data: "entities[0].negotiatedRate", render: $.fn.dataTable.render.number( ',', '.', 2, '$' ) },
+                { data: "entities[0].negotiatedRate", visible: false},
                 {
                     data: null,
                     "bSortable": false,
@@ -783,7 +783,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                      <th class="hidden-sm-down">Dest. Lat.</th>
                      <th class="hidden-sm-down">Dest. Long.</th>
                      <th class="hidden-sm-down">Data Points</th>
-                     <th class="hidden-sm-down">Contact</th>
                      <th>Status</th>
                      <th>Commit Status</th>
                      <th>Commit Rate</th>
@@ -1029,22 +1028,22 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                   <hr/>
                   <div class="row">
                       <div class="col-sm-3">
-                          <label for="rate">Rate to Transport:</label>
+                          <label for="rate">Rate to Transport</label>
                           <div class="form-group">
                             <input type="text" id="rate" name="rate" class="form-control mb-sm" placeholder="$ Rate to Transport"
                             required="required" />
                           </div>
                       </div>
                       <div class="col-sm-3">
-                          <label for="rate">Transportation Mode:</label>
+                          <label for="rate">Transportation Type</label>
                           <div class="form-group">
-                            <div class="d-inline-block"><input type="radio" id="transportionMode" name="transportationMode" value="Flat Rate" /> Flat Rate
-                            &nbsp;&nbsp;<input type="radio" id="transportionMode" name="transportationMode" value="Mileage" /> Mileage</div>
+                            <div class="d-inline-block"><input type="radio" id="transportionType" name="transportationType" value="Flat Rate" /> Flat Rate
+                            &nbsp;&nbsp;<input type="radio" id="transportionType" name="transportationType" value="Mileage" /> Mileage</div>
                           </div>
                       </div>
                       <div class="col-sm-3">
-                        <label for="transportationTypeDiv">Transportation Type:</label>
-                        <div id="transportationTypeDiv" class="form-group">
+                        <label for="transportationModeDiv">Transportation Mode</label>
+                        <div id="transportationModeDiv" class="form-group">
                         </div>
                       </div>
                       <div class="col-sm-3">
@@ -1228,7 +1227,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             var li = '';
             var checked = '';
             var qtyselect = '<select id="qty" class="form-control mb-sm">\n';
-            var transportationtypeselect = '<select id="transportationType" class="form-control mb-sm" required="required">\n';
+            var transportationmodeselect = '<select id="transportationMode" name="transportationMode" class="form-control mb-sm" required="required">\n';
             var dpchecked = '';
             $("#id").val(data["id"]);
             //$("#entityID").val(data["entityID"]); Use the session entity id of the logged in user, not from the customer_needs record
@@ -1255,11 +1254,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             $("#qtyDiv").html(qtyselect);
 
             if (entity.entities.records[0][0] == "Flat Rate") {
-                $('input[name="transportationMode"][value="Flat Rate"]').prop('checked', true);
+                $('input[name="transportationType"][value="Flat Rate"]').prop('checked', true);
             } else {
-                $('input[name="transportationMode"][value="Mileage"]').prop('checked', true);
+                $('input[name="transportationType"][value="Mileage"]').prop('checked', true);
             }
-
+/*
             for (var i = 0; i < data['needsDataPoints'].length; i++) {
                 for (var key in data['needsDataPoints'][i]) {
                     if (key == "transportation_type") {
@@ -1274,8 +1273,21 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     }
                 }
             }
-            transportationtypeselect += '</select>\n';
-            $("#transportationTypeDiv").html(transportationtypeselect);
+
+            if (data['transportationMode'] == "Empty") {
+                transportationtypeselect += '<option value="Empty">Empty</option>\n';
+            } else {
+                transportationtypeselect += '<option value="Empty">Empty</option>\n';
+                transportationtypeselect += '<option value="Load Out">Load Out</option>\n';
+                transportationtypeselect += '<option value="Either (Empty or Load Out)">Either (Empty or Load Out)</option>\n';
+            }
+*/
+
+            transportationmodeselect += '<option value="Empty">Empty</option>\n';
+            transportationmodeselect += '<option value="Load Out">Load Out</option>\n';
+            transportationmodeselect += '<option value="Either (Empty or Load Out)">Either (Empty or Load Out)</option>\n';
+            transportationmodeselect += '</select>\n';
+            $("#transportationModeDiv").html(transportationmodeselect);
 
             $("#entityID").prop('disabled', true);
             $("#myModalCommit").modal('show');

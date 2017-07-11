@@ -210,11 +210,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
                               if (type == "PUT") {
                                   var date = today;
-                                  var data = {qty: $("#qty").val(), payout: $("#payout").val(), originationAddress1: $("#originationAddress1").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress1: $("#destinationAddress1").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, contactEmails: $contacts, availableDate: $("#availableDate").val(), expirationDate: $("#expirationDate").val(), updatedAt: date};
+                                  var data = {qty: $("#qty").val(), payout: $("#payout").val(), transportationMode: $("#transportationMode").val(), originationAddress1: $("#originationAddress1").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress1: $("#destinationAddress1").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, contactEmails: $contacts, availableDate: $("#availableDate").val(), expirationDate: $("#expirationDate").val(), updatedAt: date};
                               } else {
                                   var date = today;
                                   var recStatus = 'Available';
-                                  var data = {entityID: $("#entityID").val(), qty: $("#qty").val(), payout: $("#payout").val(), originationAddress1: $("#originationAddress1").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress1: $("#destinationAddress1").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, status: recStatus, contactEmails: $contacts, availableDate: $("#availableDate").val(), expirationDate: $("#expirationDate").val(), createdAt: date};
+                                  var data = {entityID: $("#entityID").val(), qty: $("#qty").val(), payout: $("#payout").val(), transportationMode: $("#transportationMode").val(), originationAddress1: $("#originationAddress1").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress1: $("#destinationAddress1").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, status: recStatus, contactEmails: $contacts, availableDate: $("#availableDate").val(), expirationDate: $("#expirationDate").val(), createdAt: date, updatedAt: date};
                               }
 
                               $.ajax({
@@ -288,10 +288,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       function loadTableAJAX() {
         myApp.showPleaseWait();
         if (<?php echo $_SESSION['entityid']; ?> > 0) {
-            var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=entities&columns=entities.name,id,entityID,qty,payout,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&filter[]=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&satisfy=all&order[]=availableDate,desc&transform=1';
+            var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=entities&columns=entities.name,id,entityID,qty,payout,transportationMode,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&filter[]=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&satisfy=all&order[]=availableDate,desc&transform=1';
             var show = false;
         } else {
-            var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=entities&columns=entities.name,id,entityID,qty,payout,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&satisfy=all&order[]=entityID&order[]=availableDate,desc&transform=1';
+            var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=entities&columns=entities.name,id,entityID,qty,payout,transportationMode,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&satisfy=all&order[]=entityID&order[]=availableDate,desc&transform=1';
             var show = true;
         }
 
@@ -308,6 +308,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 { data: "entityID", visible: false },
                 { data: "qty" },
                 { data: "payout", render: $.fn.dataTable.render.number(',', '.', 2, '$')  },
+                { data: "transportationMode", visible: false },
                 { data: "availableDate", visible: false },
                 { data: "expirationDate", visible: false },
                 { data: "originationAddress1", visible: false },
@@ -722,6 +723,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                      <th>Entity ID</th>
                      <th>Quantity</th>
                      <th>Payout</th>
+                     <th>Transportation Mode</th>
                      <th>Available Date</th>
                      <th>Expiration Date</th>
                      <th class="hidden-sm-down">Orig. Address</th>
@@ -886,13 +888,27 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                  <hr />
                  <div class="row">
                      <div class="col-sm-3">
-                         <label for="payout">Payout to Transport:</label>
+                         <label for="payout">Payout Rate</label>
                          <div class="form-group">
                            <input type="text" id="payout" name="payout" class="form-control mb-sm" placeholder="Payout $"
                            required="required" data-parsley-type="number" />
                          </div>
                      </div>
-                     <div class="col-sm-9">
+                     <div class="col-sm-3">
+                         <label for="payout">Transportation Mode</label>
+                         <div class="form-group">
+                           <select id="transportationMode" name="transportationMode" class="form-control chzn-select" required="required">
+                             <option value="">*Select Mode...</option>
+            <?php
+                             // Here is check
+            ?>
+                                <option value="Empty">Empty</option>
+                                <option value="Load Out">Load Out</option>
+                                <option value="Either (Empty or Load Out)">Either (Empty or Load Out)</option>
+                           </select>
+                         </div>
+                     </div>
+                     <div class="col-sm-6">
                          &nbsp;
                      </div>
                  </div>
@@ -908,7 +924,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                             </div>
                         </div>
                         <div class="col-xs-6">
-                             <h5 class="text-center"><strong>Contacts For This Availability:</strong></h5>
+                             <h5 class="text-center"><strong>Contacts For This Availability</strong></h5>
                              <div class="well" style="max-height: 200px;overflow: auto;">
                                  <ul id="check-list-box" class="list-group checked-list-box">
 
@@ -1055,10 +1071,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             $("#id").val(data["id"]);
             $("#entityID").val(data["entityID"]);
             $("#qty").val(data["qty"]);
-            $("#payout").val(data["payout"].toFixed(2));
+            $("#payout").val('$' + data["payout"].toFixed(2));
 <?php if ($_SESSION['entityid'] > 0) { ?>
             $("#payout").prop("disabled", true);
 <?php } ?>
+            $("#transportationMode").val(data["transportationMode"]);
             $("#availableDate").val(data["availableDate"]);
             $("#expirationDate").val(data["expirationDate"]);
             $("#originationAddress1").val(data["originationAddress1"]);
@@ -1191,7 +1208,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
     $("#originationCity").keyup(function(){
         $("#originationCity").css("background","#FFF url(img/loaderIcon.gif) no-repeat 165px");
 
-        var url = '<?php echo API_HOST; ?>/api/locations?transform=1&columns=id,name,city&filter[]=entityID,eq,' + $("#entityID").val() + '&filter[]=city,sw,' + $(this).val();
+        var url = '<?php echo API_HOST; ?>/api/locations?transform=1&columns=id,name,city&filter[]=entityID,eq,' + $("#entityID").val() + '&filter[]=city,sw,' + $(this).val() + '&filter[]=locationTypeID,gt,1';
 
     		$.ajax({
         		type: "GET",
@@ -1243,7 +1260,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
     $("#destinationCity").keyup(function(){
         $("#destinationCity").css("background","#FFF url(img/loaderIcon.gif) no-repeat 165px");
 
-        var url = '<?php echo API_HOST; ?>/api/locations?transform=1&columns=id,name,city&filter[]=entityID,eq,' + $("#entityID").val() + '&filter[]=city,sw,' + $(this).val();
+        var url = '<?php echo API_HOST; ?>/api/locations?transform=1&columns=id,name,city&filter[]=entityID,eq,' + $("#entityID").val() + '&filter[]=city,sw,' + $(this).val() + '&filter[]=locationTypeID,gt,1';
 
     		$.ajax({
         		type: "GET",

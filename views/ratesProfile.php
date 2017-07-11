@@ -104,7 +104,8 @@ function verifyAndPost() {
              async: false,
              success: function(data){
                 if (data > 0) {
-                  window.location.href("/");
+                  alert("Rate Information Updated Successfully!");
+                  window.location.replace("<?php echo HTTP_HOST; ?>");
                   passValidation = true;
                 } else {
                   alert("Updating Rate Information Failed!");
@@ -159,7 +160,6 @@ function verifyAndPost() {
                     </div>
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                   <button type="button" class="btn btn-primary" onclick="return verifyAndPost();">Save Changes</button>
                 </div>
               </form>
