@@ -67,10 +67,10 @@ require '../lib/common.php';
 
                 if (type == "PUT") {
                     var date = today;
-                    var data = {entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), updatedAt: date};
+                    var data = {entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactEmail: $("#contactEmail").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), updatedAt: date};
                 } else {
                     var date = today;
-                    var data = {entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), createdAt: date};
+                    var data = {entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactEmail: $("#contactEmail").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), createdAt: date};
                 }
 
                 $.ajax({
@@ -86,6 +86,7 @@ require '../lib/common.php';
                         $("#id").val('');
                         $("#name").val('');
                         $("#contactName").val('');
+                        $("#contactEmail").val('');
                         $("#contactPhone").val('');
                         $("#policyNumber").val('');
                         $("#policyExpirationDate").val('');
@@ -261,18 +262,19 @@ require '../lib/common.php';
                          </div>
                      </div>
                      <div class="col-sm-6">
-                         <div class="form-group">
-                           &nbsp;
-                         </div>
-                     </div>
-                 </div>
-                 <div class="row">
-                     <div class="col-sm-6">
                          <label for="contactName">Contact Name</label>
                          <div class="form-group">
                            <input type="text" id="contactName" name="contactName" class="form-control mb-sm" placeholder="*Contact Name" required="required" />
                          </div>
                      </div>
+                 </div>
+                     <div class="col-sm-6">
+                         <label for="contactEmail">Contact Email</label>
+                         <div class="form-group">
+                           <input type="email" id="contactEmail" name="contactEmail" class="form-control mb-sm" placeholder="*Contact Email" required="required" />
+                         </div>
+                     </div>
+                 <div class="row">
                      <div class="col-sm-6">
                          <label for="contactPhone">Contact Phone</label>
                          <div class="form-group">
