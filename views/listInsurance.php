@@ -268,13 +268,13 @@ require '../lib/common.php';
                          </div>
                      </div>
                  </div>
+                 <div class="row">
                      <div class="col-sm-6">
                          <label for="contactEmail">Contact Email</label>
                          <div class="form-group">
                            <input type="email" id="contactEmail" name="contactEmail" class="form-control mb-sm" placeholder="*Contact Email" required="required" />
                          </div>
                      </div>
-                 <div class="row">
                      <div class="col-sm-6">
                          <label for="contactPhone">Contact Phone</label>
                          <div class="form-group">
