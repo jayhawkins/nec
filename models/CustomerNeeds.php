@@ -28,6 +28,56 @@ class CustomerNeed
 
     }
 
+    public function createFromExisting($api_host,$id,$qty,$originationAddress1,$originationCity,$originationState,$originationZip,$destinationAddress1,$destinationCity,$destinationState,$destinationZip,$originationLat,$originationLng,$destinationLat,$destinationLng,$distance) {
+
+          // Load the carrier need data to send notification
+          $this->load($api_host,$id);
+
+          $data = array(
+                "qty"=>$qty,
+                "originationAddress1"=>$originationAddress1,
+                "originationCity"=>$originationCity,
+                "originationState"=>$originationState,
+                "originationZip"=>$originationZip,
+                "destinationAddress1"=>$destinationAddress1,
+                "destinationCity"=>$destinationCity,
+                "destinationState"=>$destinationState,
+                "destinationZip"=>$destinationZip,
+                "originationLat"=>$originationLat,
+                "originationLng"=>$originationLng,
+                "destinationLat"=>$destinationLat,
+                "destinationLng"=>$destinationLng,
+                "distance"=>$distance,
+                "entityID"=>$this->entityID,
+                "needsDataPoints"=>$this->needsDataPoints,
+                "status"=>$this->status,
+                "availableDate"=>$this->availableDate,
+                "contactEmails"=>$this->contactEmails,
+                "createdAt" => date('Y-m-d H:i:s'),
+                "updatedAt" => date('Y-m-d H:i:s')
+          );
+          $url = $api_host."/api/customer_needs/";
+          $options = array(
+              'http' => array(
+                  'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                  'method'  => 'POST',
+                  'content' => http_build_query($data)
+              )
+          );
+          $context  = stream_context_create($options);
+          try {
+              $result = json_decode(file_get_contents($url,false,$context),true);
+              if ($result > 0) {
+                  return "success";
+              } else {
+                  return "failed";
+              }
+          } catch (Exception $e) {
+              return $e;
+          }
+
+    }
+
     public function load($api_host,$id) {
 
       $args = array(

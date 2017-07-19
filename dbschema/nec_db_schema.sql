@@ -48,6 +48,7 @@ ALTER TABLE carrier_needs ADD COLUMN originationAddress1 VarChar(255) CHARACTER 
 ALTER TABLE carrier_needs ADD COLUMN originationAddress2 VarChar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL AFTER originationAddress1;
 ALTER TABLE carrier_needs ADD COLUMN destinationAddress1 VarChar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL AFTER originationZip;
 ALTER TABLE carrier_needs ADD COLUMN destinationAddress2 VarChar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL AFTER destinationAddress1;
+ALTER TABLE carrier_needs ADD COLUMN `distance` INT(5) unsigned DEFAULT 0 after destinationLat;
 -- -------------------------------------------------------------
 
 
@@ -126,6 +127,7 @@ ALTER TABLE customer_needs ADD COLUMN destinationAddress1 VarChar(255) CHARACTER
 ALTER TABLE customer_needs ADD COLUMN destinationAddress2 VarChar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL AFTER destinationAddress1;
 ALTER TABLE customer_needs ADD COLUMN payout FLOAT(7,2) UNSIGNED DEFAULT 0.00 AFTER qty;
 ALTER TABLE customer_needs ADD COLUMN transportationMode VARCHAR(64) NOT NULL DEFAULT 'Empty' after payout;
+ALTER TABLE customer_needs ADD COLUMN `distance` INT(5) unsigned DEFAULT 0 after destinationLat;
 -- -------------------------------------------------------------
 
 -- CREATE TABLE "customer_needs_commit" -------------------------------
@@ -160,6 +162,7 @@ AUTO_INCREMENT = 1;
 ALTER TABLE customer_needs_commit ADD COLUMN customerNeedsID int(11) unsigned DEFAULT 0 AFTER id ;
 ALTER TABLE customer_needs_commit ADD COLUMN transportation_mode VARCHAR(64) DEFAULT 'Flat Rate' AFTER rate;
 ALTER TABLE customer_needs_commit ADD COLUMN transportation_type VARCHAR(64) DEFAULT 'Tow Empty' AFTER transportation_mode;
+ALTER TABLE customer_needs_commit ADD COLUMN `distance` INT(5) unsigned DEFAULT 0 after destinationLat;
 -- -------------------------------------------------------------
 
 
