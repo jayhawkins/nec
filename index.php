@@ -244,17 +244,20 @@ $app->route('POST /getlocation', function() {
 });
 
 $app->route('POST /getlocationbycitystatezip', function() {
+    $address1 = Flight::request()->data->address1;
+    $address2 = Flight::request()->data->address2;
     $city = Flight::request()->data->city;
     $state = Flight::request()->data->state;
     $zip = Flight::request()->data->zip;
     $entityID = Flight::request()->data->entityID;
     $locationType = Flight::request()->data->locationType;
     $location = Flight::location();
-    $result = $location->getLocationByCityStateZip($city,$state,$zip,$entityID);
+    //$result = $location->getLocationByCityStateZip($city,$state,$zip,$entityID);
+    $result = $location->getLocationByAddressCityStateZip($address1,$city,$state,$zip,$entityID); // Use a more specific address
     if ($result == 0) { // Address does not exist as array count returned is 0 - So... Add the location as a new location to the database to be used moving forward
         // Create the address in the locations table
         // url encode the address
-        $address = urlencode($city.", ".$state.", ".$zip);
+        $address = urlencode($address1.", ".$city.", ".$state.", ".$zip);
 
         // google map geocode api url
         $url = "http://maps.google.com/maps/api/geocode/json?address={$address}";
@@ -279,7 +282,7 @@ $app->route('POST /getlocationbycitystatezip', function() {
             $longi = $resp['results'][0]['geometry']['location']['lng'];
             $formatted_address = $resp['results'][0]['formatted_address'];
 
-            $result = $location->post($entityID,$locationTypeID,$city,"","",$city,$state,$zip,$lati,$longi);
+            $result = $location->post($entityID,$locationTypeID,$city,$address1,$address2,$city,$state,$zip,$lati,$longi); // If being added to db use city as location name
 
             echo $result;
 
@@ -325,7 +328,7 @@ $app->route('POST /carrierneedsnotification', function() {
 });
 
 /*****************************************************************************/
-// Carrier Needs Processes
+// Customer Needs Processes
 /*****************************************************************************/
 $app->route('POST /customerneedsnotification', function() {
     $customerneedid = Flight::request()->data->id;
@@ -348,6 +351,32 @@ $app->route('POST /customerneedscommitnotification', function() {
         //echo "success";
     } else {
         print_r($notificationresult);
+    }
+});
+
+$app->route('POST /createcustomerneedsfromexisting', function() {
+    $id = Flight::request()->data->id;
+    $qty = Flight::request()->data->qty;
+    $originationAddress1 = Flight::request()->data->originationAddress1;
+    $originationCity = Flight::request()->data->originationCity;
+    $originationState = Flight::request()->data->originationState;
+    $originationZip = Flight::request()->data->originationZip;
+    $destinationAddress1 = Flight::request()->data->destinationAddress1;
+    $destinationCity = Flight::request()->data->destinationCity;
+    $destinationState = Flight::request()->data->destinationState;
+    $destinationZip = Flight::request()->data->destinationZip;
+    $originationLat = Flight::request()->data->originationLat;
+    $originationLng = Flight::request()->data->originationLng;
+    $destinationLat = Flight::request()->data->destinationLat;
+    $destinationLng = Flight::request()->data->destinationLng;
+    $distance = Flight::request()->data->distance;
+    $customerneed = Flight::customerneed();
+    $result = $customerneed->createFromExisting(API_HOST,$id,$qty,$originationAddress1,$originationCity,$originationState,$originationZip,$destinationAddress1,$destinationCity,$destinationState,$destinationZip,$originationLat,$originationLng,$destinationLat,$destinationLng,$distance);
+    if ($result) {
+        print_r($result);
+        //echo "success";
+    } else {
+        print_r($result);
     }
 });
 

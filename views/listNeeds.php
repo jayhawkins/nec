@@ -173,7 +173,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
 
                 var geocoder = new google.maps.Geocoder();
-                var originationaddress = $("#originationCity").val() + ' ' + $("#originationState").val() + ' ' + $("#originationZip").val();
+                var originationaddress = $("#originationAddress1").val() + ' ' + $("#originationCity").val() + ' ' + $("#originationState").val() + ' ' + $("#originationZip").val();
 
                 geocoder.geocode( { 'address': originationaddress}, function(originationresults, status) {
 
@@ -182,7 +182,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     var originationlat = originationresults[0].geometry.location.lat();
                     var originationlng = originationresults[0].geometry.location.lng();
 
-                      var destinationaddress = $("#destinationCity").val() + ' ' + $("#destinationState").val() + ' ' + $("#destinationZip").val();
+                      var destinationaddress = $("#destinationAddress1").val() + ' ' + $("#destinationCity").val() + ' ' + $("#destinationState").val() + ' ' + $("#destinationZip").val();
                       geocoder.geocode( { 'address': destinationaddress}, function(destinationresults, status) {
 
                           if (status == google.maps.GeocoderStatus.OK) {
@@ -219,10 +219,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
                               if (type == "PUT") {
                                   var date = today;
-                                  var data = {qty: $("#qty").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, contactEmails: $contacts, availableDate: $("#availableDate").val(), expirationDate: $("#expirationDate").val(), updatedAt: date};
+                                  var data = {qty: $("#qty").val(), originationAddress1: $("#originationAddress1").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress1: $("#destinationAddress1").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, contactEmails: $contacts, availableDate: $("#availableDate").val(), expirationDate: $("#expirationDate").val(), updatedAt: date};
                               } else {
                                   var date = today;
-                                  var data = {entityID: $("#entityID").val(), qty: $("#qty").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, contactEmails: $contacts, availableDate: $("#availableDate").val(), expirationDate: $("#expirationDate").val(), createdAt: date};
+                                  var data = {entityID: $("#entityID").val(), qty: $("#qty").val(), originationAddress1: $("#originationAddress1").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress1: $("#destinationAddress1").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, contactEmails: $contacts, availableDate: $("#availableDate").val(), expirationDate: $("#expirationDate").val(), createdAt: date, updatedAt: date};
                               }
 
                               $.ajax({
@@ -255,9 +255,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                                       $("#qty").val('');
                                       $("#availableDate").val('');
                                       $("#expirationDate").val('');
+                                      $("#originationAddress1").val('');
                                       $("#originationCity").val('');
                                       $("#originationState").val('');
                                       $("#originationZip").val('');
+                                      $("#destinationAddress1").val('');
                                       $("#destinationCity").val('');
                                       $("#destinationState").val('');
                                       $("#destinationZip").val('');
@@ -287,10 +289,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       function loadTableAJAX() {
             //myApp.showPleaseWait();
             if (<?php echo $_SESSION['entityid']; ?> > 0) {
-                var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,availableDate,expirationDate,originationCity,originationState,originationZip,originationLat,originationLng,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&order[]=availableDate,desc&transform=1';
+                var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&order[]=availableDate,desc&transform=1';
                 var show = false;
             } else {
-                var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,availableDate,expirationDate,originationCity,originationState,originationZip,originationLat,originationLng,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&satisfy=all&order[]=entityID&order[]=availableDate,desc&transform=1';
+                var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&satisfy=all&order[]=entityID&order[]=availableDate,desc&transform=1';
                 var show = true;
             }
 
@@ -308,11 +310,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     { data: "qty" },
                     { data: "availableDate" },
                     { data: "expirationDate" },
+                    { data: "originationAddress1", visible: false },
                     { data: "originationCity" },
                     { data: "originationState" },
                     { data: "originationZip", visible: false },
                     { data: "originationLat", visible: false },
                     { data: "originationLng", visible: false },
+                    { data: "destinationAddress1", visible: false },
                     { data: "destinationCity" },
                     { data: "destinationState" },
                     { data: "destinationZip", visible: false },
@@ -721,11 +725,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                      <th>Quantity</th>
                      <th>Available Date</th>
                      <th>Expiration Date</th>
+                     <th class="hidden-sm-down">Orig. Address1</th>
                      <th class="hidden-sm-down">Orig. City</th>
                      <th class="hidden-sm-down">Orig. State</th>
                      <th class="hidden-sm-down">Orig. Zip</th>
                      <th class="hidden-sm-down">Orig. Lat.</th>
                      <th class="hidden-sm-down">Orig. Long.</th>
+                     <th class="hidden-sm-down">Dest. Address1</th>
                      <th class="hidden-sm-down">Dest. City</th>
                      <th class="hidden-sm-down">Dest. State</th>
                      <th class="hidden-sm-down">Dest. Zip</th>
@@ -780,11 +786,16 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                      </div>
                  </div>
                  <div class="row">
-                     <div class="col-sm-7">
+                     <div class="col-sm-3">
                          <label for="originationCity">Origination City</label>
                          <div id="originationCity" class="form-group form-control mb-sm">
                          </div>
                          <div id="suggesstion-box" class="frmSearch"></div>
+                     </div>
+                     <div class="col-sm-4">
+                         <label for="originationAddress1">Origination Address</label>
+                         <div id="originationAddress1" class="form-group form-control mb-sm">
+                         </div>
                      </div>
                      <div class="col-sm-3">
                          <label for="originationState">Origination State</label>
@@ -798,9 +809,14 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                      </div>
                  </div>
                  <div class="row">
-                   <div class="col-sm-7">
+                   <div class="col-sm-3">
                        <label for="DestinationCity">Destination City</label>
                        <div id="destinationCity" class="form-group form-control mb-sm">
+                       </div>
+                   </div>
+                   <div class="col-sm-4">
+                       <label for="destinationAddress1">Destination Address</label>
+                       <div id="destinationAddress1" class="form-group form-control mb-sm">
                        </div>
                    </div>
                    <div class="col-sm-3">
@@ -926,9 +942,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       $("#qty").val('');
       $("#availableDate").val('');
       $("#expirationDate").val('');
+      $("#originationAddress1").val('');
       $("#originationCity").val('');
       $("#originationState").val('');
       $("#originationZip").val('');
+      $("#destinationAddress1").val('');
       $("#destinationCity").val('');
       $("#destinationState").val('');
       $("#destinationZip").val('');
@@ -968,9 +986,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             $("#qty").html(data["qty"]);
             $("#availableDate").html(data["availableDate"]);
             $("#expirationDate").html(data["expirationDate"]);
+            $("#originationAddress1").html(data["originationAddress1"]);
             $("#originationCity").html(data["originationCity"]);
             $("#originationState").html(data["originationState"]);
             $("#originationZip").html(data["originationZip"]);
+            $("#destinationAddress1").html(data["destinationAddress1"]);
             $("#destinationCity").html(data["destinationCity"]);
             $("#destinationState").html(data["destinationState"]);
             $("#destinationZip").html(data["destinationZip"]);

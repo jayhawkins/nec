@@ -21,8 +21,8 @@ try {
       $entityresult = json_decode(file_get_contents($entityurl,false,$entitycontext),true);
 
       if (count($entityresult) > 0) {
-        $towAwayRate = $entityresult['towAwayRate'];
-        $loadOutRate = $entityresult['loadOutRate'];
+        $towAwayRate = number_format($entityresult['towAwayRate'],2);
+        $loadOutRate = number_format($entityresult['loadOutRate'],2);
         $loadOutRateType = $entityresult['loadOutRateType'];
         if ($loadOutRateType == "Flat Rate") {
             $lorfrchecked = "checked";
@@ -104,7 +104,7 @@ function verifyAndPost() {
              async: false,
              success: function(data){
                 if (data > 0) {
-                  alert("Rate Information Updated Successfully!");
+                  //alert("Rate Information Updated Successfully!");
                   window.location.replace("<?php echo HTTP_HOST; ?>");
                   passValidation = true;
                 } else {
@@ -139,7 +139,7 @@ function verifyAndPost() {
                 <input type="hidden" id="id" name="id" value="<?php echo $_SESSION['entityid']; ?>" />
                 <div class="row">
                     <div class="col-sm-4">
-                        <label for="towAwayRate">Tow Away Rate:</label>
+                        <label for="towAwayRate">Tow Away Rate</label>
                         <div class="form-group">
                           <input type="text" id="towAwayRate" name="towAwayRate" class="form-control mb-sm" value="<?php echo $towAwayRate; ?>" placeholder="Tow Away Rate $" />
                         </div>
