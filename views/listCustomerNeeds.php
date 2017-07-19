@@ -771,7 +771,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                      <div class="col-sm-3">
                          <label for="availableDate">Available Date</label>
                          <div class="form-group">
-                           <!--input type="text" id="policyExpirationDate" name="policyExpirationDate" class="form-control mb-sm" placeholder="Policy Expiration Date (YYYY-MM-DD)" required="required" /-->
                            <div id="sandbox-container" class="input-group date  datepicker">
                               <input type="text" id="availableDate" name="availableDate" class="form-control" placeholder="Availability Date"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
                            </div>
@@ -780,7 +779,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                      <div class="col-sm-3">
                          <label for="expirationDate">Expiration Date</label>
                          <div class="form-group">
-                           <!--input type="text" id="policyExpirationDate" name="policyExpirationDate" class="form-control mb-sm" placeholder="Policy Expiration Date (YYYY-MM-DD)" required="required" /-->
                            <div id="sandbox-container" class="input-group date  datepicker">
                               <input type="text" id="expirationDate" name="expirationDate" class="form-control" placeholder="Expiration Date"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
                            </div>

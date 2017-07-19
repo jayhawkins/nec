@@ -549,7 +549,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                           } else {
                               showAmount = "$" + showAmount[0] + ".00";
                           }
-                          newStatus = "<strong>Committed</strong><br/>" + showAmount;
+                          newStatus = "<strong>Committed</strong>";
                       }
                       return newStatus;
                     }
@@ -1147,7 +1147,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                       <div class="col-sm-3">
                           <label for="availableDate">Pick-Up Date</label>
                           <div class="form-group">
-                            <!--input type="text" id="policyExpirationDate" name="policyExpirationDate" class="form-control mb-sm" placeholder="Policy Expiration Date (YYYY-MM-DD)" required="required" /-->
                             <div id="sandbox-container" class="input-group date  datepicker">
                                <input type="text" id="pickupDate" name="pickupDate" class="form-control" placeholder="Pickup Date" required="required"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
                             </div>
@@ -1156,7 +1155,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                       <div class="col-sm-3">
                           <label for="expirationDate">Delivery Date</label>
                           <div class="form-group">
-                            <!--input type="text" id="policyExpirationDate" name="policyExpirationDate" class="form-control mb-sm" placeholder="Policy Expiration Date (YYYY-MM-DD)" required="required" /-->
                             <div id="sandbox-container" class="input-group date  datepicker">
                                <input type="text" id="deliveryDate" name="deliveryDate" class="form-control" placeholder="Delivery Date" required="required"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
                             </div>
