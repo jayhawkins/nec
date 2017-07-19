@@ -48,6 +48,7 @@ ALTER TABLE carrier_needs ADD COLUMN originationAddress1 VarChar(255) CHARACTER 
 ALTER TABLE carrier_needs ADD COLUMN originationAddress2 VarChar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL AFTER originationAddress1;
 ALTER TABLE carrier_needs ADD COLUMN destinationAddress1 VarChar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL AFTER originationZip;
 ALTER TABLE carrier_needs ADD COLUMN destinationAddress2 VarChar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL AFTER destinationAddress1;
+ALTER TABLE carrier_needs ADD COLUMN transportationMode VARCHAR(64) NOT NULL DEFAULT 'Empty' after qty;
 ALTER TABLE carrier_needs ADD COLUMN `distance` INT(5) unsigned DEFAULT 0 after destinationLat;
 -- -------------------------------------------------------------
 

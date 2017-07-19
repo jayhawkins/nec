@@ -221,11 +221,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
                               if (type == "PUT") {
                                   var date = today;
-                                  var data = {qty: $("#qty").val(), originationAddress1: $("#originationAddress1").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress1: $("#destinationAddress1").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, contactEmails: $contacts, availableDate: $("#availableDate").val(), expirationDate: $("#expirationDate").val(), updatedAt: date};
+                                  var data = {qty: $("#qty").val(), transportationMode: $("#transportationMode").val(), originationAddress1: $("#originationAddress1").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress1: $("#destinationAddress1").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, contactEmails: $contacts, availableDate: $("#availableDate").val(), expirationDate: $("#expirationDate").val(), updatedAt: date};
                               } else {
                                   var date = today;
                                   var recStatus = 'Available';
-                                  var data = {entityID: $("#entityID").val(), qty: $("#qty").val(), originationAddress1: $("#originationAddress1").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress1: $("#destinationAddress1").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, status: recStatus, contactEmails: $contacts, availableDate: $("#availableDate").val(), expirationDate: $("#expirationDate").val(), createdAt: date, updatedAt: date};
+                                  var data = {entityID: $("#entityID").val(), qty: $("#qty").val(), transportationMode: $("#transportationMode").val(), originationAddress1: $("#originationAddress1").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress1: $("#destinationAddress1").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, status: recStatus, contactEmails: $contacts, availableDate: $("#availableDate").val(), expirationDate: $("#expirationDate").val(), createdAt: date, updatedAt: date};
                               }
 
                               $.ajax({
@@ -256,6 +256,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                                       loadTableAJAX();
                                       $("#id").val('');
                                       $("#qty").val('');
+                                      $("#transportationMode").val('');
                                       $("#availableDate").val('');
                                       $("#expirationDate").val('');
                                       $("#originationAddress1").val('');
@@ -292,7 +293,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       function loadTableAJAX() {
         //myApp.showPleaseWait();
         if (<?php echo $_SESSION['entityid']; ?> > 0) {
-            var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&filter[]=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&satisfy=all&order[]=availableDate,desc&transform=1';
+            var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,transportationMode,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&filter[]=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&satisfy=all&order[]=availableDate,desc&transform=1';
             var example_table = $('#datatable-table').DataTable({
                 retrieve: true,
                 processing: true,
@@ -305,6 +306,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     { data: "id", visible: false },
                     { data: "entityID", visible: false },
                     { data: "qty" },
+                    { data: "transportationMode", visible: false },
                     { data: "availableDate", visible: false },
                     { data: "expirationDate", visible: false },
                     { data: "originationAddress1", visible: false },
@@ -339,7 +341,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 ]
               });
         } else {
-            var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,availableDate,expirationDate,originationCity,originationState,originationZip,originationLat,originationLng,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&satisfy=all&order[]=entityID&order[]=availableDate,desc&transform=1';
+            var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,transportationMode,availableDate,expirationDate,originationCity,originationState,originationZip,originationLat,originationLng,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&satisfy=all&order[]=entityID&order[]=availableDate,desc&transform=1';
             var example_table = $('#datatable-table').DataTable({
                 retrieve: true,
                 processing: true,
@@ -352,6 +354,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     { data: "id", visible: false },
                     { data: "entityID", visible: false },
                     { data: "qty" },
+                    { data: "transportationMode", visible: false },
                     { data: "availableDate", visible: false },
                     { data: "expirationDate", visible: false },
                     { data: "originationAddress1", visible: false },
@@ -768,6 +771,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                      <th>ID</th>
                      <th>Entity ID</th>
                      <th>Quantity</th>
+                     <th>Transportation Mode</th>
                      <th>Available Date</th>
                      <th>Expiration Date</th>
                      <th class="hidden-sm-down">Orig. Address</th>
@@ -927,6 +931,17 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                        </div>
                    </div>
                  </div>
+                 <div class="row">
+                    <div class="col-sm-4">
+                         <label for="divTransportationMode">Transportation Mode</label>
+                         <div id="divTransportationMode" class="form-group">
+
+                         </div>
+                    </div>
+                    <div class="col-sm-8">
+                        &nbsp;
+                    </div>
+                 </div>
                  <hr />
                  <div class="container" style="margin-top:20px;">
                      <div class="row">
@@ -1085,6 +1100,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             var checked = '';
             var dpli = '';
             var dpchecked = '';
+            var transMode = '';
+            var emptyMode = '';
+            var loadMode = '';
+            var eitherMode = '';
             $("#id").val(data["id"]);
             $("#entityID").val(data["entityID"]);
             $("#qty").val(data["qty"]);
@@ -1100,6 +1119,23 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             $("#destinationZip").val(data["destinationZip"]);
             var ndp = data["needsDataPoints"];
             var con = data["contactEmails"];
+
+            transMode = '<select id="transportationMode" name="transportationMode" class="form-control chzn-select" required="required">' +
+                             '<option value="">*Select Mode...</option>';
+            switch (data["transportationMode"]) {
+                case "Empty": emptyMode = 'selected=selected';
+                break;
+                case "Load Out": loadMode = 'selected=selected';
+                break;
+                case "Either (Empty or Load Out)": eitherMode = 'selected=selected';
+                break;
+            }
+
+            transMode += '<option value="Empty" ' + emptyMode + '>Empty</option>';
+            transMode += '<option value="Load Out" ' + loadMode + '>Load Out</option>';
+            transMode += '<option value="Either (Empty or Load Out)" ' + eitherMode + '>Either (Empty or Load Out)</option>';
+            transMode += '</select>';
+            $("#divTransportationMode").html(transMode);
 
             var params = {id: $("#entityID").val()};
             $.ajax({
