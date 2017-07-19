@@ -126,7 +126,8 @@ ALTER TABLE customer_needs ADD COLUMN originationAddress2 VarChar(255) CHARACTER
 ALTER TABLE customer_needs ADD COLUMN destinationAddress1 VarChar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL AFTER originationZip;
 ALTER TABLE customer_needs ADD COLUMN destinationAddress2 VarChar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL AFTER destinationAddress1;
 ALTER TABLE customer_needs ADD COLUMN payout FLOAT(7,2) UNSIGNED DEFAULT 0.00 AFTER qty;
-ALTER TABLE customer_needs ADD COLUMN transportationMode VARCHAR(64) NOT NULL DEFAULT 'Empty' after payout;
+ALTER TABLE customer_needs ADD COLUMN rateType VARCHAR(64) NOT NULL DEFAULT 'Flat Rate' after payout;
+ALTER TABLE customer_needs ADD COLUMN transportationMode VARCHAR(64) NOT NULL DEFAULT 'Empty' after rateType;
 ALTER TABLE customer_needs ADD COLUMN `distance` INT(5) unsigned DEFAULT 0 after destinationLat;
 -- -------------------------------------------------------------
 
