@@ -457,7 +457,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                                       loadTableAJAX();
                                       $("#id").val('');
                                       $("#qty").val('');
-                                      $("#payout").val('');
+                                      $("#rate").val('');
                                       $("#availableDate").val('');
                                       $("#expirationDate").val('');
                                       $("#originationAddress1").val('');
