@@ -94,7 +94,7 @@
                         <div class="row">
                             <div class="col-sm-8">
                                 <div class="form-group">
-                                  <input type="radio" id="customer" name="entityTypeID" value="1" /> Customer&nbsp;&nbsp;
+                                  <input type="radio" id="customer" name="entityTypeID" value="1" checked/> Customer&nbsp;&nbsp;
                                   <input type="radio" id="carrier" name="entityTypeID" value="2"/> Carrier
                                 </div>
                             </div>

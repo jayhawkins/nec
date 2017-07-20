@@ -68,6 +68,19 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
           if ( $('#formNeed').parsley().validate() ) {
 
+                // Build the contacts to verify one was chosen
+                var contactsarray = [];
+                var obj = $("#check-list-box li.active");
+                for (var i = 0; i < obj.length; i++) {
+                    item = {};
+                    item[obj[i].id] = obj[i].innerText;
+                    contactsarray.push(item);
+                }
+                if (contactsarray.length <= 0) {
+                    alert('You must select a point of contact for this need.')
+                    return false;
+                }
+
                 var result = true;
 
                 var params = {
