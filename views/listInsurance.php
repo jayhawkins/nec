@@ -128,6 +128,7 @@ require '../lib/common.php';
                 { data: "contactPhone" },
                 { data: "policyNumber" },
                 { data: "policyExpirationDate", visible: false },
+                { data: "fileupload" },
                 {
                     data: null,
                     "bSortable": false,
@@ -230,6 +231,7 @@ require '../lib/common.php';
                      <th class="hidden-sm-down">Contact Phone</th>
                      <th class="hidden-sm-down">Policy Number</th>
                      <th class="hidden-sm-down">Policy Expiration Date</th>
+                     <th class="hidden-sm-down">Policy File</th>
                      <th class="no-sort pull-right">&nbsp;</th>
                  </tr>
                  </thead>
