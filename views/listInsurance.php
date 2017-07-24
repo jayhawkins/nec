@@ -304,11 +304,11 @@ require '../lib/common.php';
                         <label for="fileupload">Policy File Upload</label>
                         <div class="form-group">
                         	<!--<input type="file" id="policyFile" name="files[]" class="form-control mb-sm" placeholder="*Policy File" required="required" multiple />-->
-							<input id="fileupload" type="file" name="files[]" class="form-control mb-sm" placeholder="*Policy File" required="required"multiple />
 							<span class="btn btn-success fileinput-button">
 								<i class="glyphicon glyphicon-plus"></i>
 								<span>Add files...</span>
 								<!-- The file input field used as target for the file upload widget -->
+							<input id="fileupload" type="file" name="files[]" class="form-control mb-sm" placeholder="*Policy File" required="required"multiple />
 							</span>
 						</div>
 						<br>
