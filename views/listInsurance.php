@@ -74,7 +74,6 @@ require '../lib/common.php';
                     var date = today;
                     var data = {fileupload: fileNames, entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactEmail: $("#contactEmail").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), createdAt: date};
                 }
-                alert(JSON.stringify(data));
                 $.ajax({
                    url: url,
                    type: type,
