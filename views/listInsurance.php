@@ -322,9 +322,9 @@ require '../lib/common.php';
 								<div id="progress" class="progress">
 									<div class="progress-bar progress-bar-success"></div>
 								</div>
+							</span>
 								<!-- The container for the uploaded files -->
 								<div id="files" class="files"></div>
-							</span>
 						</div>
                      </div>
                  </div>
