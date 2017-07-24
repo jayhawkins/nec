@@ -128,7 +128,6 @@ require '../lib/common.php';
                 { data: "contactPhone" },
                 { data: "policyNumber" },
                 { data: "policyExpirationDate", visible: false },
-                { data: "fileupload" },
                 {
                     data: null,
                     "bSortable": false,
