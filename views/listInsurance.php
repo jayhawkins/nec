@@ -308,7 +308,7 @@ require '../lib/common.php';
 								<i class="glyphicon glyphicon-plus"></i>
 								<span>Add files...</span>
 								<!-- The file input field used as target for the file upload widget -->
-								<input id="fileupload" type="file" name="files[]" class="form-control mb-sm" placeholder="*Policy File" required="required"multiple />
+								<input id="fileupload" type="file" name="files[]" class="form-control mb-sm" placeholder="*Policy File" required="required" multiple />
 								<!-- The global progress bar -->
 								<div id="progress" class="progress">
 									<div class="progress-bar progress-bar-success"></div>
