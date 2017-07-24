@@ -67,10 +67,10 @@ require '../lib/common.php';
 
                 if (type == "PUT") {
                     var date = today;
-                    var data = {entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactEmail: $("#contactEmail").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), updatedAt: date};
+                    var data = {entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactEmail: $("#contactEmail").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), fileupload: $("#fileupload").val(), updatedAt: date};
                 } else {
                     var date = today;
-                    var data = {entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactEmail: $("#contactEmail").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), createdAt: date};
+                    var data = {entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactEmail: $("#contactEmail").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), fileUpload: $("#fileupload").val(), createdAt: date};
                 }
 
                 $.ajax({
@@ -90,6 +90,7 @@ require '../lib/common.php';
                         $("#contactPhone").val('');
                         $("#policyNumber").val('');
                         $("#policyExpirationDate").val('');
+                        $("#fileupload").val('');
                         passValidation = true;
                       } else {
                         alert("Adding Insurance Failed!");
@@ -112,7 +113,7 @@ require '../lib/common.php';
 
       function loadTableAJAX() {
         myApp.showPleaseWait();
-        var url = '<?php echo API_HOST; ?>' + '/api/insurance_carriers?columns=id,name,link,contactName,contactPhone,policyNumber,policyExpirationDate,status&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order=name&transform=1';
+        var url = '<?php echo API_HOST; ?>' + '/api/insurance_carriers?columns=id,name,link,contactName,contactPhone,policyNumber,policyExpirationDate,fileupload,status&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order=name&transform=1';
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
             processing: true,
@@ -127,6 +128,7 @@ require '../lib/common.php';
                 { data: "contactPhone" },
                 { data: "policyNumber" },
                 { data: "policyExpirationDate", visible: false },
+                { data: "fileupload" },
                 {
                     data: null,
                     "bSortable": false,
@@ -251,7 +253,7 @@ require '../lib/common.php';
          </button>
        </div>
        <div class="modal-body">
-			<form id="formInsurance" class="register-form mt-lg">
+			<form id="formInsurance" class="register-form mt-lg" method="POST" enctype="multipart/form-data">
 				<input type="hidden" id="entityID" name="entityID" value="<?php echo $_SESSION['entityid']; ?>" />
 				<input type="hidden" id="id" name="id" value="" />
 				<div class="row">
@@ -425,6 +427,7 @@ require '../lib/common.php';
       $("#contactPhone").val('');
       $("#policyNumber").val('');
       $("#policyExpirationDate").val('');
+      $("#fileupload").val();
   		$("#myModal").modal('show');
   	});
 
@@ -437,6 +440,7 @@ require '../lib/common.php';
           $("#contactPhone").val(data["contactPhone"]);
           $("#policyNumber").val(data["policyNumber"]);
           $("#policyExpirationDate").val(data["policyExpirationDate"]);
+          $("#fileupload").val(data["fileupload"]);
           $("#myModal").modal('show');
         } else {
             $("#id").val(data["id"]);
