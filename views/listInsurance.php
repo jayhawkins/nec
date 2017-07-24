@@ -301,7 +301,7 @@ require '../lib/common.php';
                  </div>
                  <div class="row">
                      <div class="col-sm-12">
-                        <label for="policyFile">Policy File Upload</label>
+                        <label for="fileupload">Policy File Upload</label>
                         <div class="form-group">
                         	<!--<input type="file" id="policyFile" name="files[]" class="form-control mb-sm" placeholder="*Policy File" required="required" multiple />-->
 							<input id="fileupload" type="file" name="files[]" class="form-control mb-sm" placeholder="*Policy File" required="required"multiple />
@@ -493,7 +493,7 @@ $(function () {
             });
 
             //---- file upload ---//
-    $('#policyFile').fileupload({
+    $('#fileupload').fileupload({
         url: url,
         dataType: 'json',
         autoUpload: false,
