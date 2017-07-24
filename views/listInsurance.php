@@ -199,13 +199,6 @@ require '../lib/common.php';
 
  </script>
 
-<!-- Bootstrap styles -->
-<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-<!-- Generic page styles -->
-<link rel="stylesheet" href="css/style.css">
-<!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
-<link rel="stylesheet" href="css/jquery.fileupload.css">
-
  <ol class="breadcrumb">
    <li>ADMIN</li>
    <li class="active">Insurance Maintenance</li>
@@ -258,63 +251,63 @@ require '../lib/common.php';
          </button>
        </div>
        <div class="modal-body">
-               <form id="formInsurance" class="register-form mt-lg">
-                 <input type="hidden" id="entityID" name="entityID" value="<?php echo $_SESSION['entityid']; ?>" />
-                 <input type="hidden" id="id" name="id" value="" />
-                 <div class="row">
-                     <div class="col-sm-6">
-                         <label for="name">Insurer</label>
-                         <div class="form-group">
-                           <input type="text" id="name" name="name" class="form-control mb-sm" placeholder="*Name" required="required" />
-                         </div>
-                     </div>
-                     <div class="col-sm-6">
-                         <label for="contactName">Contact Name</label>
-                         <div class="form-group">
-                           <input type="text" id="contactName" name="contactName" class="form-control mb-sm" placeholder="*Contact Name" required="required" />
-                         </div>
-                     </div>
-                 </div>
-                 <div class="row">
-                     <div class="col-sm-6">
-                         <label for="contactEmail">Contact Email</label>
-                         <div class="form-group">
-                           <input type="email" id="contactEmail" name="contactEmail" class="form-control mb-sm" placeholder="*Contact Email" required="required" />
-                         </div>
-                     </div>
-                     <div class="col-sm-6">
-                         <label for="contactPhone">Contact Phone</label>
-                         <div class="form-group">
-                           <input type="text" id="contactPhone" name="contactPhone" class="form-control mb-sm" placeholder="Contact Phone" required="required" />
-                         </div>
-                     </div>
-                 </div>
-                 <div class="row">
-                     <div class="col-sm-6">
-                         <label for="policyNumber">Policy Number</label>
-                         <div class="form-group">
-                           <input type="text" id="policyNumber" name="policyNumber" class="form-control mb-sm" placeholder="*Policy Number" required="required" />
-                         </div>
-                     </div>
-                     <div class="col-sm-6">
-                         <label for="policyExpirationDate">Expiration Date</label>
-                         <div class="form-group">
-                           <!--input type="text" id="policyExpirationDate" name="policyExpirationDate" class="form-control mb-sm" placeholder="Policy Expiration Date (YYYY-MM-DD)" required="required" /-->
-                           <div id="sandbox-container" class="input-group date  datepicker">
-                              <input type="text" id="policyExpirationDate" name="policyExpirationDate" class="form-control" placeholder="Policy Expiration Date"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
-                           </div>
-                         </div>
-                     </div>
-                 </div>
-                 <div class="row">
-                     <div class="col-sm-12">
-					<label for="fileupload">Policy File Upload</label>
-						 <div class="form-group">
-						   <input type="file" id="fileupload" name="fileupload" class="form-control mb-sm" placeholder="*Policy Number" required="required" />
-						 </div>
-                     </div>
-                 </div>
-                </form>
+			<form id="formInsurance" class="register-form mt-lg">
+				<input type="hidden" id="entityID" name="entityID" value="<?php echo $_SESSION['entityid']; ?>" />
+				<input type="hidden" id="id" name="id" value="" />
+				<div class="row">
+				 <div class="col-sm-6">
+					 <label for="name">Insurer</label>
+					 <div class="form-group">
+					   <input type="text" id="name" name="name" class="form-control mb-sm" placeholder="*Name" required="required" />
+					 </div>
+				 </div>
+				 <div class="col-sm-6">
+					 <label for="contactName">Contact Name</label>
+					 <div class="form-group">
+					   <input type="text" id="contactName" name="contactName" class="form-control mb-sm" placeholder="*Contact Name" required="required" />
+					 </div>
+				 </div>
+				</div>
+				<div class="row">
+				 <div class="col-sm-6">
+					 <label for="contactEmail">Contact Email</label>
+					 <div class="form-group">
+					   <input type="email" id="contactEmail" name="contactEmail" class="form-control mb-sm" placeholder="*Contact Email" required="required" />
+					 </div>
+				 </div>
+				 <div class="col-sm-6">
+					 <label for="contactPhone">Contact Phone</label>
+					 <div class="form-group">
+					   <input type="text" id="contactPhone" name="contactPhone" class="form-control mb-sm" placeholder="Contact Phone" required="required" />
+					 </div>
+				 </div>
+				</div>
+				<div class="row">
+				 <div class="col-sm-6">
+					 <label for="policyNumber">Policy Number</label>
+					 <div class="form-group">
+					   <input type="text" id="policyNumber" name="policyNumber" class="form-control mb-sm" placeholder="*Policy Number" required="required" />
+					 </div>
+				 </div>
+				 <div class="col-sm-6">
+					 <label for="policyExpirationDate">Expiration Date</label>
+					 <div class="form-group">
+					   <!--input type="text" id="policyExpirationDate" name="policyExpirationDate" class="form-control mb-sm" placeholder="Policy Expiration Date (YYYY-MM-DD)" required="required" /-->
+					   <div id="sandbox-container" class="input-group date  datepicker">
+						  <input type="text" id="policyExpirationDate" name="policyExpirationDate" class="form-control" placeholder="Policy Expiration Date"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+					   </div>
+					 </div>
+				 </div>
+				</div>
+				<div class="row">
+				 <div class="col-sm-12">
+				<label for="fileupload">Policy File Upload</label>
+					 <div class="form-group">
+					   <input type="file" id="fileupload" name="fileupload" class="form-control mb-sm" placeholder="*Policy Number" required="required" />
+					 </div>
+				 </div>
+				</div>
+			</form>
        </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
