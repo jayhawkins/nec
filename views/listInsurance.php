@@ -199,6 +199,13 @@ require '../lib/common.php';
 
  </script>
 
+<!-- Bootstrap styles -->
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+<!-- Generic page styles -->
+<link rel="stylesheet" href="css/style.css">
+<!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
+<link rel="stylesheet" href="css/jquery.fileupload.css">
+
  <ol class="breadcrumb">
    <li>ADMIN</li>
    <li class="active">Insurance Maintenance</li>
@@ -304,7 +311,7 @@ require '../lib/common.php';
                         <label for="fileupload">Policy File Upload</label>
                         <div class="form-group">
                         	<!--<input type="file" id="policyFile" name="files[]" class="form-control mb-sm" placeholder="*Policy File" required="required" multiple />-->
-							<span class="btn btn-success fileinput-button">
+							<span class="btn fileinput-button form-control mb-sm">
 								<i class="glyphicon glyphicon-plus"></i>
 								<span>Add files...</span>
 								<!-- The file input field used as target for the file upload widget -->
