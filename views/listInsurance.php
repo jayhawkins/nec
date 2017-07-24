@@ -128,6 +128,7 @@ require '../lib/common.php';
                 { data: "contactPhone" },
                 { data: "policyNumber" },
                 { data: "policyExpirationDate", visible: false },
+                { data: "fileupload" },
                 {
                     data: null,
                     "bSortable": false,
@@ -426,7 +427,7 @@ require '../lib/common.php';
       $("#contactPhone").val('');
       $("#policyNumber").val('');
       $("#policyExpirationDate").val('');
-      $("#fileupload").val();
+      $("#fileupload").val('');
   		$("#myModal").modal('show');
   	});
 
