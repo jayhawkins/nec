@@ -66,14 +66,14 @@ require '../lib/common.php';
                 }
 
 				var files = $('#fileupload').prop("files");
-				var fileNames = $.map(files, function(val) { return val.name; });
-
+				var fileNames = $.map(files, function(val) { return val.name; }).join(',');
+				alert("-"+fileNames+"-");
                 if (type == "PUT") {
                     var date = today;
-                    var data = {entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactEmail: $("#contactEmail").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), fileupload: fileNames.join(","), updatedAt: date};
+                    var data = {entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactEmail: $("#contactEmail").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), fileupload: fileNames, updatedAt: date};
                 } else {
                     var date = today;
-                    var data = {entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactEmail: $("#contactEmail").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), fileUpload: fileNames.join(","), createdAt: date};
+                    var data = {entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactEmail: $("#contactEmail").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), fileUpload: fileNames, createdAt: date};
                 }
                 $.ajax({
                    url: url,
