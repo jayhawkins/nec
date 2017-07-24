@@ -66,9 +66,9 @@ require '../lib/common.php';
                 }
 
 				var files = $('#fileupload').prop("files");
-				var fileNames = $.map(files, function(val) { return val.name; }).join(',');
+				//var fileNames = $.map(files, function(val) { return val.name; }).join(',');
 
-				fileNames='newFile';
+				var fileNames='newFile';
                 if (type == "PUT") {
                     var date = today;
                     var data = {entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactEmail: $("#contactEmail").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), fileupload: fileNames, updatedAt: date};
@@ -76,6 +76,7 @@ require '../lib/common.php';
                     var date = today;
                     var data = {entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactEmail: $("#contactEmail").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), fileUpload: fileNames, createdAt: date};
                 }
+                alert(data);
                 $.ajax({
                    url: url,
                    type: type,
