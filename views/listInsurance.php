@@ -308,49 +308,10 @@ require '../lib/common.php';
                  </div>
                  <div class="row">
                      <div class="col-sm-12">
-                        <label for="fileupload">Policy File Upload</label>
-                        <div class="form-group">
-                        	<!--<input type="file" id="policyFile" name="files[]" class="form-control mb-sm" placeholder="*Policy File" required="required" multiple />-->
-							<!-- Redirect browsers with JavaScript disabled to the origin page -->
-							<noscript><input type="hidden" name="redirect" value="https://blueimp.github.io/jQuery-File-Upload/"></noscript>
-							<!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
-							<div class="row fileupload-buttonbar">
-								<div class="col-lg-7">
-									<!-- The fileinput-button span is used to style the file input field as button -->
-									<span class="btn btn-success fileinput-button">
-										<i class="glyphicon glyphicon-plus"></i>
-										<span>Add files...</span>
-										<input type="file" name="files[]" multiple>
-									</span>
-									<button type="submit" class="btn btn-primary start">
-										<i class="glyphicon glyphicon-upload"></i>
-										<span>Start upload</span>
-									</button>
-									<button type="reset" class="btn btn-warning cancel">
-										<i class="glyphicon glyphicon-ban-circle"></i>
-										<span>Cancel upload</span>
-									</button>
-									<button type="button" class="btn btn-danger delete">
-										<i class="glyphicon glyphicon-trash"></i>
-										<span>Delete</span>
-									</button>
-									<input type="checkbox" class="toggle">
-									<!-- The global file processing state -->
-									<span class="fileupload-process"></span>
-								</div>
-								<!-- The global progress state -->
-								<div class="col-lg-5 fileupload-progress fade">
-									<!-- The global progress bar -->
-									<div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
-										<div class="progress-bar progress-bar-success" style="width:0%;"></div>
-									</div>
-									<!-- The extended global progress state -->
-									<div class="progress-extended">&nbsp;</div>
-								</div>
-							</div>
-							<!-- The table listing the files available for upload/download -->
-							<table role="presentation" class="table table-striped"><tbody class="files"></tbody></table>
-						</div>
+					<label for="fileupload">Policy File Upload</label>
+						 <div class="form-group">
+						   <input type="file" id="fileupload" name="fileupload" class="form-control mb-sm" placeholder="*Policy Number" required="required" />
+						 </div>
                      </div>
                  </div>
                 </form>
@@ -425,31 +386,33 @@ require '../lib/common.php';
         </div>
       </div>
     </div>
-
+<!--
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-<!-- The jQuery UI widget factory, can be omitted if jQuery UI is already included -->
+<!-- The jQuery UI widget factory, can be omitted if jQuery UI is already included -- >
 <script src="jQuery-File-Upload-9.18.0/js/vendor/jquery.ui.widget.js"></script>
-<!-- The Load Image plugin is included for the preview images and image resizing functionality -->
+<!-- The Load Image plugin is included for the preview images and image resizing functionality -- >
 <script src="//blueimp.github.io/JavaScript-Load-Image/js/load-image.all.min.js"></script>
-<!-- The Canvas to Blob plugin is included for image resizing functionality -->
+<!-- The Canvas to Blob plugin is included for image resizing functionality -- >
 <script src="//blueimp.github.io/JavaScript-Canvas-to-Blob/js/canvas-to-blob.min.js"></script>
-<!-- Bootstrap JS is not required, but included for the responsive demo navigation -->
+<!-- Bootstrap JS is not required, but included for the responsive demo navigation -- >
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-<!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
+<!-- The Iframe Transport is required for browsers without support for XHR file uploads -- >
 <script src="jQuery-File-Upload-9.18.0/js/jquery.iframe-transport.js"></script>
-<!-- The basic File Upload plugin -->
+<!-- The basic File Upload plugin -- >
 <script src="jQuery-File-Upload-9.18.0/js/jquery.fileupload.js"></script>
-<!-- The File Upload processing plugin -->
+<!-- The File Upload processing plugin -- >
 <script src="jQuery-File-Upload-9.18.0/js/jquery.fileupload-process.js"></script>
-<!-- The File Upload image preview & resize plugin -->
+<!-- The File Upload image preview & resize plugin -- >
 <script src="jQuery-File-Upload-9.18.0/js/jquery.fileupload-image.js"></script>
-<!-- The File Upload audio preview plugin -->
+<!-- The File Upload audio preview plugin -- >
 <script src="jQuery-File-Upload-9.18.0/js/jquery.fileupload-audio.js"></script>
-<!-- The File Upload video preview plugin -->
+<!-- The File Upload video preview plugin -- >
 <script src="jQuery-File-Upload-9.18.0/js/jquery.fileupload-video.js"></script>
-<!-- The File Upload validation plugin -->
+<!-- The File Upload validation plugin -- >
 <script src="jQuery-File-Upload-9.18.0/js/jquery.fileupload-validate.js"></script>
+-->
+<!--
 <script>
 /*jslint unparam: true, regexp: true */
 
@@ -601,3 +564,4 @@ $(function () {
 });
 
  </script>
+-->
