@@ -442,7 +442,8 @@ require '../lib/common.php';
           $("#contactPhone").val(data["contactPhone"]);
           $("#policyNumber").val(data["policyNumber"]);
           $("#policyExpirationDate").val(data["policyExpirationDate"]);
-          //$("#fileupload").val(data["fileupload"]);
+          $("#fileupload")[0].files[0].name=data["fileupload"];
+          //$("#fileupload").attr("name",data["fileupload"]);
           $("#myModal").modal('show');
         } else {
             $("#id").val(data["id"]);
