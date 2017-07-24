@@ -500,7 +500,7 @@ $(function () {
     $('#fileupload').fileupload({
         url: url,
         dataType: 'json',
-        autoUpload: false,
+        autoUpload: true,
         acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
         maxFileSize: 999000,
         // Enable image resizing, except for Android and Opera,
