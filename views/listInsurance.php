@@ -67,9 +67,11 @@ require '../lib/common.php';
 
                 if (type == "PUT") {
                     var date = today;
+                    alert($("#fileupload").prop('files'));
                     var data = {entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactEmail: $("#contactEmail").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), fileupload: $("#fileupload").prop('files'), updatedAt: date};
                 } else {
                     var date = today;
+                    alert($("#fileupload").prop('files'));
                     var data = {entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactEmail: $("#contactEmail").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), fileUpload: $("#fileupload").prop('files'), createdAt: date};
                 }
 
