@@ -311,55 +311,46 @@ require '../lib/common.php';
                         <label for="fileupload">Policy File Upload</label>
                         <div class="form-group">
                         	<!--<input type="file" id="policyFile" name="files[]" class="form-control mb-sm" placeholder="*Policy File" required="required" multiple />-->
-							<span class="btn fileinput-button form-control mb-sm">
-								<!--
-								<i class="glyphicon glyphicon-plus"></i>
-								<span>Add files...</span>
-								-->
-								<!-- The file input field used as target for the file upload widget -->
-								<input id="fileupload" type="file" name="files[]" class="form-control mb-sm" placeholder="*Policy File" required="required" multiple />
-							</span>								<!-- The global progress bar -->
-								<div id="progress" class="progress">
-									<div class="progress-bar progress-bar-success"></div>
+							<!-- Redirect browsers with JavaScript disabled to the origin page -->
+							<noscript><input type="hidden" name="redirect" value="https://blueimp.github.io/jQuery-File-Upload/"></noscript>
+							<!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
+							<div class="row fileupload-buttonbar">
+								<div class="col-lg-7">
+									<!-- The fileinput-button span is used to style the file input field as button -->
+									<span class="btn btn-success fileinput-button">
+										<i class="glyphicon glyphicon-plus"></i>
+										<span>Add files...</span>
+										<input type="file" name="files[]" multiple>
+									</span>
+									<button type="submit" class="btn btn-primary start">
+										<i class="glyphicon glyphicon-upload"></i>
+										<span>Start upload</span>
+									</button>
+									<button type="reset" class="btn btn-warning cancel">
+										<i class="glyphicon glyphicon-ban-circle"></i>
+										<span>Cancel upload</span>
+									</button>
+									<button type="button" class="btn btn-danger delete">
+										<i class="glyphicon glyphicon-trash"></i>
+										<span>Delete</span>
+									</button>
+									<input type="checkbox" class="toggle">
+									<!-- The global file processing state -->
+									<span class="fileupload-process"></span>
 								</div>
-								<!-- The container for the uploaded files -->
-								<div id="files" class="files"></div>
-						</div>
-
-						<!-- The fileinput-button span is used to style the file input field as button --
-						<span class="btn btn-success fileinput-button">
-							<i class="glyphicon glyphicon-plus"></i>
-							<span>Add files...</span>
-							<!-- The file input field used as target for the file upload widget --
-							<input id="fileupload" type="file" name="files[]" multiple>
-						</span>
-						<br>
-						<br>
-						<!-- The global progress bar --
-						<div id="progress" class="progress">
-							<div class="progress-bar progress-bar-success"></div>
-						</div>
-						<!-- The container for the uploaded files --
-						<div id="files" class="files"></div>
-						<br>
-						<div class="panel panel-default">
-							<div class="panel-heading">
-								<h3 class="panel-title">Demo Notes</h3>
+								<!-- The global progress state -->
+								<div class="col-lg-5 fileupload-progress fade">
+									<!-- The global progress bar -->
+									<div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+										<div class="progress-bar progress-bar-success" style="width:0%;"></div>
+									</div>
+									<!-- The extended global progress state -->
+									<div class="progress-extended">&nbsp;</div>
+								</div>
 							</div>
-							<div class="panel-body">
-								<ul>
-									<li>The maximum file size for uploads in this demo is <strong>999 KB</strong> (default file size is unlimited).</li>
-									<li>Only image files (<strong>JPG, GIF, PNG</strong>) are allowed in this demo (by default there is no file type restriction).</li>
-									<li>Uploaded files will be deleted automatically after <strong>5 minutes or less</strong> (demo files are stored in memory).</li>
-									<li>You can <strong>drag &amp; drop</strong> files from your desktop on this webpage (see <a href="https://github.com/blueimp/jQuery-File-Upload/wiki/Browser-support">Browser support</a>).</li>
-									<li>Please refer to the <a href="https://github.com/blueimp/jQuery-File-Upload">project website</a> and <a href="https://github.com/blueimp/jQuery-File-Upload/wiki">documentation</a> for more information.</li>
-									<li>Built with the <a href="http://getbootstrap.com/">Bootstrap</a> CSS framework and Icons from <a href="http://glyphicons.com/">Glyphicons</a>.</li>
-								</ul>
-							</div>
+							<!-- The table listing the files available for upload/download -->
+							<table role="presentation" class="table table-striped"><tbody class="files"></tbody></table>
 						</div>
-						-->
-
-
                      </div>
                  </div>
                 </form>
