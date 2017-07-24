@@ -318,11 +318,10 @@ require '../lib/common.php';
 								-->
 								<!-- The file input field used as target for the file upload widget -->
 								<input id="fileupload" type="file" name="files[]" class="form-control mb-sm" placeholder="*Policy File" required="required" multiple />
-								<!-- The global progress bar -->
+							</span>								<!-- The global progress bar -->
 								<div id="progress" class="progress">
 									<div class="progress-bar progress-bar-success"></div>
 								</div>
-							</span>
 								<!-- The container for the uploaded files -->
 								<div id="files" class="files"></div>
 						</div>
