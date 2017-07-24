@@ -128,8 +128,8 @@ require '../lib/common.php';
                 { data: "contactName" },
                 { data: "contactPhone" },
                 { data: "policyNumber" },
-                { data: "policyExpirationDate", visible: false },
                 { data: "fileupload" },
+                { data: "policyExpirationDate", visible: false },
                 {
                     data: null,
                     "bSortable": false,
