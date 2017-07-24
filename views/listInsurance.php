@@ -302,12 +302,12 @@ require '../lib/common.php';
 				 </div>
 				</div>
 				<div class="row">
-				 <div class="col-sm-12">
-				<label for="fileupload">Policy File Upload</label>
-					 <div class="form-group">
-					   <input type="file" id="fileupload" name="fileupload" class="form-control mb-sm" placeholder="*Policy Number" required="required" />
+					<div class="col-sm-6">
+						<label for="fileupload">Policy File Upload</label>
+						 <div class="form-group">
+						   <input type="file" id="fileupload" name="fileupload" class="form-control mb-sm" placeholder="*Policy Number" required="required" />
+						 </div>
 					 </div>
-				 </div>
 				</div>
 			</form>
        </div>

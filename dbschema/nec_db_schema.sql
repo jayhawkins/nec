@@ -261,6 +261,7 @@ CREATE TABLE IF NOT EXISTS `insurance_carriers` (
 	`contactPhone` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
 	`policyNumber` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
 	`policyExpirationDate` Date NOT NULL,
+	`fileupload` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
 	`createdAt` DateTime NOT NULL,
 	`updatedAt` DateTime NOT NULL,
 	CONSTRAINT `unique_id` UNIQUE( `id` ) )
@@ -270,6 +271,7 @@ ENGINE = InnoDB
 AUTO_INCREMENT = 1;
 -- -------------------------------------------------------------
 ALTER TABLE insurance_carriers ADD COLUMN status VARCHAR(255) NOT NULL DEFAULT 'Active' AFTER policyExpirationDate ;
+ALTER TABLE insurance_carriers ADD COLUMN fileupload VARCHAR(255) NOT NULL DEFAULT '' AFTER policyExpirationDate ;
 -- ---------------------------------------------------------
 
 
