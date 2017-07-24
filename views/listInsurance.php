@@ -305,8 +305,8 @@ require '../lib/common.php';
                         <div class="form-group">
                         	<!--<input type="file" id="policyFile" name="files[]" class="form-control mb-sm" placeholder="*Policy File" required="required" multiple />-->
 							<span class="btn btn-success fileinput-button">
-								<!--
 								<i class="glyphicon glyphicon-plus"></i>
+								<!--
 								<span>Add files...</span>
 								-->
 								<!-- The file input field used as target for the file upload widget -->
@@ -470,8 +470,7 @@ require '../lib/common.php';
 $(function () {
     'use strict';
     // Change this to the location of your server-side upload handler:
-    var url = window.location.hostname === 'blueimp.github.io' ?
-                '//jquery-file-upload.appspot.com/' : 'server/php/',
+    var url = window.location.hostname === 'blueimp.github.io' ? '//jquery-file-upload.appspot.com/' : 'server/php/',
         uploadButton = $('<button/>')
             .addClass('btn btn-primary')
             .prop('disabled', true)
