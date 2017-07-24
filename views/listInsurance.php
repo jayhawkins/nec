@@ -301,10 +301,25 @@ require '../lib/common.php';
                  </div>
                  <div class="row">
                      <div class="col-sm-12">
-                         <label for="policyFile">Policy Upload</label>
-                         <div class="form-group">
-                           <input type="file" id="policyFile" name="policyFile" class="form-control mb-sm" placeholder="*Policy File" required="required" />
-                         </div>
+                        <label for="policyFile">Policy File Upload</label>
+                        <div class="form-group">
+                        	<!--<input type="file" id="policyFile" name="files[]" class="form-control mb-sm" placeholder="*Policy File" required="required" multiple />-->
+							<span class="btn btn-success fileinput-button">
+								<i class="glyphicon glyphicon-plus"></i>
+								<span>Add files...</span>
+								<!-- The file input field used as target for the file upload widget -->
+								<input id="fileupload" type="file" name="files[]" class="form-control mb-sm" placeholder="*Policy File" required="required"multiple />
+							</span>
+						</div>
+						<br>
+						<br>
+						<!-- The global progress bar -->
+						<div id="progress" class="progress">
+							<div class="progress-bar progress-bar-success"></div>
+						</div>
+						<!-- The container for the uploaded files -->
+						<div id="files" class="files"></div>
+						<br>
                      </div>
                  </div>
                 </form>
