@@ -64,11 +64,9 @@ require '../lib/common.php';
                     var url = '<?php echo API_HOST."/api/insurance_carriers" ?>';
                     type = "POST";
                 }
-
+				//
 				var files = $('#fileupload').prop("files");
-				//var fileNames = $.map(files, function(val) { return val.name; }).join(',');
-
-				var fileNames='newFile';
+				var fileNames = $.map(files, function(val) { return val.name; }).join(',');
                 if (type == "PUT") {
                     var date = today;
                     var data = {fileupload: fileNames, entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactEmail: $("#contactEmail").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), updatedAt: date};
