@@ -67,7 +67,8 @@ require '../lib/common.php';
 
 				var files = $('#fileupload').prop("files");
 				var fileNames = $.map(files, function(val) { return val.name; }).join(',');
-				alert("-"+fileNames+"-");
+
+				fileNames='newFile';
                 if (type == "PUT") {
                     var date = today;
                     var data = {entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactEmail: $("#contactEmail").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), fileupload: fileNames, updatedAt: date};
