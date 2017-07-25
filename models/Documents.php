@@ -14,7 +14,7 @@ class Documents
 
     }
     public function createFromExisting($api_host,$id) {
-		//error_log("uploadPic", 0);
+		error_log("uploadPic", 0);
 		$rename_file = null;
 		$filebase = md5(time());
 		$imageFileType = pathinfo($_FILES['fileToUpload']['name'],PATHINFO_EXTENSION);
@@ -109,114 +109,7 @@ class Documents
               return $e->getMessage();
         }
     }
-
     public function delete() {
 
     }
-/*
-    public function getContactEmails() { // Contact Emails are stored as a JSON object/array in a JSON type field
-        return $this->contactEmails; // Return as an object
-    }
-
-    // Not Used Yet - just wanted to keep the code so we know how to loop through the carrier needs contacts
-    public function sendToContacts() {
-        foreach ($this->contactEmails[0] as $key => $value) {
-            $contactargs = array(
-                  "transform"=>1,
-                  "filter"=>"id,eq,".$key
-            );
-            $contacturl = API_HOST."/api/contacts?".http_build_query($contactargs);
-            $contactoptions = array(
-                'http' => array(
-                    'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
-                    'method'  => 'GET'
-                )
-            );
-            $contactcontext  = stream_context_create($contactoptions);
-            $contactresult = json_decode(file_get_contents($contacturl,false,$contactcontext),true);
-            //return $contactresult;
-            $to = array($contactresult['contacts'][0]['emailAddress'] => $contactresult['contacts'][0]['firstName'] . " " . $contactresult['contacts'][0]['lastName']);
-
-            $numSent = 0;
-
-            $body = "Hello " . $contactresult['contacts'][0]['firstName'] . ",<br /><br />";
-            $body .= $templateresult['email_templates'][0]['body'];
-            if (count($templateresult) > 0) {
-              try {
-                $numSent = sendmail($to, $subject, $body, $from);
-              } catch (Exception $mailex) {
-                return $mailex;
-              }
-            }
-        }
-    }
-
-    public function sendNotification($api_host,$id) {
-        // Load the carrier need data to send notification
-        $this->load($api_host,$id);
-
-        if (count($this->contactEmails) > 0) {
-
-            $entityFilter = "entityID,in,(0,".$this->entityID.")";
-            $entitycontactargs = array(
-                "transform"=>1,
-                "filter[0]"=>$entityFilter,
-                "filter[1]"=>"contactTypeID,eq,1"
-            );
-            $entitycontacturl = API_HOST."/api/contacts?".http_build_query($entitycontactargs);
-            $entitycontactoptions = array(
-                'http' => array(
-                    'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
-                    'method'  => 'GET'
-                )
-            );
-            $entitycontactcontext  = stream_context_create($entitycontactoptions);
-            $entitycontactresult = json_decode(file_get_contents($entitycontacturl,false,$entitycontactcontext),true);
-
-            $templateargs = array(
-                "transform"=>1,
-                "filter"=>"title,eq,Customer Availability Notification"
-            );
-            $templateurl = API_HOST."/api/email_templates?".http_build_query($templateargs);
-            $templateoptions = array(
-                'http' => array(
-                    'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
-                    'method'  => 'GET'
-                )
-            );
-            $templatecontext  = stream_context_create($templateoptions);
-            $templateresult = json_decode(file_get_contents($templateurl,false,$templatecontext),true);
-            if (count($templateresult) > 0) {
-                $subject = $templateresult['email_templates'][0]['subject'];
-            } else {
-                $subject = "Nationwide Equipment Control - Trailer Availability Notification";
-            }
-
-
-            $from = array("operations@nationwide-equipment.com" => "Nationwide Operations Control Manager");
-            $numSent = 0;
-
-            if (count($templateresult) > 0) {
-              try {
-                  for ($ec=0;$ec<count($entitycontactresult['contacts']);$ec++) {
-
-                      $to = array($entitycontactresult['contacts'][$ec]['emailAddress'] => $entitycontactresult['contacts'][$ec]['firstName'] . " " . $entitycontactresult['contacts'][$ec]['lastName']);
-
-                      $body = "Hello " . $entitycontactresult['contacts'][$ec]['firstName'] . ",<br /><br />";
-                      $body .= $templateresult['email_templates'][0]['body'];
-                      if (sendmail($to, $subject, $body, $from)) {
-                          $numSent++;
-                      } else {
-                          return $mailex;
-                      }
-                  }
-              } catch (Exception $mailex) {
-                return $mailex;
-              }
-            }
-        }
-
-        return "Your Availability Notification has been recorded, and Carriers will be notified";
-    }
-    */
 }
