@@ -99,7 +99,7 @@ class Documents
       $this->entityID = $result["entityID"];
       $this->name = $result["name"];
       $this->documentID = $result["documentID"];
-      $this->documentURL = $result["name"];
+      $this->documentURL = $result["documentURL"];
       $this->createdAt = $result["createdAt"];
       $this->updatedAt = $result["updatedAt"];
     }
