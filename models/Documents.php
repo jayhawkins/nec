@@ -55,7 +55,7 @@ class Documents
 				$data = array(
 					"name"=>$name,
 					"documentID"=>$filename,
-					"documentURL"=>$name,
+					"documentURL"=>$documentURL,
 					"entityID"=>$this->entityID,
 					"createdAt" => date('Y-m-d H:i:s'),
 					"updatedAt" => date('Y-m-d H:i:s')
@@ -99,7 +99,7 @@ class Documents
       $this->entityID = $result["entityID"];
       $this->name = $result["name"];
       $this->documentID = $result["documentID"];
-      $this->documentURL = $result["documentURL"];
+      $this->documentURL = $result["name"];
       $this->createdAt = $result["createdAt"];
       $this->updatedAt = $result["updatedAt"];
     }
