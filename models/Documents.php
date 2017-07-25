@@ -21,7 +21,7 @@ class Documents
 		$filebase = md5(time());
 		$imageFileType = pathinfo($_FILES['fileToUpload']['name'],PATHINFO_EXTENSION);
 		$filename = $filebase . $imageFileType; //".jpg"; //"profile.jpg";//$_GET['file'];
-		$target_directory = "/var/www/files/" . "users/".floor($uid / 65535)."/".$uid."/";
+		$target_directory = "/var/www/files/" . "users/".floor($this->entityID / 65535)."/".$this->entityID."/";
 		//error_log("Image Directory:".$target_directory, 0);
 		//$imageFileType = pathinfo($_FILES['fileToUpload']['name'],PATHINFO_EXTENSION);
 		$target_file = $target_directory.$filename; //basename($_FILES["fileToUpload"]["name"]);
@@ -43,12 +43,12 @@ class Documents
 			$rename_file = $target_directory.$rf;
 			rename($target_file,$rename_file);
 		}
-		if (($this->status == 0) && ($uploadOk == 1)) {
+		if ($uploadOk == 1) { //($this->status == 0) && (
 			// Check if $uploadOk is set to 0 by an error
 			if ($uploadOk == 0) {
 				// file was not uploaded
 			} else {
-				mkdir("/var/www/files/" . "users/".floor($uid / 65535)."/".$uid."/", 0755, true);
+				mkdir("/var/www/files/" . "users/".floor($this->entityID / 65535)."/".$this->entityID."/", 0755, true);
 				file_put_contents($target_file, file_get_contents($_REQUEST['file']));
 				// Load the documents data to send notification
 				$this->load($api_host,$id);
