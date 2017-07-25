@@ -55,7 +55,7 @@ class Documents
 				$data = array(
 					"name"=>$name,
 					"documentID"=>$filename,
-					"documentURL"=>$documentURL,
+					"documentURL"=>$name,
 					"entityID"=>$this->entityID,
 					"createdAt" => date('Y-m-d H:i:s'),
 					"updatedAt" => date('Y-m-d H:i:s')
