@@ -1,4 +1,7 @@
 <?php
+
+define("FILE_LOCATION","/var/www/files/");
+
 class Documents
 {
 	private $name;
@@ -14,7 +17,7 @@ class Documents
 
     }
     public function createFromExisting($api_host,$id) {
-		error_log("uploadPic", 0);
+		//error_log("uploadPic", 0);
 		$rename_file = null;
 		$filebase = md5(time());
 		$imageFileType = pathinfo($_FILES['fileToUpload']['name'],PATHINFO_EXTENSION);
@@ -79,6 +82,7 @@ class Documents
 				}
 			}
 		}
+		return "failed";
 	}
     public function load($api_host,$id) {
       $args = array(
