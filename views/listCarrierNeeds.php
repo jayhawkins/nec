@@ -1140,13 +1140,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 break;
                 case "Load Out": loadMode = 'selected=selected';
                 break;
-                case "Either (Empty or Load Out)": eitherMode = 'selected=selected';
+                case "Both (Empty or Load Out)": eitherMode = 'selected=selected';
                 break;
             }
 
             transMode += '<option value="Empty" ' + emptyMode + '>Empty</option>';
             transMode += '<option value="Load Out" ' + loadMode + '>Load Out</option>';
-            transMode += '<option value="Either (Empty or Load Out)" ' + eitherMode + '>Either (Empty or Load Out)</option>';
+            transMode += '<option value="Both (Empty or Load Out)" ' + eitherMode + '>Both (Empty or Load Out)</option>';
             transMode += '</select>';
             $("#divTransportationMode").html(transMode);
 

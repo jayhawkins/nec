@@ -126,8 +126,8 @@ ALTER TABLE customer_needs ADD COLUMN originationAddress1 VarChar(255) CHARACTER
 ALTER TABLE customer_needs ADD COLUMN originationAddress2 VarChar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL AFTER originationAddress1;
 ALTER TABLE customer_needs ADD COLUMN destinationAddress1 VarChar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL AFTER originationZip;
 ALTER TABLE customer_needs ADD COLUMN destinationAddress2 VarChar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL AFTER destinationAddress1;
-ALTER TABLE customer_needs ADD COLUMN payout FLOAT(7,2) UNSIGNED DEFAULT 0.00 AFTER qty;
-ALTER TABLE customer_needs ADD COLUMN rateType VARCHAR(64) NOT NULL DEFAULT 'Flat Rate' after payout;
+ALTER TABLE customer_needs ADD COLUMN rate FLOAT(7,2) UNSIGNED DEFAULT 0.00 AFTER qty;
+ALTER TABLE customer_needs ADD COLUMN rateType VARCHAR(64) NOT NULL DEFAULT 'Flat Rate' after rate;
 ALTER TABLE customer_needs ADD COLUMN transportationMode VARCHAR(64) NOT NULL DEFAULT 'Empty' after rateType;
 ALTER TABLE customer_needs ADD COLUMN `distance` INT(5) unsigned DEFAULT 0 after destinationLat;
 -- -------------------------------------------------------------
@@ -261,6 +261,7 @@ CREATE TABLE IF NOT EXISTS `insurance_carriers` (
 	`contactPhone` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
 	`policyNumber` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
 	`policyExpirationDate` Date NOT NULL,
+	`fileupload` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
 	`createdAt` DateTime NOT NULL,
 	`updatedAt` DateTime NOT NULL,
 	CONSTRAINT `unique_id` UNIQUE( `id` ) )
@@ -270,6 +271,7 @@ ENGINE = InnoDB
 AUTO_INCREMENT = 1;
 -- -------------------------------------------------------------
 ALTER TABLE insurance_carriers ADD COLUMN status VARCHAR(255) NOT NULL DEFAULT 'Active' AFTER policyExpirationDate ;
+ALTER TABLE insurance_carriers ADD COLUMN fileupload VARCHAR(255) NOT NULL DEFAULT '' AFTER policyExpirationDate ;
 -- ---------------------------------------------------------
 
 
