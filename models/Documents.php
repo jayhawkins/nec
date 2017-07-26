@@ -19,15 +19,15 @@ class Documents
 		//error_log("uploadPic", 0);
 		$rename_file = null;
 		$filebase = md5(time());
-		$imageFileType = pathinfo($_FILES['fileToUpload']['name'],PATHINFO_EXTENSION);
+		$imageFileType = pathinfo($_FILES['fileupload']['name'],PATHINFO_EXTENSION);
 		$filename = $filebase . $imageFileType; //".jpg"; //"profile.jpg";//$_GET['file'];
 		$target_directory = "/var/www/files/" . "users/".floor($this->entityID / 65535)."/".$this->entityID."/";
 		//error_log("Image Directory:".$target_directory, 0);
-		//$imageFileType = pathinfo($_FILES['fileToUpload']['name'],PATHINFO_EXTENSION);
-		$target_file = $target_directory.$filename; //basename($_FILES["fileToUpload"]["name"]);
+		//$imageFileType = pathinfo($_FILES['fileupload']['name'],PATHINFO_EXTENSION);
+		$target_file = $target_directory.$filename; //basename($_FILES["fileupload"]["name"]);
 		$uploadOk = 1;
 		// Check file size
-		if ($_FILES["fileToUpload"]["size"] > 20000000) {
+		if ($_FILES["fileupload"]["size"] > 20000000) {
 			/* File Too Large */
 			$uploadOk = 0;
 		}
@@ -53,7 +53,7 @@ class Documents
 				// Load the documents data to send notification
 				$this->load($api_host,$id);
 				$data = array(
-					"name"=>$name,
+					"name"=>$filename,
 					"documentID"=>$filename,
 					"documentURL"=>$documentURL,
 					"entityID"=>$this->entityID,

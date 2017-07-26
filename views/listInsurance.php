@@ -56,10 +56,10 @@
 			var fileNames = $.map(files, function(val) { return val.name; }).join(',');
 			if (type == "PUT") {
 				var date = today;
-				var data = {entityID: $("#entityID").val(), name: $("#name").val(), documentID: $("#documentID").val(), documentURL: $("#documentURL").val(), updatedAt: date};
+				var data = {entityID: $("#entityID").val(), name: $("#fileupload").val(), documentID: $("#documentID").val(), documentURL: $("#documentURL").val(), updatedAt: date};
 			} else {//fileupload: fileNames,
 				var date = today;
-				var data = {entityID: $("#entityID").val(), name: $("#name").val(), documentID: $("#documentID").val(), documentURL: $("#documentURL").val(), createdAt: date};
+				var data = {entityID: $("#entityID").val(), name: $("#fileupload").val(), documentID: $("#documentID").val(), documentURL: $("#documentURL").val(), createdAt: date};
 			}//fileupload: fileNames,
 			$.ajax({
 				url: url,
@@ -72,7 +72,7 @@
 						$("#myModal").modal('hide');
 						loadTableAJAX();
 						$("#id").val('');
-						$("#name").val('');
+						$("#fileupload").val('');
 						$("#documentID").val('');
 						$("#documentURL").val('');
 						passValidation = true;
