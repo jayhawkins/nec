@@ -1452,7 +1452,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
     $('#datatable-table tbody').on( 'click', 'button', function () {
         var data = table.row( $(this).parents('tr') ).data();
-/*
+
         if (this.textContent.indexOf("View Details") > -1) {
             var li = '';
             var checked = '';
@@ -1503,8 +1503,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             formatListBoxDP();
             $("#entityID").prop('disabled', true);
             $("#myModal").modal('show');
-        } else */
-        if (this.textContent.indexOf("Commit") > -1) {
+        } else if (this.textContent.indexOf("Commit") > -1) {
             var li = '';
             var checked = '';
             var qtyselect = '<select id="qty" class="form-control mb-sm">\n';
@@ -1594,10 +1593,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             $("#entityID").prop('disabled', true);
             $("#myModalCommit").modal('show');
           } 
-          /*else if (this.textContent.indexOf("Cancel") > -1) {
+          else if (this.textContent.indexOf("Cancel") > -1) {
               $("#myCancelDialog").modal('show');
           } 
-          */
+          
          else {
             //Nothing - Somehow got in here???
           }
