@@ -962,11 +962,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
  <ol class="breadcrumb">
    <li>ADMIN</li>
-   <li class="active">Customer Trailer Availability</li>
+   <li class="active">View Carrier Committed Transport</li>
  </ol>
  <section class="widget">
      <header>
-         <h4><span class="fw-semi-bold">Availabile for Transport</span></h4>
+         <h4><span class="fw-semi-bold">Committed Transport</span></h4>
          <div class="widget-controls">
              <a data-widgster="expand" title="Expand" href="#"><i class="glyphicon glyphicon-chevron-up"></i></a>
              <a data-widgster="collapse" title="Collapse" href="#"><i class="glyphicon glyphicon-chevron-down"></i></a>
@@ -1452,7 +1452,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
     $('#datatable-table tbody').on( 'click', 'button', function () {
         var data = table.row( $(this).parents('tr') ).data();
-
+/*
         if (this.textContent.indexOf("View Details") > -1) {
             var li = '';
             var checked = '';
@@ -1503,7 +1503,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             formatListBoxDP();
             $("#entityID").prop('disabled', true);
             $("#myModal").modal('show');
-        } else if (this.textContent.indexOf("Commit") > -1) {
+        } else */
+        if (this.textContent.indexOf("Commit") > -1) {
             var li = '';
             var checked = '';
             var qtyselect = '<select id="qty" class="form-control mb-sm">\n';
@@ -1592,9 +1593,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
             $("#entityID").prop('disabled', true);
             $("#myModalCommit").modal('show');
-          } else if (this.textContent.indexOf("Cancel") > -1) {
+          } 
+          /*else if (this.textContent.indexOf("Cancel") > -1) {
               $("#myCancelDialog").modal('show');
-          } else {
+          } 
+          */
+         else {
             //Nothing - Somehow got in here???
           }
 
