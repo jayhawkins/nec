@@ -45,94 +45,102 @@
 
 			// file upload
 			if ($("#id").val() > '') {
-				var url = '<?php echo API_HOST."/api/documents" ?>/' + $("#id").val();
+				var url = '<?php echo HTTP_HOST."/uploaddocument" ?>/' + $("#id").val();
 				type = "PUT";
 			} else {
-				var url = '<?php echo API_HOST."/api/documents" ?>';
+				var url = '<?php echo HTTP_HOST."/uploaddocument" ?>';
 				type = "POST";
 			}
 			//
 			var files = $('#fileupload').prop("files");
 			var fileNames = $.map(files, function(val) { return val.name; }).join(',');
 			if (type == "PUT") {
+				alert("PUT");
 				var date = today;
-				var data = {entityID: $("#entityID").val(), name: $("#fileupload").val(), documentID: $("#documentID").val(), documentURL: $("#documentURL").val(), updatedAt: date};
+				var data = {entityID: $("#entityID").val(), fileupload: $("#fileupload"), name: $("#name").val(), documentID: $("#documentID").val(), documentURL: $("#documentURL").val(), updatedAt: date};
 			} else {//fileupload: fileNames,
+				alert("POST");
 				var date = today;
-				var data = {entityID: $("#entityID").val(), name: $("#fileupload").val(), documentID: $("#documentID").val(), documentURL: $("#documentURL").val(), createdAt: date};
+				var data = {entityID: $("#entityID").val(), fileupload: $("#fileupload"), name: $("#name").val(), documentID: $("#documentID").val(), documentURL: $("#documentURL").val(), createdAt: date};
 			}//fileupload: fileNames,
 			$.ajax({
 				url: url,
 				type: type,
-				data: JSON.stringify(data),
+				data: data,//JSON.stringify(data),
+				enctype: 'multipart/form-data',
 				contentType: "application/json",
 				async: false,
+				done: function (e, data) {
+					$.each(data.result.files, function (index, file) {
+						$('<p/>').text(file.name).appendTo('#files');
+					});
+				},
 				success: function(data){
+					console.log('file uploaded');
 					if (data > 0) {
 						$("#myModal").modal('hide');
 						loadTableAJAX();
 						$("#id").val('');
 						$("#fileupload").val('');
+						$("#name").val('');
 						$("#documentID").val('');
 						$("#documentURL").val('');
 						passValidation = true;
 					} else {
 						alert("Adding Document Failed!");
 					}
+					// update listInsurance
+					if ($("#id").val() > '') {
+						var url = '<?php echo API_HOST."/api/insurance_carriers" ?>/' + $("#id").val();
+						type = "PUT";
+					} else {
+						var url = '<?php echo API_HOST."/api/insurance_carriers" ?>';
+						type = "POST";
+					}
+					//
+					var files = $('#fileupload').prop("files");
+					var fileNames = $.map(files, function(val) { return val.name; }).join(',');
+					if (type == "PUT") {
+						var date = today;
+						var data = {fileupload: fileNames, entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactEmail: $("#contactEmail").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), updatedAt: date};
+					} else {
+						var date = today;
+						var data = {fileupload: fileNames, entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactEmail: $("#contactEmail").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), createdAt: date};
+					}
+					$.ajax({
+						url: url,
+						type: type,
+						data: JSON.stringify(data),
+						contentType: "application/json",
+						async: false,
+						success: function(data){
+							if (data > 0) {
+								$("#myModal").modal('hide');
+								loadTableAJAX();
+								$("#id").val('');
+								$("#name").val('');
+								$("#contactName").val('');
+								$("#contactEmail").val('');
+								$("#contactPhone").val('');
+								$("#policyNumber").val('');
+								$("#policyExpirationDate").val('');
+								$("#fileupload").val('');
+								passValidation = true;
+							} else {
+								alert("Adding Insurance Failed!");
+							}
+						},
+						error: function() {
+							alert("There Was An Error Adding Insurance!");
+						}
+					});
+					console.log('listInsurance updated');
 				},
-				error: function() {
+				error: function(data) {
+					console.log('file upload failed');
 					alert("There Was An Error Adding Document!");
 				}
 			});
-
-			console.log('file uploaded');
-
-			// update listInsurance
-			if ($("#id").val() > '') {
-				var url = '<?php echo API_HOST."/api/insurance_carriers" ?>/' + $("#id").val();
-				type = "PUT";
-			} else {
-				var url = '<?php echo API_HOST."/api/insurance_carriers" ?>';
-				type = "POST";
-			}
-			//
-			var files = $('#fileupload').prop("files");
-			var fileNames = $.map(files, function(val) { return val.name; }).join(',');
-			if (type == "PUT") {
-				var date = today;
-				var data = {fileupload: fileNames, entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactEmail: $("#contactEmail").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), updatedAt: date};
-			} else {
-				var date = today;
-				var data = {fileupload: fileNames, entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactEmail: $("#contactEmail").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), createdAt: date};
-			}
-			$.ajax({
-				url: url,
-				type: type,
-				data: JSON.stringify(data),
-				contentType: "application/json",
-				async: false,
-				success: function(data){
-					if (data > 0) {
-						$("#myModal").modal('hide');
-						loadTableAJAX();
-						$("#id").val('');
-						$("#name").val('');
-						$("#contactName").val('');
-						$("#contactEmail").val('');
-						$("#contactPhone").val('');
-						$("#policyNumber").val('');
-						$("#policyExpirationDate").val('');
-						$("#fileupload").val('');
-						passValidation = true;
-					} else {
-						alert("Adding Insurance Failed!");
-					}
-				},
-				error: function() {
-					alert("There Was An Error Adding Insurance!");
-				}
-			});
-			console.log('listInsurance updated');
 			return passValidation;
 		} else {
 			return false;

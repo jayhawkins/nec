@@ -1,8 +1,7 @@
 <?php
-
-
 class Documents
 {
+	private $fileupload;
 	private $name;
 	private $documentID;
 	private $documentURL;
@@ -12,28 +11,28 @@ class Documents
     public function __construct() {
 
     }
-    public function post() {
+    public function post($api_host,$id) {
 
     }
-    public function createFromExisting($api_host,$id) {
+    public function createFromExisting($api_host,$file_location,$id,$fileupload,$name,$documentID,$documentURL,$createdAt,$updatedAt,$entityID) {
 		//error_log("uploadPic", 0);
 		$rename_file = null;
 		$filebase = md5(time());
-		$imageFileType = pathinfo($_FILES['fileupload']['name'],PATHINFO_EXTENSION);
-		$filename = $filebase . $imageFileType; //".jpg"; //"profile.jpg";//$_GET['file'];
-		$target_directory = "/var/www/files/" . "users/".floor($this->entityID / 65535)."/".$this->entityID."/";
+		$imageFileType = pathinfo($fileupload['name'],PATHINFO_EXTENSION);
+		$filename = $filebase . $imageFileType;
+		$target_directory = $file_location . "users/".floor($entityID / 65535)."/".$entityID."/";
 		//error_log("Image Directory:".$target_directory, 0);
 		//$imageFileType = pathinfo($_FILES['fileupload']['name'],PATHINFO_EXTENSION);
 		$target_file = $target_directory.$filename; //basename($_FILES["fileupload"]["name"]);
 		$uploadOk = 1;
 		// Check file size
 		if ($_FILES["fileupload"]["size"] > 20000000) {
-			/* File Too Large */
+			// File Too Large
 			$uploadOk = 0;
 		}
 		// Allow certain file formats
 		if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif" && $imageFileType != "pdf" && $imageFileType != "zip") {
-			/* Only JPG, JPEG, PNG, GIF, PDF & ZIP files are allowed */
+			// Only JPG, JPEG, PNG, GIF, PDF & ZIP files are allowed
 			$uploadOk = 0;
 		}
 		// Check if file already exists
@@ -48,12 +47,12 @@ class Documents
 			if ($uploadOk == 0) {
 				// file was not uploaded
 			} else {
-				mkdir("/var/www/files/" . "users/".floor($this->entityID / 65535)."/".$this->entityID."/", 0755, true);
+				mkdir($file_location . "users/".floor($entityID / 65535)."/".$entityID."/", 0755, true);
 				file_put_contents($target_file, file_get_contents($_REQUEST['file']));
 				// Load the documents data to send notification
 				$this->load($api_host,$id);
 				$data = array(
-					"name"=>$filename,
+					"name"=>$name,
 					"documentID"=>$filename,
 					"documentURL"=>$documentURL,
 					"entityID"=>$this->entityID,
