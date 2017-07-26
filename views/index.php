@@ -221,6 +221,23 @@ if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
              </li>
  <?php
     }
+
+
+    if ($_SESSION['entityid'] == 0) {
+ ?>
+             <li>
+                 <a href="#" onclick="ajaxFormCall('listCommitment');">
+                     <span class="icon">
+                         <i class="fa fa-handshake-o"></i>
+                     </span>
+                     Commitment
+                     <span class="label label-danger">
+                         <?php echo $cncount; ?>
+                     </span>
+                 </a>
+             </li>
+ <?php
+    }
     
  ?>
             <li>
