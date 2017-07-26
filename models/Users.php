@@ -9,7 +9,7 @@ class User
     public function loginapi($username,$password) {
         try {
               //$result = json_decode(file_get_contents(API_HOST.'/api/users?filter=username,eq,' . $username));
-              $result = json_decode(file_get_contents(API_HOST.'/api/users?include=members,entities&filter=username,eq,' . $username));
+              //$result = json_decode(file_get_contents(API_HOST.'/api/users?include=members,entities&filter=username,eq,' . $username));
 
               $loginargs = array(
                             "include"=>"members,entities",
@@ -121,6 +121,7 @@ class User
                         "createdAt" => date('Y-m-d H:i:s'),
                         "updatedAt" => date('Y-m-d H:i:s')
             );
+            //print_r($entitydata)."<br/>\n";
             // use key 'http' even if you send the request to https://...
             $entityoptions = array(
                 'http' => array(
@@ -131,6 +132,7 @@ class User
             );
             $entitycontext  = stream_context_create($entityoptions);
             $entityresult = file_get_contents($entityurl, false, $entitycontext);
+            //echo $entityresult."<br/>\n";
             // Now create the entity location
             $locationurl = API_HOST.'/api/locations';
             $locationdata = array(
@@ -148,6 +150,7 @@ class User
                         "createdAt" => date('Y-m-d H:i:s'),
                         "updatedAt" => date('Y-m-d H:i:s')
             );
+            //print_r($locationdata);
             // use key 'http' even if you send the request to https://...
             $locationoptions = array(
                 'http' => array(
@@ -158,6 +161,8 @@ class User
             );
             $locationcontext  = stream_context_create($locationoptions);
             $locationresult = file_get_contents($locationurl, false, $locationcontext);
+            //echo $locationresult;
+            //die();
             if ($entityresult > 0) {
                 $entity_id = $entityresult;
                 $_SESSION['entityid'] = $entity_id;
@@ -227,6 +232,43 @@ class User
                     );
                     $contactcontext  = stream_context_create($contactoptions);
                     $contactresult = file_get_contents($contacturl, false, $contactcontext);
+//----------------------------------------------------------------------------
+
+                    $admimargs = array(
+                        "transform"=>1,
+                        "columns"=>"id",
+                        "filter"=>"entityID,eq,0"
+                    );
+
+                    $adminurl = API_HOST."/api/contacts?".http_build_query($admimargs);
+                    $adminoptions = array(
+                      'http' => array(
+                          'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                          'method'  => 'GET'
+                      )
+                    );
+
+                    $admincontext  = stream_context_create($adminoptions);
+                    $adminresult = json_decode(file_get_contents($adminurl,false,$admincontext));
+                    echo $adminresult;
+                    die();
+                    $admincontactid = $adminresult->contacts[0]->id;
+
+                    // Update entity contact id with newly created contact
+                    $entityupdateurl = API_HOST.'/api/entities/' . $entity_id;
+                    $entityupdatedata = array("contactID" => $contactresult);
+                    //print_r($entityupdatedata)."<br/>\n";
+                    $entityupdateoptions = array(
+                        'http' => array(
+                            'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                            'method'  => 'PUT',
+                            'content' => http_build_query($entityupdatedata)
+                        )
+                    );
+                    $entityupdatecontext  = stream_context_create($entityupdateoptions);
+                    $entityupdateresult = file_get_contents($entityupdateurl, false, $entityupdatecontext);
+//----------------------------------------------------------------------------
+
                     if ($memberresult > 0) {
                         $member_id = $memberresult;
                         $_SESSION['memberid'] = $member_id;

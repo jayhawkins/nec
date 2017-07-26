@@ -390,7 +390,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                                       if (type == 'POST') {
                                          var params = {id: $("#id").val()};
                                          $.ajax({
-                                            url: '<?php echo HTTP_HOST."/customerneedsnotification" ?>',
+                                            url: '<?php echo HTTP_HOST."/customerneedscommitnotification" ?>',
                                             type: 'POST',
                                             data: JSON.stringify(params),
                                             contentType: "application/json",
@@ -443,11 +443,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                                              contentType: "application/json",
                                              async: false,
                                              success: function(notification){
-                                                 alert("Create from existing: " + notification);
+                                                 //alert("Create from existing: " + notification);
                                                  //$("#myModalCommit").modal('hide');
                                              },
                                              error: function() {
-                                                alert('Failed creating a new Need from an existing.');
+                                                //alert('Failed creating a new Need from an existing.');
                                                 //$("#myModalCommit").modal('hide');
                                              }
                                           });
