@@ -380,5 +380,23 @@ $app->route('POST /createcustomerneedsfromexisting', function() {
     }
 });
 
+$app->route('POST /uploaddocument', function() {
+	$id = Flight::request()->data->id;
+	$fileupload = Flight::request()->files['fileupload'];
+	$name = Flight::request()->data->name;
+	$documentID = Flight::request()->data->documentID;
+	$documentURL = Flight::request()->data->documentURL;
+	$createdAt = Flight::request()->data->createdAt;
+	$updatedAt = Flight::request()->data->updatedAt;
+	$entityID = Flight::request()->data->entityID;
+	$documents = Flight::documents();
+    $result = $documents->createFromExisting(API_HOST,FILE_LOCATION,$id,$fileupload,$name,$documentID,$documentURL,$createdAt,$updatedAt,$entityID);
+    if ($result) {
+        print_r($result);
+    } else {
+        print_r($result);
+    }
+});
+
 // Start the framework
 $app->start();
