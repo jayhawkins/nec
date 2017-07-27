@@ -523,6 +523,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     "data":           null,
                     "defaultContent": ''
                 },
+                { data: "entities[0].name", visible: show },
                 { data: "id", visible: false },
                 { data: "entityID", visible: false },
                 { data: "qty" },
@@ -566,7 +567,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 },
                 { data: "customer_needs_commit[0].status", visible: false },
                 { data: "customer_needs_commit[0].rate", visible: false },
-                { data: "entities[0].name", visible: show },
                 { data: "entities[0].rateType", visible: false },
                 { data: "entities[0].negotiatedRate", visible: false},
                 {
@@ -995,6 +995,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                  <thead>
                  <tr>
                      <th></th>
+                     <th>Company</th>
                      <th>ID</th>
                      <th>Entity ID</th>
                      <th>Qty</th>
@@ -1018,7 +1019,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                      <th>Status</th>
                      <th>Commit Status</th>
                      <th>Commit Rate</th>
-                     <th>Company</th>
                      <th>Rate Type</th>
                      <th>Negotiated Rate</th>
                      <th class="no-sort pull-right"></th>
