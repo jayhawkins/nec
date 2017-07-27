@@ -14,6 +14,7 @@ Flight::register('db', 'PDO', array('mysql:host=localhost;dbname=' . DBNAME, DBU
 $db = Flight::db();
 
 require 'lib/common.php';
+require "lib/googleApiClass.php";
 require 'models/Users.php';
 require 'models/Entities.php';
 require 'models/Members.php';

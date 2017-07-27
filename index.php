@@ -342,10 +342,11 @@ $app->route('POST /customerneedsnotification', function() {
     }
 });
 
+/*
 $app->route('POST /customerneedscommitnotification', function() {
-    $customerneedid = Flight::request()->data->id;
+    $customerneedcommitid = Flight::request()->data->id;
     $customerneedcommit = Flight::customerneedcommit();
-    $notificationresult = $customerneedcommit->sendRepNotification(API_HOST,$customerneedid);
+    $notificationresult = $customerneedcommit->sendRepNotification(API_HOST,$customerneedcommitid);
     if ($notificationresult) {
         print_r($notificationresult);
         //echo "success";
@@ -353,6 +354,7 @@ $app->route('POST /customerneedscommitnotification', function() {
         print_r($notificationresult);
     }
 });
+*/
 
 $app->route('POST /createcustomerneedsfromexisting', function() {
     $id = Flight::request()->data->id;
@@ -370,10 +372,15 @@ $app->route('POST /createcustomerneedsfromexisting', function() {
     $destinationLat = Flight::request()->data->destinationLat;
     $destinationLng = Flight::request()->data->destinationLng;
     $distance = Flight::request()->data->distance;
+    $transportation_mode = Flight::request()->data->transportation_mode;
+    $transportation_type = Flight::request()->data->transportation_type;
+    $pickupDate = Flight::request()->data->pickupDate;
+    $deliveryDate = Flight::request()->data->deliveryDate;
     $customerneed = Flight::customerneed();
-    $result = $customerneed->createFromExisting(API_HOST,$id,$qty,$originationAddress1,$originationCity,$originationState,$originationZip,$destinationAddress1,$destinationCity,$destinationState,$destinationZip,$originationLat,$originationLng,$destinationLat,$destinationLng,$distance);
+    $result = $customerneed->createFromExisting(API_HOST,$id,$qty,$originationAddress1,$originationCity,$originationState,$originationZip,$destinationAddress1,$destinationCity,$destinationState,$destinationZip,$originationLat,$originationLng,$destinationLat,$destinationLng,$distance,$transportation_mode,$transportation_type,$pickupDate,$deliveryDate);
     if ($result) {
         print_r($result);
+        die();
         //echo "success";
     } else {
         print_r($result);

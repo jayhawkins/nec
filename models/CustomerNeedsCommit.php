@@ -49,11 +49,11 @@ class CustomerNeedCommit
 
       $this->customerNeedsID = $result["customerNeedsID"];
       $this->entityID = $result["entityID"];
-      $this->originationAddress1 = $result["originationAddress1"];
+      //$this->originationAddress1 = $result["originationAddress1"];
       $this->originationCity = $result["originationCity"];
       $this->originationState = $result["originationState"];
       $this->originationZip = $result["originationZip"];
-      $this->destinationAddress1 = $result["destinationAddress1"];
+      //$this->destinationAddress1 = $result["destinationAddress1"];
       $this->destinationCity = $result["destinationCity"];
       $this->destinationState = $result["destinationState"];
       $this->destinationZip = $result["destinationZip"];

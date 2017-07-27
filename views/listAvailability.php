@@ -76,8 +76,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
       function post() {
 
-          var originationaddress = $("#originationAddress1").val() + ', ' + $("#originationCity").val() + ', ' + $("#originationState").val() + ', ' + $("#originationZip").val();
-          var destinationaddress = $("#destinationAddress1").val() + ', ' + $("#destinationCity").val() + ', ' + $("#destinationState").val() + ', ' + $("#destinationZip").val();
+          //var originationaddress = $("#originationAddress1").val() + ', ' + $("#originationCity").val() + ', ' + $("#originationState").val() + ', ' + $("#originationZip").val();
+          //var destinationaddress = $("#destinationAddress1").val() + ', ' + $("#destinationCity").val() + ', ' + $("#destinationState").val() + ', ' + $("#destinationZip").val();
+          var originationaddress = $("#originationCity").val() + ', ' + $("#originationState").val() + ', ' + $("#originationZip").val();
+          var destinationaddress = $("#destinationCity").val() + ', ' + $("#destinationState").val() + ', ' + $("#destinationZip").val();
 
           if (originationaddress != $("#originToMatch").val() && destinationaddress != $("#destToMatch").val()) {
               alert("The commitment for this Available request must be picked up or dropped off at the listed Origination or Destination. Please select a new Origination or Destination address.");
@@ -183,137 +185,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
           }
       }
 
-      function verifyAndPost_NOTUSED() {
-
-          if ( $('#formNeed').parsley().validate() ) {
-
-                $("#load").html("<i class='fa fa-spinner fa-spin'></i> Committing Now");
-                $("#load").prop("disabled", true);
-
-                var returnMessage = "";
-                var type = "";
-                var today = new Date();
-                var dd = today.getDate();
-                var mm = today.getMonth()+1; //January is 0!
-                var yyyy = today.getFullYear();
-                var hours = today.getHours();
-                var min = today.getMinutes();
-                var sec = today.getSeconds();
-
-                if(dd<10) {
-                    dd='0'+dd;
-                }
-
-                if(mm<10) {
-                    mm='0'+mm;
-                }
-
-                if(hours<10) {
-                    hours='0'+hours;
-                }
-
-                if(min<10) {
-                    min='0'+min;
-                }
-
-                today = mm+'/'+dd+'/'+yyyy;
-                today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
-
-                var geocoder = new google.maps.Geocoder();
-                var originationaddress = $("#originationAddress1").val() + ' ' + $("#originationCity").val() + ' ' + $("#originationState").val() + ' ' + $("#originationZip").val();
-
-                geocoder.geocode( { 'address': originationaddress}, function(originationresults, status) {
-
-                  if (status == google.maps.GeocoderStatus.OK) {
-
-                    var originationlat = originationresults[0].geometry.location.lat();
-                    var originationlng = originationresults[0].geometry.location.lng();
-
-                      var destinationaddress = $("#destinationAddress1").val() + ' ' + $("#destinationCity").val() + ' ' + $("#destinationState").val() + ' ' + $("#destinationZip").val();
-                      geocoder.geocode( { 'address': destinationaddress}, function(destinationresults, status) {
-
-                          if (status == google.maps.GeocoderStatus.OK) {
-                              var destinationlat = destinationresults[0].geometry.location.lat();
-                              var destinationlng = destinationresults[0].geometry.location.lng();
-
-                              //console.log($("#transportationType").val());
-                              var distance = getDistance({lat:originationlat, lng:originationlng}, {lat:destinationlat, lng:destinationlng});
-
-                              var url = '<?php echo API_HOST."/api/customer_needs_commit" ?>';
-                              type = "POST";
-                              var date = today;
-                              var data = {customerNeedsID: $("#id").val(), entityID: $("#entityID").val(), qty: $("#qty").val(), originationAddress1: $("#originationAddress1").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress1: $("#destinationAddress1").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, distance: distance, rate: $("#rate").val(), transportation_mode: $("#transportationMode").val(), transportation_type: $('input[name="transportationType"]:checked').val(), pickupDate: $("#pickupDate").val(), deliveryDate: $("#deliveryDate").val(), createdAt: date, updatedAt: date};
-
-                              $.ajax({
-                                 url: url,
-                                 type: type,
-                                 data: JSON.stringify(data),
-                                 contentType: "application/json",
-                                 async: false,
-                                 success: function(data){
-                                    if (data > 0) {
-                                      if (type == 'POST') {
-                                        var params = {id: data}; // Send customer needs commit id so we can gather who to send notification to at NEC
-                                        $.ajax({
-                                           url: '<?php echo HTTP_HOST."/customerneedscommitnotification" ?>',
-                                           type: 'POST',
-                                           data: JSON.stringify(params),
-                                           contentType: "application/json",
-                                           async: false,
-                                           success: function(notification){
-                                             alert(notification);
-                                              returnMessage = notification;
-                                           },
-                                           error: function() {
-                                             alert("Failed");
-                                              returnMessage = 'Failed Sending Notifications! - Notify NEC of this failure.';
-                                           }
-                                        });
-                                      }
-                                      $("#myModalCommit").modal('hide');
-                                      loadTableAJAX();
-                                      $("#id").val('');
-                                      $("#qty").val('');
-                                      $("#pickupDate").val('');
-                                      $("#deliveryDate").val('');
-                                      $("#originationAddress1").val('');
-                                      $("#originationCity").val('');
-                                      $("#originationState").val('');
-                                      $("#originationZip").val('');
-                                      $("#destinationAddress1").val('');
-                                      $("#destinationCity").val('');
-                                      $("#destinationState").val('');
-                                      $("#destinationZip").val('');
-                                      $("#rate").val('');
-                                    } else {
-                                      returnMessage = "Adding Need Failed!\n\n" + data;
-                                    }
-                                 },
-                                 error: function() {
-                                    returnMessage = "There Was An Error Adding Location!";
-                                 }
-                              });
-
-                          } else {
-                              returnMessage = "ERROR Geo-Coding Address!";
-                          }
-                      });
-                  } else {
-                      returnMessage = "ERROR Geo-Coding Address!";
-                  }
-                });
-
-                return returnMessage;
-
-          } else {
-
-                return "Error";
-
-          }
-
-      }
-
-      function verifyAndPost() {
+      function verifyAndPost_WORKS() {
 
           if ( $('#formNeed').parsley().validate() ) {
 
@@ -349,8 +221,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 today = mm+'/'+dd+'/'+yyyy;
                 today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
 
-                var originationaddress = $("#originationAddress1").val() + ', ' + $("#originationCity").val() + ', ' + $("#originationState").val() + ', ' + $("#originationZip").val();
-                var destinationaddress = $("#destinationAddress1").val() + ', ' + $("#destinationCity").val() + ', ' + $("#destinationState").val() + ', ' + $("#destinationZip").val();
+                //var originationaddress = $("#originationAddress1").val() + ', ' + $("#originationCity").val() + ', ' + $("#originationState").val() + ', ' + $("#originationZip").val();
+                //var destinationaddress = $("#destinationAddress1").val() + ', ' + $("#destinationCity").val() + ', ' + $("#destinationState").val() + ', ' + $("#destinationZip").val();
+                var originationaddress = $("#originationCity").val() + ', ' + $("#originationState").val() + ', ' + $("#originationZip").val();
+                var destinationaddress = $("#destinationCity").val() + ', ' + $("#destinationState").val() + ', ' + $("#destinationZip").val();
 
                 // getMapDirectionFromGoogle is defined in common.js
                 newGetMapDirectionFromGoogle( originationaddress, destinationaddress, function(response) {
@@ -374,6 +248,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                               var newDestinationLat = "";
                               var newDestinationLng = "";
 
+
                               var url = '<?php echo API_HOST."/api/customer_needs_commit" ?>';
                               type = "POST";
                               var date = today;
@@ -388,7 +263,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                                  success: function(data){
                                     if (data > 0) {
                                       if (type == 'POST') {
-                                         var params = {id: $("#id").val()};
+                                         //var params = {id: $("#id").val()};
+                                         var params = {id: data}; // Get id fromt the customer_needs_commit just created
                                          $.ajax({
                                             url: '<?php echo HTTP_HOST."/customerneedscommitnotification" ?>',
                                             type: 'POST',
@@ -409,15 +285,16 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                                       // If new commit Origination or Destination is different than parent it came from, we need to create another customer_needs records
                                       if (originationaddress != $("#originToMatch").val() || destinationaddress != $("#destToMatch").val()) {
 
+/*
                                           if (originationaddress != $("#originToMatch").val()) {
                                               var newOriginationAddress1 = $("#oaddress1").val();
-                                              var newOriginationCity = $("#ocity").val();;
-                                              var newOriginationState = $("#ostate").val();;
-                                              var newOriginationZip = $("#ozip").val();;
-                                              var newDestinationAddress1 = $("#originationAddress1").val();;
-                                              var newDestinationCity = $("#originationCity").val();;
-                                              var newDestinationState = $("#originationState").val();;
-                                              var newDestinationZip = $("#originationZip").val();;
+                                              var newOriginationCity = $("#ocity").val();
+                                              var newOriginationState = $("#ostate").val();
+                                              var newOriginationZip = $("#ozip").val();
+                                              var newDestinationAddress1 = $("#originationAddress1").val();
+                                              var newDestinationCity = $("#originationCity").val();
+                                              var newDestinationState = $("#originationState").val();
+                                              var newDestinationZip = $("#originationZip").val();
                                           }
 
                                           if (destinationaddress != $("#destToMatch").val()) {
@@ -430,6 +307,15 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                                               var newDestinationState = $("#dstate").val();
                                               var newDestinationZip = $("#dzip").val();
                                           }
+*/
+                                          var newOriginationAddress1 = $("#originationAddress1").val();
+                                          var newOriginationCity = $("#originationCity").val();
+                                          var newOriginationState = $("#originationState").val();
+                                          var newOriginationZip = $("#originationZip").val();
+                                          var newDestinationAddress1 = $("#destinationAddress1").val();
+                                          var newDestinationCity = $("#destinationCity").val();
+                                          var newDestinationState = $("#destinationState").val();
+                                          var newDestinationZip = $("#destinationZip").val();
 
 
                                           var url = '<?php echo HTTP_HOST."/createcustomerneedsfromexisting" ?>';
@@ -480,6 +366,130 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
                               return passValidation;
               });
+
+            } else {
+
+                return false;
+
+            }
+
+      }
+
+      function verifyAndPost() {
+
+          if ( $('#formNeed').parsley().validate() ) {
+
+                $("#load").html("<i class='fa fa-spinner fa-spin'></i> Committing Now");
+                $("#load").prop("disabled", true);
+
+                var passValidation = false;
+                var type = "";
+                var today = new Date();
+                var dd = today.getDate();
+                var mm = today.getMonth()+1; //January is 0!
+                var yyyy = today.getFullYear();
+                var hours = today.getHours();
+                var min = today.getMinutes();
+                var sec = today.getSeconds();
+
+                if(dd<10) {
+                    dd='0'+dd;
+                }
+
+                if(mm<10) {
+                    mm='0'+mm;
+                }
+
+                if(hours<10) {
+                    hours='0'+hours;
+                }
+
+                if(min<10) {
+                    min='0'+min;
+                }
+
+                today = mm+'/'+dd+'/'+yyyy;
+                today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+
+                //var originationaddress = $("#originationAddress1").val() + ', ' + $("#originationCity").val() + ', ' + $("#originationState").val() + ', ' + $("#originationZip").val();
+                //var destinationaddress = $("#destinationAddress1").val() + ', ' + $("#destinationCity").val() + ', ' + $("#destinationState").val() + ', ' + $("#destinationZip").val();
+                var originationaddress = $("#originationCity").val() + ', ' + $("#originationState").val() + ', ' + $("#originationZip").val();
+                var destinationaddress = $("#destinationCity").val() + ', ' + $("#destinationState").val() + ', ' + $("#destinationZip").val();
+
+                // getMapDirectionFromGoogle is defined in common.js
+                newGetMapDirectionFromGoogle( originationaddress, destinationaddress, function(response) {
+
+                              var originationlat = response.originationlat;
+                              var originationlng = response.originationlng;
+                              var destinationlat = response.destinationlat;
+                              var destinationlng = response.destinationlng;
+                              var distance = response.distance;
+
+                              var newOriginationAddress1 = "";
+                              var newOriginationCity = "";
+                              var newOriginationState = "";
+                              var newOriginationZip = "";
+                              var newDestinationAddress1 = "";
+                              var newDestinationCity = "";
+                              var newDestinationState = "";
+                              var newDestinationZip = "";
+                              //var newOriginationLat = "";
+                              //var newOriginationLng = "";
+                              //var newDestinationLat = "";
+                              //var newDestinationLng = "";
+
+
+                              // If new commit Origination or Destination is different than parent it came from, we need to create another customer_needs records
+                              //if (originationaddress != $("#originToMatch").val() || destinationaddress != $("#destToMatch").val()) {
+
+                                  var newOriginationAddress1 = $("#originationAddress1").val();
+                                  var newOriginationCity = $("#originationCity").val();
+                                  var newOriginationState = $("#originationState").val();
+                                  var newOriginationZip = $("#originationZip").val();
+                                  var newDestinationAddress1 = $("#destinationAddress1").val();
+                                  var newDestinationCity = $("#destinationCity").val();
+                                  var newDestinationState = $("#destinationState").val();
+                                  var newDestinationZip = $("#destinationZip").val();
+
+                                  var url = '<?php echo HTTP_HOST."/createcustomerneedsfromexisting" ?>';
+                                  var date = today;
+                                  var recStatus = 'Available';
+                                  var data = {id: $("#id").val(), qty: $("#qty").val(), originationAddress1: newOriginationAddress1, originationCity: newOriginationCity, originationState: newOriginationState, originationZip: newOriginationZip, destinationAddress1: newDestinationAddress1, destinationCity: newDestinationCity, destinationState: newDestinationState, destinationZip: newDestinationZip, originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, distance: distance, transportation_mode: $("#transportationMode").val(), transportation_type: $('input[name="transportationType"]:checked').val(), pickupDate: $("#pickupDate").val(), deliveryDate: $("#deliveryDate").val()};
+                                  $.ajax({
+                                     url: url,
+                                     type: 'POST',
+                                     data: JSON.stringify(data),
+                                     contentType: "application/json",
+                                     async: false,
+                                     success: function(notification){
+                                         //alert("Create from existing: " + notification);
+                                         $("#myModalCommit").modal('hide');
+                                     },
+                                     error: function() {
+                                        alert('Failed creating a new Need from an existing.');
+                                        $("#myModalCommit").modal('hide');
+                                     }
+                                  });
+                              //}
+
+                              $("#myModal").modal('hide');
+                              loadTableAJAX();
+                              $("#id").val('');
+                              $("#qty").val('');
+                              $("#rate").val('');
+                              $("#availableDate").val('');
+                              $("#expirationDate").val('');
+                              $("#originationAddress1").val('');
+                              $("#originationCity").val('');
+                              $("#originationState").val('');
+                              $("#originationZip").val('');
+                              $("#destinationAddress1").val('');
+                              $("#destinationCity").val('');
+                              $("#destinationState").val('');
+                              $("#destinationZip").val('');
+                              passValidation = true;
+
+                });
 
             } else {
 
@@ -1189,6 +1199,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                           </div>
                           <div id="org-suggesstion-box" class="frmSearch"></div>
                       </div>
+                      <!--
                       <div class="col-sm-4">
                           <label for="originationAddress1">Origination Address</label>
                           <div class="form-group">
@@ -1196,6 +1207,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                             required="required" />
                           </div>
                       </div>
+                      -->
                       <div class="col-sm-3">
                           <label for="originationState">Origination State</label>
                           <div class="form-group">
@@ -1217,6 +1229,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                             required="required" />
                           </div>
                       </div>
+                      <div class="col-sm-4">
+                      </div>
                   </div>
                   <div class="row">
                     <div class="col-sm-3">
@@ -1227,6 +1241,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                         </div>
                         <div id="dest-suggesstion-box" class="frmSearch"></div>
                     </div>
+                    <!--
                     <div class="col-sm-4">
                         <label for="destinationAddress1">Destination Address</label>
                         <div class="form-group">
@@ -1234,6 +1249,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                           required="required" />
                         </div>
                     </div>
+                    -->
                     <div class="col-sm-3">
                         <label for="destinationState">Destination State</label>
                         <div class="form-group">
@@ -1255,9 +1271,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                           required="required" />
                         </div>
                     </div>
+                    <div class="col-sm-4">
+                    </div>
                   </div>
                   <hr/>
                   <div class="row">
+                      <!--
                       <div class="col-sm-3">
                           <label for="rate">Rate to Transport</label>
                           <div class="form-group">
@@ -1272,12 +1291,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                             &nbsp;&nbsp;<input type="radio" id="transportionType" name="transportationType" value="Mileage" /> Mileage</div>
                           </div>
                       </div>
+                      -->
                       <div class="col-sm-3">
                         <label for="transportationModeDiv">Transportation Mode</label>
                         <div id="transportationModeDiv" class="form-group">
                         </div>
                       </div>
-                      <div class="col-sm-3">
+                      <div class="col-sm-9">
                       </div>
                   </div>
         </div>
@@ -1530,8 +1550,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             $("#dstate").val(data["destinationState"]);
             $("#dzip").val(data["destinationZip"]);
             // Set up the matching addresses like we do up in the verifyAndPost() - makes it easy to do a compare
-            $("#originToMatch").val(data["originationAddress1"] + ', ' + data["originationCity"] + ', ' + data["originationState"] + ', ' + data["originationZip"]);
-            $("#destToMatch").val(data["destinationAddress1"] + ', ' + data["destinationCity"] + ', ' + data["destinationState"] + ', ' + data["destinationZip"]);
+            //$("#originToMatch").val(data["originationAddress1"] + ', ' + data["originationCity"] + ', ' + data["originationState"] + ', ' + data["originationZip"]);
+            //$("#destToMatch").val(data["destinationAddress1"] + ', ' + data["destinationCity"] + ', ' + data["destinationState"] + ', ' + data["destinationZip"]);
+            $("#originToMatch").val(data["originationCity"] + ', ' + data["originationState"] + ', ' + data["originationZip"]);
+            $("#destToMatch").val(data["destinationCity"] + ', ' + data["destinationState"] + ', ' + data["destinationZip"]);
             //$("#rate").val(data["entities"][0].negotiatedRate.toFixed(2));
             $("#rate").val(entity.entities.records[0][1].toFixed(2));
 
@@ -1576,17 +1598,17 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     empty = "selected=selected";
                 } else if (data['transportationMode'] == "Load Out"){
                     loadout = "selected=selected";
-                } else if (data['transportationMode'] == "Both (Empty or Load Out)"){
+                } else if (data['transportationMode'] == "Either (Empty or Load Out)"){
                     either = "selected=selected";
                 }
                 transportationmodeselect += '<option value="Empty" '+empty+'>Empty</option>\n';
                 transportationmodeselect += '<option value="Load Out" '+loadout+'>Load Out</option>\n';
-                transportationmodeselect += '<option value="Both (Empty or Load Out)" '+either+'>Both (Empty or Load Out)</option>\n';
+                transportationmodeselect += '<option value="Either (Empty or Load Out)" '+either+'>Either (Empty or Load Out)</option>\n';
             }
 
             //transportationmodeselect += '<option value="Empty">Empty</option>\n';
             //transportationmodeselect += '<option value="Load Out">Load Out</option>\n';
-            //transportationmodeselect += '<option value="Both (Empty or Load Out)">Both (Empty or Load Out)</option>\n';
+            //transportationmodeselect += '<option value="Either (Empty or Load Out)">Either (Empty or Load Out)</option>\n';
             transportationmodeselect += '</select>\n';
             $("#transportationModeDiv").html(transportationmodeselect);
 
@@ -1636,7 +1658,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         });
     });
 
-    $("#originationCity").keyup(function(){
+    $("#originationCity_Inactive").keyup(function(){
         $("#originationCity").css("background","#FFF url(img/loaderIcon.gif) no-repeat 165px");
 
         var url = '<?php echo API_HOST; ?>/api/locations?transform=1&columns=id,name,city&filter[]=entityID,eq,' + $("#entityID").val() + '&filter[]=city,sw,' + $(this).val();
@@ -1685,7 +1707,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         });
     }
 
-    $("#destinationCity").keyup(function(){
+    $("#destinationCity_Inactive").keyup(function(){
         $("#destinationCity").css("background","#FFF url(img/loaderIcon.gif) no-repeat 165px");
 
         var url = '<?php echo API_HOST; ?>/api/locations?transform=1&columns=id,name,city&filter[]=entityID,eq,' + $("#entityID").val() + '&filter[]=city,sw,' + $(this).val();
