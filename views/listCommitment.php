@@ -509,10 +509,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     var customer_needs = json.customer_needs;
                     var committed = [];
                     for(var i = 0; i < customer_needs.length; i++){
-                        var expirationDate = new Date(customer_needs[i].expirationDate);
-                        var todaysDate = new Date();
-                        todaysDate.setHours(0,0,0,0);
-                        if(customer_needs[i].customer_needs_commit.length > 0){
+                            if(customer_needs[i].customer_needs_commit.length > 0){
+                            var expirationDate = new Date(customer_needs[i].expirationDate);
+                            var todaysDate = new Date();
+                            todaysDate.setHours(0,0,0,0);
+
+                            console.log("Today:", todaysDate, "Expiration: ", expirationDate);
                             if(expirationDate >= todaysDate){
                                 committed.push(customer_needs[i]);                                
                             }
