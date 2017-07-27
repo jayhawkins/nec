@@ -593,8 +593,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             ]
           });
           
-        example_table.column(null).data().filter(function(value, index){
-                return value == "<strong>Committed</strong>" ? true : false;
+        example_table.column("customer_needs_commit[0].status").data().filter(function(value, index){
+                return value == "Open" ? true : false;
         });
 
         example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
