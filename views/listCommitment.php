@@ -509,8 +509,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     var customer_needs = json.customer_needs;
                     var committed = [];
                     for(var i = 0; i < customer_needs.length; i++){
+                        var expirationDate = date(customer_needs[i].expirationDate);
+                        var todaysDate = new Date();
+                        
                         if(customer_needs[i].customer_needs_commit.length > 0){
-                            committed.push(customer_needs[i]);
+                            if(expirationDate <= todaysDate){
+                                committed.push(customer_needs[i]);                                
+                            }
                         }
                     }
                     return committed;
@@ -562,7 +567,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                           newStatus = "<strong>Committed</strong>";
                       }
                       return newStatus;
-                    }
+                    }, visible: false
                 },
                 { data: "customer_needs_commit[0].status", visible: false },
                 { data: "customer_needs_commit[0].rate", visible: false },
