@@ -591,23 +591,18 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             ]
           });
           
-          var show_committed_only = example_table
-            .column("Status")
-            .data()
-            .filter(function(value, index){
-                return value == "Committed" ? true : false;
-          });
+        example_table.column(null).data().filter(function(value, index){
+                return value == "<strong>Committed</strong>" ? true : false;
+        });
 
-          //example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
-          show_committed_only.buttons().container().appendTo( $('.col-sm-6:eq(0)', show_committed_only.table().container() ) );
+        example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
 
-          //To Reload The Ajax
-          //See DataTables.net for more information about the reload method
-          //example_table.ajax.reload();
-          show_committed_only.ajax.reload();
-          $("#entityID").prop('disabled', false);
-          $("#load").html("Commit");
-          $("#load").prop("disabled", false);
+        //To Reload The Ajax
+        //See DataTables.net for more information about the reload method
+        example_table.ajax.reload();
+        $("#entityID").prop('disabled', false);
+        $("#load").html("Commit");
+        $("#load").prop("disabled", false);
 
       }
 
