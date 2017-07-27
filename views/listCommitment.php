@@ -601,7 +601,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         $("#load").html("Commit");
         $("#load").prop("disabled", false);
 
-        example_table.column("customer_needs_commit[0].status").data().filter(function(value, index){
+        example_table.column("Commit Status").data().filter(function(value, index){
                 return value === "Open" ? true : false;
         });
       }
