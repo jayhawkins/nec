@@ -504,7 +504,15 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             processing: true,
             ajax: {
                 url: url,
-                dataSrc: 'customer_needs'
+                dataSrc: function(customer_needs){
+                    var json;
+                    for(var i = 0; i < customer_needs.length; i++){
+                        if(customer_needs[i].customer_needs_commit[0].status === "Open"){
+                            json.push(customer_needs[i]);
+                        }
+                    }
+                    return json;
+                }
             },
             columns: [
                 {
@@ -601,9 +609,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         $("#load").html("Commit");
         $("#load").prop("disabled", false);
 
-        example_table.column("Commit Status").data().filter(function(value, index){
-                console.log("Commit Status[" + index + "]: " + value);
-        });
       }
 
       function recordEnableDisable(status) {
