@@ -504,15 +504,16 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             processing: true,
             ajax: {
                 url: url,
-                dataSrc: function(customer_needs){
-                    console.log(customer_needs);
-                    var json;
+                dataSrc: function(json){
+                    //console.log(json);
+                    var customer_needs = json.customer_needs;
+                    var committed = [];
                     for(var i = 0; i < customer_needs.length; i++){
                         if(customer_needs[i].customer_needs_commit[0].status === "Open"){
-                            json.push(customer_needs[i]);
+                            committed.push(customer_needs[i]);
                         }
                     }
-                    return json;
+                    return committed;
                 }
             },
             columns: [
