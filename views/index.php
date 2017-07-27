@@ -228,7 +228,7 @@ if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
              <li>
                  <a href="#" onclick="ajaxFormCall('listCommitment');">
                      <span class="icon">
-                         <i class="fa fa-handshake-o"></i>
+                         <i class="fa fa-thumbs-up"></i>
                      </span>
                      Commitment
                      <span class="label label-danger">

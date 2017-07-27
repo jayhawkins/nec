@@ -499,6 +499,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             var show = true;
         }
 
+        console.log("<?php echo API_HOST; ?>");
+
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
             processing: true,
