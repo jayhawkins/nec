@@ -499,8 +499,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             var show = true;
         }
 
-        console.log("<?php echo API_HOST; ?>");
-
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
             processing: true,
@@ -593,9 +591,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             ]
           });
           
-        example_table.column("customer_needs_commit[0].status").data().filter(function(value, index){
-                return value == "Open" ? true : false;
-        });
 
         example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
 
@@ -606,6 +601,9 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         $("#load").html("Commit");
         $("#load").prop("disabled", false);
 
+        example_table.column("customer_needs_commit[0].status").data().filter(function(value, index){
+                return value === "Open" ? true : false;
+        });
       }
 
       function recordEnableDisable(status) {
