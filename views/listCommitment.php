@@ -590,6 +590,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 }
             ]
           });
+          
+          var show_committed_only = example_table
+            .column("Status")
+            .data()
+            .filter(function(value, index){
+                return value == "Committed" ? true : false;
+          });
 
           example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
 
