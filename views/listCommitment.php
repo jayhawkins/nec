@@ -529,7 +529,9 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     "data":           null,
                     "defaultContent": ''
                 },
-                { data: "entities[0].name", visible: show },
+                { data: "entities[0].name", visible: true },
+                { data: "entities[0].negotiatedRate", visible: true},
+                { data: "customer_needs_commit[0].rate", visible: true },
                 { data: "id", visible: false },
                 { data: "entityID", visible: false },
                 { data: "qty" },
@@ -572,9 +574,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     }, visible: false
                 },
                 { data: "customer_needs_commit[0].status", visible: false },
-                { data: "customer_needs_commit[0].rate", visible: false },
                 { data: "entities[0].rateType", visible: false },
-                { data: "entities[0].negotiatedRate", visible: false},
                 {
                     data: null,
                     "bSortable": false,
@@ -1003,6 +1003,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                  <tr>
                      <th></th>
                      <th>Company</th>
+                     <th>Negotiated Rate</th>
+                     <th>Commit Rate</th>
                      <th>ID</th>
                      <th>Entity ID</th>
                      <th>Qty</th>
@@ -1025,9 +1027,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                      <th class="hidden-sm-down">Data Points</th>
                      <th>Status</th>
                      <th>Commit Status</th>
-                     <th>Commit Rate</th>
                      <th>Rate Type</th>
-                     <th>Negotiated Rate</th>
                      <th class="no-sort pull-right"></th>
                  </tr>
                  </thead>
