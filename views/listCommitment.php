@@ -1191,7 +1191,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         </div>
         <div class="modal-footer">
            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-           <button type="button" class="btn btn-primary btn-md" onclick="return post();" id="load">Commit</button>
+           <button type="button" class="btn btn-primary btn-md" onclick="return post();" id="load">Accept</button>
         </div>
       </div>
     </div>
