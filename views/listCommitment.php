@@ -176,7 +176,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     return false;
                 }
 
-          } else {
+          } 
+          else {
 
                 $("#myModalCommit").modal('hide');
 
@@ -1022,7 +1023,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
      </div>
  </section>
 
- <!-- Modal -->
+ <!-- Modal myModal -->
  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-hidden="true" aria-label="exampleModalLabel">
    <div class="modal-dialog modal-lg" role="document">
      <div class="modal-content">
@@ -1115,7 +1116,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
    </div>
  </div>
 
-  <!-- Modal -->
+  <!-- Modal myModalCommit -->
   <div class="modal fade" id="myModalCommit" tabindex="-1" aria-hidden="true" aria-label="exampleModalCommitLabel">
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
@@ -1289,7 +1290,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
     </div>
   </div>
 
-  <!-- Modal -->
+  <!-- Modal myCancelDialog -->
   <div class="modal fade" id="myCancelDialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-md" role="document">
       <div class="modal-content">
@@ -1335,69 +1336,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
        </div>
      </div>
    </div>
-
-
-<!-- These modals are currently not used -->
-  <!-- Modal -->
-  <div class="modal fade" id="myDisableDialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-md" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="disableDialogLabel"></h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-                <form id="formRegister" class="register-form mt-lg">
-                  <input type="hidden" id="entityID" name="entityID" value="<?php echo $_SESSION['entityid']; ?>" />
-                  <input type="hidden" id="id" name="id" value="" />
-                  <div class="row">
-                      <div class="col-sm-12">
-                          <div class="form-group">
-                            <h5>Do you wish to close this need?</h5>
-                          </div>
-                      </div>
-                  </div>
-                 </form>
-        </div>
-         <div class="modal-footer">
-           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-           <button type="button" class="btn btn-primary" onclick="return recordEnableDisable('Close');">Close Need</button>
-         </div>
-       </div>
-     </div>
-   </div>
-
-   <div class="modal fade" id="myEnableDialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-     <div class="modal-dialog modal-md" role="document">
-       <div class="modal-content">
-         <div class="modal-header">
-           <h5 class="modal-title" id="enableDialogLabel"></h5>
-           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-             <span aria-hidden="true">&times;</span>
-           </button>
-         </div>
-         <div class="modal-body">
-                 <form id="formRegister" class="register-form mt-lg">
-                   <input type="hidden" id="entityID" name="entityID" value="<?php echo $_SESSION['entityid']; ?>" />
-                   <input type="hidden" id="id" name="id" value="" />
-                   <div class="row">
-                       <div class="col-sm-12">
-                           <div class="form-group">
-                             <h5>Do you wish to open this need?</h5>
-                           </div>
-                       </div>
-                   </div>
-                  </form>
-         </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary" onclick="return recordEnableDisable('Enable');">Open Need</button>
-          </div>
-        </div>
-      </div>
-    </div>
 
  <script>
 
@@ -1503,7 +1441,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             formatListBoxDP();
             $("#entityID").prop('disabled', true);
             $("#myModal").modal('show');
-        } else if (this.textContent.indexOf("Commit") > -1) {
+        } else if (this.textContent.indexOf("Accept Committment") > -1) {
             var li = '';
             var checked = '';
             var qtyselect = '<select id="qty" class="form-control mb-sm">\n';
