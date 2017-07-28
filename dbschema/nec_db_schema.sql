@@ -275,7 +275,6 @@ ALTER TABLE insurance_carriers ADD COLUMN status VARCHAR(255) NOT NULL DEFAULT '
 ALTER TABLE insurance_carriers ADD COLUMN fileupload VARCHAR(255) NOT NULL DEFAULT '' AFTER policyExpirationDate ;
 ALTER TABLE insurance_carriers ADD COLUMN contactEmail VARCHAR(255) NOT NULL DEFAULT '' AFTER contactName ;
 ALTER TABLE insurance_carriers ADD COLUMN fileupload VARCHAR(255) NOT NULL DEFAULT '' AFTER policyExpirationDate ;
-ALTER TABLE insurance_carriers ADD COLUMN contactEmail VARCHAR(255) NOT NULL DEFAULT '' AFTER contactName ;
 -- ---------------------------------------------------------
 
 
