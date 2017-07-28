@@ -580,29 +580,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     "bSortable": false,
                     "mRender": function (o) {
                         var buttons = '';
-                        //var buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text-info\"></i> <span class=\"text-info\">View Details</span></button>';
-
-                        if (o.status != "Committed" && o.customer_needs_commit.length == 0) {
-                                  buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-plus text-info\"></i> <span class=\"text\">Commit</span></button>";
-                        } else if (o.customer_needs_commit.length > 0) {
-                                  var showAmount = o.customer_needs_commit[0].rate.toString().split(".");
-                                  showAmount[0] = showAmount[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                                  if (showAmount.length > 1) {
-                                      if (showAmount[1].length < 2) {
-                                          showAmount[1] = showAmount[1] + '0';
-                                      }
-                                      showAmount = "$" + showAmount[0] + "." + showAmount[1];
-                                  } else {
-                                      showAmount = "$" + showAmount[0] + ".00";
-                                  }
-                                  //buttons += " &nbsp;<div class=\"d-inline-block\"><div class=\"btn btn-primary btn-xs\"><i class=\"glyphicon glyphicon-flag text-info\"></i> <span class=\"btn-primary\">Rate " + showAmount + "</span></div>";
-                                  buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text-info\"></i> <span class=\"text\">Cancel</span></button></div>";
-                        } else {
-                                  buttons += "No Longer Available";
-                        }
-
+                        
+                        buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"fa fa-thumbs-up text-info\"></i> <span class=\"text\">Accept Commitment</span></button>";
+                        
                         return buttons;
-                    }, visible: false
+                    }, visible: true
                 }
             ]
           });
