@@ -177,8 +177,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     return false;
                 }
 
-          } 
-          else {
+          } else {
 
                 $("#myModalCommit").modal('hide');
 
