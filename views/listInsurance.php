@@ -19,6 +19,7 @@
 	})();
 	function verifyAndPost() {
 		if ( $('#formInsurance').parsley().validate() ) {
+			var data,date;
 			var passValidation = false;
 			var type = "";
 			var today = new Date();
@@ -28,6 +29,7 @@
 			var hours = today.getHours();
 			var min = today.getMinutes();
 			var sec = today.getSeconds();
+			var url = "";
 			if(dd<10) {
 				dd='0'+dd;
 			}
@@ -45,37 +47,25 @@
 
 			// file upload
 			if ($("#id").val() > '') {
-				var url = '<?php echo HTTP_HOST."/uploaddocument" ?>/' + $("#id").val();
+				url = '<?php echo HTTP_HOST."/uploaddocument" ?>/' + $("#id").val();
 				type = "PUT";
 			} else {
-				var url = '<?php echo HTTP_HOST."/uploaddocument" ?>';
+				url = '<?php echo HTTP_HOST."/uploaddocument" ?>';
 				type = "POST";
 			}
-			//
-			var files = $('#fileupload').prop("files");
-			var fileNames = $.map(files, function(val) { return val.name; }).join(',');
-			if (type == "PUT") {
-				alert("PUT");
-				var date = today;
-				var data = {entityID: $("#entityID").val(), fileupload: $("#fileupload"), name: $("#name").val(), documentID: $("#documentID").val(), documentURL: $("#documentURL").val(), updatedAt: date};
-			} else {//fileupload: fileNames,
-				alert("POST");
-				var date = today;
-				var data = {entityID: $("#entityID").val(), fileupload: $("#fileupload"), name: $("#name").val(), documentID: $("#documentID").val(), documentURL: $("#documentURL").val(), createdAt: date};
-			}//fileupload: fileNames,
+			var formData = new FormData();
+			formData.append('entityID', $("#entityID").val());
+			formData.append('name', $("#name").val());
+			formData.append('documentID', "insurance");
+			formData.append('updatedAt', date);
+			formData.append('fileupload', $('#fileupload')[0].files[0]);
 			$.ajax({
-				url: url,
-				type: type,
-				data: data,//JSON.stringify(data),
-				enctype: 'multipart/form-data',
-				contentType: "application/json",
-				async: false,
-				done: function (e, data) {
-					$.each(data.result.files, function (index, file) {
-						$('<p/>').text(file.name).appendTo('#files');
-					});
-				},
-				success: function(data){
+				url : url,
+				type : 'POST',
+				data : formData,
+				processData: false,  // tell jQuery not to process the data
+				contentType: false,  // tell jQuery not to set contentType
+				success : function(data) {
 					console.log('file uploaded');
 					if (data > 0) {
 						$("#myModal").modal('hide');
@@ -91,21 +81,20 @@
 					}
 					// update listInsurance
 					if ($("#id").val() > '') {
-						var url = '<?php echo API_HOST."/api/insurance_carriers" ?>/' + $("#id").val();
+						url = '<?php echo API_HOST."/api/insurance_carriers" ?>/' + $("#id").val();
 						type = "PUT";
 					} else {
-						var url = '<?php echo API_HOST."/api/insurance_carriers" ?>';
+						url = '<?php echo API_HOST."/api/insurance_carriers" ?>';
 						type = "POST";
 					}
-					//
 					var files = $('#fileupload').prop("files");
 					var fileNames = $.map(files, function(val) { return val.name; }).join(',');
 					if (type == "PUT") {
-						var date = today;
-						var data = {fileupload: fileNames, entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactEmail: $("#contactEmail").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), updatedAt: date};
+						date = today;
+						data = {fileupload: fileNames, entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactEmail: $("#contactEmail").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), updatedAt: date};
 					} else {
-						var date = today;
-						var data = {fileupload: fileNames, entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactEmail: $("#contactEmail").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), createdAt: date};
+						date = today;
+						data = {fileupload: fileNames, entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactEmail: $("#contactEmail").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), createdAt: date};
 					}
 					$.ajax({
 						url: url,
@@ -135,10 +124,6 @@
 						}
 					});
 					console.log('listInsurance updated');
-				},
-				error: function(data) {
-					console.log('file upload failed');
-					alert("There Was An Error Adding Document!");
 				}
 			});
 			return passValidation;
@@ -148,7 +133,7 @@
 	}
 	function loadTableAJAX() {
 		myApp.showPleaseWait();
-		var url = '<?php echo API_HOST; ?>' + '/api/insurance_carriers?columns=id,name,link,contactName,contactPhone,policyNumber,policyExpirationDate,fileupload,status&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order=name&transform=1';
+		var url = '<?php echo API_HOST; ?>' + '/api/insurance_carriers?columns=id,name,link,contactName,contactEmail,contactPhone,policyNumber,policyExpirationDate,fileupload,status&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order=name&transform=1';
 		var example_table = $('#datatable-table').DataTable({
 			retrieve: true,
 			processing: true,
@@ -160,6 +145,7 @@
 				{ data: "id", visible: false },
 				{ data: "name" },
 				{ data: "contactName" },
+				{ data: "contactEmail" },
 				{ data: "contactPhone" },
 				{ data: "policyNumber" },
 				{ data: "policyExpirationDate", visible: false },
@@ -251,6 +237,7 @@
 					<th>ID</th>
 					<th class="hidden-sm-down">Name</th>
 					<th class="hidden-sm-down">Contact Name</th>
+					<th class="hidden-sm-down">Contact Email</th>
 					<th class="hidden-sm-down">Contact Phone</th>
 					<th class="hidden-sm-down">Policy Number</th>
 					<th class="hidden-sm-down">Policy Expiration Date</th>
@@ -276,7 +263,7 @@
 				</button>
 			</div>
 			<div class="modal-body">
-				<form id="formInsurance" class="register-form mt-lg" method="POST" enctype="multipart/form-data">
+				<form id="formInsurance" class="register-form mt-lg" action="<?php echo HTTP_HOST."/uploaddocument" ?>" method="POST" enctype="multipart/form-data">
 					<input type="hidden" id="entityID" name="entityID" value="<?php echo $_SESSION['entityid']; ?>" />
 					<input type="hidden" id="id" name="id" value="" />
 					<div class="row">
@@ -413,6 +400,7 @@
 		$("#id").val('');
 		$("#name").val('');
 		$("#contactName").val('');
+		$("#contactEmail").val('');
 		$("#contactPhone").val('');
 		$("#policyNumber").val('');
 		$("#policyExpirationDate").val('');
@@ -425,11 +413,10 @@
 			$("#id").val(data["id"]);
 			$("#name").val(data["name"]);
 			$("#contactName").val(data["contactName"]);
+			$("#contactEmail").val(data["contactEmail"]);
 			$("#contactPhone").val(data["contactPhone"]);
 			$("#policyNumber").val(data["policyNumber"]);
 			$("#policyExpirationDate").val(data["policyExpirationDate"]);
-			//$("#fileupload")[0].files[0].name=data["fileupload"];
-			//$("#fileupload").attr("name",data["fileupload"]);
 			$("#myModal").modal('show');
 		} else {
 			$("#id").val(data["id"]);
@@ -443,28 +430,5 @@
 				}
 			}
 		}
-	});
-	$(function () {
-		'use strict';
-		// Change this to the location of your server-side upload handler:
-		var url = '<?php echo API_HOST."/api/insurance_file" ?>/' + $("#id").val();
-		//var url = window.location.hostname === 'blueimp.github.io' ? '//jquery-file-upload.appspot.com/' : 'server/php/';
-		$('#fileupload').fileupload({
-			url: url,
-			dataType: 'json',
-			done: function (e, data) {
-				$.each(data.result.files, function (index, file) {
-					$('<p/>').text(file.name).appendTo('#files');
-				});
-			},
-			progressall: function (e, data) {
-				var progress = parseInt(data.loaded / data.total * 100, 10);
-				$('#progress .progress-bar').css(
-					'width',
-					progress + '%'
-				);
-			}
-		}).prop('disabled', !$.support.fileInput)
-			.parent().addClass($.support.fileInput ? undefined : 'disabled');
 	});
 </script>
