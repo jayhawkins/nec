@@ -75,9 +75,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       })();
 
       function post() {
+/*
+          //var originationaddress = $("#originationAddress1").val() + ', ' + $("#originationCity").val() + ', ' + $("#originationState").val() + ', ' + $("#originationZip").val();
+          //var destinationaddress = $("#destinationAddress1").val() + ', ' + $("#destinationCity").val() + ', ' + $("#destinationState").val() + ', ' + $("#destinationZip").val();
 
-          var originationaddress = $("#originationAddress1").val() + ', ' + $("#originationCity").val() + ', ' + $("#originationState").val() + ', ' + $("#originationZip").val();
-          var destinationaddress = $("#destinationAddress1").val() + ', ' + $("#destinationCity").val() + ', ' + $("#destinationState").val() + ', ' + $("#destinationZip").val();
 
           if (originationaddress != $("#originToMatch").val() && destinationaddress != $("#destToMatch").val()) {
               alert("The commitment for this Available request must be picked up or dropped off at the listed Origination or Destination. Please select a new Origination or Destination address.");
@@ -85,10 +86,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
               //alert($("#destToMatch").val());
               return false;
           }
-
+*/
 
           if (confirm("You have selected to Commit to this Availability. A Nationwide Equipment Control team member will contact you within 4 buisness hours to start the order process. Do you wish to proceed with this commitment?") == true) {
-
+/*
                 var result = true;
 
                 var params = {
@@ -164,7 +165,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                       //alert('Failed Searching for Origination Location! - Notify NEC of this failure.');
                    }
                 });
-
+*/
                 if (result) {
                     verifyAndPost(function(data) {
                       alert(data);
@@ -176,8 +177,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     return false;
                 }
 
-          } 
-          else {
+          } else {
 
                 $("#myModalCommit").modal('hide');
 
@@ -1023,99 +1023,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
      </div>
  </section>
 
- <!-- Modal myModal -->
- <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-hidden="true" aria-label="exampleModalLabel">
-   <div class="modal-dialog modal-lg" role="document">
-     <div class="modal-content">
-       <div class="modal-header">
-         <h5 class="modal-title" id="exampleModalLabel"><strong>Availablity Details</strong></h5>
-         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-           <span aria-hidden="true">&times;</span>
-         </button>
-       </div>
-       <div class="modal-body">
-               <form id="formView" class="register-form mt-lg">
-                 <input type="hidden" id="id" name="id" value="" />
-                 <div class="row">
-                     <div class="col-sm-2">
-                         <label for="dspqty">Trailers Available:</label>
-                         <div id="dspqty" class="form-group form-control mb-sm">
-                         </div>
-                     </div>
-                     <div class="col-sm-3">
-                         <label for="dspavailableDate">Available Date</label>
-                         <div id="dspavailableDate" class="form-group form-control mb-sm">
-                         </div>
-                     </div>
-                     <div class="col-sm-3">
-                         <label for="dspexpirationDate">Available Date</label>
-                         <div id="dspexpirationDate" class="form-group form-control mb-sm">
-                         </div>
-                     </div>
-                     <div class="col-sm-4">
-                         <div class="form-group">
-                         </div>
-                     </div>
-                 </div>
-                 <div class="row">
-                     <div class="col-sm-7">
-                         <label for="dsporiginationCity">Origination City</label>
-                         <div id="dsporiginationCity" class="form-group form-control mb-sm">
-                         </div>
-                     </div>
-                     <div class="col-sm-3">
-                         <label for="dsporiginationState">Origination State</label>
-                         <div id="dsporiginationState" class="form-group form-control mb-sm">
-                         </div>
-                     </div>
-                     <div class="col-sm-2">
-                         <label for="dsporiginationZip">Origination Zip</label>
-                         <div id="dsporiginationZip" class="form-group form-control mb-sm">
-                         </div>
-                     </div>
-                 </div>
-                 <div class="row">
-                   <div class="col-sm-7">
-                       <label for="dspdestinationCity">Destination City</label>
-                       <div id="dspdestinationCity" class="form-group form-control mb-sm">
-                       </div>
-                   </div>
-                   <div class="col-sm-3">
-                       <label for="dspdestinationState">Destination State</label>
-                       <div id="dspdestinationState" class="form-group form-control mb-sm">
-                       </div>
-                   </div>
-                   <div class="col-sm-2">
-                       <label for="dspdestinationZip">Destination Zip</label>
-                       <div id="dspdestinationZip" class="form-group form-control mb-sm">
-                       </div>
-                   </div>
-                 </div>
-                 <hr />
-                 <div class="container" style="margin-top:20px;">
-                     <div class="row">
-                       <div class="col-xs-6">
-                            <h5 class="text-center"><strong>Trailer Data</strong></h5>
-                            <div class="well" style="max-height: 200px;overflow: auto;">
-                                <ul id="dp-check-list-box" class="list-group">
-
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="col-xs-6">
-                        </div>
-                     </div>
-                 </div>
-                </form>
-       </div>
-       <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <!--button type="button" class="btn btn-primary" id="btnCommit">Commit To Need</button-->
-       </div>
-     </div>
-   </div>
- </div>
-
   <!-- Modal myModalCommit -->
   <div class="modal fade" id="myModalCommit" tabindex="-1" aria-hidden="true" aria-label="exampleModalCommitLabel">
     <div class="modal-dialog modal-lg" role="document">
@@ -1284,7 +1191,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         </div>
         <div class="modal-footer">
            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-           <button type="button" class="btn btn-primary btn-md" onclick="return post();" id="load">Commit</button>
+           <button type="button" class="btn btn-primary btn-md" onclick="return post();" id="load">Accept</button>
         </div>
       </div>
     </div>
@@ -1391,57 +1298,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
     $('#datatable-table tbody').on( 'click', 'button', function () {
         var data = table.row( $(this).parents('tr') ).data();
 
-        if (this.textContent.indexOf("View Details") > -1) {
-            var li = '';
-            var checked = '';
-            var dpli = '';
-            var dpchecked = '';
-            $("#id").val(data["id"]);
-            $("#entityID").val(data["entityID"]);
-            $("#dspqty").html(data["qty"]);
-            $("#dspavailableDate").html(data["availableDate"]);
-            $("#dspexpirationDate").html(data["expirationDate"]);
-            $("#dsporiginationCity").html(data["originationCity"]);
-            $("#dsporiginationState").html(data["originationState"]);
-            $("#dsporiginationZip").html(data["originationZip"]);
-            $("#dspdestinationCity").html(data["destinationCity"]);
-            $("#dspdestinationState").html(data["destinationState"]);
-            $("#dspdestinationZip").html(data["destinationZip"]);
-            var ndp = data["needsDataPoints"];
-            var con = data["contactEmails"];
-
-            for (var i = 0; i < dataPoints.object_type_data_points.length; i++) {
-                var selected = '';
-                var value = '';
-
-                $.each(ndp, function(idx, obj) {
-                  $.each(obj, function(key, val) {
-                    if (dataPoints.object_type_data_points[i].columnName == key) {
-                        value = val; // Get the value from the JSON data in the record to use to set the selected option in the dropdown
-                    }
-                  })
-                });
-
-                dpli += '<li>' + dataPoints.object_type_data_points[i].title;
-                for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
-
-                    if (dataPoints.object_type_data_points[i].object_type_data_point_values[v].value === value) {
-                        selected = ' selected ';
-                        //dpli += '<option' + selected + '>' + dataPoints.object_type_data_points[i].object_type_data_point_values[v].value + '</option>\n';
-                        dpli += ' => <strong>' + dataPoints.object_type_data_points[i].object_type_data_point_values[v].value + '</strong>\n';
-                    } else {
-                        selected = '';
-                    }
-                }
-
-                dpli += '</li>\n';
-            }
-            $("#dp-check-list-box").html(dpli);
-            formatListBox();
-            formatListBoxDP();
-            $("#entityID").prop('disabled', true);
-            $("#myModal").modal('show');
-        } else if (this.textContent.indexOf("Accept Commitment") > -1) {
+        if (this.textContent.indexOf("Accept Commitment") > -1) {
             var li = '';
             var checked = '';
             var qtyselect = '<select id="qty" class="form-control mb-sm">\n';
@@ -1487,34 +1344,21 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             } else {
                 $('input[name="transportationType"][value="Mileage"]').prop('checked', true);
             }
-/*
-            for (var i = 0; i < data['needsDataPoints'].length; i++) {
-                for (var key in data['needsDataPoints'][i]) {
-                    if (key == "transportation_type") {
-                        if (data['needsDataPoints'][i][key] == "Tow Empty") {
-                            transportationtypeselect += '<option>Tow Empty</option>\n';
-                        } else {
-                            transportationtypeselect += '<option>Tow Empty</option>\n';
-                            transportationtypeselect += '<option>Load Out</option>\n';
-                            transportationtypeselect += '<option>Both (Empty or Load Out)</option>\n';
-                        }
-                        i = data['needsDataPoints'].length; // Get out of the loop - we already did what we needed to do.
-                    }
-                }
-            }
-*/
 
             var empty = "";
             var loadout = "";
             var either = "";
             if (data['transportationMode'] == "Empty") {
                 transportationmodeselect += '<option value="Empty">Empty</option>\n';
-            } else {
+            } 
+            else {
                 if (data['transportationMode'] == "Empty") {
                     empty = "selected=selected";
-                } else if (data['transportationMode'] == "Load Out"){
+                } 
+                else if (data['transportationMode'] == "Load Out"){
                     loadout = "selected=selected";
-                } else if (data['transportationMode'] == "Both (Empty or Load Out)"){
+                } 
+                else if (data['transportationMode'] == "Both (Empty or Load Out)"){
                     either = "selected=selected";
                 }
                 transportationmodeselect += '<option value="Empty" '+empty+'>Empty</option>\n';
@@ -1531,13 +1375,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             $("#entityID").prop('disabled', true);
             $("#myModalCommit").modal('show');
           } 
-          else if (this.textContent.indexOf("Cancel") > -1) {
-              $("#myCancelDialog").modal('show');
-          } 
-          
-         else {
-            //Nothing - Somehow got in here???
-          }
+        else if (this.textContent.indexOf("Cancel") > -1) {
+            $("#myCancelDialog").modal('show');
+        } 
+        else {
+          //Nothing - Somehow got in here???
+        }
 
     });
 

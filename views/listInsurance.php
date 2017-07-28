@@ -44,90 +44,99 @@
 			}
 			today = mm+'/'+dd+'/'+yyyy;
 			today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
-
 			var date = today;
-
 			// file upload
 			if ($("#id").val() > '') {
-				url = '<?php echo HTTP_HOST."/uploaddocument" ?>/' + $("#id").val();
+				console.log("editing");
+				url = '<?php echo API_HOST."/api/insurance_carriers" ?>/' + $("#id").val();
 				type = "PUT";
+				var files = $('#fileupload').prop("files");
+				var fileNames = $.map(files, function(val) { return val.name; }).join(',');
+				date = today;
+				data = {id: $("#id").val(), entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactEmail: $("#contactEmail").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), updatedAt: date};
+				$.ajax({
+					url: url,
+					type: type,
+					data: JSON.stringify(data),
+					contentType: "application/json",
+					async: false,
+					success: function(data){
+						if (data > 0) {
+							$("#myModal").modal('hide');
+							loadTableAJAX();
+							$("#id").val('');
+							$("#name").val('');
+							$("#contactName").val('');
+							$("#contactEmail").val('');
+							$("#contactPhone").val('');
+							$("#policyNumber").val('');
+							$("#policyExpirationDate").val('');
+							$("#fileupload").val('');
+							passValidation = true;
+						} else {
+							alert("Adding Insurance Failed!");
+						}
+					},
+					error: function() {
+						alert("There Was An Error Adding Insurance!");
+					}
+				});
 			} else {
+				console.log("creating");
 				url = '<?php echo HTTP_HOST."/uploaddocument" ?>';
 				type = "POST";
-			}
-			var formData = new FormData();
-			formData.append('entityID', $("#entityID").val());
-			formData.append('name', $("#name").val());
-			formData.append('documentID', "insurance");
-			formData.append('updatedAt', date);
-			formData.append('fileupload', $('#fileupload')[0].files[0]);
-			$.ajax({
-				url : url,
-				type : 'POST',
-				data : formData,
-				processData: false,  // tell jQuery not to process the data
-				contentType: false,  // tell jQuery not to set contentType
-				success : function(data) {
-					console.log('file uploaded');
-					if (data > 0) {
-						$("#myModal").modal('hide');
-						loadTableAJAX();
-						$("#id").val('');
-						$("#fileupload").val('');
-						$("#name").val('');
-						$("#documentID").val('');
-						$("#documentURL").val('');
-						passValidation = true;
-					} else {
-						alert("Adding Document Failed!");
-					}
-					// update listInsurance
-					if ($("#id").val() > '') {
-						url = '<?php echo API_HOST."/api/insurance_carriers" ?>/' + $("#id").val();
-						type = "PUT";
-					} else {
+				var formData = new FormData();
+				formData.append('entityID', $("#entityID").val());
+				formData.append('name', $("#name").val());
+				formData.append('documentID', "insurance");
+				formData.append('updatedAt', date);
+				formData.append('fileupload', $('#fileupload')[0].files[0]);
+				$.ajax({
+					url : url,
+					type : 'POST',
+					data : formData,
+					processData: false,  // tell jQuery not to process the data
+					contentType: false,  // tell jQuery not to set contentType
+					success : function(data) {
+						console.log('file uploaded');
+						// update listInsurance
 						url = '<?php echo API_HOST."/api/insurance_carriers" ?>';
 						type = "POST";
-					}
-					var files = $('#fileupload').prop("files");
-					var fileNames = $.map(files, function(val) { return val.name; }).join(',');
-					if (type == "PUT") {
-						date = today;
-						data = {fileupload: fileNames, entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactEmail: $("#contactEmail").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), updatedAt: date};
-					} else {
+						var files = $('#fileupload').prop("files");
+						var fileNames = $.map(files, function(val) { return val.name; }).join(',');
 						date = today;
 						data = {fileupload: fileNames, entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactEmail: $("#contactEmail").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), createdAt: date};
-					}
-					$.ajax({
-						url: url,
-						type: type,
-						data: JSON.stringify(data),
-						contentType: "application/json",
-						async: false,
-						success: function(data){
-							if (data > 0) {
-								$("#myModal").modal('hide');
-								loadTableAJAX();
-								$("#id").val('');
-								$("#name").val('');
-								$("#contactName").val('');
-								$("#contactEmail").val('');
-								$("#contactPhone").val('');
-								$("#policyNumber").val('');
-								$("#policyExpirationDate").val('');
-								$("#fileupload").val('');
-								passValidation = true;
-							} else {
-								alert("Adding Insurance Failed!");
+						$.ajax({
+							url: url,
+							type: type,
+							data: JSON.stringify(data),
+							contentType: "application/json",
+							async: false,
+							success: function(data){
+								if (data > 0) {
+									$("#myModal").modal('hide');
+									loadTableAJAX();
+									$("#id").val('');
+									$("#name").val('');
+									$("#contactName").val('');
+									$("#contactEmail").val('');
+									$("#contactPhone").val('');
+									$("#policyNumber").val('');
+									$("#policyExpirationDate").val('');
+									$("#fileupload").val('');
+									passValidation = true;
+								} else {
+									alert("Adding Insurance Failed!");
+								}
+							},
+							error: function() {
+								alert("There Was An Error Adding Insurance!");
 							}
-						},
-						error: function() {
-							alert("There Was An Error Adding Insurance!");
-						}
-					});
-					console.log('listInsurance updated');
-				}
-			});
+						});
+						console.log('listInsurance updated');
+					}
+				});
+			}
 			return passValidation;
 		} else {
 			return false;
@@ -407,6 +416,9 @@
 		$("#policyNumber").val('');
 		$("#policyExpirationDate").val('');
 		$("#fileupload").val('');
+		$("#fileupload").prop("disabled", false);
+		$("#fileupload").prop("required", true);
+		$("#fileupload").parent().parent().attr("hidden", false);
 		$("#myModal").modal('show');
 	});
 	$('#datatable-table tbody').on( 'click', 'button', function () {
@@ -418,6 +430,9 @@
 			$("#contactEmail").val(data["contactEmail"]);
 			$("#contactPhone").val(data["contactPhone"]);
 			$("#policyNumber").val(data["policyNumber"]);
+			$("#fileupload").prop("disabled", true);
+			$("#fileupload").prop("required", false);
+			$("#fileupload").parent().parent().attr("hidden", true);
 			$("#policyExpirationDate").val(data["policyExpirationDate"]);
 			$("#myModal").modal('show');
 		} else {
