@@ -1441,7 +1441,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             formatListBoxDP();
             $("#entityID").prop('disabled', true);
             $("#myModal").modal('show');
-        } else if (this.textContent.indexOf("Accept Committment") > -1) {
+        } else if (this.textContent.indexOf("Accept Commitment") > -1) {
             var li = '';
             var checked = '';
             var qtyselect = '<select id="qty" class="form-control mb-sm">\n';
