@@ -388,16 +388,14 @@ $app->route('POST /createcustomerneedsfromexisting', function() {
 });
 
 $app->route('POST /uploaddocument', function() {
-	$id = Flight::request()->data->id;
-	$fileupload = Flight::request()->files['fileupload'];
 	$name = Flight::request()->data->name;
+	$fileupload = Flight::request()->files['fileupload'];
 	$documentID = Flight::request()->data->documentID;
-	$documentURL = Flight::request()->data->documentURL;
-	$createdAt = Flight::request()->data->createdAt;
 	$updatedAt = Flight::request()->data->updatedAt;
 	$entityID = Flight::request()->data->entityID;
+	$documentURL = HTTP_HOST."/viewdocument?entityID=".$entityID."&filename=".$fileupload['name'];
 	$documents = Flight::documents();
-    $result = $documents->createFromExisting(API_HOST,FILE_LOCATION,$id,$fileupload,$name,$documentID,$documentURL,$createdAt,$updatedAt,$entityID);
+    $result = $documents->createFromExisting(API_HOST,FILE_LOCATION,$fileupload,$name,$documentID,$documentURL,$updatedAt,$entityID);
     if ($result) {
         print_r($result);
     } else {
@@ -405,5 +403,11 @@ $app->route('POST /uploaddocument', function() {
     }
 });
 
+$app->route('POST /viewdocument', function() {
+	$entityID = Flight::request()->data->entityID;
+	$file_location = Flight::request()->data->file_location;
+	$filename = Flight::request()->data->filename;
+    $result = $documents->viewdocument($entityID,FILE_LOCATION,$filename);
+});
 // Start the framework
 $app->start();

@@ -14,19 +14,74 @@ class Documents
     public function post($api_host,$id) {
 
     }
-    public function createFromExisting($api_host,$file_location,$id,$fileupload,$name,$documentID,$documentURL,$createdAt,$updatedAt,$entityID) {
-		//error_log("uploadPic", 0);
+    public function viewdocument($entityID,$file_location,$filename) {
+		$dir = $file_location . "users/".floor($entityID / 65535)."/".$entityID."/";
+		$file = $dir . "/" . $filename;
+		$fileType = pathinfo($fileupload['name'],PATHINFO_EXTENSION);
+		$mime_type="";
+		if(@is_array(getimagesize($mediapath))){
+			$mime_type = "image/jpeg, image/png, image/bmp, image/gif";
+		} else {
+			$mime_type = "application/".$fileType;
+		}
+		if(file_exists($file)){
+			// Try and open the remote stream
+			if (!$stream = fopen($file, 'r')) {
+				// If opening failed, inform the client we have no content
+				header('HTTP/1.1 500 Internal Server Error');
+				exit('Unable to open remote stream');
+			}
+			// It's probably an idea to remove the execution time limit - on Windows hosts
+			// this could result in the audio stream cutting off mid-flow
+			set_time_limit(0);
+			//header("Content-Transfer-Encoding: binary");
+			//header('content-type: application/octet-stream');
+    		header('Content-type: {$mime_type}');
+    		header('Content-length: ' . filesize($file));
+    		header('Content-Disposition: filename="' . $filename);
+    		header('X-Pad: avoid browser bug');
+    		header('Cache-Control: no-cache');
+    		readfile($file);
+  			// Send the data
+  			//fpassthru($stream);
+		}else{
+			$dir = $file_location . "images/users/default";
+			$filename = "default.png";
+			$file = $dir . "/" . $filename;
+			$mime_type = "image/jpeg, image/png, image/bmp, image/gif";
+			if(file_exists($file)){
+				// Try and open the remote stream
+				if (!$stream = fopen($file, 'r')) {
+					// If opening failed, inform the client we have no content
+					header('HTTP/1.1 500 Internal Server Error');
+					exit('Unable to open remote stream');
+				}
+				// It's probably an idea to remove the execution time limit - on Windows hosts
+				// this could result in the audio stream cutting off mid-flow
+				set_time_limit(0);
+				//header("Content-Transfer-Encoding: binary");
+				//header('content-type: application/octet-stream');
+    			header('Content-type: {$mime_type}');
+    			header('Content-length: ' . filesize($file));
+    			header('Content-Disposition: filename="' . $filename);
+    			header('X-Pad: avoid browser bug');
+    			header('Cache-Control: no-cache');
+    			readfile($file);
+			} else {
+    			header("HTTP/1.0 404 Not Found");
+    		}
+		}
+    }
+    public function createFromExisting($api_host,$file_location,$fileupload,$name,$documentID,$documentURL,$updatedAt,$entityID) {
 		$rename_file = null;
-		$filebase = md5(time());
+		$filebase = pathinfo($fileupload['name'],PATHINFO_FILENAME);;//md5(time());
 		$imageFileType = pathinfo($fileupload['name'],PATHINFO_EXTENSION);
-		$filename = $filebase . $imageFileType;
+		$filename = $filebase . "." .$imageFileType;
 		$target_directory = $file_location . "users/".floor($entityID / 65535)."/".$entityID."/";
-		//error_log("Image Directory:".$target_directory, 0);
-		//$imageFileType = pathinfo($_FILES['fileupload']['name'],PATHINFO_EXTENSION);
-		$target_file = $target_directory.$filename; //basename($_FILES["fileupload"]["name"]);
+		$target_file = $target_directory.$filename;
 		$uploadOk = 1;
 		// Check file size
-		if ($_FILES["fileupload"]["size"] > 20000000) {
+		if ($fileupload["size"] > 20000000) {
 			// File Too Large
 			$uploadOk = 0;
 		}
@@ -46,17 +101,19 @@ class Documents
 			// Check if $uploadOk is set to 0 by an error
 			if ($uploadOk == 0) {
 				// file was not uploaded
+				return "failed";
 			} else {
-				mkdir($file_location . "users/".floor($entityID / 65535)."/".$entityID."/", 0755, true);
-				file_put_contents($target_file, file_get_contents($_REQUEST['file']));
+				// make user file directory
+				try { mkdir($file_location . "users/".floor($entityID / 65535)."/".$entityID."/", 0755, true); } catch(Exception $e) {/*echo 'Message: ' .$e->getMessage();*/}
+				file_put_contents($target_file, file_get_contents($fileupload["tmp_name"]));
 				// Load the documents data to send notification
-				$this->load($api_host,$id);
+				//$this->load($api_host,$id);
 				$data = array(
 					"name"=>$name,
 					"documentID"=>$filename,
 					"documentURL"=>$documentURL,
-					"entityID"=>$this->entityID,
-					"createdAt" => date('Y-m-d H:i:s'),
+					"entityID"=>$entityID,
+					"createdAt" => date('Y-m-d H:i:s'), //$updatedAt
 					"updatedAt" => date('Y-m-d H:i:s')
 				);
 				$url = $api_host."/api/documents/";

@@ -258,6 +258,7 @@ CREATE TABLE IF NOT EXISTS `insurance_carriers` (
 	`entityID` Int( 11 ) UNSIGNED NOT NULL,
 	`name` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
 	`contactName` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	`contactEmail` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
 	`contactPhone` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
 	`policyNumber` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
 	`policyExpirationDate` Date NOT NULL,
@@ -272,6 +273,7 @@ AUTO_INCREMENT = 1;
 -- -------------------------------------------------------------
 ALTER TABLE insurance_carriers ADD COLUMN status VARCHAR(255) NOT NULL DEFAULT 'Active' AFTER policyExpirationDate ;
 ALTER TABLE insurance_carriers ADD COLUMN fileupload VARCHAR(255) NOT NULL DEFAULT '' AFTER policyExpirationDate ;
+ALTER TABLE insurance_carriers ADD COLUMN contactEmail VARCHAR(255) NOT NULL DEFAULT '' AFTER contactName ;
 -- ---------------------------------------------------------
 
 

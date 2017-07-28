@@ -504,7 +504,23 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             processing: true,
             ajax: {
                 url: url,
-                dataSrc: 'customer_needs'
+                dataSrc: function(json){
+                    //console.log(json);
+                    var customer_needs = json.customer_needs;
+                    var committed = [];
+                    for(var i = 0; i < customer_needs.length; i++){
+                        if(customer_needs[i].customer_needs_commit.length > 0){
+                            var expirationDate = new Date(customer_needs[i].expirationDate);
+                            var todaysDate = new Date();
+                            todaysDate.setHours(0,0,0,0);
+                            todaysDate.setDate(todaysDate.getDate()-1);
+                            //if(todaysDate < expirationDate) committed.push(customer_needs[i]);                                
+                            
+                            committed.push(customer_needs[i]); 
+                        }
+                    }
+                    return committed;
+                }
             },
             columns: [
                 {
@@ -513,6 +529,9 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     "data":           null,
                     "defaultContent": ''
                 },
+                { data: "entities[0].name", visible: true },
+                { data: "entities[0].negotiatedRate", visible: true},
+                { data: "customer_needs_commit[0].rate", visible: true },
                 { data: "id", visible: false },
                 { data: "entityID", visible: false },
                 { data: "qty" },
@@ -552,53 +571,34 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                           newStatus = "<strong>Committed</strong>";
                       }
                       return newStatus;
-                    }
+                    }, visible: false
                 },
                 { data: "customer_needs_commit[0].status", visible: false },
-                { data: "customer_needs_commit[0].rate", visible: false },
-                { data: "entities[0].name", visible: show },
                 { data: "entities[0].rateType", visible: false },
-                { data: "entities[0].negotiatedRate", visible: false},
                 {
                     data: null,
                     "bSortable": false,
                     "mRender": function (o) {
                         var buttons = '';
-                        //var buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text-info\"></i> <span class=\"text-info\">View Details</span></button>';
-
-                        if (o.status != "Committed" && o.customer_needs_commit.length == 0) {
-                                  buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-plus text-info\"></i> <span class=\"text\">Commit</span></button>";
-                        } else if (o.customer_needs_commit.length > 0) {
-                                  var showAmount = o.customer_needs_commit[0].rate.toString().split(".");
-                                  showAmount[0] = showAmount[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                                  if (showAmount.length > 1) {
-                                      if (showAmount[1].length < 2) {
-                                          showAmount[1] = showAmount[1] + '0';
-                                      }
-                                      showAmount = "$" + showAmount[0] + "." + showAmount[1];
-                                  } else {
-                                      showAmount = "$" + showAmount[0] + ".00";
-                                  }
-                                  //buttons += " &nbsp;<div class=\"d-inline-block\"><div class=\"btn btn-primary btn-xs\"><i class=\"glyphicon glyphicon-flag text-info\"></i> <span class=\"btn-primary\">Rate " + showAmount + "</span></div>";
-                                  buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text-info\"></i> <span class=\"text\">Cancel</span></button></div>";
-                        } else {
-                                  buttons += "No Longer Available";
-                        }
-
+                        
+                        buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"fa fa-thumbs-up text-info\"></i> <span class=\"text\">Accept Commitment</span></button>";
+                        
                         return buttons;
-                    }
+                    }, visible: true
                 }
-            ]
+            ],
+            scrollX: true
           });
+          
 
-          example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
+        example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
 
-          //To Reload The Ajax
-          //See DataTables.net for more information about the reload method
-          example_table.ajax.reload();
-          $("#entityID").prop('disabled', false);
-          $("#load").html("Commit");
-          $("#load").prop("disabled", false);
+        //To Reload The Ajax
+        //See DataTables.net for more information about the reload method
+        example_table.ajax.reload();
+        $("#entityID").prop('disabled', false);
+        $("#load").html("Commit");
+        $("#load").prop("disabled", false);
 
       }
 
@@ -985,6 +985,9 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                  <thead>
                  <tr>
                      <th></th>
+                     <th>Company</th>
+                     <th>Negotiated Rate</th>
+                     <th>Commit Rate</th>
                      <th>ID</th>
                      <th>Entity ID</th>
                      <th>Qty</th>
@@ -1007,10 +1010,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                      <th class="hidden-sm-down">Data Points</th>
                      <th>Status</th>
                      <th>Commit Status</th>
-                     <th>Commit Rate</th>
-                     <th>Company</th>
                      <th>Rate Type</th>
-                     <th>Negotiated Rate</th>
                      <th class="no-sort pull-right"></th>
                  </tr>
                  </thead>
