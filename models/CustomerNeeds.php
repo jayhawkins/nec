@@ -33,8 +33,6 @@ class CustomerNeed
 
           /******** WE ARE NOT USING THE LNG AND LAT FROM THIS CALL - WE WILL NEED TO GO GET THE GEOCODE BASED ON THE NEW ORIGINATION AND DESTINATION *****/
 
-          $google = new googleApiClass();
-
           // Load the carrier need data to send notification
           $this->load($api_host,$id);
 
@@ -43,14 +41,6 @@ class CustomerNeed
 
           $entered_originationaddress = $originationCity . ", " . $originationState . ", " . $originationZip;
           $entered_destinationaddress = $destinationCity . ", " . $destinationState . ", " . $destinationZip;
-
-          //$google->setFromAddress($entered_originationaddress);
-          //$google->setToAddress($entered_destinationaddress);
-          //$google->setLanguage('us');
-          //$google->findAddress();
-          //$instructions = $google->getInstructions();
-          //echo "Instructions: " . $instructions;
-          //die();
 
           try {
 /*
@@ -215,6 +205,17 @@ class CustomerNeed
               if ($result > 0) {
                   // Write the new avaialbility record if origination was changed
                   if ($original_originationaddress != $entered_originationaddress) {
+
+                        $oaddress = urlencode($originationCity . ", " . $originationState . ", " . $originationZip);
+                        $daddress = urlencode($this->destinationCity . ", " . $this->destinationState . ", " . $this->destinationZip);
+
+                        $details = "http://maps.googleapis.com/maps/api/distancematrix/json?origins=".urlencode($oaddress)."&destinations=".urlencode($daddress)."&mode=driving&sensor=false";
+                        $json = file_get_contents($details);
+                        $details = json_decode($json, TRUE);
+                        //echo "<pre>"; print_r($details); echo "</pre>";
+
+                        $distance = ( ($details['rows'][0]['elements'][0]['distance']['value'] / 1000) * .6214 );
+
                         $data = array(
                             "qty"=>$qty,
                             //"originationAddress1"=>$originationAddress1,
@@ -254,6 +255,17 @@ class CustomerNeed
                             return $e;
                         }
                   } else if ($original_destinationaddress != $entered_destinationaddress) {
+
+                        $oaddress = urlencode($destinationCity . ", " . $destinationState . ", " . $destinationZip);
+                        $daddress = urlencode($this->destinationCity . ", " . $this->destinationState . ", " . $this->destinationZip);
+
+                        $details = "http://maps.googleapis.com/maps/api/distancematrix/json?origins=".urlencode($oaddress)."&destinations=".urlencode($daddress)."&mode=driving&sensor=false";
+                        $json = file_get_contents($details);
+                        $details = json_decode($json, TRUE);
+                        //echo "<pre>"; print_r($details); echo "</pre>";
+
+                        $distance = ( ($details['rows'][0]['elements'][0]['distance']['value'] / 1000) * .6214 );
+
                         $data = array(
                             "qty"=>$qty,
                             //"originationAddress1"=>$destinationAddress1,
