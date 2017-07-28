@@ -44,6 +44,7 @@
 			}
 			today = mm+'/'+dd+'/'+yyyy;
 			today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+			var date = today;
 			// file upload
 			if ($("#id").val() > '') {
 				console.log("editing");
