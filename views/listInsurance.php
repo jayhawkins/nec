@@ -45,6 +45,8 @@
 			today = mm+'/'+dd+'/'+yyyy;
 			today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
 
+			var date = today;
+
 			// file upload
 			if ($("#id").val() > '') {
 				url = '<?php echo HTTP_HOST."/uploaddocument" ?>/' + $("#id").val();
