@@ -514,9 +514,9 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                             var todaysDate = new Date();
                             todaysDate.setHours(0,0,0,0);
                             todaysDate.setDate(todaysDate.getDate()-1);
-                            if(todaysDate < expirationDate){
-                                committed.push(customer_needs[i]);                                
-                            }
+                            //if(todaysDate < expirationDate) committed.push(customer_needs[i]);                                
+                            
+                            committed.push(customer_needs[i]); 
                         }
                     }
                     return committed;
