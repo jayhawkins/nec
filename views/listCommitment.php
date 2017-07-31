@@ -331,7 +331,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
           });
           
 
-        example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
+        //example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
 
         //To Reload The Ajax
         //See DataTables.net for more information about the reload method
