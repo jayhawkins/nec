@@ -280,7 +280,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             ajax: {
                 url: url,
                 dataSrc: function(json){
-                    return $.parseJSON(json.d);
+                    console.log("Json:", json);
+                    //return $.parseJSON(json.d);
                 }
             },
             columns: [
