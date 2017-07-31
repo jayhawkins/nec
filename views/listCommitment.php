@@ -1426,7 +1426,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         var table = '<table  class="col-sm-12" cellpadding="5" cellspacing="0" border="0"><tr>';
 
         // `d` is the original data object for the row
-        var ndp = d.needsDataPoints;
+        var ndp = d.customer_needs[0].needsDataPoints;
 
         for (var i = 0; i < dataPoints.object_type_data_points.length; i++) {
             var selected = '';
