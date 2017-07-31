@@ -623,7 +623,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                           <label for="availableDate">Pick-Up Date</label>
                           <div class="form-group">
                             <div id="sandbox-container" class="input-group date  datepicker">
-                               <input type="text" id="pickupDate" name="pickupDate" class="form-control" placeholder="Pickup Date" required="required"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                               <input type="text" id="pickupDate" name="pickupDate" class="form-control" placeholder="Pickup Date" required="required" readonly><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
                             </div>
                           </div>
                       </div>
@@ -631,7 +631,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                           <label for="expirationDate">Delivery Date</label>
                           <div class="form-group">
                             <div id="sandbox-container" class="input-group date  datepicker">
-                               <input type="text" id="deliveryDate" name="deliveryDate" class="form-control" placeholder="Delivery Date" required="required"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                               <input type="text" id="deliveryDate" name="deliveryDate" class="form-control" placeholder="Delivery Date" required="required" readonly><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
                             </div>
                           </div>
                       </div>
@@ -660,7 +660,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                           <div class="form-group">
                             <input type="hidden" id="originationLocationID" name="originationLocationID" />
                             <input type="text" id="originationCity" name="originationCity" class="form-control mb-sm" placeholder="Origin City"
-                            required="required" />
+                            required="required" readonly/>
                           </div>
                           <div id="org-suggesstion-box" class="frmSearch"></div>
                       </div>
@@ -668,13 +668,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                           <label for="originationAddress1">Origination Address</label>
                           <div class="form-group">
                             <input type="text" id="originationAddress1" name="originationAddress1" class="form-control mb-sm" placeholder="Origin Address"
-                            required="required" />
+                            required="required" readonly/>
                           </div>
                       </div>
                       <div class="col-sm-3">
                           <label for="originationState">Origination State</label>
                           <div class="form-group">
-                            <select id="originationState" name="origitnaionState" data-placeholder="Origin State" class="form-control chzn-select" data-ui-jq="select2" required="required">
+                            <select id="originationState" name="origitnaionState" data-placeholder="Origin State" class="form-control chzn-select" data-ui-jq="select2" required="required" disabled>
                               <option value="">*Select State...</option>
              <?php
                               foreach($states->states->records as $value) {
@@ -689,7 +689,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                           <label for="originationZip">Origination Zip</label>
                           <div class="form-group">
                             <input type="text" id="originationZip" name="originationZip" class="form-control mb-sm" placeholder="Origin Zip"
-                            required="required" />
+                            required="required" readonly/>
                           </div>
                       </div>
                   </div>
@@ -698,7 +698,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                         <label for="DestinationCity">Destination City</label>
                         <div class="form-group">
                           <input type="text" id="destinationCity" name="destinationCity" class="form-control mb-sm" placeholder="Dest. City"
-                          required="required" />
+                          required="required" readonly/>
                         </div>
                         <div id="dest-suggesstion-box" class="frmSearch"></div>
                     </div>
@@ -706,13 +706,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                         <label for="destinationAddress1">Destination Address</label>
                         <div class="form-group">
                           <input type="text" id="destinationAddress1" name="destinationAddress1" class="form-control mb-sm" placeholder="Destination Address"
-                          required="required" />
+                          required="required" readonly/>
                         </div>
                     </div>
                     <div class="col-sm-3">
                         <label for="destinationState">Destination State</label>
                         <div class="form-group">
-                          <select id="destinationState" name="destinationState" data-placeholder="Dest. State" class="form-control chzn-select" data-ui-jq="select2" required="required">
+                          <select id="destinationState" name="destinationState" data-placeholder="Dest. State" class="form-control chzn-select" data-ui-jq="select2" required="required" disabled>
                             <option value="">*Select State...</option>
            <?php
                             foreach($states->states->records as $value) {
@@ -727,7 +727,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                         <label for="destinationZip">Destination Zip</label>
                         <div class="form-group">
                           <input type="text" id="destinationZip" name="destinationZip" class="form-control mb-sm" placeholder="Dest. Zip"
-                          required="required" />
+                          required="required" readonly/>
                         </div>
                     </div>
                   </div>
@@ -737,14 +737,14 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                           <label for="rate">Rate to Transport</label>
                           <div class="form-group">
                             <input type="text" id="rate" name="rate" class="form-control mb-sm" placeholder="$ Rate to Transport"
-                            required="required" />
+                            required="required" readonly/>
                           </div>
                       </div>
                       <div class="col-sm-3">
                           <label for="rate">Rate Type</label>
                           <div class="form-group">
-                            <div class="d-inline-block"><input type="radio" id="transportionType" name="transportationType" value="Flat Rate" /> Flat Rate
-                            &nbsp;&nbsp;<input type="radio" id="transportionType" name="transportationType" value="Mileage" /> Mileage</div>
+                            <div class="d-inline-block"><input type="radio" id="transportionType" name="transportationType" value="Flat Rate" disabled/> Flat Rate
+                            &nbsp;&nbsp;<input type="radio" id="transportionType" name="transportationType" value="Mileage" disabled/> Mileage</div>
                           </div>
                       </div>
                       <div class="col-sm-3">
@@ -758,7 +758,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         </div>
         <div class="modal-footer">
            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-           <button type="button" class="btn btn-primary btn-md" onclick="return post();" id="load">Accept</button>
+           <button type="button" class="btn btn-primary btn-md" onclick="return post();" id="load">Accept Commit</button>
         </div>
       </div>
     </div>
