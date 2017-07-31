@@ -75,108 +75,16 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       })();
 
       function post() {
-/*
-          //var originationaddress = $("#originationAddress1").val() + ', ' + $("#originationCity").val() + ', ' + $("#originationState").val() + ', ' + $("#originationZip").val();
-          //var destinationaddress = $("#destinationAddress1").val() + ', ' + $("#destinationCity").val() + ', ' + $("#destinationState").val() + ', ' + $("#destinationZip").val();
 
+          if (confirm("You have selected to Approve this Commit. Do you wish to proceed?") == true) {
 
-          if (originationaddress != $("#originToMatch").val() && destinationaddress != $("#destToMatch").val()) {
-              alert("The commitment for this Available request must be picked up or dropped off at the listed Origination or Destination. Please select a new Origination or Destination address.");
-              //alert($("#originToMatch").val());
-              //alert($("#destToMatch").val());
-              return false;
-          }
-*/
-
-          if (confirm("You have selected to Commit to this Availability. A Nationwide Equipment Control team member will contact you within 4 buisness hours to start the order process. Do you wish to proceed with this commitment?") == true) {
-/*
-                var result = true;
-
-                var params = {
-                      address1: $("#originationAddress1").val(),
-                      city: $("#originationCity").val(),
-                      state: $("#originationState").val(),
-                      zip: $("#originationZip").val(),
-                      entityID: $("#entityID").val(),
-                      locationType: "Origination"
-                };
-                //alert(JSON.stringify(params));
-
-                $.ajax({
-                   url: '<?php echo HTTP_HOST."/getlocationbycitystatezip" ?>',
-                   type: 'POST',
-                   data: JSON.stringify(params),
-                   contentType: "application/json",
-                   async: false,
-                   success: function(response){
-                      //alert("Origination " + response);
-                      if (response == "success") {
-                          var params = {
-                                address1: $("#destinationAddress1").val(),
-                                city: $("#destinationCity").val(),
-                                state: $("#destinationState").val(),
-                                zip: $("#destinationZip").val(),
-                                entityID: $("#entityID").val(),
-                                locationType: "Destination"
-                          };
-                          //alert(JSON.stringify(params));
-                          $.ajax({
-                             url: '<?php echo HTTP_HOST."/getlocationbycitystatezip" ?>',
-                             type: 'POST',
-                             data: JSON.stringify(params),
-                             contentType: "application/json",
-                             async: false,
-                             success: function(response){
-                                //alert("Destination " + response);
-                                if (response == "success") {
-                                } else {
-                                    if (response == "ZERO_RESULTS") {
-                                        alert("Destination Address does not exist!");
-                                    } else {
-                                        alert("Destination Address Error: " + JSON.stringify(response));
-                                    }
-                                    result = false;
-                                    //alert('Preparation Failed!');
-                                }
-                             },
-                             error: function(response) {
-                                if (response == "ZERO_RESULTS") {
-                                    alert("Destination Address does not exist!");
-                                } else {
-                                    alert("Destination Address Error: " + JSON.stringify(response));
-                                }
-                                result = false;
-                                //alert('Failed Searching for Destination Location! - Notify NEC of this failure.');
-                             }
-                          });
-                      } else {
-                          if (response == "ZERO_RESULTS") {
-                              alert("Origination Address does not exist!");
-                          } else {
-                              alert("Origination Address Error: " + JSON.stringify(response));
-                          }
-                          result = false;
-                          //alert('Preparation Failed!');
-                      }
-                   },
-                   error: function(response) {
-                      alert("Issue With Origination Address: " + JSON.stringify(response));
-                      result = false;
-                      //alert('Failed Searching for Origination Location! - Notify NEC of this failure.');
-                   }
-                });
-*/
-                if (result) {
                     verifyAndPost(function(data) {
                       alert(data);
                       $("#load").html("Commit");
                       $("#load").prop("disabled", false);
                     });
                     return true;
-                } else {
-                    return false;
-                }
-
+                
           } else {
 
                 $("#myModalCommit").modal('hide');
