@@ -622,7 +622,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                       <div class="col-sm-3">
                           <label for="availableDate">Pick-Up Date</label>
                           <div class="form-group">
-                            <div id="sandbox-container" class="input-group date  datepicker">
+                            <div id="sandbox-container" class="input-group date ">
                                <input type="text" id="pickupDate" name="pickupDate" class="form-control" placeholder="Pickup Date" required="required" readonly><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
                             </div>
                           </div>
@@ -630,7 +630,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                       <div class="col-sm-3">
                           <label for="expirationDate">Delivery Date</label>
                           <div class="form-group">
-                            <div id="sandbox-container" class="input-group date  datepicker">
+                            <div id="sandbox-container" class="input-group date ">
                                <input type="text" id="deliveryDate" name="deliveryDate" class="form-control" placeholder="Delivery Date" required="required" readonly><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
                             </div>
                           </div>
