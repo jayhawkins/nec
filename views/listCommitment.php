@@ -432,7 +432,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 { data: "customer_needs[0].expirationDate" },
                 { data: "pickupDate" },
                 { data: "deliveryDate" },
-                { data: "customer_needs[0].expirationDate" },
                 { data: "transportationMode" },
                 { data: "originationAddress1", visible: false },
                 { data: "originationCity" },
