@@ -267,10 +267,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       function loadTableAJAX() {
 
         if (<?php echo $_SESSION['entityid']; ?> > 0) {
-            var url = '<?php echo API_HOST; ?>' + '/api/customer_needs_commit?include=customer_needs,entities&columns=id,customerNeedsID,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,status,qty,rate,transportation_mode,pickupDate,deliveryDate,customer_needs.needsDataPoints,distance,customer_needs.expirationDate,customer_needs.availableDate,entities.name,entities.rateType,entities.negotiatedRate&order[]=pickupDate,desc&transform=1';
+            var url = '<?php echo API_HOST; ?>' + '/api/customer_needs_commit?include=customer_needs,entities&columns=id,customerNeedsID,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,status,qty,rate,transportation_mode,transportation_type,pickupDate,deliveryDate,customer_needs.needsDataPoints,distance,customer_needs.expirationDate,customer_needs.availableDate,entities.name,entities.rateType,entities.negotiatedRate&order[]=pickupDate,desc&transform=1';
             var show = false;
         } else {
-            var url = '<?php echo API_HOST; ?>' + '/api/customer_needs_commit?include=customer_needs,entities&columns=id,customerNeedsID,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,status,qty,rate,transportation_mode,pickupDate,deliveryDate,customer_needs.needsDataPoints,distance,customer_needs.expirationDate,customer_needs.availableDate,entities.name,entities.rateType,entities.negotiatedRate&satify=all&order[]=id&order[]=pickupDate,desc&transform=1';
+            var url = '<?php echo API_HOST; ?>' + '/api/customer_needs_commit?include=customer_needs,entities&columns=id,customerNeedsID,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,status,qty,rate,transportation_mode,transportation_type,pickupDate,deliveryDate,customer_needs.needsDataPoints,distance,customer_needs.expirationDate,customer_needs.availableDate,entities.name,entities.rateType,entities.negotiatedRate&satify=all&order[]=id&order[]=pickupDate,desc&transform=1';
             var show = true;
         }
 
@@ -834,8 +834,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         if (this.textContent.indexOf("Accept Commitment") > -1) {
             var li = '';
             var checked = '';
-            var qtyselect = '<select id="qty" class="form-control mb-sm">\n';
-            var transportationmodeselect = '<select id="transportationMode" name="transportationMode" class="form-control mb-sm" required="required">\n';
+            var qtyselect = '<select id="qty" class="form-control mb-sm" disabled>\n';
+            var transportationmodeselect = '<select id="transportationMode" name="transportationMode" class="form-control mb-sm" required="required" disabled>\n';
             var dpchecked = '';
             $("#id").val(data["id"]);
             //$("#entityID").val(data["entityID"]); Use the session entity id of the logged in user, not from the customer_needs record
@@ -857,11 +857,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             $("#dcity").val(data["destinationCity"]);
             $("#dstate").val(data["destinationState"]);
             $("#dzip").val(data["destinationZip"]);
+            $("#pickupDate").val(data["pickupDate"]);
+            $("#deliveryDate").val(data["deliveryDate"]);
             // Set up the matching addresses like we do up in the verifyAndPost() - makes it easy to do a compare
             $("#originToMatch").val(data["originationAddress1"] + ', ' + data["originationCity"] + ', ' + data["originationState"] + ', ' + data["originationZip"]);
             $("#destToMatch").val(data["destinationAddress1"] + ', ' + data["destinationCity"] + ', ' + data["destinationState"] + ', ' + data["destinationZip"]);
-            //$("#rate").val(data["entities"][0].negotiatedRate.toFixed(2));
-            $("#rate").val(entity.entities.records[0][1].toFixed(2));
+            $("#rate").val(data["rate"].toFixed(2));
+            //$("#rate").val(entity.entities.records[0][1].toFixed(2));
 
             for (var i = 1; i <= data['qty']; i++) {
                 if (i == data['qty']) {
@@ -872,7 +874,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             qtyselect += '</select>\n';
             $("#qtyDiv").html(qtyselect);
 
-            if (entity.entities.records[0][0] == "Flat Rate") {
+            if (data["transportation_type"] == "Flat Rate") {
                 $('input[name="transportationType"][value="Flat Rate"]').prop('checked', true);
             } else {
                 $('input[name="transportationType"][value="Mileage"]').prop('checked', true);
@@ -881,17 +883,17 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             var empty = "";
             var loadout = "";
             var either = "";
-            if (data['transportationMode'] == "Empty") {
+            if (data['transportation_mode'] == "Empty") {
                 transportationmodeselect += '<option value="Empty">Empty</option>\n';
             } 
             else {
-                if (data['transportationMode'] == "Empty") {
+                if (data['transportation_mode'] == "Empty") {
                     empty = "selected=selected";
                 } 
-                else if (data['transportationMode'] == "Load Out"){
+                else if (data['transportation_mode'] == "Load Out"){
                     loadout = "selected=selected";
                 } 
-                else if (data['transportationMode'] == "Both (Empty or Load Out)"){
+                else if (data['transportation_mode'] == "Both (Empty or Load Out)"){
                     either = "selected=selected";
                 }
                 transportationmodeselect += '<option value="Empty" '+empty+'>Empty</option>\n';
