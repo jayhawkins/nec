@@ -279,7 +279,9 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             processing: true,
             ajax: {
                 url: url,
-                dataSrc: "customer_needs_commit"
+                dataSrc: function(json){
+                    return $.parseJSON(json.d);
+                }
             },
             columns: [
                 {
