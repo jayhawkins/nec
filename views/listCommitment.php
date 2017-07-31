@@ -448,7 +448,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 { data: "distance", render: $.fn.dataTable.render.number(',', '.', 0, '')  },
                 { data: "customer_needs[0].needsDataPoints", visible: false },
                 { data: "status", visible: false },
-                { data: "entities[0].rateType", visible: false },
+                { data: "customer_needs[0].entities[0].rateType", visible: false },
                 {
                     data: null,
                     "bSortable": false,
@@ -1135,40 +1135,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         format: "yyyy-mm-dd"
     });
 
-    $("#addNeed").click(function(){
-      var li = '';
-      var checked = '';
-      var dpli = '';
-      var dpchecked = '';
-      $("#id").val('');
-      $("#qty").val('');
-      $("#availableDate").val('');
-      $("#originationCity").val('');
-      $("#originationState").val('');
-      $("#originationZip").val('');
-      $("#destinationCity").val('');
-      $("#destinationState").val('');
-      $("#destinationZip").val('');
-      for (var i = 0; i < contacts.contacts.records.length; i++) {
-          li += '<li id=\"' + contacts.contacts.records[i][0] + '\" class=\"list-group-item\" ' + checked + '>' + contacts.contacts.records[i][1] + ' ' + contacts.contacts.records[i][2] + '</li>\n';
-      }
-      $("#check-list-box").html(li);
-      for (var i = 0; i < dataPoints.object_type_data_points.length; i++) {
-          dpli += '<li>' + dataPoints.object_type_data_points[i].title +
-                  ' <select class="form-control mb-sm" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '">';
-          for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
-              dpli += '<option>' + dataPoints.object_type_data_points[i].object_type_data_point_values[v].value + '</option>\n';
-          }
-          dpli += '</select>' +
-                  '</li>\n';
-      }
-      $("#dp-check-list-box").html(dpli);
-      formatListBox();
-      formatListBoxDP();
-      $("#entityID").prop('disabled', false);
-  		$("#myModal").modal('show');
-  	});
-
     $('#datatable-table tbody').on( 'click', 'button', function () {
         var data = table.row( $(this).parents('tr') ).data();
 
@@ -1293,7 +1259,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
            }
         });
     });
-
+    
+/*
     $("#originationCity").keyup(function(){
         $("#originationCity").css("background","#FFF url(img/loaderIcon.gif) no-repeat 165px");
 
@@ -1391,7 +1358,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
            }
         });
     }
-
+*/
+   
     $("#myModal").on("hidden.bs.modal", function () {
         $("#entityID").prop('disabled', false);
     });
@@ -1454,6 +1422,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         return table;
 
     }
+    
 /*
     $('#datatable-table tbody').on('click', 'td.details-control', function () {
 
@@ -1471,6 +1440,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         }
     } );
 */
+
     $('#datatable-table tbody').on('click', 'td.details-control-add', function () {
 
         var tr = $(this).closest('tr');
