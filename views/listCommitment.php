@@ -401,7 +401,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       function loadTableAJAX() {
 
         if (<?php echo $_SESSION['entityid']; ?> > 0) {
-            var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=customer_needs_commit,entities&columns=id,entityID,qty,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate&order[]=availableDate,desc&transform=1';
+            var url = '<?php echo API_HOST; ?>' + '/api/customer_needs_commit?include=customer_needs,entities&columns=id,customerNeedsID,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,status,qty,rate,transportation_mode,transportation_type,pickupDate,deliveryDate,customer_needs.needsDataPoints,distance,customer_needs.expirationDate,customer_needs.availableDate,entities.name,entities.rateType,entities.negotiatedRate&order[]=pickupDate,desc&transform=1';
             var show = false;
         } else {
             var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=customer_needs_commit,entities&columns=id,entityID,qty,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate&satisfy=all&order[]=entityID&order[]=availableDate,desc&transform=1';
@@ -413,23 +413,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             processing: true,
             ajax: {
                 url: url,
-                dataSrc: function(json){
-                    //console.log(json);
-                    var customer_needs = json.customer_needs;
-                    var committed = [];
-                    for(var i = 0; i < customer_needs.length; i++){
-                        if(customer_needs[i].customer_needs_commit.length > 0){
-                            var expirationDate = new Date(customer_needs[i].expirationDate);
-                            var todaysDate = new Date();
-                            todaysDate.setHours(0,0,0,0);
-                            todaysDate.setDate(todaysDate.getDate()-1);
-                            //if(todaysDate < expirationDate) committed.push(customer_needs[i]);                                
-                            
-                            committed.push(customer_needs[i]); 
-                        }
-                    }
-                    return committed;
-                }
+                dataSrc: 'customer_needs_commit'
             },
             columns: [
                 {
@@ -438,14 +422,14 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     "data":           null,
                     "defaultContent": ''
                 },
-                { data: "entities[0].name", visible: true },
-                { data: "entities[0].negotiatedRate", visible: true},
+                { data: "customer_needs[0].entities[0].name", visible: true },
+                { data: "customer_needs[0].entities[0].negotiatedRate", visible: true},
                 { data: "customer_needs_commit[0].rate", visible: true },
                 { data: "id", visible: false },
                 { data: "entityID", visible: false },
                 { data: "qty" },
-                { data: "availableDate" },
-                { data: "expirationDate" },
+                { data: "customer_needs[0].availableDate", visible:false },
+                { data: "customer_needs[0].expirationDate" },
                 { data: "transportationMode" },
                 { data: "originationAddress1", visible: false },
                 { data: "originationCity" },
@@ -460,29 +444,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 { data: "destinationLat", visible: false },
                 { data: "destinationLng", visible: false },
                 { data: "distance", render: $.fn.dataTable.render.number(',', '.', 0, '')  },
-                { data: "needsDataPoints", visible: false },
-                {
-                    data: null,
-                    "bSortable": false,
-                    "render": function(o) {
-                      var newStatus = o.status;
-                      if (o.customer_needs_commit.length > 0) {
-                          var showAmount = o.customer_needs_commit[0].rate.toString().split(".");
-                          showAmount[0] = showAmount[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                          if (showAmount.length > 1) {
-                              if (showAmount[1].length < 2) {
-                                  showAmount[1] = showAmount[1] + '0';
-                              }
-                              showAmount = "$" + showAmount[0] + "." + showAmount[1];
-                          } else {
-                              showAmount = "$" + showAmount[0] + ".00";
-                          }
-                          newStatus = "<strong>Committed</strong>";
-                      }
-                      return newStatus;
-                    }, visible: false
-                },
-                { data: "customer_needs_commit[0].status", visible: false },
+                { data: "customer_needs[0].needsDataPoints", visible: false },
+                { data: "status", visible: false },
                 { data: "entities[0].rateType", visible: false },
                 {
                     data: null,
@@ -917,7 +880,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                      <th class="hidden-sm-down">Dest. Long.</th>
                      <th class="hidden-sm-down">Mileage</th>
                      <th class="hidden-sm-down">Data Points</th>
-                     <th>Status</th>
                      <th>Commit Status</th>
                      <th>Rate Type</th>
                      <th class="no-sort pull-right"></th>
@@ -936,7 +898,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalCommitLabel"><strong>Commit To Availablity</strong></h5>
+          <h5 class="modal-title" id="exampleModalCommitLabel"><strong>Accept Commitment</strong></h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
