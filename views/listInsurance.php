@@ -17,6 +17,19 @@
 			},
 		};
 	})();
+	function validateFile(file) {
+		var ext = $(file).val().split(".");
+		ext = ext[ext.length-1].toLowerCase();
+		var arrayExtensions = ["jpg" , "jpeg", "png", "bmp", "gif", "pdf", "zip", "doc", "docx"];
+		if (arrayExtensions.lastIndexOf(ext) == -1) {
+			alert("File must be one of the following valid types; jpg, jpeg, png, bmp, gif, pdf, zip, doc or docx.");
+			$(file).val("");
+			$(file).focus();
+			return false;
+		} else {
+			return true;
+		}
+	}
 	function verifyAndPost() {
 		if ( $('#formInsurance').parsley().validate() ) {
 			var data,date;
@@ -316,7 +329,7 @@
 							<label for="policyExpirationDate">Expiration Date</label>
 							<div class="form-group">
 								<!--input type="text" id="policyExpirationDate" name="policyExpirationDate" class="form-control mb-sm" placeholder="Policy Expiration Date (YYYY-MM-DD)" required="required" /-->
-								<div id="sandbox-container" class="input-group date  datepicker">
+								<div id="sandbox-container" class="input-group date datepicker">
 									<input type="text" id="policyExpirationDate" name="policyExpirationDate" class="form-control" placeholder="Policy Expiration Date"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
 								</div>
 							</div>
@@ -326,7 +339,7 @@
 						<div class="col-sm-6">
 							<label for="fileupload">Policy File Upload</label>
 							<div class="form-group">
-								<input type="file" id="fileupload" name="fileupload" class="form-control mb-sm" placeholder="*Policy Number" required="required" />
+								<input type="file" id="fileupload" name="fileupload" class="form-control mb-sm" placeholder="*Policy Number" required="required" onchange="validateFile(this);" />
 							</div>
 						</div>
 					</div>
