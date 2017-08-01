@@ -75,7 +75,7 @@ class Documents
     public function createFromExisting($api_host,$file_location,$fileupload,$name,$documentID,$documentURL,$updatedAt,$entityID) {
 		$rename_file = null;
 		$filebase = pathinfo($fileupload['name'],PATHINFO_FILENAME);;//md5(time());
-		$imageFileType = pathinfo($fileupload['name'],PATHINFO_EXTENSION);
+		$imageFileType = strtolower(pathinfo($fileupload['name'],PATHINFO_EXTENSION));
 		$filename = $filebase . "." .$imageFileType;
 		$target_directory = $file_location . "users/".floor($entityID / 65535)."/".$entityID."/";
 		$target_file = $target_directory.$filename;
@@ -86,8 +86,8 @@ class Documents
 			$uploadOk = 0;
 		}
 		// Allow certain file formats
-		if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif" && $imageFileType != "pdf" && $imageFileType != "zip") {
-			// Only JPG, JPEG, PNG, GIF, PDF & ZIP files are allowed
+		if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif" && $imageFileType != "pdf" && $imageFileType != "doc" && $imageFileType != "docx" && $imageFileType != "zip") {
+			// Only JPG, JPEG, PNG, GIF, PDF, doc, docx & ZIP files are allowed
 			$uploadOk = 0;
 		}
 		// Check if file already exists
