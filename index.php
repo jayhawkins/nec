@@ -342,6 +342,18 @@ $app->route('POST /customerneedsnotification', function() {
     }
 });
 
+$app->route('POST /commitacceptednotification', function() {
+    $customerneedcommitid = Flight::request()->data->id;
+    $customerneedcommit = Flight::customerneedcommit();
+    $notificationresult = $customerneedcommit->sendAcceptNotification(API_HOST,$customerneedcommitid);
+    if ($notificationresult) {
+        print_r($notificationresult);
+        //echo "success";
+    } else {
+        print_r($notificationresult);
+    }
+});
+
 /*
 $app->route('POST /customerneedscommitnotification', function() {
     $customerneedcommitid = Flight::request()->data->id;
