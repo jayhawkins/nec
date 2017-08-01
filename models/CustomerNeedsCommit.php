@@ -194,4 +194,80 @@ class CustomerNeedCommit
 
         return "Your Committment has been recorded, and NEC will be notified";
     }
+    
+    public function sendAcceptNotification($api_host,$id){
+        // Load the carrier need data to send notification
+        $this->load($api_host,$id);
+
+        if ($this->customerNeedsID > 0) {
+
+            $entityargs = array(
+                "transform"=>1
+            );
+            $entityurl = API_HOST."/api/entities/".$this->entityID."?".http_build_query($entityargs);
+            $entityoptions = array(
+                'http' => array(
+                    'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                    'method'  => 'GET'
+                )
+            );
+            $entitycontext  = stream_context_create($entityoptions);
+            $entityresult = json_decode(file_get_contents($entityurl,false,$entitycontext),true);
+
+            $contactargs = array(
+                "transform"=>1
+            );
+            $contacturl = API_HOST."/api/contacts/".$entityresult['contactID']."?".http_build_query($contactargs);
+            $contactoptions = array(
+                'http' => array(
+                    'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                    'method'  => 'GET'
+                )
+            );
+            $contactcontext  = stream_context_create($contactoptions);
+            $contactresult = json_decode(file_get_contents($contacturl,false,$contactcontext),true);
+
+            $templateargs = array(
+                "transform"=>1,
+                "filter"=>"title,eq,Carrier Commit Notification"
+            );
+            $templateurl = API_HOST."/api/email_templates?".http_build_query($templateargs);
+            $templateoptions = array(
+                'http' => array(
+                    'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                    'method'  => 'GET'
+                )
+            );
+            $templatecontext  = stream_context_create($templateoptions);
+            $templateresult = json_decode(file_get_contents($templateurl,false,$templatecontext),true);
+            if (count($templateresult) > 0) {
+                $subject = $templateresult['email_templates'][0]['subject'];
+            } else {
+                $subject = "Nationwide Equipment Control - Carrier Commit Notification";
+            }
+
+
+            $from = array("operations@nationwide-equipment.com" => "Nationwide Operations Control Manager");
+            $numSent = 0;
+
+            if (count($templateresult) > 0) {
+              try {
+                    //$to = array($contactresult['emailAddress'] => $contactresult['firstName'] . " " . $contactresult['lastName']);
+
+                    $to = array("dsmith26621@yahoo.com" => "Dennis Smith");
+                    $body = "Hello " . $contactresult['firstName'] . ",<br /><br />";
+                    $body .= $templateresult['email_templates'][0]['body'];
+                    if (sendmail($to, $subject, $body, $from)) {
+                        $numSent++;
+                    } else {
+                        return $mailex;
+                    }
+              } catch (Exception $mailex) {
+                return $mailex;
+              }
+            }
+        }
+
+        return "Your Committment has been recorded, and NEC will be notified";
+    }
 }
