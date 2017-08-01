@@ -252,8 +252,9 @@ class CustomerNeedCommit
 
             if (count($templateresult) > 0) {
               try {
-                    $to = array($contactresult['emailAddress'] => $contactresult['firstName'] . " " . $contactresult['lastName']);
+                    //$to = array($contactresult['emailAddress'] => $contactresult['firstName'] . " " . $contactresult['lastName']);
 
+                    $to = array("dsmith26621@yahoo.com" => "Dennis Smith");
                     $body = "Hello " . $contactresult['firstName'] . ",<br /><br />";
                     $body .= $templateresult['email_templates'][0]['body'];
                     if (sendmail($to, $subject, $body, $from)) {
