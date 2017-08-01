@@ -256,7 +256,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                             buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"fa fa-thumbs-up text-info\"></i> <span class=\"text\">Accept Commitment</span></button>";
                         }
                         else{
-                            buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\" disable><i class=\"fa fa-thumbs-up text-info\"></i> <span class=\"text\">Accept Commitment</span></button>";
+                            buttons += "All ready Approved!" ;
                         }
                         
                         return buttons;
