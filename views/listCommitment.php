@@ -92,7 +92,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
           if ( $('#formNeed').parsley().validate() ) {
 
-                $("#load").html("<i class='fa fa-spinner fa-spin'></i> Committing Now");
+                $("#load").html("<i class='fa fa-spinner fa-spin'></i> Approving Commit");
                 $("#load").prop("disabled", true);
 
                 var passValidation = false;
@@ -250,8 +250,14 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     "bSortable": false,
                     "mRender": function (o) {
                         var buttons = '';
+                        var status = o.status;
                         
-                        buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"fa fa-thumbs-up text-info\"></i> <span class=\"text\">Accept Commitment</span></button>";
+                        if(status == "Open"){
+                            buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"fa fa-thumbs-up text-info\"></i> <span class=\"text\">Accept Commitment</span></button>";
+                        }
+                        else{
+                            buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\" disable><i class=\"fa fa-thumbs-up text-info\"></i> <span class=\"text\">Accept Commitment</span></button>";
+                        }
                         
                         return buttons;
                     }, visible: true
