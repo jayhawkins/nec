@@ -565,7 +565,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                             </div>
                           </div>
                       </div>
-                      <div class="col-sm-4">
+                      <!--<div class="col-sm-4">
                           <div class="form-group">
               <?php if ($_SESSION['entityid'] > 0) { ?>
                              <input type="hidden" id="entityID" name="entityID" value="<?php echo $_SESSION['entityid']; ?>" />
@@ -576,13 +576,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                <?php
                                 foreach($entities->entities->records as $value) {
                                     $selected = ($value[0] == $entity) ? 'selected=selected':'';
-                                    echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
+                                    //echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
                                 }
                ?>
                               </select>
                <?php } ?>
                           </div>
-                      </div>
+                      </div>-->
                   </div>
                   <div class="row">
                       <div class="col-sm-3">
