@@ -137,7 +137,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                    async: false,
                    success: function(data){
                       if (data > 0) {
-                        if (type == 'POST') {
+                        if (type == 'PUT') {
                            var params = {id: $("#id").val()};
                            $.ajax({
                               url: '<?php echo HTTP_HOST."/commitacceptednotification" ?>',
@@ -156,7 +156,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                            });
                         }
 
-                        $("#myModal").modal('hide');
+                        $("#myModalCommit").modal('hide');
                         loadTableAJAX();
                         $("#id").val('');
                         $("#qty").val('');
