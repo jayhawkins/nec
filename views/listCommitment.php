@@ -80,7 +80,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                       $("#load").prop("disabled", false);
                     });
                     return true;
-                
+
           } else {
 
                 $("#myModalCommit").modal('hide');
@@ -185,7 +185,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 });
 
                 return passValidation;
-              
+
             } else {
 
                 return false;
@@ -252,13 +252,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 { data: "pickupDate" },
                 { data: "deliveryDate" },
                 { data: "transportation_mode" },
-                { data: "originationAddress1", visible: false },
+                { data: "originationAddress1", visible: true },
                 { data: "originationCity" },
                 { data: "originationState" },
                 { data: "originationZip", visible: false },
                 { data: "originationLat", visible: false },
                 { data: "originationLng", visible: false },
-                { data: "destinationAddress1", visible: false },
+                { data: "destinationAddress1", visible: true },
                 { data: "destinationCity" },
                 { data: "destinationState" },
                 { data: "destinationZip", visible: false },
@@ -274,21 +274,21 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     "mRender": function (o) {
                         var buttons = '';
                         var status = o.status;
-                        
+
                         if(status == "Open"){
                             buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"fa fa-thumbs-up text-info\"></i> <span class=\"text\">Accept Commitment</span></button>";
                         }
                         else{
                             buttons += "Already Approved!" ;
                         }
-                        
+
                         return buttons;
                     }, visible: true
                 }
             ],
             scrollX: true
           });
-          
+
 
         //example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
 
@@ -844,14 +844,14 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             var either = "";
             if (data['transportation_mode'] == "Empty") {
                 transportationmodeselect += '<option value="Empty">Empty</option>\n';
-            } 
+            }
             else {
                 if (data['transportation_mode'] == "Empty") {
                     empty = "selected=selected";
-                } 
+                }
                 else if (data['transportation_mode'] == "Load Out"){
                     loadout = "selected=selected";
-                } 
+                }
                 else if (data['transportation_mode'] == "Both (Empty or Load Out)"){
                     either = "selected=selected";
                 }
@@ -868,10 +868,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
             $("#entityID").prop('disabled', true);
             $("#myModalCommit").modal('show');
-          } 
+          }
         else if (this.textContent.indexOf("Cancel") > -1) {
             $("#myCancelDialog").modal('show');
-        } 
+        }
         else {
           //Nothing - Somehow got in here???
         }
@@ -920,7 +920,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
     $('#btnCommit').click(function () {
         $("#myModalCommit").modal('show');
-        
+
     });
 
     /* Formatting function for row details - modify as you need */
@@ -958,7 +958,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         return table;
 
     }
-    
+
 
     $('#datatable-table tbody').on('click', 'td.details-control-add', function () {
 

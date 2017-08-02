@@ -1067,7 +1067,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                      </div>
                  </div>
                  <div class="row">
-                     <div class="col-sm-7">
+                     <div class="col-sm-3">
+                         <label for="dsporiginationAddress1">Origination Address</label>
+                         <div id="dsporiginationAddress1" class="form-group form-control mb-sm">
+                         </div>
+                     </div>
+                     <div class="col-sm-3">
                          <label for="dsporiginationCity">Origination City</label>
                          <div id="dsporiginationCity" class="form-group form-control mb-sm">
                          </div>
@@ -1077,14 +1082,19 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                          <div id="dsporiginationState" class="form-group form-control mb-sm">
                          </div>
                      </div>
-                     <div class="col-sm-2">
+                     <div class="col-sm-3">
                          <label for="dsporiginationZip">Origination Zip</label>
                          <div id="dsporiginationZip" class="form-group form-control mb-sm">
                          </div>
                      </div>
                  </div>
                  <div class="row">
-                   <div class="col-sm-7">
+                   <div class="col-sm-3">
+                       <label for="dspdestinationAddress1">Destination Address</label>
+                       <div id="dspdestinationAddress1" class="form-group form-control mb-sm">
+                       </div>
+                   </div>
+                   <div class="col-sm-3">
                        <label for="dspdestinationCity">Destination City</label>
                        <div id="dspdestinationCity" class="form-group form-control mb-sm">
                        </div>
@@ -1094,7 +1104,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                        <div id="dspdestinationState" class="form-group form-control mb-sm">
                        </div>
                    </div>
-                   <div class="col-sm-2">
+                   <div class="col-sm-3">
                        <label for="dspdestinationZip">Destination Zip</label>
                        <div id="dspdestinationZip" class="form-group form-control mb-sm">
                        </div>
@@ -1190,6 +1200,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                       </div>
                   </div>
                   <div class="row">
+                      <div class="col-sm-4">
+                          <label for="originationAddress1">Origination Address</label>
+                          <div class="form-group">
+                            <input type="text" id="originationAddress1" name="originationAddress1" class="form-control mb-sm" placeholder="Origin Address"
+                            required="required" />
+                          </div>
+                      </div>
                       <div class="col-sm-3">
                           <label for="originationCity">Origination City</label>
                           <div class="form-group">
@@ -1199,15 +1216,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                           </div>
                           <div id="org-suggesstion-box" class="frmSearch"></div>
                       </div>
-                      <!--
-                      <div class="col-sm-4">
-                          <label for="originationAddress1">Origination Address</label>
-                          <div class="form-group">
-                            <input type="text" id="originationAddress1" name="originationAddress1" class="form-control mb-sm" placeholder="Origin Address"
-                            required="required" />
-                          </div>
-                      </div>
-                      -->
                       <div class="col-sm-3">
                           <label for="originationState">Origination State</label>
                           <div class="form-group">
@@ -1233,6 +1241,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                       </div>
                   </div>
                   <div class="row">
+                    <div class="col-sm-4">
+                        <label for="destinationAddress1">Destination Address</label>
+                        <div class="form-group">
+                          <input type="text" id="destinationAddress1" name="destinationAddress1" class="form-control mb-sm" placeholder="Destination Address"
+                          required="required" />
+                        </div>
+                    </div>
                     <div class="col-sm-3">
                         <label for="DestinationCity">Destination City</label>
                         <div class="form-group">
@@ -1241,15 +1256,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                         </div>
                         <div id="dest-suggesstion-box" class="frmSearch"></div>
                     </div>
-                    <!--
-                    <div class="col-sm-4">
-                        <label for="destinationAddress1">Destination Address</label>
-                        <div class="form-group">
-                          <input type="text" id="destinationAddress1" name="destinationAddress1" class="form-control mb-sm" placeholder="Destination Address"
-                          required="required" />
-                        </div>
-                    </div>
-                    -->
                     <div class="col-sm-3">
                         <label for="destinationState">Destination State</label>
                         <div class="form-group">
@@ -1483,9 +1489,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             $("#dspqty").html(data["qty"]);
             $("#dspavailableDate").html(data["availableDate"]);
             $("#dspexpirationDate").html(data["expirationDate"]);
+            $("#dsporiginationAddress1").html(data["originationAddress1"]);
             $("#dsporiginationCity").html(data["originationCity"]);
             $("#dsporiginationState").html(data["originationState"]);
             $("#dsporiginationZip").html(data["originationZip"]);
+            $("#dspdestinationAddress1").html(data["destinationAddress1"]);
             $("#dspdestinationCity").html(data["destinationCity"]);
             $("#dspdestinationState").html(data["destinationState"]);
             $("#dspdestinationZip").html(data["destinationZip"]);
@@ -1598,17 +1606,17 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     empty = "selected=selected";
                 } else if (data['transportationMode'] == "Load Out"){
                     loadout = "selected=selected";
-                } else if (data['transportationMode'] == "Either (Empty or Load Out)"){
+                } else if (data['transportationMode'] == "Both (Empty or Load Out)"){
                     either = "selected=selected";
                 }
                 transportationmodeselect += '<option value="Empty" '+empty+'>Empty</option>\n';
                 transportationmodeselect += '<option value="Load Out" '+loadout+'>Load Out</option>\n';
-                transportationmodeselect += '<option value="Either (Empty or Load Out)" '+either+'>Either (Empty or Load Out)</option>\n';
+                transportationmodeselect += '<option value="Both (Empty or Load Out)" '+either+'>Both (Empty or Load Out)</option>\n';
             }
 
             //transportationmodeselect += '<option value="Empty">Empty</option>\n';
             //transportationmodeselect += '<option value="Load Out">Load Out</option>\n';
-            //transportationmodeselect += '<option value="Either (Empty or Load Out)">Either (Empty or Load Out)</option>\n';
+            //transportationmodeselect += '<option value="Both (Empty or Load Out)">Both (Empty or Load Out)</option>\n';
             transportationmodeselect += '</select>\n';
             $("#transportationModeDiv").html(transportationmodeselect);
 
