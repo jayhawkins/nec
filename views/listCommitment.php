@@ -226,7 +226,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                         var input = '';
                         var customerRate = o.customer_needs[0].entities[0].negotiatedRate.toFixed(2);
                         
-                        input += "<span class=\"input-group-addon\"><i class=\"fa fa-usd\"></i></span><input type=\"text\" name=\"customerRate\" class=\"form-control mb-sm\" placeholder=\"Customer Rate\" value=\"" + customerRate + "\"/>";
+                        input += "<i class=\"fa fa-usd\"></i><input type=\"text\" name=\"customerRate\" class=\"form-control mb-sm\" placeholder=\"Customer Rate\" value=\"" + customerRate + "\"/>";
                         
                         return input;
                     }, visible: true
