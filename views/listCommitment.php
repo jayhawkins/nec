@@ -287,7 +287,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                         var status = o.status;
 
                         if(status == "Open"){
-                            buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"fa fa-thumbs-up text-info\"></i> <span class=\"text\">Accept Commitment</span></button>";
+                            buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\" disabled><i class=\"fa fa-thumbs-up text-info\"></i> <span class=\"text\">Accept Commitment</span></button>";
                         }
                         else{
                             buttons += "Already Approved!" ;
