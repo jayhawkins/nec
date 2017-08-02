@@ -219,13 +219,36 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     defaultContent: ''
                 },
                 { data: "customer_needs[0].entities[0].name", visible: true },
-                { data: "customer_needs[0].entities[0].negotiatedRate", visible: true},
+                {                     
+                    data: null,
+                    "bSortable": false,
+                    "mRender": function (o) {
+                        var input = '';
+                        var customerRate = o.customer_needs[0].entities[0].negotiatedRate;
+                        
+                        input += "<input type=\"text\" id=\"customerRate\" name=\"customerRate\" class=\"form-control mb-sm\" placeholder=\"Customer Rate\" value=\"" . customerRate . "\"/>";
+                        
+                        return input;
+                    }, visible: true
+                },
+                {                     
+                    data: null,
+                    "bSortable": false,
+                    "mRender": function (o) {
+                        var input = '';
+                        var carrierRate = o.rate;
+                        
+                        input += "<input type=\"text\" id=\"carrierRate\" name=\"carrierRate\" class=\"form-control mb-sm\" placeholder=\"Carrier Rate\" value=\"" . carrierRate . "\"/>";
+                        
+                        return input;
+                    }, visible: true
+                },
                 { data: "rate", visible: true },
                 { data: "id", visible: false },
                 { data: "customer_needs[0].entityID", visible: false },
                 { data: "qty" },
                 { data: "customer_needs[0].availableDate", visible:false },
-                { data: "customer_needs[0].expirationDate" },
+                { data: "customer_needs[0].expirationDate", visible: false },
                 { data: "pickupDate" },
                 { data: "deliveryDate" },
                 { data: "transportation_mode" },
@@ -489,8 +512,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                  <tr>
                      <th></th>
                      <th>Company</th>
-                     <th>Negotiated Rate</th>
-                     <th>Commit Rate</th>
+                     <th>Customer Rate</th>
+                     <th>Carrier Rate</th>
                      <th>ID</th>
                      <th>Entity ID</th>
                      <th>Qty</th>
@@ -767,7 +790,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
     $('#datatable-table tbody').on( 'click', 'button', function () {
         var data = table.row( $(this).parents('tr') ).data();
 
-        if (this.textContent.indexOf("Accept Commitment") > -1) {
+        //if (this.textContent.indexOf("Accept Commitment") > -1) {
+        if (this.textContent.indexOf("") > -1) {
             var li = '';
             var checked = '';
             var qtyselect = '<select id="qty" class="form-control mb-sm" disabled>\n';
