@@ -905,7 +905,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             ?>
                                 <option value="Empty">Empty</option>
                                 <option value="Load Out">Load Out</option>
-                                <!--option value="Both (Empty or Load Out)">Both (Empty or Load Out)</option-->
+                                <option value="Both (Empty or Load Out)">Both (Empty or Load Out)</option>
                            </select>
                          </div>
                      </div>
