@@ -1598,18 +1598,19 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     empty = "selected=selected";
                 } else if (data['transportationMode'] == "Load Out"){
                     loadout = "selected=selected";
-                } else if (data['transportationMode'] == "Either (Empty or Load Out)"){
+                } else if (data['transportationMode'] == "Both (Empty or Load Out)"){
                     either = "selected=selected";
                 }
                 transportationmodeselect += '<option value="Empty" '+empty+'>Empty</option>\n';
                 transportationmodeselect += '<option value="Load Out" '+loadout+'>Load Out</option>\n';
-                transportationmodeselect += '<option value="Either (Empty or Load Out)" '+either+'>Either (Empty or Load Out)</option>\n';
+                transportationmodeselect += '<option value="Both" '+either+'>Both (Empty or Load Out)</option>\n';
             }
 
             //transportationmodeselect += '<option value="Empty">Empty</option>\n';
             //transportationmodeselect += '<option value="Load Out">Load Out</option>\n';
-            //transportationmodeselect += '<option value="Either (Empty or Load Out)">Either (Empty or Load Out)</option>\n';
+            //transportationmodeselect += '<option value="Both (Empty or Load Out)">Both (Empty or Load Out)</option>\n';
             transportationmodeselect += '</select>\n';
+            alert(transportationmodeselect);
             $("#transportationModeDiv").html(transportationmodeselect);
 
             $("#entityID").prop('disabled', true);
