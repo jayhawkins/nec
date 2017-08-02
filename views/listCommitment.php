@@ -243,7 +243,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                         return input;
                     }, visible: true
                 },
-                { data: "rate", visible: true },
                 { data: "id", visible: false },
                 { data: "customer_needs[0].entityID", visible: false },
                 { data: "qty" },
