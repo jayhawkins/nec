@@ -233,7 +233,20 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                                             contentType: "application/json",
                                             async: false,
                                             success: function(notification){
-                                                alert(notification);
+                                                var updatedata = {rootCustomerNeedsID: data};
+                                                $.ajax({
+                                                    url: '<?php echo API_HOST."/api/customer_needs" ?>/' + data,
+                                                    type: 'PUT',
+                                                    data: JSON.stringify(updatedata),
+                                                    contentType: "application/json",
+                                                    async: false,
+                                                    success: function(updateneeds){
+                                                        alert(notification);
+                                                    },
+                                                    error: function() {
+                                                       alert('Failed Updating Root Customer Needs ID! - Notify NEC of this failure.');
+                                                    }
+                                                });
                                             },
                                             error: function() {
                                                alert('Failed Sending Notifications! - Notify NEC of this failure.');
