@@ -342,7 +342,16 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 { data: "entityID", visible: false },
                 { data: "qty" },
                 { data: "availableDate" },
-                { data: "expirationDate" },
+                {
+                    data: null,
+                    "bSortable": true,
+                    "render": function(o) {
+                      if (o.expirationDate == '0000-00-00') {
+                          return '';
+                      } else {
+                          return o.expirationDate;
+                      }
+                },
                 { data: "transportationMode" },
                 { data: "originationAddress1", visible: false },
                 { data: "originationCity" },
