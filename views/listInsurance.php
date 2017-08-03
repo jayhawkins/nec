@@ -339,7 +339,9 @@
 						<div class="col-sm-6">
 							<label for="fileupload">Policy File Upload</label>
 							<div class="form-group">
-								<input type="file" id="fileupload" name="fileupload" class="form-control mb-sm" placeholder="*Policy Number" required="required" onchange="validateFile(this);" />
+								<input type="file" id="fileupload" name="fileupload" class="form-control mb-sm" placeholder="*Policy Number" required="required" data-filesize="20000000"
+								data-filetype="image/bmp,image/gif,image/jpeg,application/zip,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/rtf"
+								onchange="validateFile(this);" />
 							</div>
 						</div>
 					</div>
