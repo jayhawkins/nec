@@ -533,13 +533,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                      <th>Pickup</th>
                      <th>Delivery</th>
                      <th>Transport Mode</th>
-                     <th class="hidden-sm-down">Orig. Address1</th>
+                     <th class="hidden-sm-down">Orig. Address</th>
                      <th class="hidden-sm-down">Orig. City</th>
                      <th class="hidden-sm-down">Orig. State</th>
                      <th class="hidden-sm-down">Orig. Zip</th>
                      <th class="hidden-sm-down">Orig. Lat.</th>
                      <th class="hidden-sm-down">Orig. Long.</th>
-                     <th class="hidden-sm-down">Dest. Address1</th>
+                     <th class="hidden-sm-down">Dest. Address</th>
                      <th class="hidden-sm-down">Dest. City</th>
                      <th class="hidden-sm-down">Dest. State</th>
                      <th class="hidden-sm-down">Dest. Zip</th>

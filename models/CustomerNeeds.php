@@ -4,6 +4,7 @@ class CustomerNeed
 {
 
     private $id;
+    private $rootCustomerNeedsID;
     private $entityID;
     private $originationCity;
     private $originationState;
@@ -17,9 +18,13 @@ class CustomerNeed
     private $destinationLng;
     private $needsDataPoints;
     private $status;
+    private $transportationMode;
+    private $distance;
     private $qty;
     private $availableDate;
     private $contactEmails;
+    private $createdAt;
+    private $updatedAt;
 
     public function __construct() {
 
@@ -29,108 +34,38 @@ class CustomerNeed
 
     }
 
-    public function createFromExisting($api_host,$id,$qty,$originationAddress1,$originationCity,$originationState,$originationZip,$destinationAddress1,$destinationCity,$destinationState,$destinationZip,$originationLat,$originationLng,$destinationLat,$destinationLng,$distance,$transportation_mode,$transportation_type,$pickupDate,$deliveryDate) {
+    public function createFromExisting($api_host,$id,$rootCustomerNeedsID,$qty,$originationAddress1,$originationCity,$originationState,$originationZip,$destinationAddress1,$destinationCity,$destinationState,$destinationZip,$originationLat,$originationLng,$destinationLat,$destinationLng,$distance,$transportationMode,$transportation_mode,$transportation_type,$pickupDate,$deliveryDate) {
 
           /******** WE ARE NOT USING THE LNG AND LAT FROM THIS CALL - WE WILL NEED TO GO GET THE GEOCODE BASED ON THE NEW ORIGINATION AND DESTINATION *****/
 
           // Load the carrier need data to send notification
           $this->load($api_host,$id);
 
-          $original_originationaddress = $this->originationCity . ", " . $this->originationState . ", " . $this->originationZip;
-          $original_destinationaddress = $this->destinationCity . ", " . $this->destinationState . ", " . $this->destinationZip;
+          $original_originationaddress = $this->originationCity . ", " . $this->originationState;
+          $original_destinationaddress = $this->destinationCity . ", " . $this->destinationState;
 
-          $entered_originationaddress = $originationCity . ", " . $originationState . ", " . $originationZip;
-          $entered_destinationaddress = $destinationCity . ", " . $destinationState . ", " . $destinationZip;
+          $entered_originationaddress = $originationCity . ", " . $originationState;
+          $entered_destinationaddress = $destinationCity . ", " . $destinationState;
 
           try {
-/*
-              if ($original_originationaddress == $entered_originationaddress && $original_destinationaddress == $entered_destinationaddress) {
 
-                      $data = array(
-                        "qty"=>$qty,
-                        //"originationAddress1"=>$originationAddress1,
-                        "originationCity"=>$originationCity,
-                        "originationState"=>$originationState,
-                        "originationZip"=>$originationZip,
-                        //"destinationAddress1"=>$destinationAddress1,
-                        "destinationCity"=>$destinationCity,
-                        "destinationState"=>$destinationState,
-                        "destinationZip"=>$destinationZip,
-                        "originationLat"=>$originationLat,
-                        "originationLng"=>$originationLng,
-                        "destinationLat"=>$destinationLat,
-                        "destinationLng"=>$destinationLng,
-                        "distance"=>$distance,
-                        "entityID"=>$this->entityID,
-                        "needsDataPoints"=>$this->needsDataPoints,
-                        "status"=>$this->status,
-                        "availableDate"=>$this->availableDate,
-                        "contactEmails"=>$this->contactEmails,
-                        "createdAt" => date('Y-m-d H:i:s'),
-                        "updatedAt" => date('Y-m-d H:i:s')
-                      );
-                      $url = $api_host."/api/customer_needs/";
-                      $options = array(
-                          'http' => array(
-                              'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
-                              'method'  => 'POST',
-                              'content' => http_build_query($data)
-                          )
-                      );
-                      $context  = stream_context_create($options);
-                      $result = json_decode(file_get_contents($url,false,$context),true);
-
-              } else {
-                      $data = array(
-                        "qty"=>$qty,
-                        //"originationAddress1"=>$originationAddress1,
-                        "originationCity"=>$originationCity,
-                        "originationState"=>$originationState,
-                        "originationZip"=>$originationZip,
-                        //"destinationAddress1"=>$destinationAddress1,
-                        "destinationCity"=>$destinationCity,
-                        "destinationState"=>$destinationState,
-                        "destinationZip"=>$destinationZip,
-                        "originationLat"=>$originationLat,
-                        "originationLng"=>$originationLng,
-                        "destinationLat"=>$destinationLat,
-                        "destinationLng"=>$destinationLng,
-                        "distance"=>$distance,
-                        "entityID"=>$this->entityID,
-                        "needsDataPoints"=>$this->needsDataPoints,
-                        "status"=>$this->status,
-                        "availableDate"=>$this->availableDate,
-                        "contactEmails"=>$this->contactEmails,
-                        "createdAt" => date('Y-m-d H:i:s'),
-                        "updatedAt" => date('Y-m-d H:i:s')
-                      );
-                      $url = $api_host."/api/customer_needs/";
-                      $options = array(
-                          'http' => array(
-                              'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
-                              'method'  => 'POST',
-                              'content' => http_build_query($data)
-                          )
-                      );
-                      $context  = stream_context_create($options);
-                      $result = json_decode(file_get_contents($url,false,$context),true);
-              }
-*/
               $data = array(
+                "rootCustomerNeedsID"=>$rootCustomerNeedsID,
                 "qty"=>$qty,
                 //"originationAddress1"=>$originationAddress1,
                 "originationCity"=>$originationCity,
                 "originationState"=>$originationState,
-                "originationZip"=>$originationZip,
+                //"originationZip"=>$originationZip,
                 //"destinationAddress1"=>$destinationAddress1,
                 "destinationCity"=>$destinationCity,
                 "destinationState"=>$destinationState,
-                "destinationZip"=>$destinationZip,
+                //"destinationZip"=>$destinationZip,
                 "originationLat"=>$originationLat,
                 "originationLng"=>$originationLng,
                 "destinationLat"=>$destinationLat,
                 "destinationLng"=>$destinationLng,
                 "distance"=>$distance,
+                "transportationMode"=>$transportationMode,
                 "entityID"=>$this->entityID,
                 "needsDataPoints"=>$this->needsDataPoints,
                 "status"=>$this->status,
@@ -157,11 +92,11 @@ class CustomerNeed
                             //"originationAddress1"=>$originationAddress1,
                             "originationCity"=>$originationCity,
                             "originationState"=>$originationState,
-                            "originationZip"=>$originationZip,
+                            //"originationZip"=>$originationZip,
                             //"destinationAddress1"=>$destinationAddress1,
                             "destinationCity"=>$destinationCity,
                             "destinationState"=>$destinationState,
-                            "destinationZip"=>$destinationZip,
+                            //"destinationZip"=>$destinationZip,
                             "originationLat"=>$originationLat,
                             "originationLng"=>$originationLng,
                             "destinationLat"=>$destinationLat,
@@ -206,8 +141,8 @@ class CustomerNeed
                   // Write the new avaialbility record if origination was changed
                   if ($original_originationaddress != $entered_originationaddress) {
 
-                        $oaddress = urlencode($originationCity . ", " . $originationState . ", " . $originationZip);
-                        $daddress = urlencode($this->destinationCity . ", " . $this->destinationState . ", " . $this->destinationZip);
+                        $oaddress = urlencode($this->originationCity . ", " . $this->originationState);
+                        $daddress = urlencode($originationCity . ", " . $originationState);
 
                         $details = "http://maps.googleapis.com/maps/api/distancematrix/json?origins=".urlencode($oaddress)."&destinations=".urlencode($daddress)."&mode=driving&sensor=false";
                         $json = file_get_contents($details);
@@ -217,20 +152,22 @@ class CustomerNeed
                         $distance = ( ($details['rows'][0]['elements'][0]['distance']['value'] / 1000) * .6214 );
 
                         $data = array(
+                            "rootCustomerNeedsID"=>$rootCustomerNeedsID,
                             "qty"=>$qty,
-                            //"originationAddress1"=>$originationAddress1,
-                            "originationCity"=>$originationCity,
-                            "originationState"=>$originationState,
-                            "originationZip"=>$originationZip,
-                            //"destinationAddress1"=>$this->destinationAddress1,
-                            "destinationCity"=>$this->destinationCity,
-                            "destinationState"=>$this->destinationState,
-                            "destinationZip"=>$this->destinationZip,
-                            "originationLat"=>$originationLat,
-                            "originationLng"=>$originationLng,
-                            "destinationLat"=>$this->destinationLat,
-                            "destinationLng"=>$this->destinationLng,
+                            //"originationAddress1"=>$this->originationAddress1,
+                            "originationCity"=>$this->originationCity,
+                            "originationState"=>$this->originationState,
+                            //"originationZip"=>$this->originationZip,
+                            //"destinationAddress1"=>$originationAddress1,
+                            "destinationCity"=>$originationCity,
+                            "destinationState"=>$originationState,
+                            //"destinationZip"=>$originationZip,
+                            "originationLat"=>$this->originationLat,
+                            "originationLng"=>$this->originationLng,
+                            "destinationLat"=>$originationLat,
+                            "destinationLng"=>$originationLng,
                             "distance"=>$distance,
+                            "transportationMode"=>$this->transportationMode,
                             "entityID"=>$this->entityID,
                             "needsDataPoints"=>$this->needsDataPoints,
                             "status"=>$this->status,
@@ -256,8 +193,8 @@ class CustomerNeed
                         }
                   } else if ($original_destinationaddress != $entered_destinationaddress) {
 
-                        $oaddress = urlencode($destinationCity . ", " . $destinationState . ", " . $destinationZip);
-                        $daddress = urlencode($this->destinationCity . ", " . $this->destinationState . ", " . $this->destinationZip);
+                        $oaddress = urlencode($destinationCity . ", " . $destinationState);
+                        $daddress = urlencode($this->destinationCity . ", " . $this->destinationState);
 
                         $details = "http://maps.googleapis.com/maps/api/distancematrix/json?origins=".urlencode($oaddress)."&destinations=".urlencode($daddress)."&mode=driving&sensor=false";
                         $json = file_get_contents($details);
@@ -267,20 +204,22 @@ class CustomerNeed
                         $distance = ( ($details['rows'][0]['elements'][0]['distance']['value'] / 1000) * .6214 );
 
                         $data = array(
+                            "rootCustomerNeedsID"=>$rootCustomerNeedsID,
                             "qty"=>$qty,
-                            //"originationAddress1"=>$destinationAddress1,
+                            //"originationAddress1"=>$this->originationAddress1,
                             "originationCity"=>$destinationCity,
                             "originationState"=>$destinationState,
-                            "originationZip"=>$destinationZip,
-                            //"destinationAddress1"=>$this->destinationAddress1,
+                            //"originationZip"=>$this->originationZip,
+                            //"destinationAddress1"=>$originationAddress1,
                             "destinationCity"=>$this->destinationCity,
                             "destinationState"=>$this->destinationState,
-                            "destinationZip"=>$this->destinationZip,
-                            "originationLat"=>$originationLat,
-                            "originationLng"=>$originationLng,
-                            "destinationLat"=>$destinationLat,
-                            "destinationLng"=>$destinationLng,
+                            //"destinationZip"=>$originationZip,
+                            "originationLat"=>$destinationLat,
+                            "originationLng"=>$destinationLng,
+                            "destinationLat"=>$this->destinationLat,
+                            "destinationLng"=>$this->destinationLng,
                             "distance"=>$distance,
+                            "transportationMode"=>$this->transportationMode,
                             "entityID"=>$this->entityID,
                             "needsDataPoints"=>$this->needsDataPoints,
                             "status"=>$this->status,
@@ -333,6 +272,7 @@ class CustomerNeed
       $context  = stream_context_create($options);
       $result = json_decode(file_get_contents($url,false,$context),true);
 
+      $this->rootCustomerNeedsID = $result["rootCustomerNeedsID"];
       $this->entityID = $result["entityID"];
       $this->originationCity = $result["originationCity"];
       $this->originationState = $result["originationState"];
@@ -345,10 +285,14 @@ class CustomerNeed
       $this->destinationLat = $result["destinationLat"];
       $this->destinationLng = $result["destinationLng"];
       $this->needsDataPoints = $result["needsDataPoints"];
+      $this->transportationMode = $result["transportationMode"];
+      $this->distance = $result["distance"];
       $this->status = $result["status"];
       $this->qty = $result["qty"];
       $this->availableDate = $result["availableDate"];
       $this->contactEmails = $result["contactEmails"];
+      $this->createdAt = $result["createdAt"];
+      $this->updatedAt = $result["updatedAt"];
 
     }
 

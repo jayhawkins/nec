@@ -130,7 +130,7 @@ ALTER TABLE customer_needs ADD COLUMN rate FLOAT(7,2) UNSIGNED DEFAULT 0.00 AFTE
 ALTER TABLE customer_needs ADD COLUMN rateType VARCHAR(64) NOT NULL DEFAULT 'Flat Rate' after rate;
 ALTER TABLE customer_needs ADD COLUMN transportationMode VARCHAR(64) NOT NULL DEFAULT 'Empty' after rateType;
 ALTER TABLE customer_needs ADD COLUMN `distance` INT(5) unsigned DEFAULT 0 after destinationLat;
-ALTER TABLE customer_needs CHANGE COLUMN payout rate FLOAT(7,2) UNSIGNED NULL DEFAULT '0.00' ;
+ALTER TABLE customer_needs ADD COLUMN rootCustomerNeedsID int(11) unsigned DEFAULT 0 AFTER id ;
 -- -------------------------------------------------------------
 
 -- CREATE TABLE "customer_needs_commit" -------------------------------
@@ -164,8 +164,11 @@ AUTO_INCREMENT = 1;
 -- -------------------------------------------------------------
 ALTER TABLE customer_needs_commit ADD COLUMN customerNeedsID int(11) unsigned DEFAULT 0 AFTER id ;
 ALTER TABLE customer_needs_commit ADD COLUMN transportation_mode VARCHAR(64) DEFAULT 'Flat Rate' AFTER rate;
-ALTER TABLE customer_needs_commit ADD COLUMN transportation_type VARCHAR(64) DEFAULT 'Tow Empty' AFTER transportation_mode;
+ALTER TABLE customer_needs_commit ADD COLUMN transportation_type VARCHAR(64) DEFAULT 'Empty' AFTER transportation_mode;
 ALTER TABLE customer_needs_commit ADD COLUMN `distance` INT(5) unsigned DEFAULT 0 after destinationLat;
+ALTER TABLE customer_needs_commit CHANGE COLUMN originationZip originationZip VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL;
+ALTER TABLE customer_needs_commit ADD COLUMN cancellationReason VARCHAR(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL AFTER deliveryDate;
+ALTER TABLE customer_needs_commit ADD COLUMN explainOther VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL AFTER cancellationReason;
 -- -------------------------------------------------------------
 
 

@@ -2,7 +2,6 @@
 
 class CustomerNeedCommit
 {
-
     private $customerNeedsID;
     private $entityID;
     private $originationAddress1;
@@ -52,11 +51,11 @@ class CustomerNeedCommit
       //$this->originationAddress1 = $result["originationAddress1"];
       $this->originationCity = $result["originationCity"];
       $this->originationState = $result["originationState"];
-      $this->originationZip = $result["originationZip"];
+      //$this->originationZip = $result["originationZip"];
       //$this->destinationAddress1 = $result["destinationAddress1"];
       $this->destinationCity = $result["destinationCity"];
       $this->destinationState = $result["destinationState"];
-      $this->destinationZip = $result["destinationZip"];
+      //$this->destinationZip = $result["destinationZip"];
       $this->originationLat = $result["originationLat"];
       $this->originationLng = $result["originationLng"];
       $this->destinationLat = $result["destinationLat"];
@@ -194,7 +193,7 @@ class CustomerNeedCommit
 
         return "Your Committment has been recorded, and NEC will be notified";
     }
-    
+
     public function sendAcceptNotification($api_host,$id){
         // Load the carrier need data to send notification
         $this->load($api_host,$id);
