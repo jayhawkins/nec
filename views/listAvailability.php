@@ -320,8 +320,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             var show = true;
         }
 
-        console.log(url);
-
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
             processing: true,
@@ -888,7 +886,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                      <th>Commit ID</th>
                      <th>Commit Status</th>
                      <th>Commit Rate</th>
-                     <th>Transporation Mode</th>
+                     <th>Transportation Mode</th>
                      <th>Name</th>
                      <th>Rate Type</th>
                      <th>Negotiated Rate</th>
