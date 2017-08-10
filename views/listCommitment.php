@@ -44,38 +44,37 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
  <script>
 
-     var contacts = <?php echo json_encode($contacts); ?>;
-     //console.log(contacts);
+    var contacts = <?php echo json_encode($contacts); ?>;
+    //console.log(contacts);
 
-     var locations_contacts = <?php echo json_encode($locations_contacts); ?>;
-     //console.log(locations_contacts);
+    var locations_contacts = <?php echo json_encode($locations_contacts); ?>;
+    //console.log(locations_contacts);
 
-     var dataPoints = <?php echo json_encode($dataPoints); ?>;
-     //console.log(dataPoints);
+    var dataPoints = <?php echo json_encode($dataPoints); ?>;
+    //console.log(dataPoints);
 
-     var entity = <?php echo json_encode($entity); ?>;
-     //alert(JSON.stringify(entity));
-     //console.log(JSON.stringify(entity.entities.records[0][1]));
+    var entity = <?php echo json_encode($entity); ?>;
+    //alert(JSON.stringify(entity));
+    //console.log(JSON.stringify(entity.entities.records[0][1]));
 
-     var entityid = <?php echo $_SESSION['entityid']; ?>;
+    var entityid = <?php echo $_SESSION['entityid']; ?>;
+    
+    var customerNeedsRootIDs = <?php echo json_encode($customer_needs_root)?>;
      
-     var customerNeedsRootIDs = <?php echo json_encode($customer_needs_root)?>;
-     
-     var myApp;
-      myApp = myApp || (function () {
-       var pleaseWaitDiv = $('<div class="modal hide" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false"><div class="modal-header"><h1>Processing...</h1></div><div class="modal-body"><div class="progress progress-striped active"><div class="bar" style="width: 100%;"></div></div></div></div>');
-       return {
-           showPleaseWait: function() {
-               pleaseWaitDiv.modal();
-           },
-           hidePleaseWait: function () {
-               pleaseWaitDiv.modal('hide');
-           },
+    var myApp;
+    myApp = myApp || (function () {
+        var pleaseWaitDiv = $('<div class="modal hide" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false"><div class="modal-header"><h1>Processing...</h1></div><div class="modal-body"><div class="progress progress-striped active"><div class="bar" style="width: 100%;"></div></div></div></div>');
+        return {
+            showPleaseWait: function() {
+                pleaseWaitDiv.modal();
+            },
+            hidePleaseWait: function () {
+                pleaseWaitDiv.modal('hide');
+            }
+        };
+    })();
 
-       };
-      })();
-
-      function post() {
+    function post() {
 
           if (confirm("You have selected to Approve this Commit. Do you wish to proceed?") == true) {
 
@@ -93,7 +92,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
           }
       }
 
-      function verifyAndPost() {
+    function verifyAndPost() {
 
           if ( $('#formNeed').parsley().validate() ) {
 
@@ -200,7 +199,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
       }
 
-
     function getCustomerNeedRoot(){        
                 
         var customerNeedsRootIDs = new Array();
@@ -235,9 +233,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
           return customerNeedsRootIDs;
     }
       
-
-
-      function loadTableAJAX() {        
+    function loadTableAJAX() {        
         
         var baseUrl = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate';
                             
@@ -245,8 +241,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
            
            baseUrl = baseUrl + "&filter[]=id,eq," + customer_need.rootCustomerNeedsID;
         });
-        
-        
+                
         if (<?php echo $_SESSION['entityid']; ?> > 0) {
             var url = baseUrl + '&satisfy=any&order[]=rootCustomerNeedsID&order[]=availableDate,desc&transform=1';
             var show = false;
@@ -254,14 +249,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
             var url = baseUrl + '&satisfy=any&order[]=entityID&order[]=rootCustomerNeedsID&order[]=availableDate,desc&transform=1';
             var show = true;
         }
-
-/*      if (<?php echo $_SESSION['entityid']; ?> > 0) {
-            var url = '<?php echo API_HOST; ?>' + '/api/customer_needs_commit?include=customer_needs,entities&columns=id,customerNeedsID,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,status,qty,rate,transportation_mode,transportation_type,pickupDate,deliveryDate,customer_needs.needsDataPoints,distance,customer_needs.expirationDate,customer_needs.availableDate,entities.name,entities.rateType,entities.negotiatedRate&order[]=pickupDate,desc&transform=1';
-            var show = false;
-        } else {
-            var url = '<?php echo API_HOST; ?>' + '/api/customer_needs_commit?include=customer_needs,entities&columns=id,customerNeedsID,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,status,qty,rate,transportation_mode,transportation_type,pickupDate,deliveryDate,customer_needs.needsDataPoints,distance,customer_needs.expirationDate,customer_needs.availableDate,entities.name,entities.rateType,entities.negotiatedRate&satify=all&order[]=id&order[]=pickupDate,desc&transform=1';
-            var show = true;
-        }*/
 
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
@@ -347,13 +334,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                     "mRender": function (o) {
                         var buttons = '';
                         
-                        buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"fa fa-check text-info\"></i> <span class=\"text-info\">View Commits</span></button>';
+                        buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"fa fa-thumbs-up text-info\"></i> <span class=\"text-info\">View Commits</span></button>';
 
                         return buttons;
                     }
                 }
                 
-            ]
+            ],
+            scrollX: true
           });
 
           example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
@@ -466,9 +454,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
       }
 
-      function loadCustomerNeedsCommitAJAX (id){
+    function loadCustomerNeedsCommitAJAX (id){
                  
-        var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,availableDate,expirationDate,transportationMode,rate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.pickupDate,customer_needs_commit.deliveryDate,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate&filter=rootCustomerNeedsID,eq,' + id + '&satisfy=all&order[]=entityID&order[]=rootCustomerNeedsID&order[]=availableDate,desc&transform=1';
+        var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,availableDate,expirationDate,transportationMode,rate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.entityID,customer_needs_commit.status,customer_needs_commit.pickupDate,customer_needs_commit.deliveryDate,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate&filter=rootCustomerNeedsID,eq,' + id + '&satisfy=all&order[]=entityID&order[]=rootCustomerNeedsID&order[]=availableDate,desc&transform=1';
         
         if ( ! $.fn.DataTable.isDataTable( '#customer-needs-commit-table' ) ) {
             
@@ -509,12 +497,13 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                         var input = '';
                         var status = o.customer_needs_commit[0].status;
                         var carrierRate = o.customer_needs_commit[0].rate.toFixed(2);
+                        var commitID = o.customer_needs_commit[0].id;
                         
                         if(status == "Available"){
-                            input += "<input type=\"text\" name=\"carrierRate\" class=\"form-control mb-sm\" placeholder=\"Carrier Rate\" value=\"" + carrierRate + "\"/>";
+                            input += "<input id=\"carrierRate-" + commitID + "\" type=\"text\" name=\"carrierRate\" class=\"form-control mb-sm\" placeholder=\"Carrier Rate\" value=\"" + carrierRate + "\"/>";
                         }
                         else{
-                            input += "<input type=\"text\" name=\"carrierRate\" class=\"form-control mb-sm\" placeholder=\"Carrier Rate\" value=\"" + carrierRate + "\" readonly/>";
+                            input += "<input id=\"carrierRate-" + commitID + "\" type=\"text\" name=\"carrierRate\" class=\"form-control mb-sm\" placeholder=\"Carrier Rate\" value=\"" + carrierRate + "\" readonly/>";
                         }
                                                 
                         return input;
@@ -572,8 +561,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                     "bSortable": false,
                     "mRender": function (o) {
                         var buttons = '';
+                        var status = o.customer_needs_commit[0].status;                        
                         
-                        buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"fa fa-check text-info\"></i> <span class=\"text-info\">Accept Commit</span></button>';
+                        if(status == "Available"){
+                            buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"fa fa-check text-info\"></i> <span class=\"text-info\">Accept Commit</span></button>';
+                        }
+                        else{
+                            buttons += "Already Approved!" ;
+                        }
 
                         return buttons;
                     }
@@ -601,7 +596,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
           
       }
 
-      function getCarrierTotal(json){
+    function getCarrierTotal(json){
       
             var customer_needs = json.customer_needs;
             var customer_needs_commit = new Array();
@@ -609,15 +604,89 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
             customer_needs.forEach(function(customer_need){
 
-                if(customer_need.customer_needs_commit.length > 0){
+                if(customer_need.customer_needs_commit.length > 0 && customer_need.customer_needs_commit[0].status !== "Available"){
                     carrierTotal += customer_need.customer_needs_commit[0].rate;
-                    //customer_needs_commit.push(customer_need);
                 }
             });
             
         $("#carrierTotalRate").val(carrierTotal.toFixed(2));        
         getTotalRevenue();             
       }
+
+    function approveCommit(rootCustomerNeedsID, commitID, carrierRate){
+                
+        var type = "";
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth()+1; //January is 0!
+        var yyyy = today.getFullYear();
+        var hours = today.getHours();
+        var min = today.getMinutes();
+        var sec = today.getSeconds();
+
+        if(dd<10) {
+            dd='0'+dd;
+        }
+
+        if(mm<10) {
+            mm='0'+mm;
+        }
+
+        if(hours<10) {
+            hours='0'+hours;
+        }
+
+        if(min<10) {
+            min='0'+min;
+        }
+
+        today = mm+'/'+dd+'/'+yyyy;
+        today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+
+        var url = '<?php echo API_HOST."/api/customer_needs_commit" ?>/' + commitID;
+        type = "PUT";
+        var date = today;
+        var data = {rate: carrierRate, status: "Close", updatedAt: date};
+        //var data = {rate: carrierRate, updatedAt: date};
+
+        //console.log("CommitID:", commitID);
+
+        $.ajax({
+           url: url,
+           type: type,
+           data: JSON.stringify(data),
+           contentType: "application/json",
+           async: false,
+           success: function(data){
+              if (data > 0) {
+                if (type === 'PUT') {
+                   var params = {id: commitID};
+                   $.ajax({
+                      url: '<?php echo HTTP_HOST."/commitacceptednotification" ?>',
+                      type: 'POST',
+                      data: JSON.stringify(params),
+                      contentType: "application/json",
+                      async: false,
+                      success: function(notification){
+                          alert(notification);
+                      },
+                      error: function() {
+                         alert('Failed Sending Notifications! - Notify NEC of this failure.');
+                      }
+                   });
+                }
+
+              } else {
+                alert("Approving Commit Failed! Please Verify Your Data.");
+              }
+              
+              loadCustomerNeedsCommitAJAX(rootCustomerNeedsID);
+           },
+           error: function() {
+              alert("There Was An Error Approving Commit!");
+           }
+        }); 
+    }
 
  </script>
 
@@ -757,7 +826,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                      <th>Pick Up</th>
                      <th>Delivery</th>
                      <th>Transport Mode</th>
-                     <th>Commit Rate</th>
+                     <th>Carrier Rate</th>
                      <th class="hidden-sm-down">Orig. Address1</th>
                      <th class="hidden-sm-down">Orig. City</th>
                      <th class="hidden-sm-down">Orig. State</th>
@@ -789,26 +858,38 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
          </div>
                 
         <div class="row">
-            <div class="col-sm-3">
+            <div class="col-sm-4">
                 <label for="customerRate">Customer Rate</label>
                 <div class="form-group">
                   <input type="hidden" id="customerNeedsID" name="customerNeedsID" />
                   <input type="text" id="customerRate" name="customerRate" class="form-control mb-sm" placeholder="Customer Rate" />
                 </div>
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-4">
                 <label for="carrierTotalRate">Carrier Total Rate</label>
                 <div class="form-group">
                   <input type="text" id="carrierTotalRate" name="carrierTotalRate" class="form-control mb-sm" placeholder="Customer Rate" readonly/>
                 </div>
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-4">
                 <label for="totalRevenue">Total Revenue</label>
                 <div class="form-group">
                   <input type="text" id="totalRevenue" name="totalRevenue" class="form-control mb-sm" placeholder="Total Revenue" readonly/>
                 </div>
             </div>
         </div>
+         <div class="row">                
+            <div class="col-sm-6">
+                <div class="form-group">
+                  <!--<button id="completeOrder" class="btn btn-primary btn-block" role="button"><i class="fa fa-check-square-o text-info"></i> <span class="text-info">Complete Order</span></button>-->
+                </div>
+            </div>         
+            <div class="col-sm-6">
+                <div class="form-group">
+                  <button id="completeOrder" class="btn btn-primary btn-block" role="button"><i class="fa fa-check-square-o text-info"></i> <span class="text-info">Complete Order</span></button>
+                </div>
+            </div>
+         </div>
      </div>
     
  </section>
@@ -819,6 +900,19 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
     var table = $("#datatable-table").DataTable();
     $("#customer-needs-commit").css("display", "none");
+
+    $('#customer-needs-commit-table tbody').on( 'click', 'button', function () {
+        var commitTable = $("#customer-needs-commit-table").DataTable();
+        
+        var data = commitTable.row( $(this).parents('tr') ).data();
+
+        var rootCustomerNeedsID = data["rootCustomerNeedsID"];
+        var commitID = data.customer_needs_commit[0].id; 
+        //var entityID = data.customer_needs_commit[0].entityID; 
+        var carrierRate = $("#carrierRate-" + commitID).val();
+        
+        approveCommit(rootCustomerNeedsID, commitID, carrierRate);
+    });
 
     $('#datatable-table tbody').on( 'click', 'button', function () {
         var data = table.row( $(this).parents('tr') ).data();
