@@ -391,7 +391,7 @@ $app->route('POST /createcustomerneedsfromexisting', function() {
     $pickupDate = Flight::request()->data->pickupDate;
     $deliveryDate = Flight::request()->data->deliveryDate;
     $customerneed = Flight::customerneed();
-    $result = $customerneed->createFromExisting(API_HOST,$id,$rootCustomerNeedsID,$qty,$originationAddress1,$originationCity,$originationState,$originationZip,$destinationAddress1,$destinationCity,$destinationState,$destinationZip,$originationLat,$originationLng,$destinationLat,$destinationLng,$distance,$transportation_mode,$transportation_type,$pickupDate,$deliveryDate,GOOGLE_MAPS_API);
+    $result = $customerneed->createFromExisting(API_HOST,$id,$rootCustomerNeedsID,$qty,$originationAddress1,$originationCity,$originationState,$originationZip,$destinationAddress1,$destinationCity,$destinationState,$destinationZip,$originationLat,$originationLng,$destinationLat,$destinationLng,$distance,$transportationMode,$transportation_mode,$transportation_type,$pickupDate,$deliveryDate,GOOGLE_MAPS_API);
     if ($result) {
         print_r($result);
         die();

@@ -216,7 +216,14 @@ class CustomerNeedCommit
             $contactargs = array(
                 "transform"=>1
             );
-            $contacturl = API_HOST."/api/contacts/".$entityresult['contactID']."?".http_build_query($contactargs);
+            
+            if($entityresult['contactID'] == 0 ){
+                $contacturl = API_HOST."/api/contacts/".$entityresult['assignedMemberID']."?".http_build_query($contactargs);            
+            }
+            else{
+                $contacturl = API_HOST."/api/contacts/".$entityresult['contactID']."?".http_build_query($contactargs);
+            }
+            
             $contactoptions = array(
                 'http' => array(
                     'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -251,8 +258,8 @@ class CustomerNeedCommit
 
             if (count($templateresult) > 0) {
               try {
-                    $to = array($contactresult['emailAddress'] => $contactresult['firstName'] . " " . $contactresult['lastName']);
-
+                    //$to = array($contactresult['emailAddress'] => $contactresult['firstName'] . " " . $contactresult['lastName']);
+                    $to = array("dsmith@dubtel.com" => "Dennis Smith");
                     $body = "Hello " . $contactresult['firstName'] . ",<br /><br />";
                     $body .= $templateresult['email_templates'][0]['body'];
                     if (sendmail($to, $subject, $body, $from)) {
