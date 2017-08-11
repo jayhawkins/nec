@@ -128,7 +128,7 @@ class Documents
 				try {
 					$result = json_decode(file_get_contents($url,false,$context),true);
 					if ($result > 0) {
-						return "success";
+						return $result;
 					} else {
 						return "failed";
 					}
