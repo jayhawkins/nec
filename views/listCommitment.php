@@ -784,7 +784,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
             </div>   
             <div class="col-sm-4 col-sm-offset-4">
                 <div class="form-group">
-                  <button id="completeOrder" class="btn btn-primary btn-block" role="button"><i class="fa fa-check-square-o text-info"></i> <span class="text-info">Complete Order</span></button>
+                    <button id="completeOrder" class="btn btn-primary btn-block" role="button" onclick="completeOrder();"><i class="fa fa-check-square-o text-info"></i> <span class="text-info">Complete Order</span></button>
                 </div>
             </div>
         </div>
@@ -805,7 +805,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
     loadTableAJAX();
 
-    $("#completeOrder").on("click", function(){
+    function completeOrder(){
         var today = new Date();
         var dd = today.getDate();
         var mm = today.getMonth()+1; //January is 0!
@@ -830,34 +830,45 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
             min='0'+min;
         }
 
+        if(sec<10) {
+            sec='0'+sec;
+        }
+
         today = mm+'/'+dd+'/'+yyyy;
         today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
 
         var url = '<?php echo HTTP_HOST."/uploaddocument" ?>';
         var type = "POST";
         var formData = new FormData();
+        var fileData = $('#filePurchaseOrder')[0].files[0];
         formData.append('entityID', $("#entityID").val());
-        formData.append('name', "Purchase Order" + today);
+        formData.append('name', "Purchase Order: " + today);
         formData.append('documentID', "purchaseOrder");
         formData.append('updatedAt', today);
-        formData.append('fileupload', $('#filePurchaseOrder')[0].files[0]);
+        formData.append('fileupload', fileData);
+        console.log(fileData);
         
-        $.ajax({
-            url: url,
-            type: type,
-            data: formData,
-            processData: false,  // tell jQuery not to process the data
-            contentType: false,  // tell jQuery not to set contentType
-            success: function(data){
-                alert('File uploaded');
-                console.log(data);
-              
-           },
-           error: function() {
-              alert("Could not upload file.");
-           }
-        }); 
-    });
+        if(fileData != undefined){
+            $.ajax({
+                url: url,
+                type: type,
+                data: formData,
+                processData: false,  // tell jQuery not to process the data
+                contentType: false,  // tell jQuery not to set contentType
+                success: function(data){
+                    alert('Purchase Order Uploaded.');
+                    console.log(data);
+
+               },
+               error: function(error) {
+                  alert("Could not upload file.");
+               }
+            }); 
+        }
+        else{
+            alert('You must Upload the Customer\'s Purchase Order to Complete the Order.');
+        }
+    }
 
     var table = $("#datatable-table").DataTable();
     $("#customer-needs-commit").css("display", "none");
