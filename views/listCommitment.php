@@ -346,105 +346,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
           example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
           
-          
-/*
-        var example_table = $('#datatable-table').DataTable({
-            retrieve: true,
-            processing: true,
-            ajax: {
-                url: url,
-                dataSrc: "customer_needs_commit"
-            },
-            columns: [
-                {
-                    className:      'details-control-add',
-                    orderable:      false,
-                    data:           null,
-                    defaultContent: ''
-                },
-                { data: "customer_needs[0].entities[0].name", visible: true },
-                {                     
-                    data: null,
-                    "bSortable": false,
-                    "mRender": function (o) {
-                        var input = '';
-                        var status = o.status;
-                        var customerRate = o.customer_needs[0].entities[0].negotiatedRate.toFixed(2);
-                        
-                        if(status == "Open"){
-                            input += "<input type=\"text\" name=\"customerRate\" class=\"form-control mb-sm\" placeholder=\"Customer Rate\" value=\"" + customerRate + "\"/>";
-                        }
-                        else{
-                            input += "<input type=\"text\" name=\"customerRate\" class=\"form-control mb-sm\" placeholder=\"Customer Rate\" value=\"" + customerRate + "\" readonly/>" ;
-                        }
-                        
-                        return input;
-                    }, visible: true
-                },
-                {                     
-                    data: null,
-                    "bSortable": false,
-                    "mRender": function (o) {
-                        var input = '';
-                        var status = o.status;
-                        var carrierRate = o.rate.toFixed(2);
-                        
-                        if(status == "Open"){
-                            input += "<input type=\"text\" name=\"carrierRate\" class=\"form-control mb-sm\" placeholder=\"Carrier Rate\" value=\"" + carrierRate + "\"/>";
-                        }
-                        else{
-                            input += "<input type=\"text\" name=\"carrierRate\" class=\"form-control mb-sm\" placeholder=\"Carrier Rate\" value=\"" + carrierRate + "\" readonly/>";
-                        }
-                                                
-                        return input;
-                    }, visible: true
-                },
-                { data: "id", visible: false },
-                { data: "customer_needs[0].entityID", visible: false },
-                { data: "qty" },
-                { data: "customer_needs[0].availableDate", visible:false },
-                { data: "customer_needs[0].expirationDate", visible: false },
-                { data: "pickupDate" },
-                { data: "deliveryDate" },
-                { data: "transportation_mode" },
-                { data: "originationAddress1", visible: true },
-                { data: "originationCity" },
-                { data: "originationState" },
-                { data: "originationZip", visible: false },
-                { data: "originationLat", visible: false },
-                { data: "originationLng", visible: false },
-                { data: "destinationAddress1", visible: true },
-                { data: "destinationCity" },
-                { data: "destinationState" },
-                { data: "destinationZip", visible: false },
-                { data: "destinationLat", visible: false },
-                { data: "destinationLng", visible: false },
-                { data: "distance", render: $.fn.dataTable.render.number(',', '.', 0, '')  },
-                { data: "customer_needs[0].needsDataPoints", visible: false },
-                { data: "status", visible: false },
-                { data: "customer_needs[0].entities[0].rateType", visible: false },
-                {
-                    data: null,
-                    "bSortable": false,
-                    "mRender": function (o) {
-                        var buttons = '';
-                        var status = o.status;
-
-                        if(status == "Open"){
-                            buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\" disabled><i class=\"fa fa-thumbs-up text-info\"></i> <span class=\"text\">Accept Commitment</span></button>";
-                        }
-                        else{
-                            buttons += "Already Approved!" ;
-                        }
-
-                        return buttons;
-                    }, visible: true
-                }
-            ],
-            scrollX: true
-          });
-*/
-
         //To Reload The Ajax
         //See DataTables.net for more information about the reload method
         example_table.ajax.reload();
@@ -818,7 +719,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
              <table id="customer-needs-commit-table" class="table table-striped table-hover">
                  <thead>
                  <tr>
-                     <th>Company</th>
+                     <th>Carrier Name</th>
                      <th>ID</th>
                      <th>Root Customer Needs ID</th>
                      <th>Entity ID</th>
@@ -862,34 +763,40 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                 <label for="customerRate">Customer Rate</label>
                 <div class="form-group">
                   <input type="hidden" id="customerNeedsID" name="customerNeedsID" />
+                  <input type="hidden" id="entityID" name="entityID" />
                   <input type="text" id="customerRate" name="customerRate" class="form-control mb-sm" placeholder="Customer Rate" />
                 </div>
+            </div>         
+            <div class="col-sm-4 col-sm-offset-4">
+                <label for="filePurchaseOrder">Upload the Customer's purchase order</label>
+                <div class="form-group">
+                  <input type="file" id="filePurchaseOrder" name="filePurchaseOrder" class="form-control-file mb-sm"/>
+                </div>
             </div>
+        </div>
+         
+        <div class="row">
             <div class="col-sm-4">
                 <label for="carrierTotalRate">Carrier Total Rate</label>
                 <div class="form-group">
                   <input type="text" id="carrierTotalRate" name="carrierTotalRate" class="form-control mb-sm" placeholder="Customer Rate" readonly/>
                 </div>
+            </div>   
+            <div class="col-sm-4 col-sm-offset-4">
+                <div class="form-group">
+                  <button id="completeOrder" class="btn btn-primary btn-block" role="button"><i class="fa fa-check-square-o text-info"></i> <span class="text-info">Complete Order</span></button>
+                </div>
             </div>
+        </div>
+         <div class="row"> 
             <div class="col-sm-4">
                 <label for="totalRevenue">Total Revenue</label>
                 <div class="form-group">
                   <input type="text" id="totalRevenue" name="totalRevenue" class="form-control mb-sm" placeholder="Total Revenue" readonly/>
                 </div>
-            </div>
-        </div>
-         <div class="row">                
-            <div class="col-sm-6">
-                <div class="form-group">
-                  <!--<button id="completeOrder" class="btn btn-primary btn-block" role="button"><i class="fa fa-check-square-o text-info"></i> <span class="text-info">Complete Order</span></button>-->
-                </div>
-            </div>         
-            <div class="col-sm-6">
-                <div class="form-group">
-                  <button id="completeOrder" class="btn btn-primary btn-block" role="button"><i class="fa fa-check-square-o text-info"></i> <span class="text-info">Complete Order</span></button>
-                </div>
-            </div>
+            </div>             
          </div>
+        </div>
      </div>
     
  </section>
@@ -897,6 +804,60 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
  <script>
 
     loadTableAJAX();
+
+    $("#completeOrder").on("click", function(){
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth()+1; //January is 0!
+        var yyyy = today.getFullYear();
+        var hours = today.getHours();
+        var min = today.getMinutes();
+        var sec = today.getSeconds();
+
+        if(dd<10) {
+            dd='0'+dd;
+        }
+
+        if(mm<10) {
+            mm='0'+mm;
+        }
+
+        if(hours<10) {
+            hours='0'+hours;
+        }
+
+        if(min<10) {
+            min='0'+min;
+        }
+
+        today = mm+'/'+dd+'/'+yyyy;
+        today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+
+        var url = '<?php echo HTTP_HOST."/uploaddocument" ?>';
+        var type = "POST";
+        var formData = new FormData();
+        formData.append('entityID', $("#entityID").val());
+        formData.append('name', "Purchase Order" + today);
+        formData.append('documentID', "purchaseOrder");
+        formData.append('updatedAt', today);
+        formData.append('fileupload', $('#filePurchaseOrder')[0].files[0]);
+        
+        $.ajax({
+            url: url,
+            type: type,
+            data: formData,
+            processData: false,  // tell jQuery not to process the data
+            contentType: false,  // tell jQuery not to set contentType
+            success: function(data){
+                alert('File uploaded');
+                console.log(data);
+              
+           },
+           error: function() {
+              alert("Could not upload file.");
+           }
+        }); 
+    });
 
     var table = $("#datatable-table").DataTable();
     $("#customer-needs-commit").css("display", "none");
@@ -919,8 +880,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
         var id = data["id"];
         var rate = data["rate"];
+        var entityID = data["entityID"];
         
         $("#customerNeedsID").val(id);
+        $("#entityID").val(entityID);
         $("#customerRate").val(rate.toFixed(2));
             
         loadCustomerNeedsCommitAJAX(id);
