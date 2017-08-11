@@ -411,7 +411,7 @@ $app->route('POST /uploaddocument', function() {
 	$documents = Flight::documents();
     $result = $documents->createFromExisting(API_HOST,FILE_LOCATION,$fileupload,$name,$documentID,$documentURL,$updatedAt,$entityID);
     if ($result) {
-        print_r($result);
+        return $result;
     } else {
         print_r($result);
     }
