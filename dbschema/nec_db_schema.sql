@@ -563,6 +563,60 @@ AUTO_INCREMENT = 1;
 -- ---------------------------------------------------------
 
 
+-- CREATE TABLE "states" -----------------------------------
+-- CREATE TABLE "states" ---------------------------------------
+CREATE TABLE IF NOT EXISTS `orders` (
+	`id` Int( 11 ) UNSIGNED AUTO_INCREMENT NOT NULL,
+	`customerID` Int( 11 ) UNSIGNED NOT NULL,
+	`carrierIDs` JSON NOT NULL,
+	`documentID` Int( 11 ) UNSIGNED NOT NULL,
+	`orderID` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	`originationAddress` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	`originationCity` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	`originationState` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	`originationZip` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL,    
+	`destinationAddress` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
+	`destinationCity` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
+	`destinationState` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
+	`destinationZip` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
+	`originationLng` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	`originationLat` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	`destinationLng` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
+	`destinationLat` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
+    `distance` INT(5) UNSIGNED DEFAULT 0,
+	`needsDataPoints` JSON NOT NULL,
+	`status` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'Open',
+    `transportationMode` VARCHAR(64) NOT NULL DEFAULT 'Empty',
+	`qty` SMALLINT(5) UNSIGNED DEFAULT 0,
+	`customerRate` FLOAT(7,2) UNSIGNED DEFAULT 0.00,
+    `carrierTotalRate` FLOAT(7,2) UNSIGNED DEFAULT 0.00,
+    `totalRevenue` FLOAT(7,2) UNSIGNED DEFAULT 0.00,
+    `rateType` VARCHAR(64) NOT NULL DEFAULT 'Flat Rate',    
+	`createdAt` DateTime NOT NULL,
+	`updatedAt` DateTime NOT NULL,
+	CONSTRAINT `unique_id` UNIQUE( `id` ) )
+CHARACTER SET = utf8
+COLLATE = utf8_general_ci
+ENGINE = InnoDB
+AUTO_INCREMENT = 1;
+
+ALTER TABLE `orders`
+	ADD CONSTRAINT `lnk_entities_orders` FOREIGN KEY ( `customerID` )
+	REFERENCES `entities`( `id` )
+	ON DELETE No Action
+	ON UPDATE No Action;
+    
+    
+ALTER TABLE `orders`
+	ADD CONSTRAINT `lnk_documents_orders` FOREIGN KEY ( `documentID` )
+	REFERENCES `documents`( `id` )
+	ON DELETE No Action
+	ON UPDATE No Action;
+
+-- -------------------------------------------------------------
+-- ---------------------------------------------------------
+
+
 -- CREATE TABLE "users" ------------------------------------
 -- CREATE TABLE "users" ----------------------------------------
 CREATE TABLE IF NOT EXISTS `users` (
