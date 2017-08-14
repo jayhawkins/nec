@@ -100,7 +100,7 @@ CREATE TABLE IF NOT EXISTS `customer_needs` (
 	`entityID` Int( 11 ) UNSIGNED NOT NULL,
 	`originationCity` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
 	`originationState` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-	`originationZip` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	`originationZip` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
 	`destinationCity` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
 	`destinationState` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
 	`destinationZip` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL,

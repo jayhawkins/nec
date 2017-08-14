@@ -25,7 +25,7 @@ require 'models/CarrierNeeds.php';
 require 'models/CustomerNeeds.php';
 require 'models/CustomerNeedsCommit.php';
 require 'models/Documents.php';
-//require 'models/DocumentsCommit.php';
+require 'models/InsuranceCarriers.php';
 
 Flight::register( 'user', 'User' );
 Flight::register( 'entity', 'Entity' );
@@ -37,4 +37,4 @@ Flight::register( 'carrierneed', 'CarrierNeed' );
 Flight::register( 'customerneed', 'CustomerNeed' );
 Flight::register( 'customerneedcommit', 'CustomerNeedCommit' );
 Flight::register( 'documents', 'Documents' );
-//Flight::register( 'documentscommit', 'DocumentsCommit' );
+Flight::register( 'insurancecarrier', 'InsuranceCarrier' );

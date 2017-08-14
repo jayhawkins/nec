@@ -354,7 +354,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 ]
               });
         } else {
-            var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,transportationMode,availableDate,expirationDate,originationCity,originationState,originationZip,originationLat,originationLng,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&satisfy=all&order[]=entityID&order[]=availableDate,desc&transform=1';
+            var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,transportationMode,availableDate,expirationDate,originationCity,originationState,originationZip,originationLat,originationLng,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&satisfy=all&order[]=entityID&order[]=createdAt,desc&transform=1';
             var example_table = $('#datatable-table').DataTable({
                 retrieve: true,
                 processing: true,
@@ -1069,6 +1069,9 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       var checked = '';
       var dpli = '';
       var dpchecked = '';
+      var emptyMode = '';
+      var loadMode = '';
+      var eitherMode = 'selected=selected';
       $("#id").val('');
       $("#qty").val('');
       $("#availableDate").val('');
@@ -1082,6 +1085,16 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       $("#destinationState").val('');
       $("#destinationZip").val('');
       //alert(JSON.stringify(contacts));
+
+      transMode = '<select id="transportationMode" name="transportationMode" class="form-control chzn-select" required="required">' +
+                             '<option value="">*Select Mode...</option>';
+
+      transMode += '<option value="Empty" ' + emptyMode + '>Empty</option>';
+      transMode += '<option value="Load Out" ' + loadMode + '>Load Out</option>';
+      transMode += '<option value="Both (Empty or Load Out)" ' + eitherMode + '>Both (Empty or Load Out)</option>';
+      transMode += '</select>';
+      $("#divTransportationMode").html(transMode);
+
       for (var i = 0; i < contacts.contacts.records.length; i++) {
           li += '<li id=\"' + contacts.contacts.records[i][0] + '\" class=\"list-group-item\" ' + checked + '>' + contacts.contacts.records[i][1] + ' ' + contacts.contacts.records[i][2] + '</li>\n';
       }

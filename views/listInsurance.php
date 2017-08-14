@@ -30,6 +30,7 @@
 			return true;
 		}
 	}
+
 	function verifyAndPost() {
 		if ( $('#formInsurance').parsley().validate() ) {
 			var data,date;
@@ -60,11 +61,8 @@
 			var date = today;
 			// file upload
 			if ($("#id").val() > '') {
-				console.log("editing");
 				url = '<?php echo API_HOST."/api/insurance_carriers" ?>/' + $("#id").val();
 				type = "PUT";
-				var files = $('#fileupload').prop("files");
-				var fileNames = $.map(files, function(val) { return val.name; }).join(',');
 				date = today;
 				data = {id: $("#id").val(), entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactEmail: $("#contactEmail").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), updatedAt: date};
 				$.ajax({
@@ -94,16 +92,14 @@
 						alert("There Was An Error Adding Insurance!");
 					}
 				});
+
 			} else {
-				console.log("creating");
-				url = '<?php echo HTTP_HOST."/uploaddocument" ?>';
+
+				url = '<?php echo HTTP_HOST."/uploadpolicy" ?>';
 				type = "POST";
 				var formData = new FormData();
-				formData.append('entityID', $("#entityID").val());
-				formData.append('name', $("#name").val());
-				formData.append('documentID', "insurance");
-				formData.append('updatedAt', date);
 				formData.append('fileupload', $('#fileupload')[0].files[0]);
+				formData.append('entityID', $("#entityID").val());
 				$.ajax({
 					url : url,
 					type : 'POST',
@@ -111,14 +107,13 @@
 					processData: false,  // tell jQuery not to process the data
 					contentType: false,  // tell jQuery not to set contentType
 					success : function(data) {
-						console.log('file uploaded');
 						// update listInsurance
 						url = '<?php echo API_HOST."/api/insurance_carriers" ?>';
 						type = "POST";
 						var files = $('#fileupload').prop("files");
 						var fileNames = $.map(files, function(val) { return val.name; }).join(',');
 						date = today;
-						data = {fileupload: fileNames, entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactEmail: $("#contactEmail").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), createdAt: date};
+						data = {fileupload: fileNames, entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactEmail: $("#contactEmail").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), createdAt: date, updatedAt: date};
 						$.ajax({
 							url: url,
 							type: type,
@@ -155,8 +150,8 @@
 			return false;
 		}
 	}
+
 	function loadTableAJAX() {
-		myApp.showPleaseWait();
 		var url = '<?php echo API_HOST; ?>' + '/api/insurance_carriers?columns=id,name,link,contactName,contactEmail,contactPhone,policyNumber,policyExpirationDate,fileupload,status&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order=name&transform=1';
 		var example_table = $('#datatable-table').DataTable({
 			retrieve: true,
@@ -166,14 +161,22 @@
 				dataSrc: 'insurance_carriers'
 			},
 			columns: [
+                {
+					data: null,
+					"bSortable": false,
+					"mRender": function (o) {
+						var buttons = '<button class=\"btn btn-primary\" role=\"button\"><i class=\"glyphicon glyphicon-eye-open text-info\"></i> <span class=\"text-info\">View Policy</span></button>';
+						return buttons;
+					}
+				},
 				{ data: "id", visible: false },
 				{ data: "name" },
 				{ data: "contactName" },
 				{ data: "contactEmail" },
 				{ data: "contactPhone" },
-				{ data: "policyNumber" },
+				{ data: "policyNumber", visible: false },
 				{ data: "policyExpirationDate", visible: false },
-				{ data: "fileupload" },
+				{ data: "fileupload", visible: false },
 				{
 					data: null,
 					"bSortable": false,
@@ -195,6 +198,7 @@
 		example_table.ajax.reload();
 		myApp.hidePleaseWait();
 	}
+
 	function recordEnableDisable(status) {
 		var passValidation = false;
 		if (status == "Disable") {
@@ -233,6 +237,11 @@
 		});
 		//return passValidation;
 	}
+
+	function viewDocumentHold() {
+		window.open($("#docToView").val(), '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
+	}
+
 </script>
 <ol class="breadcrumb">
 	<li>ADMIN</li>
@@ -258,6 +267,7 @@
 			<table id="datatable-table" class="table table-striped table-hover">
 				<thead>
 					<tr>
+                    <th class="no-sort pull-right">&nbsp;</th>
 					<th>ID</th>
 					<th class="hidden-sm-down">Name</th>
 					<th class="hidden-sm-down">Contact Name</th>
@@ -336,7 +346,7 @@
 						</div>
 					</div>
 					<div class="row">
-						<div class="col-sm-6">
+						<div class="col-sm-12">
 							<label for="fileupload">Policy File Upload</label>
 							<div class="form-group">
 								<input type="file" id="fileupload" name="fileupload" class="form-control mb-sm" placeholder="*Policy Number" required="required" data-filesize="20000000"
@@ -413,7 +423,46 @@
 		</div>
 	</div>
 </div>
+<div class="modal fade" id="viewPolicy" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="enableDialogLabel">View Policy</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+                <div class="row">
+                <form>
+                    <input type="hidden" id="entityID" value="<?php echo $_SESSION['entityid']; ?>" />
+                    <input type="hidden" id="docToView" value="" />
+                    <div id="divUploadPolicyFile" class="col-sm-6">
+                        <label for="updatePolicyFile">Update Policy File</label>
+                        <div class="form-group">
+                            <input type="file" id="updatePolicyFile" name="updatePolicyFile" class="form-control mb-sm" placeholder="Update Policy" data-filesize="20000000"
+                            data-filetype="image/bmp,image/gif,image/jpeg,application/zip,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/rtf"
+                            onchange="validateFile(this);" />
+                        </div>
+                    </div>
+                    <div class="col-sm-3 pull-right">
+                        <button type="button" class="btn btn-primary" id="btnReplace">Replace Document</button>
+                    </div>
+                    <div class="col-sm-3 pull-right">
+                        <button type="button" class="btn btn-primary" id="btnView">View Document</button>
+                    </div>
+                </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btnSave">Save</button>
+            </div>
+		</div>
+	</div>
+</div>
 <script>
+
 	/*jslint unparam: true, regexp: true */
 	loadTableAJAX();
 	var table = $("#datatable-table").DataTable();
@@ -422,6 +471,7 @@
 		todayHighlight: true,
 		format: "yyyy-mm-dd"
 	});
+
 	$("#addInsurance").click(function(){
 		$("#id").val('');
 		$("#name").val('');
@@ -449,7 +499,13 @@
 			$("#fileupload").prop("required", false);
 			$("#fileupload").parent().parent().attr("hidden", true);
 			$("#policyExpirationDate").val(data["policyExpirationDate"]);
+			$("#docToView").val(data["fileupload"]);
 			$("#myModal").modal('show');
+        } else if (this.textContent.indexOf("View Policy") > -1) {
+            $("#docToView").val(data['fileupload']);
+            $("#divUploadPolicyFile").hide();
+            $("#btnSave").hide();
+            $("#viewPolicy").modal('show');
 		} else {
 			$("#id").val(data["id"]);
 			if (this.textContent.indexOf("Disable") > -1) {
@@ -463,4 +519,29 @@
 			}
 		}
 	});
+
+	$("#btnReplace").click(function(){
+	    $("#divUploadPolicyFile").show();
+        $("#btnSave").show();
+	});
+
+	$("#btnView").click(function(){
+	    window.open( '<?php echo HTTP_HOST."/viewpolicy" ?>?filename=' + $("#docToView").val() + '&entityID=' + $("#entityID").val(), '_blank');
+	    /*
+	    url = '<?php echo HTTP_HOST."/viewpolicy" ?>';
+        type = "POST";
+        data = {'filename': $('#docToView').val(), 'entityID': $("#entityID").val()};
+        $.ajax({
+            url : url,
+            type : type,
+            data : JSON.stringify(data),
+            contentType: "application/json",
+            success : function(data) {
+
+            }
+        });
+        */
+	});
+
+
 </script>

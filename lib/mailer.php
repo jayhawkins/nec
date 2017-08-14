@@ -3,9 +3,9 @@
 function sendmail($to, $subject, $body, $from, $document='') {
 
   // Create the Transport
-  $transport = Swift_SmtpTransport::newInstance('smtp.gmail.com', 465, 'tls')
-    ->setUsername('jaycarl.hawkins@gmail.com')
-    ->setPassword('GoldenCountry1972');
+  $transport = Swift_SmtpTransport::newInstance('smtp.gmail.com', 587, 'tls')
+    ->setUsername('necmailer@gmail.com')
+    ->setPassword('smzncalqysuakryl'); // or use pqlamz2017
 
   // Create the Mailer using your created Transport
   $mailer = Swift_Mailer::newInstance($transport);
