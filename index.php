@@ -430,7 +430,7 @@ $app->route('POST /createcustomerneedsfromexisting', function() {
     }
 });
 
-/* No longer using - moved to Insurance Carrier Processes
+ 
 $app->route('POST /uploaddocument', function() {
 	$name = Flight::request()->data->name;
 	$fileupload = Flight::request()->files['fileupload'];
@@ -453,7 +453,7 @@ $app->route('POST /viewdocument', function() {
 	$filename = Flight::request()->data->filename;
     $result = $documents->viewdocument($entityID,FILE_LOCATION,$filename);
 });
-*/
+/*No longer using - moved to Insurance Carrier Processes*/
 
 // Start the framework
 $app->start();
