@@ -12,7 +12,7 @@ $entity = '';
 $entity = json_decode(file_get_contents(API_HOST.'/api/entities?columns=rateType,negotiatedRate&filter[]=id,eq,' . $_SESSION['entityid']));
 
 $entities = '';
-$entities = json_decode(file_get_contents(API_HOST.'/api/entities?columns=id,name&order=name&filter[]=id,gt,0&filter[]=entityTypeID,eq,1'));
+$entities = json_decode(file_get_contents(API_HOST.'/api/entities?columns=id,name&order=name&filter[]=id,gt,0&filter[]=entityTypeID,eq,2'));
 
 
 $locationTypeID = '';
@@ -260,11 +260,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                                   var newDestinationCity = $("#destinationCity").val();
                                   var newDestinationState = $("#destinationState").val();
                                   var newDestinationZip = $("#destinationZip").val();
+                                  var carrierID = $("#entityID").val();
 
                                   var url = '<?php echo HTTP_HOST."/createcustomerneedsfromexisting" ?>';
                                   var date = today;
                                   var recStatus = 'Available';
-                                  var data = {id: $("#id").val(), rootCustomerNeedsID: $("#rootCustomerNeedsID").val(), qty: $("#qty").val(), originationAddress1: newOriginationAddress1, originationCity: newOriginationCity, originationState: newOriginationState, originationZip: newOriginationZip, destinationAddress1: newDestinationAddress1, destinationCity: newDestinationCity, destinationState: newDestinationState, destinationZip: newDestinationZip, originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, distance: distance,  transportationMode: $("#transportationMode").val(),transportation_mode: $("#transportationMode").val(), transportation_type: $('input[name="transportationType"]:checked').val(), pickupDate: $("#pickupDate").val(), deliveryDate: $("#deliveryDate").val()};
+                                  var data = {id: $("#id").val(), rootCustomerNeedsID: $("#rootCustomerNeedsID").val(), carrierID: carrierID, qty: $("#qty").val(), originationAddress1: newOriginationAddress1, originationCity: newOriginationCity, originationState: newOriginationState, originationZip: newOriginationZip, destinationAddress1: newDestinationAddress1, destinationCity: newDestinationCity, destinationState: newDestinationState, destinationZip: newDestinationZip, originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, distance: distance,  transportationMode: $("#transportationMode").val(),transportation_mode: $("#transportationMode").val(), transportation_type: $('input[name="transportationType"]:checked').val(), pickupDate: $("#pickupDate").val(), deliveryDate: $("#deliveryDate").val()};
                                   $.ajax({
                                      url: url,
                                      type: 'POST',
@@ -1045,9 +1046,9 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
               <?php if ($_SESSION['entityid'] > 0) { ?>
                              <input type="hidden" id="entityID" name="entityID" value="<?php echo $_SESSION['entityid']; ?>" />
               <?php } else { ?>
-                              <label for="entityID">Customer</label>
+                              <label for="entityID">Carrier</label>
                               <select id="entityID" name="entityID" data-placeholder="Carrier" class="form-control chzn-select" required="required">
-                                <option value="">*Select Customer...</option>
+                                <option value="">*Select Carrier...</option>
                <?php
                                 foreach($entities->entities->records as $value) {
                                     $selected = ($value[0] == $entity) ? 'selected=selected':'';
