@@ -4,8 +4,8 @@ function sendmail($to, $subject, $body, $from, $document='') {
 
   // Create the Transport
   $transport = Swift_SmtpTransport::newInstance('smtp.gmail.com', 587, 'tls')
-    ->setUsername('jaycarl.hawkins@gmail.com')
-    ->setPassword('turnsomepages1978');
+    ->setUsername('necmailer@gmail.com')
+    ->setPassword('smzncalqysuakryl'); // This password was setup in the Gmail account Security Settings for Apps
 
   // Create the Mailer using your created Transport
   $mailer = Swift_Mailer::newInstance($transport);
@@ -15,7 +15,7 @@ function sendmail($to, $subject, $body, $from, $document='') {
   }
 
   if (empty($from) || count($from) <= 0) {
-      $from = array('jaycarl.hawkins@gmail.com' => 'Jay Hawkins');
+      $from = array('necmailer@gmail.com' => 'Nationwide Equipment Control');
   }
 
   // Send an account activation to the member
