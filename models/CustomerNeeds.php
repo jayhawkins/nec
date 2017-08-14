@@ -34,7 +34,7 @@ class CustomerNeed
 
     }
 
-    public function createFromExisting($api_host,$id,$rootCustomerNeedsID,$qty,$originationAddress1,$originationCity,$originationState,$originationZip,$destinationAddress1,$destinationCity,$destinationState,$destinationZip,$originationLat,$originationLng,$destinationLat,$destinationLng,$distance,$transportationMode,$transportation_mode,$transportation_type,$pickupDate,$deliveryDate,$google_maps_api) {
+    public function createFromExisting($api_host,$id,$rootCustomerNeedsID,$carrierID,$qty,$originationAddress1,$originationCity,$originationState,$originationZip,$destinationAddress1,$destinationCity,$destinationState,$destinationZip,$originationLat,$originationLng,$destinationLat,$destinationLng,$distance,$transportationMode,$transportation_mode,$transportation_type,$pickupDate,$deliveryDate,$google_maps_api) {
 
           /******** WE ARE NOT USING THE LNG AND LAT FROM THIS CALL - WE WILL NEED TO GO GET THE GEOCODE BASED ON THE NEW ORIGINATION AND DESTINATION *****/
 
@@ -102,7 +102,7 @@ class CustomerNeed
                             "destinationLat"=>$destinationLat,
                             "destinationLng"=>$destinationLng,
                             "distance"=>$distance,
-                            "entityID"=>$this->entityID,
+                            "entityID"=>$carrierID,
                             "status"=>$this->status,
                             "transportation_type"=>$transportation_type,
                             "transportation_mode"=>$transportation_mode,
