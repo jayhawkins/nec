@@ -74,16 +74,109 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         };
     })();
 
-    function post() {
+      function post() {
 
-          if (confirm("You have selected to Approve this Commit. Do you wish to proceed?") == true) {
+          //var originationaddress = $("#originationAddress1").val() + ', ' + $("#originationCity").val() + ', ' + $("#originationState").val() + ', ' + $("#originationZip").val();
+          //var destinationaddress = $("#destinationAddress1").val() + ', ' + $("#destinationCity").val() + ', ' + $("#destinationState").val() + ', ' + $("#destinationZip").val();
+          var originationaddress = $("#originationCity").val() + ', ' + $("#originationState").val();
+          var destinationaddress = $("#destinationCity").val() + ', ' + $("#destinationState").val();
 
+          if (originationaddress != $("#originToMatch").val() && destinationaddress != $("#destToMatch").val()) {
+              alert("The commitment for this Available request must be picked up or dropped off at the listed Origination or Destination. Please select a new Origination or Destination address.");
+              //alert($("#originToMatch").val());
+              //alert($("#destToMatch").val());
+              return false;
+          }
+
+
+          if (confirm("You have selected to Commit to this Availability. A Nationwide Equipment Control team member will contact you within 4 buisness hours to start the order process. Do you wish to proceed with this commitment?") == true) {
+
+                var result = true;
+
+                var params = {
+                      address1: $("#originationAddress1").val(),
+                      city: $("#originationCity").val(),
+                      state: $("#originationState").val(),
+                      zip: $("#originationZip").val(),
+                      entityID: $("#entityID").val(),
+                      locationType: "Origination"
+                };
+                //alert(JSON.stringify(params));
+
+                $.ajax({
+                   url: '<?php echo HTTP_HOST."/getlocationbycitystatezip" ?>',
+                   type: 'POST',
+                   data: JSON.stringify(params),
+                   contentType: "application/json",
+                   async: false,
+                   success: function(response){
+                      //alert("Origination " + response);
+                      if (response == "success") {
+                          var params = {
+                                address1: $("#destinationAddress1").val(),
+                                city: $("#destinationCity").val(),
+                                state: $("#destinationState").val(),
+                                zip: $("#destinationZip").val(),
+                                entityID: $("#entityID").val(),
+                                locationType: "Destination"
+                          };
+                          //alert(JSON.stringify(params));
+                          $.ajax({
+                             url: '<?php echo HTTP_HOST."/getlocationbycitystatezip" ?>',
+                             type: 'POST',
+                             data: JSON.stringify(params),
+                             contentType: "application/json",
+                             async: false,
+                             success: function(response){
+                                //alert("Destination " + response);
+                                if (response == "success") {
+                                } else {
+                                    if (response == "ZERO_RESULTS") {
+                                        alert("Destination Address does not exist!");
+                                    } else {
+                                        alert("Destination Address Error: " + JSON.stringify(response));
+                                    }
+                                    result = false;
+                                    //alert('Preparation Failed!');
+                                }
+                             },
+                             error: function(response) {
+                                if (response == "ZERO_RESULTS") {
+                                    alert("Destination Address does not exist!");
+                                } else {
+                                    alert("Destination Address Error: " + JSON.stringify(response));
+                                }
+                                result = false;
+                                //alert('Failed Searching for Destination Location! - Notify NEC of this failure.');
+                             }
+                          });
+                      } else {
+                          if (response == "ZERO_RESULTS") {
+                              alert("Origination Address does not exist!");
+                          } else {
+                              alert("Origination Address Error: " + JSON.stringify(response));
+                          }
+                          result = false;
+                          //alert('Preparation Failed!');
+                      }
+                   },
+                   error: function(response) {
+                      alert("Issue With Origination Address: " + JSON.stringify(response));
+                      result = false;
+                      //alert('Failed Searching for Origination Location! - Notify NEC of this failure.');
+                   }
+                });
+
+                if (result) {
                     verifyAndPost(function(data) {
                       alert(data);
                       $("#load").html("Commit");
                       $("#load").prop("disabled", false);
                     });
                     return true;
+                } else {
+                    return false;
+                }
 
           } else {
 
@@ -92,11 +185,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
           }
       }
 
-    function verifyAndPost() {
+      function verifyAndPost() {
 
           if ( $('#formNeed').parsley().validate() ) {
 
-                $("#load").html("<i class='fa fa-spinner fa-spin'></i> Approving Commit");
+                $("#load").html("<i class='fa fa-spinner fa-spin'></i> Committing Now");
                 $("#load").prop("disabled", true);
 
                 var passValidation = false;
@@ -128,70 +221,88 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                 today = mm+'/'+dd+'/'+yyyy;
                 today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
 
-                var url = '<?php echo API_HOST."/api/customer_needs_commit" ?>/' + $("#id").val();
-                type = "PUT";
-                var date = today;
-                var data = {status: "Close", updatedAt: date};
+                //var originationaddress = $("#originationAddress1").val() + ', ' + $("#originationCity").val() + ', ' + $("#originationState").val() + ', ' + $("#originationZip").val();
+                //var destinationaddress = $("#destinationAddress1").val() + ', ' + $("#destinationCity").val() + ', ' + $("#destinationState").val() + ', ' + $("#destinationZip").val();
+                var originationaddress = $("#originationCity").val() + ', ' + $("#originationState").val();
+                var destinationaddress = $("#destinationCity").val() + ', ' + $("#destinationState").val();
 
-                $.ajax({
-                   url: url,
-                   type: type,
-                   data: JSON.stringify(data),
-                   contentType: "application/json",
-                   async: false,
-                   success: function(data){
-                      if (data > 0) {
-                        if (type == 'PUT') {
-                           var params = {id: $("#id").val()};
-                           $.ajax({
-                              url: '<?php echo HTTP_HOST."/commitacceptednotification" ?>',
-                              type: 'POST',
-                              data: JSON.stringify(params),
-                              contentType: "application/json",
-                              async: false,
-                              success: function(notification){
-                                  alert(notification);
-                                  $("#myModalCommit").modal('hide');
-                              },
-                              error: function() {
-                                 alert('Failed Sending Notifications! - Notify NEC of this failure.');
-                                 $("#myModalCommit").modal('hide');
-                              }
-                           });
-                        }
+                // getMapDirectionFromGoogle is defined in common.js
+                newGetMapDirectionFromGoogle( originationaddress, destinationaddress, function(response) {
 
-                        $("#myModalCommit").modal('hide');
-                        loadTableAJAX();
-                        $("#id").val('');
-                        $("#qty").val('');
-                        $("#rate").val('');
-                        $("#availableDate").val('');
-                        $("#expirationDate").val('');
-                        $("#originationAddress1").val('');
-                        $("#originationCity").val('');
-                        $("#originationState").val('');
-                        $("#originationZip").val('');
-                        $("#destinationAddress1").val('');
-                        $("#destinationCity").val('');
-                        $("#destinationState").val('');
-                        $("#destinationZip").val('');
-                        $("#pickupDate").val('');
-                        $("#deliveryDate").val('');
-                        $("#rate").val('');
-                        passValidation = true;
-                      } else {
-                        alert("Adding Need Failed! Please Verify Your Data.");
-                      }
-                   },
-                   error: function() {
-                      alert("There Was An Error Adding Availability!");
-                   }
+                              var originationlat = response.originationlat;
+                              var originationlng = response.originationlng;
+                              var destinationlat = response.destinationlat;
+                              var destinationlng = response.destinationlng;
+                              var distance = response.distance;
+
+                              var newOriginationAddress1 = "";
+                              var newOriginationCity = "";
+                              var newOriginationState = "";
+                              var newOriginationZip = "";
+                              var newDestinationAddress1 = "";
+                              var newDestinationCity = "";
+                              var newDestinationState = "";
+                              var newDestinationZip = "";
+                              //var newOriginationLat = "";
+                              //var newOriginationLng = "";
+                              //var newDestinationLat = "";
+                              //var newDestinationLng = "";
+
+
+                              // If new commit Origination or Destination is different than parent it came from, we need to create another customer_needs records
+                              //if (originationaddress != $("#originToMatch").val() || destinationaddress != $("#destToMatch").val()) {
+
+                                  var newOriginationAddress1 = $("#originationAddress1").val();
+                                  var newOriginationCity = $("#originationCity").val();
+                                  var newOriginationState = $("#originationState").val();
+                                  var newOriginationZip = $("#originationZip").val();
+                                  var newDestinationAddress1 = $("#destinationAddress1").val();
+                                  var newDestinationCity = $("#destinationCity").val();
+                                  var newDestinationState = $("#destinationState").val();
+                                  var newDestinationZip = $("#destinationZip").val();
+
+                                  var url = '<?php echo HTTP_HOST."/createcustomerneedsfromexisting" ?>';
+                                  var date = today;
+                                  var recStatus = 'Available';
+                                  var data = {id: $("#id").val(), rootCustomerNeedsID: $("#rootCustomerNeedsID").val(), qty: $("#qty").val(), originationAddress1: newOriginationAddress1, originationCity: newOriginationCity, originationState: newOriginationState, originationZip: newOriginationZip, destinationAddress1: newDestinationAddress1, destinationCity: newDestinationCity, destinationState: newDestinationState, destinationZip: newDestinationZip, originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, distance: distance,  transportationMode: $("#transportationMode").val(),transportation_mode: $("#transportationMode").val(), transportation_type: $('input[name="transportationType"]:checked').val(), pickupDate: $("#pickupDate").val(), deliveryDate: $("#deliveryDate").val()};
+                                  $.ajax({
+                                     url: url,
+                                     type: 'POST',
+                                     data: JSON.stringify(data),
+                                     contentType: "application/json",
+                                     async: false,
+                                     success: function(notification){
+                                         //alert("Create from existing: " + notification);
+                                         $("#myModalCommit").modal('hide');
+                                     },
+                                     error: function() {
+                                        alert('Failed creating a new Need from an existing.');
+                                        $("#myModalCommit").modal('hide');
+                                     }
+                                  });
+                              //}
+
+                              $("#myModal").modal('hide');
+                              loadCustomerNeedsCommitAJAX ($("#id").val());
+                              $("#id").val('');
+                              $("#rootCustomerNeedsID").val('');
+                              $("#qty").val('');
+                              $("#rate").val('');
+                              $("#availableDate").val('');
+                              $("#expirationDate").val('');
+                              $("#originationAddress1").val('');
+                              $("#originationCity").val('');
+                              $("#originationState").val('');
+                              $("#originationZip").val('');
+                              $("#destinationAddress1").val('');
+                              $("#destinationCity").val('');
+                              $("#destinationState").val('');
+                              $("#destinationZip").val('');
+                              passValidation = true;
+
                 });
 
-                return passValidation;
-
-            } 
-            else {
+            } else {
 
                 return false;
 
@@ -503,7 +614,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                 
         var url = baseUrl + '&satisfy=any&order[]=entityID&order[]=rootCustomerNeedsID&order[]=availableDate,desc&transform=1';
         
-        var example_table = $('#selected-customer-need').DataTable({
+        if ( ! $.fn.DataTable.isDataTable( '#customer-needs-commit-table' ) ) {
+            
+            var example_table = $('#selected-customer-need').DataTable({
             retrieve: true,
             processing: true,
             ajax: {
@@ -597,12 +710,18 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
             ]
           });
 
-          example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
-          
-        //To Reload The Ajax
-        //See DataTables.net for more information about the reload method
-        example_table.ajax.reload();
-
+            example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
+            
+            //To Reload The Ajax
+            //See DataTables.net for more information about the reload method
+            example_table.ajax.reload();
+        }
+        else{
+          //The URL will change with each "View Commit" button click
+          // Must load new Url each time.
+            var reload_table = $('#selected-customer-need').DataTable();
+            reload_table.ajax.url(url).load();
+        }
     }
     
     function getCarrierTotal(json){
@@ -913,6 +1032,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
              </table>
          </div>
                 
+        <div class="row">            
+            <div class="col-sm-4">
+                <a data-widgster="addCommit" title="Add" href="Javascript:addNewCommit();"><i class="fa fa-plus-square-o"></i> Add Carrier Commitment</a>
+            </div>
+        </div>
+                
+    <br>
+    
         <div class="row">
             <div class="col-sm-4">
                 <label for="customerRate">Customer Rate</label>
@@ -956,9 +1083,286 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
     
  </section>
 
+ 
+  <!-- Modal -->
+  <div class="modal fade" id="myModalCommit" tabindex="-1" aria-hidden="true" aria-label="exampleModalCommitLabel">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalCommitLabel"><strong>Add Carrier Commmit</strong></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+                <form id="formNeed" class="register-form mt-lg">
+                  <input type="hidden" id="id" name="id" value="" />
+                  <input type="hidden" id="rootCustomerNeedsID" name="rootCustomerNeedsID" value="" />
+                  <input type="hidden" id="originToMatch" name="originToMatch" value="" />
+                  <input type="hidden" id="destToMatch" name="destToMatch" value="" />
+                  <input type="hidden" id="oaddress1" name="oaddress1" value="" />
+                  <input type="hidden" id="ocity" name="ocity" value="" />
+                  <input type="hidden" id="ostate" name="ostate" value="" />
+                  <input type="hidden" id="ozip" name="ozip" value="" />
+                  <input type="hidden" id="daddress1" name="daddress1" value="" />
+                  <input type="hidden" id="dcity" name="dcity" value="" />
+                  <input type="hidden" id="dstate" name=""dstate value="" />
+                  <input type="hidden" id="dzip" name="dzip" value="" />
+                  <div class="row">
+                      <div class="col-sm-2">
+                          <label for="qtyDiv"># of Trailers</label>
+                          <div id="qtyDiv" class="form-group">
+                          </div>
+                      </div>
+                      <div class="col-sm-3">
+                          <label for="availableDate">Pick-Up Date</label>
+                          <div class="form-group">
+                            <div id="sandbox-container" class="input-group date  datepicker">
+                               <input type="text" id="pickupDate" name="pickupDate" class="form-control" placeholder="Pickup Date" required="required"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                            </div>
+                          </div>
+                      </div>
+                      <div class="col-sm-3">
+                          <label for="expirationDate">Delivery Date</label>
+                          <div class="form-group">
+                            <div id="sandbox-container" class="input-group date  datepicker">
+                               <input type="text" id="deliveryDate" name="deliveryDate" class="form-control" placeholder="Delivery Date" required="required"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                            </div>
+                          </div>
+                      </div>
+                      <div class="col-sm-4">
+                          <div class="form-group">
+              <?php if ($_SESSION['entityid'] > 0) { ?>
+                             <input type="hidden" id="entityID" name="entityID" value="<?php echo $_SESSION['entityid']; ?>" />
+              <?php } else { ?>
+                              <label for="entityID">Carrier</label>
+                              <select id="entityID" name="entityID" data-placeholder="Carrier" class="form-control chzn-select" required="required">
+                                <option value="">*Select Carrier...</option>
+               <?php
+                                foreach($entities->entities->records as $value) {
+                                    $selected = ($value[0] == $entity) ? 'selected=selected':'';
+                                    echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
+                                }
+               ?>
+                              </select>
+               <?php } ?>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="row">
+                      <div class="col-sm-3">
+                          <label for="originationCity">Origination City</label>
+                          <div class="form-group">
+                            <input type="hidden" id="originationLocationID" name="originationLocationID" />
+                            <input type="text" id="originationCity" name="originationCity" class="form-control mb-sm" placeholder="Origin City"
+                            required="required" />
+                          </div>
+                          <div id="org-suggesstion-box" class="frmSearch"></div>
+                      </div>
+                      <!--
+                      <div class="col-sm-4">
+                          <label for="originationAddress1">Origination Address</label>
+                          <div class="form-group">
+                            <input type="text" id="originationAddress1" name="originationAddress1" class="form-control mb-sm" placeholder="Origin Address"
+                            required="required" />
+                          </div>
+                      </div>
+                      -->
+                      <div class="col-sm-3">
+                          <label for="originationState">Origination State</label>
+                          <div class="form-group">
+                            <select id="originationState" name="origitnaionState" data-placeholder="Origin State" class="form-control chzn-select" data-ui-jq="select2" required="required">
+                              <option value="">*Select State...</option>
+             <?php
+                              foreach($states->states->records as $value) {
+                                  $selected = ($value[0] == $state) ? 'selected=selected':'';
+                                  echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
+                              }
+             ?>
+                            </select>
+                          </div>
+                      </div>
+                      <!--
+                      <div class="col-sm-2">
+                          <label for="originationZip">Origination Zip</label>
+                          <div class="form-group">
+                            <input type="text" id="originationZip" name="originationZip" class="form-control mb-sm" placeholder="Origin Zip"
+                            required="required" />
+                          </div>
+                      </div>
+                      -->
+                      <div class="col-sm-4">
+                      </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-3">
+                        <label for="DestinationCity">Destination City</label>
+                        <div class="form-group">
+                          <input type="text" id="destinationCity" name="destinationCity" class="form-control mb-sm" placeholder="Dest. City"
+                          required="required" />
+                        </div>
+                        <div id="dest-suggesstion-box" class="frmSearch"></div>
+                    </div>
+                    <!--
+                    <div class="col-sm-4">
+                        <label for="destinationAddress1">Destination Address</label>
+                        <div class="form-group">
+                          <input type="text" id="destinationAddress1" name="destinationAddress1" class="form-control mb-sm" placeholder="Destination Address"
+                          required="required" />
+                        </div>
+                    </div>
+                    -->
+                    <div class="col-sm-3">
+                        <label for="destinationState">Destination State</label>
+                        <div class="form-group">
+                          <select id="destinationState" name="destinationState" data-placeholder="Dest. State" class="form-control chzn-select" data-ui-jq="select2" required="required">
+                            <option value="">*Select State...</option>
+           <?php
+                            foreach($states->states->records as $value) {
+                                $selected = ($value[0] == $state) ? 'selected=selected':'';
+                                echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
+                            }
+           ?>
+                          </select>
+                        </div>
+                    </div>
+                    <!--
+                    <div class="col-sm-2">
+                        <label for="destinationZip">Destination Zip</label>
+                        <div class="form-group">
+                          <input type="text" id="destinationZip" name="destinationZip" class="form-control mb-sm" placeholder="Dest. Zip"
+                          required="required" />
+                        </div>
+                    </div>
+                    -->
+                    <div class="col-sm-4">
+                    </div>
+                  </div>
+                  <hr/>
+                  <div class="row">
+                      <!--
+                      <div class="col-sm-3">
+                          <label for="rate">Rate to Transport</label>
+                          <div class="form-group">
+                            <input type="text" id="rate" name="rate" class="form-control mb-sm" placeholder="$ Rate to Transport"
+                            required="required" />
+                          </div>
+                      </div>
+                      <div class="col-sm-3">
+                          <label for="rate">Rate Type</label>
+                          <div class="form-group">
+                            <div class="d-inline-block"><input type="radio" id="transportionType" name="transportationType" value="Flat Rate" /> Flat Rate
+                            &nbsp;&nbsp;<input type="radio" id="transportionType" name="transportationType" value="Mileage" /> Mileage</div>
+                          </div>
+                      </div>
+                      -->
+                      <div class="col-sm-3">
+                        <label for="transportationModeDiv">Transportation Mode</label>
+                        <div id="transportationModeDiv" class="form-group">
+                        </div>
+                      </div>
+                      <div class="col-sm-9">
+                      </div>
+                  </div>
+        </div>
+        <div class="modal-footer">
+           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+           <button type="button" class="btn btn-primary btn-md" onclick="return post();" id="load">Commit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+ 
  <script>
 
     loadTableAJAX();
+
+    $('.datepicker').datepicker({
+        autoclose: true,
+        todayHighlight: true,
+        format: "yyyy-mm-dd"
+    });
+
+    function addNewCommit(){  
+        
+        var selectedTable = $("#selected-customer-need").DataTable();
+        var json = selectedTable.ajax.json()
+        var data = json.customer_needs[0];
+        
+        var li = '';
+        var checked = '';
+        var qtyselect = '<select id="qty" class="form-control mb-sm">\n';
+        var transportationmodeselect = '<select id="transportationMode" name="transportationMode" class="form-control mb-sm" required="required">\n';
+        var dpchecked = '';
+        $("#id").val(data["id"]);
+        $("#rootCustomerNeedsID").val(data["rootCustomerNeedsID"]);
+        //$("#entityID").val(data["entityID"]); Use the session entity id of the logged in user, not from the customer_needs record
+        $("#entityID").val(entityid);
+        $("#qty").val(data["qty"]);
+        $("#originationAddress1").val(data["originationAddress1"]);
+        $("#originationCity").val(data["originationCity"]);
+        $("#originationState").val(data["originationState"]);
+        $("#originationZip").val(data["originationZip"]);
+        $("#destinationAddress1").val(data["destinationAddress1"]);
+        $("#destinationCity").val(data["destinationCity"]);
+        $("#destinationState").val(data["destinationState"]);
+        $("#destinationZip").val(data["destinationZip"]);
+        $("#oaddress1").val(data["originationAddress1"]);
+        $("#ocity").val(data["originationCity"]);
+        $("#ostate").val(data["originationState"]);
+        $("#ozip").val(data["originationZip"]);
+        $("#daddress1").val(data["destinationAddress1"]);
+        $("#dcity").val(data["destinationCity"]);
+        $("#dstate").val(data["destinationState"]);
+        $("#dzip").val(data["destinationZip"]);
+        // Set up the matching addresses like we do up in the verifyAndPost() - makes it easy to do a compare
+        //$("#originToMatch").val(data["originationAddress1"] + ', ' + data["originationCity"] + ', ' + data["originationState"] + ', ' + data["originationZip"]);
+        //$("#destToMatch").val(data["destinationAddress1"] + ', ' + data["destinationCity"] + ', ' + data["destinationState"] + ', ' + data["destinationZip"]);
+        $("#originToMatch").val(data["originationCity"] + ', ' + data["originationState"]);
+        $("#destToMatch").val(data["destinationCity"] + ', ' + data["destinationState"]);
+        //$("#rate").val(data["entities"][0].negotiatedRate.toFixed(2));
+        $("#rate").val(entity.entities.records[0][1].toFixed(2));
+
+        for (var i = 1; i <= data['qty']; i++) {
+            if (i == data['qty']) {
+                dpchecked = "selected=selected";
+            }
+            qtyselect += '<option ' + dpchecked + '>' + i + '</option>\n';
+        }
+        qtyselect += '</select>\n';
+        $("#qtyDiv").html(qtyselect);
+
+        if (entity.entities.records[0][0] == "Flat Rate") {
+            $('input[name="transportationType"][value="Flat Rate"]').prop('checked', true);
+        } else {
+            $('input[name="transportationType"][value="Mileage"]').prop('checked', true);
+        }
+
+        var empty = "";
+        var loadout = "";
+        var either = "";
+        if (data['transportationMode'] == "Empty") {
+            transportationmodeselect += '<option value="Empty">Empty</option>\n';
+        } else {
+            if (data['transportationMode'] == "Empty") {
+                empty = "selected=selected";
+            } else if (data['transportationMode'] == "Load Out"){
+                loadout = "selected=selected";
+            } else if (data['transportationMode'] == "Both (Empty or Load Out)"){
+                either = "selected=selected";
+            }
+            transportationmodeselect += '<option value="Empty" '+empty+'>Empty</option>\n';
+            transportationmodeselect += '<option value="Load Out" '+loadout+'>Load Out</option>\n';
+            transportationmodeselect += '<option value="Both (Empty or Load Out)" '+either+'>Both (Empty or Load Out)</option>\n';
+        }
+
+        transportationmodeselect += '</select>\n';
+        $("#transportationModeDiv").html(transportationmodeselect);
+
+        $("#entityID").prop('disabled', true);
+        $("#myModalCommit").modal('show');
+    }
 
     function completeOrder(){
         var today = new Date();
