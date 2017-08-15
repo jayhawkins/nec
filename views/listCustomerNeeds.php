@@ -864,7 +864,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                    <div class="col-sm-4">
                        <label for="destinationAddress1">Destination Address</label>
                        <div class="form-group">
-                         <input type="text" id="destinationAddress1" name="destinationAddress1" class="form-control mb-sm" placeholder="Destination Address />
+                         <input type="text" id="destinationAddress1" name="destinationAddress1" class="form-control mb-sm" placeholder="Destination Address" />
                        </div>
                    </div>
                    <div class="col-sm-3">

@@ -6,9 +6,11 @@ class CustomerNeed
     private $id;
     private $rootCustomerNeedsID;
     private $entityID;
+    private $originationAddress1;
     private $originationCity;
     private $originationState;
     private $originationZip;
+    private $destinationAddress1;
     private $destinationCity;
     private $destinationState;
     private $destinationZip;
@@ -245,6 +247,53 @@ class CustomerNeed
                         }
                   }
 
+                  // If quantity was not the total quantity for the need, we need to create another leg of the original need with adjusted quantity
+                  if ($qty != $this->qty) {
+
+                        $newqty = $this->qty - $qty;
+
+                        $data = array(
+                            "rootCustomerNeedsID"=>$this->rootCustomerNeedsID,
+                            "qty"=>$newqty,
+                            "originationAddress1"=>$this->originationAddress1,
+                            "originationCity"=>$this->originationCity,
+                            "originationState"=>$this->originationState,
+                            "originationZip"=>$this->originationZip,
+                            "destinationAddress1"=>$this->destinationAddress1,
+                            "destinationCity"=>$this->destinationCity,
+                            "destinationState"=>$this->destinationState,
+                            "destinationZip"=>$this->destinationZip,
+                            "originationLat"=>$this->originationLat,
+                            "originationLng"=>$this->originationLng,
+                            "destinationLat"=>$this->destinationLat,
+                            "destinationLng"=>$this->destinationLng,
+                            "distance"=>$this->distance,
+                            "transportationMode"=>$this->transportationMode,
+                            "entityID"=>$this->entityID,
+                            "needsDataPoints"=>$this->needsDataPoints,
+                            "status"=>$this->status,
+                            "availableDate"=>$this->availableDate,
+                            "contactEmails"=>$this->contactEmails,
+                            "createdAt" => date('Y-m-d H:i:s'),
+                            "updatedAt" => date('Y-m-d H:i:s')
+                        );
+
+                        $url = $api_host."/api/customer_needs/";
+                        $options = array(
+                            'http' => array(
+                                'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                                'method'  => 'POST',
+                                'content' => http_build_query($data)
+                            )
+                        );
+                        $context  = stream_context_create($options);
+                        try {
+                            $destresult = json_decode(file_get_contents($url,false,$context),true);
+                        } catch (Exception $e) {
+                            return $e;
+                        }
+                  }
+
                   return "success";
 
               }
@@ -274,9 +323,11 @@ class CustomerNeed
 
       $this->rootCustomerNeedsID = $result["rootCustomerNeedsID"];
       $this->entityID = $result["entityID"];
+      $this->originationAddress1 = $result["originationAddress1"];
       $this->originationCity = $result["originationCity"];
       $this->originationState = $result["originationState"];
       $this->originationZip = $result["originationZip"];
+      $this->destinationAddress1 = $result["destinationAddress1"];
       $this->destinationCity = $result["destinationCity"];
       $this->destinationState = $result["destinationState"];
       $this->destinationZip = $result["destinationZip"];
@@ -482,5 +533,20 @@ class CustomerNeed
 
         //return "Your Committment has been recorded, and NEC will be notified";
         return true;
+    }
+
+    public function availabilityMatching($api_host, $id) {
+        // Load the carrier need data to send notification
+        $this->load($api_host,$id);
+
+        //- Exact match of Origination and Destination City and State
+        //- Exact match of Origination City and State
+        //- Exact match of Destination City and State
+        //- Match of Origination City
+        //- Match of Destination City
+        //- Match of Origination State
+        //- Match of Destination State
+
+
     }
 }

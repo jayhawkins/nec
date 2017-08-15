@@ -332,8 +332,9 @@ $app->route('GET /viewpolicy', function() {
 	$entityID = Flight::request()->query['entityID'];
 	$filename = Flight::request()->query['filename'];
     $theFile = FILE_LOCATION."users/0/".$entityID."/".$filename;
+    $fileType = pathinfo($filename,PATHINFO_EXTENSION);
 
-    header("Content-type: application/pdf\r\n");
+    header("Content-type: application/".$fileType."\r\n");
     header('Content-Disposition: inline; filename="$theFile"\r\n');
     header("Content-Length: " . filesize($theFile) . "\r\n");
     readfile(FILE_LOCATION."users/0/".$entityID."/".$filename);
@@ -430,7 +431,7 @@ $app->route('POST /createcustomerneedsfromexisting', function() {
     }
 });
 
- 
+
 $app->route('POST /uploaddocument', function() {
 	$name = Flight::request()->data->name;
 	$fileupload = Flight::request()->files['fileupload'];
@@ -453,7 +454,6 @@ $app->route('POST /viewdocument', function() {
 	$filename = Flight::request()->data->filename;
     $result = $documents->viewdocument($entityID,FILE_LOCATION,$filename);
 });
-/*No longer using - moved to Insurance Carrier Processes*/
 
 // Start the framework
 $app->start();
