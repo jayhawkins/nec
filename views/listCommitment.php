@@ -14,6 +14,9 @@ $entity = json_decode(file_get_contents(API_HOST.'/api/entities?columns=rateType
 $entities = '';
 $entities = json_decode(file_get_contents(API_HOST.'/api/entities?columns=id,name&order=name&filter[]=id,gt,0&filter[]=entityTypeID,eq,2'));
 
+$allEntities = '';
+$allEntities = json_decode(file_get_contents(API_HOST.'/api/entities?columns=id,name&order=name&filter[]=id,gt,0&transform=1'));
+
 
 $locationTypeID = '';
 $locationTypes = json_decode(file_get_contents(API_HOST."/api/location_types?columns=id,name,status&filter[]=entityID,eq," . $_SESSION['entityid'] . "&filter[]=id,gt,0&satisfy=all&order=name"));
@@ -58,6 +61,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
     //console.log(JSON.stringify(entity.entities.records[0][1]));
 
     var entityid = <?php echo $_SESSION['entityid']; ?>;
+    
+    var allEntities = <?php echo json_encode($allEntities); ?>;
+    console.log(allEntities);
     
     var customerNeedsRootIDs = <?php echo json_encode($customer_needs_root)?>;
      
@@ -499,7 +505,25 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                 }
             },
             columns: [
-                { data: "entities[0].name", visible: true },
+                //{ data: "entities[0].name", visible: true },
+                {                     
+                    data: null,
+                    "bSortable": true,
+                    "mRender": function (o) {
+                        var entityName = '';
+                        var entityID = o.customer_needs_commit[0].entityID;
+                        
+                        allEntities.entities.forEach(function(entity){
+                            
+                            if(entityID == entity.id){
+                                
+                                entityName = entity.name;
+                            }                            
+                        });
+                                                
+                        return entityName;
+                    }, visible: true
+                },
                 { data: "id", visible: false },
                 { data: "rootCustomerNeedsID", visible: false},
                 { data: "entityID", visible: false },
