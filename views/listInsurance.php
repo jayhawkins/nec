@@ -151,6 +151,81 @@
 		}
 	}
 
+	function replaceDocument() {
+
+        var data,date;
+        var passValidation = false;
+        var type = "";
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth()+1; //January is 0!
+        var yyyy = today.getFullYear();
+        var hours = today.getHours();
+        var min = today.getMinutes();
+        var sec = today.getSeconds();
+        var url = "";
+        if(dd<10) {
+            dd='0'+dd;
+        }
+        if(mm<10) {
+            mm='0'+mm;
+        }
+        if(hours<10) {
+            hours='0'+hours;
+        }
+        if(min<10) {
+            min='0'+min;
+        }
+        today = mm+'/'+dd+'/'+yyyy;
+        today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+        var date = today;
+
+	    url = '<?php echo HTTP_HOST."/uploadpolicy" ?>';
+        type = "POST";
+        var formData = new FormData();
+        formData.append('fileupload', $('#updatePolicyFile')[0].files[0]);
+        formData.append('entityID', $("#entityID").val());
+        $.ajax({
+            url : url,
+            type : 'POST',
+            data : formData,
+            processData: false,  // tell jQuery not to process the data
+            contentType: false,  // tell jQuery not to set contentType
+            success : function(data) {
+                // update listInsurance
+                url = '<?php echo API_HOST."/api/insurance_carriers/" ?>' + $("#replaceID").val();
+                type = "PUT";
+                var files = $('#updatePolicyFile').prop("files");
+                var fileNames = $.map(files, function(val) { return val.name; }).join(',');
+                data = {id: $("#replaceID").val(), fileupload: fileNames, entityID: $("#entityID").val(), updatedAt: date};
+                console.log(data);
+                $.ajax({
+                    url: url,
+                    type: type,
+                    data: JSON.stringify(data),
+                    contentType: "application/json",
+                    async: false,
+                    success: function(data){
+                        if (data > 0) {
+                            $("#viewPolicy").modal('hide');
+                            loadTableAJAX();
+                            passValidation = true;
+                        } else {
+                            alert("Updating Insurance Policy Document Failed!");
+                        }
+                    },
+                    error: function() {
+                        alert("There Was An Error Updating Insurance Document!");
+                    }
+                });
+                console.log('listInsurance updated');
+            },
+            error: function() {
+                alert("Failed");
+            }
+        });
+	}
+
 	function loadTableAJAX() {
 		var url = '<?php echo API_HOST; ?>' + '/api/insurance_carriers?columns=id,name,link,contactName,contactEmail,contactPhone,policyNumber,policyExpirationDate,fileupload,status&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order=name&transform=1';
 		var example_table = $('#datatable-table').DataTable({
@@ -176,7 +251,7 @@
 				{ data: "contactPhone" },
 				{ data: "policyNumber", visible: false },
 				{ data: "policyExpirationDate", visible: false },
-				{ data: "fileupload", visible: false },
+				{ data: "fileupload" },
 				{
 					data: null,
 					"bSortable": false,
@@ -436,6 +511,7 @@
                 <div class="row">
                 <form>
                     <input type="hidden" id="entityID" value="<?php echo $_SESSION['entityid']; ?>" />
+                    <input type="hidden" id="replaceID" name="replaceID" value="" />
                     <input type="hidden" id="docToView" value="" />
                     <div id="divUploadPolicyFile" class="col-sm-6">
                         <label for="updatePolicyFile">Update Policy File</label>
@@ -445,11 +521,12 @@
                             onchange="validateFile(this);" />
                         </div>
                     </div>
-                    <div class="col-sm-3 pull-right">
-                        <button type="button" class="btn btn-primary" id="btnReplace">Replace Document</button>
-                    </div>
-                    <div class="col-sm-3 pull-right">
-                        <button type="button" class="btn btn-primary" id="btnView">View Document</button>
+                    <div class="col-sm-6 pull-right">
+                        <label for="btnView">&nbsp;</label>
+                        <div class="form-group">
+                            <button type="button" class="btn btn-primary" id="btnReplace">Replace Document</button>
+                            <button type="button" class="btn btn-primary" id="btnView">View Document</button>
+                        </div>
                     </div>
                 </form>
                 </div>
@@ -502,6 +579,7 @@
 			$("#docToView").val(data["fileupload"]);
 			$("#myModal").modal('show');
         } else if (this.textContent.indexOf("View Policy") > -1) {
+            $("#replaceID").val(data['id']);
             $("#docToView").val(data['fileupload']);
             $("#divUploadPolicyFile").hide();
             $("#btnSave").hide();
@@ -520,12 +598,12 @@
 		}
 	});
 
-	$("#btnReplace").click(function(){
+	$("#btnReplace").unbind('click').bind('click',function(){
 	    $("#divUploadPolicyFile").show();
         $("#btnSave").show();
 	});
 
-	$("#btnView").click(function(){
+	$("#btnView").unbind('click').bind('click',function(){
 	    window.open( '<?php echo HTTP_HOST."/viewpolicy" ?>?filename=' + $("#docToView").val() + '&entityID=' + $("#entityID").val(), '_blank');
 	    /*
 	    url = '<?php echo HTTP_HOST."/viewpolicy" ?>';
@@ -541,6 +619,11 @@
             }
         });
         */
+	});
+
+	$("#btnSave").unbind('click').bind('click',function(){ // Doing it like this because it was double posting document giving me duplicates
+	    replaceDocument();
+	    return false;
 	});
 
 

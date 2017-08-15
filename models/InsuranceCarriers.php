@@ -34,11 +34,13 @@ class InsuranceCarrier
 		if ($fileupload["size"] > 20000000) {
 			// File Too Large
 			$uploadOk = 0;
+			//return "File too big";
 		}
 		// Allow certain file formats
 		if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif" && $imageFileType != "pdf" && $imageFileType != "doc" && $imageFileType != "docx" && $imageFileType != "zip") {
 			// Only JPG, JPEG, PNG, GIF, PDF, doc, docx & ZIP files are allowed
 			$uploadOk = 0;
+			//return "Invalid extention -> " . $imageFileType;
 		}
 		// Check if file already exists
 		if ((file_exists($target_file)) && ($uploadOk == 1)) {
@@ -111,8 +113,7 @@ class InsuranceCarrier
 		//	$mime_type = "application/".$fileType;
 		//}
 		$mime_type = "application/".$fileType;
-		echo $file;
-		die();
+
 		if(file_exists($file)){
 			// Try and open the remote stream
 			if (!$stream = fopen($file, 'r')) {
