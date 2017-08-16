@@ -488,7 +488,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
             processing: true,
             ajax: {
                 url: url,
-                //dataSrc: 'customer_needs'
+                //dataSrc: 'customer_needs',
                 dataSrc: function ( json ) {
                     
                     var customer_needs = json.customer_needs;
@@ -1437,12 +1437,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         formData.append('documentID', "purchaseOrder");
         formData.append('updatedAt', today);
         formData.append('fileupload', fileData);
-        console.log(fileData);
         
         var selectedTable = $('#selected-customer-need').DataTable();
         var selectedCustomerNeed = selectedTable.ajax.json().customer_needs[0];
         
-        console.log(selectedCustomerNeed);
         
         var commitTable = $('#customer-needs-commit-table').DataTable();
         var customer_needs = commitTable.ajax.json().customer_needs;
@@ -1451,7 +1449,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         customer_needs.forEach(function(customer_need){
 
             if(customer_need.customer_needs_commit.length > 0 && customer_need.customer_needs_commit[0].status == "Close"){
-                carrierIDs.push({carrierID: customer_need.customer_needs_commit[0].entityID});
+                var carrier = {carrierID: customer_need.customer_needs_commit[0].entityID};
+                
+                if (carrierIDs.indexOf(carrier) == -1) carrierIDs.push(carrier);                
             }
         });
                             

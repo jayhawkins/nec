@@ -241,7 +241,7 @@ if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
     
  ?>
             <li>
-                <a href="#">
+                <a href="#" onclick="ajaxFormCall('listOrders');">
                     <span class="icon">
                         <i class="fa fa-check-square-o"></i>
                     </span>
