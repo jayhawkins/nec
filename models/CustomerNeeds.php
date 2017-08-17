@@ -52,7 +52,8 @@ class CustomerNeed
           try {
 
               $data = array(
-                "rootCustomerNeedsID"=>$rootCustomerNeedsID,
+                //"rootCustomerNeedsID"=>$rootCustomerNeedsID,
+                "rootCustomerNeedsID"=>$id,
                 "qty"=>$qty,
                 //"originationAddress1"=>$originationAddress1,
                 "originationCity"=>$originationCity,
@@ -154,7 +155,8 @@ class CustomerNeed
                         $distance = ( ($details['rows'][0]['elements'][0]['distance']['value'] / 1000) * .6214 );
 
                         $data = array(
-                            "rootCustomerNeedsID"=>$rootCustomerNeedsID,
+                            //"rootCustomerNeedsID"=>$rootCustomerNeedsID,
+                            "rootCustomerNeedsID"=>$id,
                             "qty"=>$qty,
                             //"originationAddress1"=>$this->originationAddress1,
                             "originationCity"=>$this->originationCity,
@@ -173,7 +175,7 @@ class CustomerNeed
                             "entityID"=>$this->entityID,
                             "needsDataPoints"=>$this->needsDataPoints,
                             "status"=>$this->status,
-                            "availableDate"=>$this->availableDate,
+                            "availableDate"=>$deliveryDate,
                             "contactEmails"=>$this->contactEmails,
                             "createdAt" => date('Y-m-d H:i:s'),
                             "updatedAt" => date('Y-m-d H:i:s')
@@ -206,7 +208,8 @@ class CustomerNeed
                         $distance = ( ($details['rows'][0]['elements'][0]['distance']['value'] / 1000) * .6214 );
 
                         $data = array(
-                            "rootCustomerNeedsID"=>$rootCustomerNeedsID,
+                            //"rootCustomerNeedsID"=>$rootCustomerNeedsID,
+                            "rootCustomerNeedsID"=>$id,
                             "qty"=>$qty,
                             //"originationAddress1"=>$this->originationAddress1,
                             "originationCity"=>$destinationCity,
@@ -225,7 +228,7 @@ class CustomerNeed
                             "entityID"=>$this->entityID,
                             "needsDataPoints"=>$this->needsDataPoints,
                             "status"=>$this->status,
-                            "availableDate"=>$this->availableDate,
+                            "availableDate"=>$deliveryDate,
                             "contactEmails"=>$this->contactEmails,
                             "createdAt" => date('Y-m-d H:i:s'),
                             "updatedAt" => date('Y-m-d H:i:s')
