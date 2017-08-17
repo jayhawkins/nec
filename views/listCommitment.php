@@ -63,7 +63,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
     var entityid = <?php echo $_SESSION['entityid']; ?>;
     
     var allEntities = <?php echo json_encode($allEntities); ?>;
-    console.log(allEntities);
     
     var customerNeedsRootIDs = <?php echo json_encode($customer_needs_root)?>;
      
@@ -1485,8 +1484,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                         data: JSON.stringify(orderData),
                         contentType: "application/json",
                         async: false,
-                        success: function(){
-                            alert("Purchase Order Completed.");
+                        success: function(response){
+                            
+                            saveOrderDetails(response);
                             
                             $.ajax({
                                 url: '<?php echo API_HOST ?>' + '/api/customer_needs/' + selectedCustomerNeed.id,
@@ -1522,7 +1522,95 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
             alert('You must Upload the Customer\'s Purchase Order to Complete the Order.');
         }
     }
+    
+    function saveOrderDetails(orderID){
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth()+1; //January is 0!
+        var yyyy = today.getFullYear();
+        var hours = today.getHours();
+        var min = today.getMinutes();
+        var sec = today.getSeconds();
 
+        if(dd<10) {
+            dd='0'+dd;
+        }
+
+        if(mm<10) {
+            mm='0'+mm;
+        }
+
+        if(hours<10) {
+            hours='0'+hours;
+        }
+
+        if(min<10) {
+            min='0'+min;
+        }
+
+        if(sec<10) {
+            sec='0'+sec;
+        }
+
+        today = mm+'/'+dd+'/'+yyyy;
+        today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+        
+        
+        var table = $("#customer-needs-commit-table").DataTable();
+        var url = '<?php echo API_HOST ?>' + '/api/order_details/';
+        var json = table.ajax.json();        
+        
+        var customer_needs = json.customer_needs;
+        var order_detail_list = new Array();
+
+        customer_needs.forEach(function(customer_need){
+
+            if(customer_need.customer_needs_commit.length > 0 && 
+                    customer_need.customer_needs_commit[0].status == "Close"){
+                
+                var order_detail = {
+                    carrierID: customer_need.customer_needs_commit[0].entityID,
+                    orderID: orderID,
+                    originationCity: customer_need.originationCity,
+                    originationState: customer_need.originationState,
+                    destinationCity: customer_need.destinationCity,
+                    destinationState: customer_need.destinationState,
+                    originationLng: customer_need.originationLng,
+                    originationLat: customer_need.originationLat,
+                    destinationLng: customer_need.destinationLng,
+                    destinationLat: customer_need.destinationLat,
+                    distance: customer_need.distance,
+                    status: "Open",
+                    transportationMode: customer_need.transportationMode,
+                    qty: customer_need.qty,
+                    carrierRate: customer_need.customer_needs_commit[0].rate,
+                    pickupDate: customer_need.customer_needs_commit[0].pickupDate,
+                    deliveryDate: customer_need.customer_needs_commit[0].deliveryDate,
+                    createdAt: today,
+                    updatedAt: today
+                };                
+                
+                order_detail_list.push(order_detail);
+            }
+        });
+        
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: JSON.stringify(order_detail_list),
+            contentType: "application/json",
+            async: false,
+            success: function(){
+                alert("Purchase Order Completed.");
+            },
+            error: function(){
+                alert("Error with adding Order Details.");
+            }
+
+        });
+
+    }
+    
     var table = $("#datatable-table").DataTable();
     $("#customer-needs-commit").css("display", "none");
 
@@ -1594,7 +1682,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         var table = '<table  class="col-sm-12" cellpadding="5" cellspacing="0" border="0"><tr>';
 
         // `d` is the original data object for the row
-        var ndp = d.customer_needs[0].needsDataPoints;
+        var ndp = d.needsDataPoints;
 
         for (var i = 0; i < dataPoints.object_type_data_points.length; i++) {
             var selected = '';
