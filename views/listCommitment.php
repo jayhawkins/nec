@@ -63,7 +63,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
     var entityid = <?php echo $_SESSION['entityid']; ?>;
     
     var allEntities = <?php echo json_encode($allEntities); ?>;
-    console.log(allEntities);
     
     var customerNeedsRootIDs = <?php echo json_encode($customer_needs_root)?>;
      
@@ -1594,7 +1593,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         var table = '<table  class="col-sm-12" cellpadding="5" cellspacing="0" border="0"><tr>';
 
         // `d` is the original data object for the row
-        var ndp = d.customer_needs[0].needsDataPoints;
+        var ndp = d.needsDataPoints;
 
         for (var i = 0; i < dataPoints.object_type_data_points.length; i++) {
             var selected = '';
