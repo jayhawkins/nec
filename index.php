@@ -335,7 +335,7 @@ $app->route('GET /viewpolicy', function() {
     $fileType = pathinfo($filename,PATHINFO_EXTENSION);
 
     header("Content-type: application/".$fileType."\r\n");
-    header('Content-Disposition: inline; filename="$theFile"\r\n');
+    header('Content-Disposition: inline; filename='.$filename.'\r\n');
     header("Content-Length: " . filesize($theFile) . "\r\n");
     readfile(FILE_LOCATION."users/0/".$entityID."/".$filename);
 

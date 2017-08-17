@@ -513,7 +513,7 @@
                     <input type="hidden" id="entityID" value="<?php echo $_SESSION['entityid']; ?>" />
                     <input type="hidden" id="replaceID" name="replaceID" value="" />
                     <input type="hidden" id="docToView" value="" />
-                    <div id="divUploadPolicyFile" class="col-sm-6">
+                    <div id="divUploadPolicyFile" class="col-md-7">
                         <label for="updatePolicyFile">Update Policy File</label>
                         <div class="form-group">
                             <input type="file" id="updatePolicyFile" name="updatePolicyFile" class="form-control mb-sm" placeholder="Update Policy" data-filesize="20000000"
@@ -521,7 +521,7 @@
                             onchange="validateFile(this);" />
                         </div>
                     </div>
-                    <div class="col-sm-6 pull-right">
+                    <div class="col-md-5 pull-right">
                         <label for="btnView">&nbsp;</label>
                         <div class="form-group">
                             <button type="button" class="btn btn-primary" id="btnReplace">Replace Document</button>
