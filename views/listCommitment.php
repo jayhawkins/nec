@@ -1312,7 +1312,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
     function addNewCommit(){  
         
         var selectedTable = $("#selected-customer-need").DataTable();
-        var json = selectedTable.ajax.json()
+        var json = selectedTable.ajax.json();
         var data = json.customer_needs[0];
         
         var li = '';

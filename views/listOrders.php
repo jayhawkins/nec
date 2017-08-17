@@ -123,10 +123,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                         orders.forEach(function(order){
                             var carrierIDs = order.carrierIDs;
                             
-                            //console.log(carrierIDs, carrier);
-                            
-                            //if (carrierIDs.indexOf(carrier) > -1) carrierOrders.push(order);
-                            
                             for(var i = 0; i < carrierIDs.length; i++){
                                 carrierIDs[i].carrierID 
                                 if(carrierIDs[i].carrierID == entityid){
@@ -226,13 +222,13 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         
         switch(entityType){
             case 0:     // URL for the Admin.
-                url += '/api/order_details?include=orders&columns=id,carrierID,orderID,originationCity,originationState,destinationCity,destinationState,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID&filter=orderID,eq,' + orderID + '&transform=1';
+                url += '/api/order_details?include=orders&columns=id,carrierID,orderID,originationCity,originationState,destinationCity,destinationState,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID&filter=orderID,eq,' + orderID + '&transform=1';
                 break;
             case 1:    // URL for Customer.
-                url += '/api/order_details?include=orders&columns=id,carrierID,orderID,originationCity,originationState,destinationCity,destinationState,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID&filter=orderID,eq,' + orderID + '&transform=1';
+                url += '/api/order_details?include=orders&columns=id,carrierID,orderID,originationCity,originationState,destinationCity,destinationState,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID&filter=orderID,eq,' + orderID + '&transform=1';
                 break;
             case 2:     // URL for the Carrier. The Customer can only see order details of their route.
-                url += '/api/order_details?include=orders&columns=id,carrierID,orderID,originationCity,originationState,destinationCity,destinationState,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID&filter[]=orderID,eq,' + orderID + '&filter[]=carrierID,eq,' + entityid + '&transform=1';
+                url += '/api/order_details?include=orders&columns=id,carrierID,orderID,originationCity,originationState,destinationCity,destinationState,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID&filter[]=orderID,eq,' + orderID + '&filter[]=carrierID,eq,' + entityid + '&transform=1';
                 break;
         }        
         
@@ -286,7 +282,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                             
                             var orderDetail = {
                                 orders: order_details[0].orders,
-                                status: order_details[0].status,
+                                status: order_details[0].orders[0].status,
                                 qty: order_details[0].qty,
                                 transportationMode: order_details[0].transportationMode,
                                 pickupDate: earliestPickup,
@@ -317,8 +313,20 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                     { data: "destinationCity" },
                     { data: "destinationState" },
                     { data: "distance" },
-                    { data: "carrierRate" }
-                ]
+                    { data: "carrierRate" },
+                    {
+                        data: null,
+                        "bSortable": false,
+                        "mRender": function (o) {
+                            var buttons = '';
+
+                            buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text-info\"></i> <span class=\"text-info\">Edit</span></button>';
+
+                            return buttons;
+                        }
+                    }
+                ],
+                scrollX: true
               });
 
             //To Reload The Ajax
@@ -335,6 +343,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         $("#order-details").css("display", "block");
         $("#orders").css("display", "none");
     }
+    
  </script>
 
  <style>
@@ -474,6 +483,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                      <th class="hidden-sm-down">Dest. State</th>
                      <th class="hidden-sm-down">Mileage</th>
                      <th>Rate</th>
+                     <th class="no-sort pull-right"></th>
                  </tr>
                  </thead>
                  <tbody>
@@ -484,16 +494,132 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                 
  </section>
  
+<!-- Modal -->
+  <div class="modal fade" id="changeOrderStatus" tabindex="-1" aria-hidden="true" aria-label="exampleModalCommitLabel">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalCommitLabel"><strong>Change Order Status</strong></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+                <form id="formNeed" class="register-form mt-lg">
+                  <input type="hidden" id="id" name="id" value="" />
+                  <input type="hidden" id="ocity" name="ocity" value="" />
+                  <input type="hidden" id="ostate" name="ostate" value="" />
+                  <input type="hidden" id="dcity" name="dcity" value="" />
+                  <input type="hidden" id="dstate" name="dstate" value="" />
+                  <div class="row">
+                      <div class="col-sm-2">
+                            <label for="qtyTrailers"># of Trailers</label>
+                            <div class="form-group">
+                                <input type="text" id="qtyTrailers" name="qtyTrailers" class="form-control" placeholder="Number of Trailers" readonly>
+                            </div>
+                      </div>
+                      <div class="col-sm-3">
+                          <label for="pickupDate">Pick-Up Date</label>
+                          <div class="form-group">
+                            <div id="sandbox-container" class="input-group date  datepicker">
+                               <input type="text" id="pickupDate" name="pickupDate" class="form-control" placeholder="Pickup Date" readonly><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                            </div>
+                          </div>
+                      </div>
+                      <div class="col-sm-3">
+                          <label for="deliveryDate">Delivery Date</label>
+                          <div class="form-group">
+                            <div id="sandbox-container" class="input-group date  datepicker">
+                               <input type="text" id="deliveryDate" name="deliveryDate" class="form-control" placeholder="Delivery Date" readonly><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                            </div>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="row">
+                      <div class="col-sm-3">
+                          <label for="originationCity">Origination City</label>
+                          <div class="form-group">
+                            <input type="text" id="originationCity" name="originationCity" class="form-control mb-sm" placeholder="Origin City" readonly />
+                          </div>
+                      </div>
+                      <div class="col-sm-3">
+                          <label for="originationState">Origination State</label>
+                          <div class="form-group">
+                            <select id="originationState" name="originationState" data-placeholder="Origin State" class="form-control chzn-select" data-ui-jq="select2" disabled>
+                              <option value="">*Select State...</option>
+             <?php
+                              foreach($states->states->records as $value) {
+                                  $selected = ($value[0] == $state) ? 'selected=selected':'';
+                                  echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
+                              }
+             ?>
+                            </select>
+                          </div>
+                      </div>
+                      <div class="col-sm-4">
+                      </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-3">
+                        <label for="DestinationCity">Destination City</label>
+                        <div class="form-group">
+                          <input type="text" id="destinationCity" name="destinationCity" class="form-control mb-sm" placeholder="Dest. City" readonly/>
+                        </div>
+                        <div id="dest-suggesstion-box" class="frmSearch"></div>
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="destinationState">Destination State</label>
+                        <div class="form-group">
+                          <select id="destinationState" name="destinationState" data-placeholder="Dest. State" class="form-control chzn-select" data-ui-jq="select2" disabled>
+                            <option value="">*Select State...</option>
+           <?php
+                            foreach($states->states->records as $value) {
+                                $selected = ($value[0] == $state) ? 'selected=selected':'';
+                                echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
+                            }
+           ?>
+                          </select>
+                        </div>
+                    </div>
+                  </div>
+                  <hr/>
+                  <div class="row">                      
+                      <div class="col-sm-3">
+                        <label for="transportationMode">Transportation Mode</label>
+                        <div class="form-group">
+                            <input type="text" id="transportationMode" name="transportationMode" class="form-control" placeholder="TransportationMode" readonly>
+                        </div>
+                      </div>                    
+                      <div class="col-sm-3">
+                        <label for="orderStatusDiv">Order Status</label>
+                        <div id="orderStatusDiv" class="form-group">
+                            
+                        </div>
+                      </div>
+                  </div>
+        </div>
+        <div class="modal-footer">
+           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+           <button type="button" class="btn btn-primary btn-md" onclick="" id="load">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+ 
+ 
  
  <script>
 
     loadTableAJAX();
-
+    
+/*
     $('.datepicker').datepicker({
         autoclose: true,
         todayHighlight: true,
         format: "yyyy-mm-dd"
     });
+*/
 
     var table = $("#orders-table").DataTable();
     
@@ -507,8 +633,61 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
     }
 
 
-    $('#orders-table tbody').on( 'click', 'button', function () {
-        var data = table.row( $(this).parents('tr') ).data();
+    $('#order-details-table tbody').on( 'click', 'button', function () {
+        var orderDetailsTable = $("#order-details-table").DataTable();
+        var data = orderDetailsTable.row( $(this).parents('tr') ).data();
+
+        if(entityType == 0 || entityType == 2) {
+            
+            var orderStatusSelect = '<select id="orderStatus" name="orderStatus" class="form-control mb-sm" required="required">\n';
+        
+            $("#id").val(data["orders[0].id"]);
+            $("#originationCity").val(data["originationCity"]);
+            $("#originationState").val(data["originationState"]);
+            $("#destinationCity").val(data["destinationCity"]);
+            $("#destinationState").val(data["destinationState"]);
+            $("#ocity").val(data["originationCity"]);
+            $("#ostate").val(data["originationState"]);
+            $("#dcity").val(data["destinationCity"]);
+            $("#dstate").val(data["destinationState"]);
+            $("#qtyTrailers").val(data["qty"]);
+            $("#pickupDate").val(data["pickupDate"]);
+            $("#deliveryDate").val(data["deliveryDate"]);
+            $("#transportationMode").val(data["transportationMode"]);
+            
+            var inTransit = "";
+            var weatherDelay = "";
+            var atRelayLocation = "";
+            var delivered = "";
+            var completePOD = "";
+            
+            if (data['status'] == "In Transit") {
+                inTransit = "selected=selected";
+            } else if (data['status'] == "Weather Delay"){
+                weatherDelay = "selected=selected";
+            } else if (data['status'] == "At Relay Location"){
+                atRelayLocation = "selected=selected";
+            } else if (data['status'] == "Delivered"){
+                delivered = "selected=selected";
+            } else if (data['status'] == "Completed POD"){
+                completePOD = "selected=selected";
+            }
+            
+            orderStatusSelect += '<option value="">Please Select...</option>\n';
+            orderStatusSelect += '<option value="In Transit" '+inTransit+'>In Transit</option>\n';
+            orderStatusSelect += '<option value="Weather Delay" '+weatherDelay+'>Weather Delay</option>\n';
+            orderStatusSelect += '<option value="At Relay Location" '+atRelayLocation+'>At Relay Location</option>\n';
+            orderStatusSelect += '<option value="Delivered" '+delivered+'>Delivered</option>\n';
+            orderStatusSelect += '<option value="Completed POD" '+completePOD+'>Completed POD</option>\n';
+                    
+            orderStatusSelect += '</select>\n';
+            $("#orderStatusDiv").html(orderStatusSelect);
+            
+            $("#changeOrderStatus").modal('show');
+        }
+        else if(entityType == 1) {
+            console.log("This is the Customer.");
+        }
 
     });
 
