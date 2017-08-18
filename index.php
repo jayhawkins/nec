@@ -455,5 +455,30 @@ $app->route('POST /viewdocument', function() {
     $result = $documents->viewdocument($entityID,FILE_LOCATION,$filename);
 });
 
+
+/*****************************************************************************/
+// POD API Process
+/*****************************************************************************/
+$app->route('POST /pod_api', function() {
+    
+    // Data will be passed through using the format below
+    //$customerneedid = Flight::request()->data->id;
+    
+    // This is setup using config/setup.php
+    $podAPI = Flight::quickbooks();
+    
+    // This is the calling method inside the class
+    $apiResponse = $podAPI->testMethod();
+    
+    
+    if ($apiResponse) {
+        print_r($apiResponse);
+        //echo "success";
+    } else {
+        print_r($apiResponse);
+    }
+});
+
+
 // Start the framework
 $app->start();

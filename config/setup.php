@@ -26,6 +26,7 @@ require 'models/CustomerNeeds.php';
 require 'models/CustomerNeedsCommit.php';
 require 'models/Documents.php';
 require 'models/InsuranceCarriers.php';
+require 'models/Quickbooks.php';        // All of your API code will need to go into 'models/Quickbooks.php'
 
 Flight::register( 'user', 'User' );
 Flight::register( 'entity', 'Entity' );
@@ -38,3 +39,4 @@ Flight::register( 'customerneed', 'CustomerNeed' );
 Flight::register( 'customerneedcommit', 'CustomerNeedCommit' );
 Flight::register( 'documents', 'Documents' );
 Flight::register( 'insurancecarrier', 'InsuranceCarrier' );
+Flight::register( 'quickbooks', 'Quickbooks' );
