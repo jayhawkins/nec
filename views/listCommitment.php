@@ -452,7 +452,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
                         }
                         else{
-                            buttons += "Order Completed!" ;
+                            buttons += "Commitment Complete!" ;
                         }
                         
                         return buttons;

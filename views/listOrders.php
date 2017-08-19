@@ -85,7 +85,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
             }
         };
     })();
-
+    
     function loadTableAJAX() {        
         
         var url = '<?php echo API_HOST; ?>';
@@ -184,7 +184,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                 { data: "destinationZip" },
                 { data: "distance", render: $.fn.dataTable.render.number(',', '.', 0, '')  },
                 { data: "needsDataPoints", visible: false },
-                { data: "status" },
+                { data: "status",visible: false },
                 {
                     data: null,
                     "bSortable": false,
@@ -219,6 +219,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
     function loadOrderDetailsAJAX(orderID){
         
         var url = '<?php echo API_HOST; ?>';
+        var blnShow = false;
         
         switch(entityType){
             case 0:     // URL for the Admin.
@@ -226,6 +227,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                 break;
             case 1:    // URL for Customer.
                 url += '/api/order_details?include=orders&columns=id,carrierID,orderID,originationCity,originationState,destinationCity,destinationState,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID&filter=orderID,eq,' + orderID + '&transform=1';
+                blnShow = true;
                 break;
             case 2:     // URL for the Carrier. The Customer can only see order details of their route.
                 url += '/api/order_details?include=orders&columns=id,carrierID,orderID,originationCity,originationState,destinationCity,destinationState,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID&filter[]=orderID,eq,' + orderID + '&filter[]=carrierID,eq,' + entityid + '&transform=1';
@@ -303,7 +305,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                 },
                 columns: [
                     { data: "orders[0].orderID" },
-                    { data: "status" },
+                    { data: "status", visible: false },
                     { data: "qty" },
                     { data: "transportationMode" },
                     { data: "pickupDate" },
@@ -323,10 +325,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                             buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text-info\"></i> <span class=\"text-info\">Edit</span></button>';
 
                             return buttons;
-                        }
+                        }, visible: blnShow
                     }
-                ],
-                scrollX: true
+                ]
               });
 
             //To Reload The Ajax
@@ -344,6 +345,102 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         $("#orders").css("display", "none");
     }
     
+    function loadOrderStatusesAJAX(orderID){
+        
+        var url = '<?php echo API_HOST; ?>/api/order_statuses?columns=id,orderID,city,state,status,note,createdAt&filter=orderID,eq,' + orderID + '&transform=1';
+        var blnShow = false;
+        
+        if(entityType != 1) blnShow = true;
+        
+        if ( ! $.fn.DataTable.isDataTable( '#order-history-table' ) ) {
+        
+            var order_history_table = $('#order-history-table').DataTable({
+                retrieve: true,
+                processing: true,
+                ajax: {
+                    url: url,
+                    dataSrc: 'order_statuses'
+                },
+                columns: [
+                    { data: "createdAt" },
+                    { data: "city" },
+                    { data: "state" },
+                    { data: "status" },
+                    { data: "note", visible: blnShow }
+                ]
+              });
+
+            //To Reload The Ajax
+            //See DataTables.net for more information about the reload method
+            order_history_table.ajax.reload();
+        }
+        else{
+            //The URL will change with each "View Commit" button click
+          // Must load new Url each time.
+            var reload_table = $('#order-history-table').DataTable();
+            reload_table.ajax.url(url).load();
+        }
+        
+        
+    }
+    
+    
+    function loadPODListAJAX(orderID){
+        
+        var url = '<?php echo API_HOST; ?>/api/orders?columns=podList&filter=id,eq,' + orderID + '&transform=1';
+        
+        
+        if ( ! $.fn.DataTable.isDataTable( '#pod-list-table' ) ) {
+        
+            var order_history_table = $('#pod-list-table').DataTable({
+                retrieve: true,
+                processing: true,
+                ajax: {
+                    url: url,
+                    dataSrc: 'orders[0].podList'
+                },
+                columns: [
+                    { data: "vinNumber" },
+                    { data: "deliveryDate" },
+                    { data: "notes" },
+                    {  
+                        data: null,
+                        "bSortable": false,
+                        "mRender": function (o) {
+                            var buttons = '';
+
+                            buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"fa fa-download text-info\"></i> <span class=\"text-info\">Download POD</span></button>';
+
+                            return buttons;
+                        }
+                    },
+                    {  
+                        data: null,
+                        "bSortable": false,
+                        "mRender": function (o) {
+                            var buttons = '';
+
+                            buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"fa fa-upload text-info\"></i> <span class=\"text-info\">Upload POD</span></button>';
+
+                            return buttons;
+                        }
+                    }
+                ]
+              });
+
+            //To Reload The Ajax
+            //See DataTables.net for more information about the reload method
+            order_history_table.ajax.reload();
+        }
+        else{
+            //The URL will change with each "View Commit" button click
+          // Must load new Url each time.
+            var reload_table = $('#pod-list-table').DataTable();
+            reload_table.ajax.url(url).load();
+        }
+        
+        
+    }
  </script>
 
  <style>
@@ -407,11 +504,13 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
  </style>
 
+ <div id="orders">
+     
  <ol class="breadcrumb">
    <li>ADMIN</li>
    <li class="active">View Orders</li>
  </ol>
- <section id="orders" class="widget">
+ <section  class="widget">
      <header>
          <h4><span class="fw-semi-bold">Orders</span></h4>
          <!--<div class="widget-controls">
@@ -454,52 +553,124 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
          </div>
      </div>
  </section>
+ </div>
  
- 
-<section class="widget"  id="order-details" style="display: none;">
-     <header>
-         <h4><span class="fw-semi-bold">Order Details</span></h4>  
-         <div class="widget-controls">
-             <a data-widgster="close" title="Close" href="Javascript:closeOrderDetails()"><i class="glyphicon glyphicon-remove"></i></a>
-         </div>
-     </header>
+ <div id="order-details" style="display: none;">
+    <ol class="breadcrumb">
+      <li>ADMIN</li>
+      <li>View Orders</li>
+      <li class="active">View Order Details</li>
+    </ol>
+     
+    <section class="widget">
+         <header>
+             <h4><span class="fw-semi-bold">Order Details</span></h4>  
+             <div class="widget-controls">
+                 <a data-widgster="close" title="Close" href="Javascript:closeOrderDetails()"><i class="glyphicon glyphicon-remove"></i></a>
+             </div>
+         </header>
+        <br>
+        <br>
+        <div class="widget-body">
+
+            <div id="dataTable-1" class="mt">
+                <table id="order-details-table" class="table table-striped table-hover">
+                    <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Status</th>
+                        <th>Qty</th>
+                        <th>Transport Mode</th>
+                        <th>Pick Up</th>
+                        <th>Delivery</th>
+                        <th class="hidden-sm-down">Orig. City</th>
+                        <th class="hidden-sm-down">Orig. State</th>
+                        <th class="hidden-sm-down">Dest. City</th>
+                        <th class="hidden-sm-down">Dest. State</th>
+                        <th class="hidden-sm-down">Mileage</th>
+                        <th>Rate</th>
+                        <th class="no-sort pull-right"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <!-- loadTableAJAX() is what populates this area -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
     <br>
-    <br>
-     <div class="widget-body">
-         
-         <div id="dataTable-2" class="mt">
-            <table id="order-details-table" class="table table-striped table-hover">
-                 <thead>
-                 <tr>
-                     <th>Order ID</th>
-                     <th>Status</th>
-                     <th>Qty</th>
-                     <th>Transport Mode</th>
-                     <th>Pick Up</th>
-                     <th>Delivery</th>
-                     <th class="hidden-sm-down">Orig. City</th>
-                     <th class="hidden-sm-down">Orig. State</th>
-                     <th class="hidden-sm-down">Dest. City</th>
-                     <th class="hidden-sm-down">Dest. State</th>
-                     <th class="hidden-sm-down">Mileage</th>
-                     <th>Rate</th>
-                     <th class="no-sort pull-right"></th>
-                 </tr>
-                 </thead>
-                 <tbody>
-                      <!-- loadTableAJAX() is what populates this area -->
-                 </tbody>
+    
+        <div id="dataTable-2" class="mt">
+            <h5><span class="fw-semi-bold">Order Tracking History</span></h5>
+            <table id="order-history-table" class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>City</th>
+                    <th>State</th>
+                    <th>Status</th>
+                    <th>Note</th>
+                </tr>
+                </thead>
+                <tbody>
+                    <!-- loadTableAJAX() is what populates this area -->
+                </tbody>
              </table>
-         </div>
-                
- </section>
- 
+        </div>
+    
+              <?php 
+              
+              if ($_SESSION['entitytype'] != 1){ 
+                  
+                  ?>
+    
+        <div class="row">            
+            <div class="col-sm-4">
+                <a data-widgster="addDeliveryStatus" title="Add" href="Javascript:addDeliveryStatus();"><i class="fa fa-plus-square-o"></i> Add Delivery Status</a>
+            </div>
+        </div>
+    
+              <?php 
+              
+              } 
+              
+              ?>
+    
+    <br>
+    
+        <div id="dataTable-3" class="mt">
+            <h5><span class="fw-semi-bold">POD List</span></h5>
+            <table id="pod-list-table" class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>Trailer VIN</th>
+                    <th>Delivery Date</th>
+                    <th>Notes</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                    <!-- loadTableAJAX() is what populates this area -->
+                </tbody>
+             </table>
+        </div>
+    
+    
+     </section>
+     
+     
+
+      
+ </div>
+    
 <!-- Modal -->
-  <div class="modal fade" id="changeOrderStatus" tabindex="-1" aria-hidden="true" aria-label="exampleModalCommitLabel">
+  <div class="modal fade" id="addOrderStatus" tabindex="-1" aria-hidden="true" aria-label="exampleModalCommitLabel">
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalCommitLabel"><strong>Change Order Status</strong></h5>
+          <h5 class="modal-title" id="exampleModalCommitLabel"><strong>Add Order Status</strong></h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -507,45 +678,17 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         <div class="modal-body">
                 <form id="formNeed" class="register-form mt-lg">
                   <input type="hidden" id="id" name="id" value="" />
-                  <input type="hidden" id="ocity" name="ocity" value="" />
-                  <input type="hidden" id="ostate" name="ostate" value="" />
-                  <input type="hidden" id="dcity" name="dcity" value="" />
-                  <input type="hidden" id="dstate" name="dstate" value="" />
-                  <div class="row">
-                      <div class="col-sm-2">
-                            <label for="qtyTrailers"># of Trailers</label>
-                            <div class="form-group">
-                                <input type="text" id="qtyTrailers" name="qtyTrailers" class="form-control" placeholder="Number of Trailers" readonly>
-                            </div>
-                      </div>
-                      <div class="col-sm-3">
-                          <label for="pickupDate">Pick-Up Date</label>
-                          <div class="form-group">
-                            <div id="sandbox-container" class="input-group date  datepicker">
-                               <input type="text" id="pickupDate" name="pickupDate" class="form-control" placeholder="Pickup Date" readonly><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
-                            </div>
-                          </div>
-                      </div>
-                      <div class="col-sm-3">
-                          <label for="deliveryDate">Delivery Date</label>
-                          <div class="form-group">
-                            <div id="sandbox-container" class="input-group date  datepicker">
-                               <input type="text" id="deliveryDate" name="deliveryDate" class="form-control" placeholder="Delivery Date" readonly><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
-                            </div>
-                          </div>
-                      </div>
-                  </div>
                   <div class="row">
                       <div class="col-sm-3">
-                          <label for="originationCity">Origination City</label>
+                          <label for="city">City</label>
                           <div class="form-group">
-                            <input type="text" id="originationCity" name="originationCity" class="form-control mb-sm" placeholder="Origin City" readonly />
+                              <input type="text" id="city" name="city" class="form-control mb-sm" placeholder="City" required="true" />
                           </div>
                       </div>
                       <div class="col-sm-3">
-                          <label for="originationState">Origination State</label>
+                          <label for="state">State</label>
                           <div class="form-group">
-                            <select id="originationState" name="originationState" data-placeholder="Origin State" class="form-control chzn-select" data-ui-jq="select2" disabled>
+                            <select id="state" name="state" data-placeholder="State" class="form-control chzn-select" data-ui-jq="select2">
                               <option value="">*Select State...</option>
              <?php
                               foreach($states->states->records as $value) {
@@ -555,41 +698,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
              ?>
                             </select>
                           </div>
-                      </div>
-                      <div class="col-sm-4">
-                      </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-sm-3">
-                        <label for="DestinationCity">Destination City</label>
-                        <div class="form-group">
-                          <input type="text" id="destinationCity" name="destinationCity" class="form-control mb-sm" placeholder="Dest. City" readonly/>
-                        </div>
-                        <div id="dest-suggesstion-box" class="frmSearch"></div>
-                    </div>
-                    <div class="col-sm-3">
-                        <label for="destinationState">Destination State</label>
-                        <div class="form-group">
-                          <select id="destinationState" name="destinationState" data-placeholder="Dest. State" class="form-control chzn-select" data-ui-jq="select2" disabled>
-                            <option value="">*Select State...</option>
-           <?php
-                            foreach($states->states->records as $value) {
-                                $selected = ($value[0] == $state) ? 'selected=selected':'';
-                                echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
-                            }
-           ?>
-                          </select>
-                        </div>
-                    </div>
-                  </div>
-                  <hr/>
-                  <div class="row">                      
-                      <div class="col-sm-3">
-                        <label for="transportationMode">Transportation Mode</label>
-                        <div class="form-group">
-                            <input type="text" id="transportationMode" name="transportationMode" class="form-control" placeholder="TransportationMode" readonly>
-                        </div>
-                      </div>                    
+                      </div>                 
                       <div class="col-sm-3">
                         <label for="orderStatusDiv">Order Status</label>
                         <div id="orderStatusDiv" class="form-group">
@@ -597,10 +706,19 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                         </div>
                       </div>
                   </div>
+                  <hr/>
+                  <div class="row">                 
+                      <div class="col-sm-12">
+                        <label for="statusNotes">Notes</label>
+                        <div class="form-group">
+                            <textarea id="statusNotes" rows="4" cols="50" class="form-control mb-sm" maxlength="600"></textarea>
+                        </div>
+                      </div>
+                  </div>
         </div>
         <div class="modal-footer">
            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-           <button type="button" class="btn btn-primary btn-md" onclick="" id="load">Save</button>
+           <button type="button" class="btn btn-primary btn-md" onclick="saveDeliveryStatus();" id="saveOrderStatus">Save</button>
         </div>
       </div>
     </div>
@@ -633,63 +751,110 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
     }
 
 
-    $('#order-details-table tbody').on( 'click', 'button', function () {
-        var orderDetailsTable = $("#order-details-table").DataTable();
-        var data = orderDetailsTable.row( $(this).parents('tr') ).data();
+    function saveDeliveryStatus(){        
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth()+1; //January is 0!
+        var yyyy = today.getFullYear();
+        var hours = today.getHours();
+        var min = today.getMinutes();
+        var sec = today.getSeconds();
 
-        if(entityType == 0 || entityType == 2) {
-            
+        if(dd<10) {
+            dd='0'+dd;
+        }
+
+        if(mm<10) {
+            mm='0'+mm;
+        }
+
+        if(hours<10) {
+            hours='0'+hours;
+        }
+
+        if(min<10) {
+            min='0'+min;
+        }
+
+        if(sec<10) {
+            sec='0'+sec;
+        }
+
+        today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+
+        var orderHistoryTable = $('#order-history-table').DataTable();
+        
+        var id = $("#id").val();
+        var city = $("#city").val();
+        var state = $("#state").val();
+        var status = $("#orderStatus").val();
+        var notes = $("#statusNotes").val();
+        
+        var orderStatus = {orderID: id, city: city, state: state, status: status, note: notes, createdAt: today, updatedAt: today};
+        
+        $.ajax({
+           url: '<?php echo API_HOST."/api/order_statuses" ?>/',
+           type: "POST",
+           data: JSON.stringify(orderStatus),
+           contentType: "application/json",
+           async: false,
+           success: function(data){
+                orderHistoryTable.ajax.reload();
+                $("#addOrderStatus").modal('hide');
+           },
+           error: function() {
+              alert("There Was An Error Saving the Status");
+           }
+        }); 
+        
+    }
+
+    function addDeliveryStatus() {
+        var orderDetailsTable = $("#order-details-table").DataTable();
+        var json = orderDetailsTable.ajax.json();
+        var data = json.order_details[0];
+
+        console.log(data);
+
             var orderStatusSelect = '<select id="orderStatus" name="orderStatus" class="form-control mb-sm" required="required">\n';
         
-            $("#id").val(data["orders[0].id"]);
-            $("#originationCity").val(data["originationCity"]);
-            $("#originationState").val(data["originationState"]);
-            $("#destinationCity").val(data["destinationCity"]);
-            $("#destinationState").val(data["destinationState"]);
-            $("#ocity").val(data["originationCity"]);
-            $("#ostate").val(data["originationState"]);
-            $("#dcity").val(data["destinationCity"]);
-            $("#dstate").val(data["destinationState"]);
-            $("#qtyTrailers").val(data["qty"]);
-            $("#pickupDate").val(data["pickupDate"]);
-            $("#deliveryDate").val(data["deliveryDate"]);
-            $("#transportationMode").val(data["transportationMode"]);
+            $("#id").val(data.orders[0].id);
             
             var inTransit = "";
-            var weatherDelay = "";
-            var atRelayLocation = "";
-            var delivered = "";
-            var completePOD = "";
+            var inCarriersYard = "";
+            var atShipper = "";
+            var trailerLoaded = "";
+            var atConsignee = "";
+            var trailerDelivered = "";
             
             if (data['status'] == "In Transit") {
                 inTransit = "selected=selected";
-            } else if (data['status'] == "Weather Delay"){
-                weatherDelay = "selected=selected";
-            } else if (data['status'] == "At Relay Location"){
-                atRelayLocation = "selected=selected";
-            } else if (data['status'] == "Delivered"){
-                delivered = "selected=selected";
-            } else if (data['status'] == "Completed POD"){
-                completePOD = "selected=selected";
+            } else if (data['status'] == "In Carrier's Yard"){
+                inCarriersYard = "selected=selected";
+            } else if (data['status'] == "At Shipper To Be Loaded"){
+                atShipper = "selected=selected";
+            } else if (data['status'] == "Trailer Loaded In Route"){
+                trailerLoaded = "selected=selected";
+            } else if (data['status'] == "At Consignee To Be Unloaded"){
+                atConsignee = "selected=selected";
+            } else if (data['status'] == "Trailer Delivered"){
+                trailerDelivered = "selected=selected";
             }
             
             orderStatusSelect += '<option value="">Please Select...</option>\n';
+            orderStatusSelect += '<option value="In Carrier\'s Yard" '+inCarriersYard+'>In Carrier\'s Yard</option>\n';
+            orderStatusSelect += '<option value="At Shipper To Be Loaded" '+atShipper+'>At Shipper To Be Loaded</option>\n';
+            orderStatusSelect += '<option value="Trailer Loaded In Route" '+trailerLoaded+'>Trailer Loaded In Route</option>\n';
+            orderStatusSelect += '<option value="At Consignee To Be Unloaded" '+atConsignee+'>At Consignee To Be Unloaded</option>\n';
+            orderStatusSelect += '<option value="Trailer Delivered" '+trailerDelivered+'>Trailer Delivered</option>\n';
             orderStatusSelect += '<option value="In Transit" '+inTransit+'>In Transit</option>\n';
-            orderStatusSelect += '<option value="Weather Delay" '+weatherDelay+'>Weather Delay</option>\n';
-            orderStatusSelect += '<option value="At Relay Location" '+atRelayLocation+'>At Relay Location</option>\n';
-            orderStatusSelect += '<option value="Delivered" '+delivered+'>Delivered</option>\n';
-            orderStatusSelect += '<option value="Completed POD" '+completePOD+'>Completed POD</option>\n';
                     
             orderStatusSelect += '</select>\n';
             $("#orderStatusDiv").html(orderStatusSelect);
             
-            $("#changeOrderStatus").modal('show');
-        }
-        else if(entityType == 1) {
-            console.log("This is the Customer.");
-        }
-
-    });
+            $("#addOrderStatus").modal('show');
+        
+    }
 
     $('#orders-table tbody').on( 'click', 'td.order-details-link', function () {
         var data = table.row( $(this).parents('tr') ).data();
@@ -697,7 +862,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         var orderID = data["id"];
 
         loadOrderDetailsAJAX(orderID);
-        
+        loadOrderStatusesAJAX(orderID);
+        loadPODListAJAX(orderID);
     });
     
     /* Formatting function for row details - modify as you need */
