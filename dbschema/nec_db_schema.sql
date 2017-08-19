@@ -600,6 +600,8 @@ COLLATE = utf8_general_ci
 ENGINE = InnoDB
 AUTO_INCREMENT = 1;
 
+ALTER TABLE `orders` ADD COLUMN `podList` JSON NOT NULL AFTER `needsDataPoints` ;
+
 ALTER TABLE `orders`
 	ADD CONSTRAINT `lnk_entities_orders` FOREIGN KEY ( `customerID` )
 	REFERENCES `entities`( `id` )
@@ -660,6 +662,33 @@ ALTER TABLE `order_details`
 
 -- -------------------------------------------------------------
 -- ---------------------------------------------------------
+
+-- CREATE TABLE "order_statuses" ------------------------------------
+-- CREATE TABLE "order_statuses" ----------------------------------------
+CREATE TABLE IF NOT EXISTS `order_statuses` (
+	`id` Int( 11 ) UNSIGNED AUTO_INCREMENT NOT NULL,
+	`orderID` Int( 11 ) UNSIGNED NOT NULL,
+	`city` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	`state` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	`status` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
+	`note` VarChar( 600 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
+	`createdAt` DateTime NOT NULL,
+	`updatedAt` DateTime NOT NULL,
+	CONSTRAINT `unique_id` UNIQUE( `id` ) )
+CHARACTER SET = utf8
+COLLATE = utf8_general_ci
+ENGINE = InnoDB
+AUTO_INCREMENT = 1;
+
+ALTER TABLE `order_statuses`
+	ADD CONSTRAINT `lnk_orders_order_statuses` FOREIGN KEY ( `orderID` )
+	REFERENCES `orders`( `id` )
+	ON DELETE No Action
+	ON UPDATE No Action;
+
+-- -------------------------------------------------------------
+-- ---------------------------------------------------------
+
 
 -- CREATE TABLE "users" ------------------------------------
 -- CREATE TABLE "users" ----------------------------------------
