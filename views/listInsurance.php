@@ -340,7 +340,6 @@
 			<table id="datatable-table" class="table table-striped table-hover">
 				<thead>
 					<tr>
-                    <th class="no-sort pull-right">&nbsp;</th>
 					<th>ID</th>
 					<th class="hidden-sm-down">Name</th>
 					<th class="hidden-sm-down">Contact Name</th>
