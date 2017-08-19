@@ -214,7 +214,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         orders_table.ajax.reload();
 
       }
-
       
     function loadOrderDetailsAJAX(orderID){
         
@@ -382,8 +381,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         }
         
         
-    }
-    
+    }    
     
     function loadPODListAJAX(orderID){
         
@@ -441,6 +439,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         
         
     }
+    
  </script>
 
  <style>
