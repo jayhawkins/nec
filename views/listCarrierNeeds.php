@@ -341,7 +341,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                         "bSortable": false,
                         "mRender": function (o) {
                             var buttons = '<div class="pull-right text-nowrap">';
-                            var buttons = '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text\"></i> <span class=\"text\">Edit</span></button>';
+                            buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text\"></i> <span class=\"text\">Edit</span></button>';
 
                             if (o.status == "Available") {
                                       buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text\"></i> <span class=\"text\">Available</span></button>";
@@ -390,13 +390,15 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                         data: null,
                         "bSortable": false,
                         "mRender": function (o) {
-                            var buttons = '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text-info\"></i> <span class=\"text-info\">Edit</span></button>';
+                            var buttons = '<div class="pull-right text-nowrap">';
+                            buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text\"></i> <span class=\"text\">Edit</span></button>';
 
                             if (o.status == "Available") {
-                                      buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text-info\"></i> <span class=\"text-info\">Available</span></button>";
+                                      buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text\"></i> <span class=\"text\">Available</span></button>";
                             } else {
-                                      buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text-info\"></i> <span class=\"text-info\">Unavailable</span></button>";
+                                      buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text\"></i> <span class=\"text\">Unavailable</span></button>";
                             }
+                            buttons += '</div>';
 
                             return buttons;
                         }
@@ -1105,7 +1107,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       for (var i = 0; i < dataPoints.object_type_data_points.length; i++) {
           dpli += '<li>' + dataPoints.object_type_data_points[i].title +
                   ' <select class="form-control mb-sm" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '">\n' +
-                  ' <option value="">-Select One-</option>\n';
+                  ' <option value="" selected=selected>-Select From List-</option>\n';
           for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
               dpli += '<option>' + dataPoints.object_type_data_points[i].object_type_data_point_values[v].value + '</option>\n';
           }
@@ -1211,7 +1213,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
                 dpli += '<li>' + dataPoints.object_type_data_points[i].title +
                         ' <select class="form-control mb-sm" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '">\n' +
-                        ' <option value="">-Select One-</option>\n';
+                        ' <option value="">-Select From List-</option>\n';
                 for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
 
                     if (dataPoints.object_type_data_points[i].object_type_data_point_values[v].value === value) {
