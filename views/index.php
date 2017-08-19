@@ -109,6 +109,9 @@ if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
          https://code.google.com/p/chromium/issues/detail?id=332189
          */
 
+        var entityid = <?php echo $_SESSION['entityid']; ?>;
+        var entityType = <?php echo $_SESSION['entitytype'];  ?>;
+    
          // Main call to change main content area based on menu item selected
          function ajaxFormCall(form) {
            var host = location.protocol+'//'+window.location.hostname;
@@ -129,6 +132,60 @@ if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
               }
            });
          }
+         
+         
+        function countUserOrders(){
+             
+            var url = '<?php echo API_HOST; ?>';
+            var orderCount = 0;
+            switch(entityType){
+                case 0:     // URL for the Admin. The admin can see ALL Orders.
+                    url += '/api/orders?include=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,distance,needsDataPoints,status,qty,rateType,transportationMode,enitities.id,entities.name,documents.id,documents.documentURL&satisfy=all&transform=1';
+                    break;
+                case 1:    // URL for Customer. The Customer can only see their orders.
+                    url += '/api/orders?include=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,distance,needsDataPoints,status,qty,rateType,transportationMode,enitities.id,entities.name,documents.id,documents.documentURL&filter=customerID,eq,' + entityid + '&satisfy=all&transform=1';
+                    break;
+                case 2:     // URL for the Carrier. Same as the admin but will be filtered below.
+                    url += '/api/orders?include=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,distance,needsDataPoints,status,qty,rateType,transportationMode,enitities.id,entities.name,documents.id,documents.documentURL&satisfy=all&transform=1';
+                    break;
+            }
+            
+
+            $.ajax({
+               url: '<?php echo API_HOST."/api/orders" ?>?transform=1',
+               type: "GET",
+               contentType: "application/json",
+               async: false,
+               success: function(json){
+               
+                    var orders = json.orders;
+
+                    if(entityType == 2) {                                                  
+
+                        orders.forEach(function(order){
+                            var carrierIDs = order.carrierIDs;
+
+                            for(var i = 0; i < carrierIDs.length; i++){
+                                carrierIDs[i].carrierID 
+                                if(carrierIDs[i].carrierID == entityid){
+                                    orderCount++;
+                                    break;
+                                }
+                            }
+                        });
+                    }
+                    else {
+                        orderCount = orders.length;
+                    }
+                    
+                    $('#orderCount').html(orderCount);
+               },
+               error: function() {
+                  alert("There Was An Error Saving the Status");
+               }
+            }); 
+
+        }
 
     </script>
 </head>
@@ -246,8 +303,8 @@ if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
                         <i class="fa fa-check-square-o"></i>
                     </span>
                     Orders
-                    <span class="label label-danger">
-                        9
+                    <span id="orderCount" class="label label-danger">
+                        
                     </span>
                 </a>
             </li>
@@ -1048,6 +1105,8 @@ if ($_SESSION['entityid'] == 0) {
 <!--script src="js/index.js"></script-->
 
 <script type="text/javascript">
+
+    countUserOrders();
 
 $(function() {
 
