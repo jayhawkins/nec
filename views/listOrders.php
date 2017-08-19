@@ -86,6 +86,212 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         };
     })();
     
+      function post() {
+
+          var result = true;
+
+          var params = {
+                address1: $("#originationAddress").val(),
+                city: $("#originationCity").val(),
+                state: $("#originationState").val(),
+                zip: $("#originationZip").val(),
+                entityID: $("#entityID").val(),
+                locationType: "Origination"
+          };
+          //alert(JSON.stringify(params));
+          $.ajax({
+             url: '<?php echo HTTP_HOST."/getlocationbycitystatezip" ?>',
+             type: 'POST',
+             data: JSON.stringify(params),
+             contentType: "application/json",
+             async: false,
+             success: function(response){
+                if (response == "success") {
+                    var params = {
+                          address1: $("#destinationAddress").val(),
+                          city: $("#destinationCity").val(),
+                          state: $("#destinationState").val(),
+                          zip: $("#destinationZip").val(),
+                          entityID: $("#entityID").val(),
+                          locationType: "Destination"
+                    };
+                    //alert(JSON.stringify(params));
+                    $.ajax({
+                       url: '<?php echo HTTP_HOST."/getlocationbycitystatezip" ?>',
+                       type: 'POST',
+                       data: JSON.stringify(params),
+                       contentType: "application/json",
+                       async: false,
+                       success: function(response){
+                          if (response == "success") {
+                          } else {
+                              alert("1: " + response);
+                              result = false;
+                              //alert('Preparation Failed!');
+                          }
+                       },
+                       error: function(response) {
+                          alert("2: " + response);
+                          result = false;
+                          //alert('Failed Searching for Destination Location! - Notify NEC of this failure.');
+                       }
+                    });
+                } else {
+                    alert("3: " + response);
+                    result = false;
+                    //alert('Preparation Failed!');
+                }
+             },
+             error: function(response) {
+                alert("4: " + JSON.stringify(response));
+                result = false;
+                //alert('Failed Searching for Origination Location! - Notify NEC of this failure.');
+             }
+          });
+
+          if (result) { 
+            verifyAndPost(function(data) {
+                      alert(data);
+                      $("#load").html("Save Changes");
+                      $("#load").prop("disabled", false);
+                    });
+                    
+                    return true;
+            } 
+            else { return false; }
+      }
+
+
+
+      function verifyAndPost() {
+
+          //if ( $('#formEditOrder').parsley().validate() ) {
+
+                
+                $("#load").html("<i class='fa fa-spinner fa-spin'></i> Editing Order");
+                $("#load").prop("disabled", true);
+
+
+                var passValidation = false;
+                var type = "";
+                var today = new Date();
+                var dd = today.getDate();
+                var mm = today.getMonth()+1; //January is 0!
+                var yyyy = today.getFullYear();
+                var hours = today.getHours();
+                var min = today.getMinutes();
+                var sec = today.getSeconds();
+
+                if(dd<10) {
+                    dd='0'+dd;
+                }
+
+                if(mm<10) {
+                    mm='0'+mm;
+                }
+
+                if(hours<10) {
+                    hours='0'+hours;
+                }
+
+                if(min<10) {
+                    min='0'+min;
+                }
+
+                today = mm+'/'+dd+'/'+yyyy;
+                today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+
+                var originationaddress = $("#originationAddress").val() + ', ' + $("#originationCity").val() + ', ' + $("#originationState").val() + ', ' + $("#originationZip").val();
+                var destinationaddress = $("#destinationAddress").val() + ', ' + $("#destinationCity").val() + ', ' + $("#destinationState").val() + ', ' + $("#destinationZip").val();
+
+                // getMapDirectionFromGoogle is defined in common.js
+                newGetMapDirectionFromGoogle( originationaddress, destinationaddress, function(response) {
+
+                              var originationlat = response.originationlat;
+                              var originationlng = response.originationlng;
+                              var destinationlat = response.destinationlat;
+                              var destinationlng = response.destinationlng;
+                              var distance = response.distance;
+
+                                var url = '<?php echo API_HOST."/api/orders" ?>/' + $("#id").val();
+                                type = "PUT";
+                              
+
+                              // Build the podList
+                              var podArray = [];
+                              var obj = $("#input-list-box li");
+                              var item = {};
+                              for (var i = 0; i < obj.length; i++) {
+                                  
+                                  item = {vinNumber: obj[i].firstChild.value, deliveryDate: "", notes: ""};
+                                  podArray.push(item);
+                              }
+                              
+                              console.log(podArray);
+                              
+                              var $contacts = podArray;
+
+                              // Build the needsDataPoints
+                              var needsarray = [];
+                              var obj = $("#dp-check-list-box li select");
+                              for (var i = 0; i < obj.length; i++) {
+                                  item = {};
+                                  item[obj[i].id] = obj[i].value;
+                                  needsarray.push(item);
+                              }
+                              var needsdatapoints = needsarray;
+
+                            var date = today;
+                            var data = {qty: $("#qty").val(), customerRate: $("#rate").val(), rateType: $('input[name="rateType"]:checked').val(), transportationMode: $("#transportationMode").val(), originationAddress: $("#originationAddress").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress: $("#destinationAddress").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, distance: distance, needsDataPoints: needsdatapoints, podList: $contacts, updatedAt: date};
+                              
+
+                              $.ajax({
+                                 url: url,
+                                 type: type,
+                                 data: JSON.stringify(data),
+                                 contentType: "application/json",
+                                 async: false,
+                                 success: function(data){
+                                    if (data > 0) {
+                                      
+                                      alert("Will Send Notification to NEC Admin and Customer.");
+
+                                      $("#editOrder").modal('hide');
+                                      
+                                      var orderDetailTable = $('#order-details-table').DataTable();
+                                      var podListTable = $('#pod-list-table').DataTable();
+                                      
+                                      orderDetailTable.ajax.reload();
+                                      podListTable.ajax.reload();
+                                      
+                                      $("#id").val('');
+                                      $("#qty").val('');
+                                      $("#rate").val('');
+                                      $("#originationAddress").val('');
+                                      $("#originationCity").val('');
+                                      $("#originationState").val('');
+                                      $("#originationZip").val('');
+                                      $("#destinationAddress").val('');
+                                      $("#destinationCity").val('');
+                                      $("#destinationState").val('');
+                                      $("#destinationZip").val('');
+                                      passValidation = true;
+                                    } else {
+                                      alert("Editing Order Failed! Please Verify Your Data.");
+                                    }
+                                 },
+                                 error: function() {
+                                    alert("There Was An Error Editing The Order!");
+                                 }
+                              });
+
+                              return passValidation;
+              });
+
+            //} else { return false; }
+
+      }
+
     function loadTableAJAX() {        
         
         var url = '<?php echo API_HOST; ?>';
@@ -334,11 +540,13 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
             order_details_table.ajax.reload();
         }
         else{
+        
             //The URL will change with each "View Commit" button click
           // Must load new Url each time.
             var reload_table = $('#order-details-table').DataTable();
-            reload_table.ajax.url(url).load();
+            reload_table.ajax.url(url).load());
         }
+        
         
         $("#order-details").css("display", "block");
         $("#orders").css("display", "none");
@@ -395,7 +603,16 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                 processing: true,
                 ajax: {
                     url: url,
-                    dataSrc: 'orders[0].podList'
+                    //dataSrc: 'orders[0].podList',
+                    dataSrc: function(json){
+                        
+                        var podList = json.orders[0].podList;
+                        
+                        if (podList == null) podList = [];
+                        
+                        return podList;
+                    }
+                    
                 },
                 columns: [
                     { data: "vinNumber" },
@@ -407,7 +624,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                         "mRender": function (o) {
                             var buttons = '';
 
-                            buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"fa fa-download text-info\"></i> <span class=\"text-info\">Download POD</span></button>';
+                            buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\" disabled><i class=\"fa fa-download text-info\"></i> <span class=\"text-info\">Download POD</span></button>';
 
                             return buttons;
                         }
@@ -418,7 +635,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                         "mRender": function (o) {
                             var buttons = '';
 
-                            buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"fa fa-upload text-info\"></i> <span class=\"text-info\">Upload POD</span></button>';
+                            buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\" disabled><i class=\"fa fa-upload text-info\"></i> <span class=\"text-info\">Upload POD</span></button>';
 
                             return buttons;
                         }
@@ -431,15 +648,280 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
             order_history_table.ajax.reload();
         }
         else{
+        
             //The URL will change with each "View Commit" button click
           // Must load new Url each time.
             var reload_table = $('#pod-list-table').DataTable();
+            
             reload_table.ajax.url(url).load();
         }
         
         
     }
     
+    
+      function formatListBox() {
+          // Bootstrap Listbox
+          $('.list-group.checked-list-box .list-group-item').each(function () {
+
+              // Settings
+              var $widget = $(this),
+                  $checkbox = $('<input type="checkbox" class="hidden" style="display: none" />'),
+                  color = ($widget.data('color') ? $widget.data('color') : "primary"),
+                  style = ($widget.data('style') == "button" ? "btn-" : "list-group-item-"),
+                  settings = {
+                      on: {
+                          icon: 'glyphicon glyphicon-check'
+                      },
+                      off: {
+                          icon: 'glyphicon glyphicon-unchecked'
+                      }
+                  };
+
+              $widget.css('cursor', 'pointer');
+              $widget.append($checkbox);
+
+              // Event Handlers
+              $widget.on('click', function () {
+                  $checkbox.prop('checked', !$checkbox.is(':checked'));
+                  $checkbox.triggerHandler('change');
+                  //recordLocationContacts();
+                  //updateDisplay();
+              });
+              $checkbox.on('change', function () {
+                  updateDisplay();
+              });
+
+
+
+
+              // Actions
+              function updateDisplay() {
+                  var isChecked = $checkbox.is(':checked');
+
+                  // Set the button's state
+                  $widget.data('state', (isChecked) ? "on" : "off");
+
+                  // Set the button's icon
+                  $widget.find('.state-icon')
+                      .removeClass()
+                      .addClass('state-icon ' + settings[$widget.data('state')].icon);
+
+                  // Update the button's color
+                  if (isChecked) {
+                      $widget.addClass(style + color + ' active');
+                  } else {
+                      $widget.removeClass(style + color + ' active');
+                  }
+              }
+
+              // Initialization
+              function init() {
+
+                  if ($widget.data('checked') == true) {
+                      $checkbox.prop('checked', !$checkbox.is(':checked'));
+                  }
+
+                  updateDisplay();var checkedItems = {}, counter = 0;
+                  $("#check-list-box li.active").each(function(idx, li) {
+                      //console.log($(li));
+                      checkedItems[counter] = $(li).context.id;
+                      counter++;
+                  });
+                  //$('#display-json').html(JSON.stringify(checkedItems, null, '\t'));
+                  if ($widget.find('.state-icon').length == 0) {
+                      $widget.prepend('<span class="state-icon ' + settings[$widget.data('state')].icon + '"></span>');
+                  }
+              }
+
+              init();
+          });
+
+          // Doesn't get called - this is from the example but copied to the Save Changes button click
+          $('#get-checked-data').on('click', function(event) {
+              event.preventDefault();
+              var checkedItems = {}, counter = 0;
+              $("#check-list-box li.active").each(function(idx, li) {
+                  checkedItems[counter] = $(li).context.id;
+                  counter++;
+              });
+          });
+
+      }
+
+      function formatListBoxDP() {
+          // Bootstrap Listbox
+          $('.list-group.dp-checked-list-box .list-group-item').each(function () {
+
+              // Settings
+              var $widget = $(this),
+                  $checkbox = $('<input type="checkbox" class="hidden" style="display: none" />'),
+                  color = ($widget.data('color') ? $widget.data('color') : "primary"),
+                  style = ($widget.data('style') == "button" ? "btn-" : "list-group-item-"),
+                  settings = {
+                      on: {
+                          icon: 'glyphicon glyphicon-check'
+                      },
+                      off: {
+                          icon: 'glyphicon glyphicon-unchecked'
+                      }
+                  };
+
+              $widget.css('cursor', 'pointer');
+              $widget.append($checkbox);
+
+              // Event Handlers
+              $widget.on('click', function () {
+                  //$checkbox.prop('checked', !$checkbox.is(':checked'));
+                  //$checkbox.triggerHandler('change');
+                  //recordDataPoints();
+                  //updateDisplay();
+              });
+              $checkbox.on('change', function () {
+                  //updateDisplay();
+              });
+
+              function recordDataPoints() {
+                  var passValidation = false;
+                  var entityID = <?php echo $_SESSION['entityid']; ?>;
+                  var contactdata = [];
+
+                  $("#dp-check-list-box li.active").each(function(idx, li) {
+                      contactdata.push({"entityID": entityID, "location_id": $("#id").val(), "contact_id": $(li).context.id});
+                  });
+
+                  if (contactdata.length > 0) {
+                      var url = '<?php echo HTTP_HOST."/deletelocationcontacts" ?>';
+                      var data = {location_id: $("#id").val()};
+                      var type = "POST";
+
+                      $.ajax({
+                         url: url,
+                         type: type,
+                         data: JSON.stringify(data),
+                         contentType: "application/json",
+                         async: false,
+                         success: function(data){
+                            if (data == "success") {
+
+                                 $.ajax({
+                                    url: url,
+                                    type: type,
+                                    data: JSON.stringify(data),
+                                    contentType: "application/json",
+                                    async: false,
+                                    success: function(data){
+                                         getLocationContacts();
+                                    },
+                                    error: function() {
+                                       alert("There Was An Error Adding Need Contacts!");
+                                    }
+                                 });
+                            } else {
+                                  alert("There Was An Issue Clearing Need Contacts!");
+                            }
+                         },
+                         error: function() {
+                              alert("There Was An Error Deleting Need Records!");
+                         }
+                      });
+                  }
+
+                  //return passValidation;
+              }
+
+
+              // Actions
+              function updateDisplay() {
+                  var isChecked = $checkbox.is(':checked');
+
+                  // Set the button's state
+                  $widget.data('state', (isChecked) ? "on" : "off");
+
+                  // Set the button's icon
+                  $widget.find('.state-icon')
+                      .removeClass()
+                      .addClass('state-icon ' + settings[$widget.data('state')].icon);
+
+                  // Update the button's color
+                  if (isChecked) {
+                      $widget.addClass(style + color + ' active');
+                  } else {
+                      $widget.removeClass(style + color + ' active');
+                  }
+              }
+
+              // Initialization
+              function init() {
+
+                  if ($widget.data('checked') == true) {
+                      $checkbox.prop('checked', !$checkbox.is(':checked'));
+                  }
+
+                  updateDisplay();var checkedItems = {}, counter = 0;
+                  $("#dp-check-list-box li.active").each(function(idx, li) {
+                    //console.log($(li));
+                      checkedItems[counter] = $(li).context.id;
+                      counter++;
+                  });
+                  //$('#display-json').html(JSON.stringify(checkedItems, null, '\t'));
+                  if ($widget.find('.state-icon').length == 0) {
+                      $widget.prepend('<span class="state-icon ' + settings[$widget.data('state')].icon + '"></span>');
+                  }
+              }
+
+              init();
+          });
+
+          // Doesn't get called - this is from the example but copied to the Save Changes button click
+          $('#get-checked-data').on('click', function(event) {
+              event.preventDefault();
+              var checkedItems = {}, counter = 0;
+              $("#check-list-box li.active").each(function(idx, li) {
+                  checkedItems[counter] = $(li).context.id;
+                  counter++;
+              });
+          });
+
+      }
+
+      function getLocationContacts() {
+
+          var url = '<?php echo API_HOST."/api/locations_contacts?columns=location_id,contact_id&filter=entityID,eq," . $_SESSION['entityid'] ?>';
+          var type = "GET";
+
+          $.ajax({
+             url: url,
+             type: type,
+             async: false,
+             success: function(data){
+                  locations_contacts = data;
+             },
+             error: function() {
+                alert("There Was An Error Retrieving Location Contacts!");
+             }
+          });
+      }
+
+      function getLocations(city) {
+
+          var url = '<?php echo API_HOST."/api/locations?columns=id,city,state,zip&filter[]=entityID,eq," . $_SESSION['entityid'] ?>';
+          url += "&filter[]=city,sw," + city;
+          var type = "GET";
+
+          $.ajax({
+             url: url,
+             type: type,
+             async: false,
+             success: function(data){
+                  alert(JSON.stringify(data));
+             },
+             error: function() {
+                alert("There Was An Error Retrieving Location Contacts!");
+             }
+          });
+      }
+
  </script>
 
  <style>
@@ -675,7 +1157,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
           </button>
         </div>
         <div class="modal-body">
-                <form id="formNeed" class="register-form mt-lg">
+                <form id="formAddOrderStatus" class="register-form mt-lg">
                   <input type="hidden" id="id" name="id" value="" />
                   <div class="row">
                       <div class="col-sm-3">
@@ -724,6 +1206,173 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
   </div>
 
  
+ <!-- Edit Order Modal -->
+ <div class="modal fade" id="editOrder" z-index="1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+   <div class="modal-dialog modal-lg" role="document">
+     <div class="modal-content">
+       <div class="modal-header">
+         <h5 class="modal-title" id="exampleModalLabel"><strong>Edit Order</strong></h5>
+         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+           <span aria-hidden="true">&times;</span>
+         </button>
+       </div>
+       <div class="modal-body">
+               <form id="formEditOrder" class="register-form mt-lg">
+                 <input type="hidden" id="id" name="id" value="" />
+                 <div class="row">
+                     <div class="col-sm-2">
+                         <label for="qty">Trailers Available:</label>
+                         <div class="form-group">
+                           <input type="text" id="qty" name="qty" class="form-control mb-sm" placeholder="# Available"
+                           required="required" readonly/>
+                         </div>
+                     </div>
+                     <div class="col-sm-3">
+                     </div>
+                     <div class="col-sm-3">
+                     </div>
+                     <div class="col-sm-4">
+                     </div>
+                 </div>
+                 <div class="row">
+                     <div class="col-sm-4">
+                         <label for="originationAddress">Origination Address</label>
+                         <div class="form-group">
+                           <input type="text" id="originationAddress" name="originationAddress" class="form-control mb-sm" placeholder="Origin Address" />
+                         </div>
+                     </div>
+                     <div class="col-sm-3">
+                         <label for="originationCity">Origination City</label>
+                         <div class="form-group">
+                           <input type="hidden" id="originationLocationID" name="originationLocationID" />
+                           <input type="text" id="originationCity" name="originationCity" class="form-control mb-sm" placeholder="Origin City"
+                           required="required" />
+                         </div>
+                         <div id="suggesstion-box" class="frmSearch"></div>
+                     </div>
+                     <div class="col-sm-3">
+                         <label for="originationState">Origination State</label>
+                         <div class="form-group">
+                           <select id="originationState" name="origitnaionState" data-placeholder="Origin State" class="form-control chzn-select" data-ui-jq="select2" required="required">
+                             <option value="">*Select State...</option>
+            <?php
+                             foreach($states->states->records as $value) {
+                                 $selected = ($value[0] == $state) ? 'selected=selected':'';
+                                 echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
+                             }
+            ?>
+                           </select>
+                         </div>
+                     </div>
+                     <div class="col-sm-2">
+                         <label for="originationZip">Origination Zip</label>
+                         <div class="form-group">
+                           <input type="text" id="originationZip" name="originationZip" class="form-control mb-sm" placeholder="Origin Zip" />
+                         </div>
+                     </div>
+                 </div>
+                 <div class="row">
+                   <div class="col-sm-4">
+                       <label for="destinationAddress">Destination Address</label>
+                       <div class="form-group">
+                         <input type="text" id="destinationAddress" name="destinationAddress" class="form-control mb-sm" placeholder="Destination Address" />
+                       </div>
+                   </div>
+                   <div class="col-sm-3">
+                       <label for="DestinationCity">Destination City</label>
+                       <div class="form-group">
+                         <input type="text" id="destinationCity" name="destinationCity" class="form-control mb-sm" placeholder="Dest. City"
+                         required="required" />
+                       </div>
+                   </div>
+                   <div class="col-sm-3">
+                       <label for="destinationState">Destination State</label>
+                       <div class="form-group">
+                         <select id="destinationState" name="destinationState" data-placeholder="Dest. State" class="form-control chzn-select" data-ui-jq="select2" required="required">
+                           <option value="">*Select State...</option>
+          <?php
+                           foreach($states->states->records as $value) {
+                               $selected = ($value[0] == $state) ? 'selected=selected':'';
+                               echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
+                           }
+          ?>
+                         </select>
+                       </div>
+                   </div>
+                   <div class="col-sm-2">
+                       <label for="destinationZip">Destination Zip</label>
+                       <div class="form-group">
+                         <input type="text" id="destinationZip" name="destinationZip" class="form-control mb-sm" placeholder="Dest. Zip" />
+                       </div>
+                   </div>
+                 </div>
+                 <hr />
+                 <div class="row">
+                     <div class="col-sm-3">
+                         <label for="rate">Rate</label>
+                         <div class="form-group">
+                           <input type="text" id="rate" name="rate" class="form-control mb-sm"
+                              placeholder="Rate $" required="required" data-parsley-type="number" readonly/>
+                         </div>
+                     </div>
+                     <div class="col-sm-3">
+                         <label for="rateType">Rate Type</label>
+                         <div class="form-group">
+                           <div class="d-inline-block"><input type="radio" id="rateType" name="rateType" value="Flat Rate" /> Flat Rate
+                           &nbsp;&nbsp;<input type="radio" id="rateType" name="rateType" value="Mileage" /> Mileage</div>
+                         </div>
+                     </div>
+                     <div class="col-sm-3">
+                         <label for="transportationMode">Transportation Mode</label>
+                         <div class="form-group">
+                           <select id="transportationMode" name="transportationMode" class="form-control chzn-select" required="required">
+                             <option value="">*Select Mode...</option>
+            <?php
+                             // Here is check
+            ?>
+                                <option value="Empty">Empty</option>
+                                <option value="Load Out">Load Out</option>
+                                <option value="Both (Empty or Load Out)">Both (Empty or Load Out)</option>
+                           </select>
+                         </div>
+                     </div>
+                     <div class="col-sm-3">
+                         &nbsp;
+                     </div>
+                 </div>
+                 <hr />
+                 <div class="container" style="margin-top:20px;">
+                     <div class="row">
+                       <div class="col-xs-6">
+                            <h5 class="text-center"><strong>Trailer Data</strong></h5>
+                            <div class="well" style="max-height: 200px;overflow: auto;">
+                                <ul id="dp-check-list-box" class="list-group">
+
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                             <h5 class="text-center"><strong>Trailer VIN Numbers</strong></h5>
+                             <a data-widgster="addVINNumber" title="Add" href="Javascript:addVINNumber();"><i class="fa fa-plus-square-o"></i> Add VIN Number</a>
+            
+                             <div class="well" style="max-height: 200px;overflow: auto;">
+                                 <ul id="input-list-box" class="list-group">
+
+                                 </ul>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+               </form>
+       </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button id="load" type="button" class="btn btn-primary" onclick="return post();">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
  
  
  <script>
@@ -748,8 +1397,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         $("#orders").css("display", "block");
         table.ajax.reload();
     }
-
-
+    
     function saveDeliveryStatus(){        
         var today = new Date();
         var dd = today.getDate();
@@ -813,7 +1461,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         var json = orderDetailsTable.ajax.json();
         var data = json.order_details[0];
 
-        console.log(data);
+        //console.log(data);
 
             var orderStatusSelect = '<select id="orderStatus" name="orderStatus" class="form-control mb-sm" required="required">\n';
         
@@ -855,6 +1503,108 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         
     }
 
+    function addVINNumber(){
+        var li = '';
+
+        li += '<li class=\"list-group-item\"><input type="text" class="form-control" value=""></li>\n';
+        
+        $("#input-list-box").append(li);
+    }
+
+    $('#order-details-table tbody').on( 'click', 'button', function () {
+        
+        var table = $("#order-details-table").DataTable();
+        var data = table.row( $(this).parents('tr') ).data();
+
+        var orderID = data.orders[0].id;
+
+        $("#id").val(orderID);
+        
+        var url = '<?php echo API_HOST . '/api/orders/' ?>' + orderID;
+            
+        $.ajax({
+            url: url,
+            type: "GET",
+            contentType: "application/json",
+            async: false,
+            success: function(data){
+                
+            var dpli = '';
+            var dpchecked = '';
+            $("#id").val(data["id"]);
+            $("#entityID").val(data["entityID"]);
+            $("#qty").val(data["qty"]);
+            $("#rate").val(data["customerRate"].toFixed(2));
+<?php if ($_SESSION['entityid'] > 0) { ?>
+            $("#rate").prop("disabled", true);
+<?php } ?>
+            $("#transportationMode").val(data["transportationMode"]);
+            $("#originationAddress").val(data["originationAddress"]);
+            $("#originationCity").val(data["originationCity"]);
+            $("#originationState").val(data["originationState"]);
+            $("#originationZip").val(data["originationZip"]);
+            $("#destinationAddress").val(data["destinationAddress"]);
+            $("#destinationCity").val(data["destinationCity"]);
+            $("#destinationState").val(data["destinationState"]);
+            $("#destinationZip").val(data["destinationZip"]);
+            var ndp = data["needsDataPoints"];
+            var pod = data["podList"];
+
+            if (data['rateType'] == "Flat Rate") {
+                $('input[name="rateType"][value="Flat Rate"]').prop('checked', true);
+            } else {
+                $('input[name="rateType"][value="Mileage"]').prop('checked', true);
+            }
+
+            if (pod != null){
+                var li = '';
+                for (var i = 0; i < pod.length; i++) {
+
+                    li += '<li class=\"list-group-item\"><input type="text" class="form-control" value="' + pod[i].vinNumber + '"></li>\n';
+                }
+                $("#input-list-box").html(li);
+                
+            }
+
+
+            for (var i = 0; i < dataPoints.object_type_data_points.length; i++) {
+                var selected = '';
+                var value = '';
+
+                $.each(ndp, function(idx, obj) {
+                  $.each(obj, function(key, val) {
+                    if (dataPoints.object_type_data_points[i].columnName == key) {
+                        value = val; // Get the value from the JSON data in the record to use to set the selected option in the dropdown
+                    }
+                  })
+                });
+
+                dpli += '<li>' + dataPoints.object_type_data_points[i].title +
+                        ' <select class="form-control mb-sm" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '">';
+                for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
+
+                    if (dataPoints.object_type_data_points[i].object_type_data_point_values[v].value === value) {
+                        selected = ' selected ';
+                    } else {
+                        selected = '';
+                    }
+
+                    dpli += '<option' + selected + '>' + dataPoints.object_type_data_points[i].object_type_data_point_values[v].value + '</option>\n';
+
+                }
+
+                dpli += '</select>' +
+                        '</li>\n';
+            }
+            $("#dp-check-list-box").html(dpli);
+            //formatListBox();
+            formatListBoxDP();
+            $("#entityID").prop('disabled', true);
+            $("#editOrder").modal('show');
+            }
+        });
+    });
+    
     $('#orders-table tbody').on( 'click', 'td.order-details-link', function () {
         var data = table.row( $(this).parents('tr') ).data();
 

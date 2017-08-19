@@ -157,8 +157,6 @@ if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
                contentType: "application/json",
                async: false,
                success: function(json){
-
-                    console.log(json);
                
                     var orders = json.orders;
 
@@ -177,7 +175,7 @@ if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
                         });
                     }
                     else {
-                        orderCount = orders.length();
+                        orderCount = orders.length;
                     }
                     
                     $('#orderCount').html(orderCount);
