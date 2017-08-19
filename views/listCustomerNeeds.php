@@ -1155,6 +1155,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 dpli += '<li>' + dataPoints.object_type_data_points[i].title +
                         ' <select class="form-control mb-sm" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '">' +
                         ' <option value="">-Select From List-</option>\n';
+
                 for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
 
                     if (dataPoints.object_type_data_points[i].object_type_data_point_values[v].value === value) {
