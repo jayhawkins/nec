@@ -1224,6 +1224,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         });
     });
 
+/* Taken out per FS257
     $("#originationCity").keyup(function(){
         $("#originationCity").css("background","#FFF url(img/loaderIcon.gif) no-repeat 165px");
 
@@ -1248,6 +1249,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         		}
     		});
   	});
+*/
 
     function selectOrgCity(val) {
         var params = {id: val};
@@ -1276,6 +1278,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         });
     }
 
+/* Taken out per FS257
     $("#destinationCity").keyup(function(){
         $("#destinationCity").css("background","#FFF url(img/loaderIcon.gif) no-repeat 165px");
 
@@ -1300,6 +1303,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         		}
     		});
   	});
+*/
 
     function selectDestCity(val) {
         var params = {id: val};
