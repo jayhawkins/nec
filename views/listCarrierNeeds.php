@@ -1076,7 +1076,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       var dpchecked = '';
       var emptyMode = '';
       var loadMode = '';
-      var eitherMode = 'selected=selected';
+      var eitherMode = '';
       $("#id").val('');
       $("#qty").val('');
       $("#availableDate").val('');
@@ -1092,7 +1092,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       //alert(JSON.stringify(contacts));
 
       transMode = '<select id="transportationMode" name="transportationMode" class="form-control chzn-select" required="required">' +
-                             '<option value="">*Select Mode...</option>';
+                             '<option value="" selected=selected>*Select Mode...</option>';
 
       transMode += '<option value="Empty" ' + emptyMode + '>Empty</option>';
       transMode += '<option value="Load Out" ' + loadMode + '>Load Out</option>';
