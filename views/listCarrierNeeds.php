@@ -878,7 +878,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                            <input type="text" id="originationCity" name="originationCity" class="form-control mb-sm" placeholder="Origin City"
                            required="required" />
                          </div>
-                         <div id="suggesstion-box" class="frmSearch"></div>
+                         <div id="suggesstion-box-origin" class="frmSearch"></div>
                      </div>
                      <div class="col-sm-4">
                          <label for="originationAddress1">Origination Address</label>
@@ -916,6 +916,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                          <input type="text" id="destinationCity" name="destinationCity" class="form-control mb-sm" placeholder="Dest. City"
                          required="required" />
                        </div>
+                       <div id="suggesstion-box-dest" class="frmSearch"></div>
                    </div>
                    <div class="col-sm-4">
                        <label for="destinationAddress1">Destination Address</label>
@@ -1284,6 +1285,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         });
     });
 
+/* Taken out per FS257
     $("#originationCity").keyup(function(){
         $("#originationCity").css("background","#FFF url(img/loaderIcon.gif) no-repeat 165px");
 
@@ -1302,12 +1304,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                   li += '<li onClick="selectOrgCity(\'' + data.locations[t].id + '\');" id=\"' + data.locations[t].id + '\">' + data.locations[t].city + ' [' + data.locations[t].name + ']</li>\n';
               }
               li += '</ul>';
-              $("#suggesstion-box").html(li);
-        			$("#suggesstion-box").show();
+              $("#suggesstion-box-origin").html(li);
+        			$("#suggesstion-box-origin").show();
         			$("#originationCity").css("background","#FFF");
         		}
     		});
   	});
+*/
 
     function selectOrgCity(val) {
         var params = {id: val};
@@ -1328,7 +1331,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
              var li = setContactsOnLocationSelected();
              $("#check-list-box").html(li);
              formatListBox();
-             $("#suggesstion-box").hide();
+             $("#suggesstion-box-origin").hide();
            },
            error: function() {
                 alert('Error Selecting Origination City!');
@@ -1336,6 +1339,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         });
     }
 
+/* Taken out per FS257
     $("#destinationCity").keyup(function(){
         $("#destinationCity").css("background","#FFF url(img/loaderIcon.gif) no-repeat 165px");
 
@@ -1354,12 +1358,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                   li += '<li onClick="selectDestCity(\'' + data.locations[t].id + '\');" id=\"' + data.locations[t].id + '\">' + data.locations[t].city + ' [' + data.locations[t].name + ']</li>\n';
               }
               li += '</ul>';
-              $("#suggesstion-box").html(li);
-        			$("#suggesstion-box").show();
+              $("#suggesstion-box-dest").html(li);
+        			$("#suggesstion-box-dest").show();
         			$("#destinationCity").css("background","#FFF");
         		}
     		});
   	});
+*/
 
     function selectDestCity(val) {
         var params = {id: val};
@@ -1376,7 +1381,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
              $("#destinationCity").val(response.city);
              $("#destinationState").val(response.state);
              $("#destinationZip").val(response.zip);
-             $("#suggesstion-box").hide();
+             $("#suggesstion-box-dest").hide();
            },
            error: function() {
                 alert('Error Selecting Destination City!');
