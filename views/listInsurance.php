@@ -3,6 +3,7 @@
 	require '../../nec_config.php';
 	require '../lib/common.php';
 ?>
+
 <script src="vendor/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
 <script>
 	var myApp;
@@ -256,12 +257,14 @@
 					data: null,
 					"bSortable": false,
 					"mRender": function (o) {
-						var buttons = '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text-info\"></i> <span class=\"text-info\">Edit</span></button>';
+					    var buttons = '<div class="pull-right text-nowrap">';
+						buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text-info\"></i> <span class=\"text-info\">Edit</span></button>';
 						if (o.status == "Active") {
 							buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text-info\"></i> <span class=\"text-info\">Disable</span></button>";
 						} else {
 							buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text-info\"></i> <span class=\"text-info\">Enable</span></button>";
 						}
+						buttons += '</div>';
 						return buttons;
 					}
 				}
