@@ -244,7 +244,13 @@
 				{ data: "contactPhone" },
 				{ data: "policyNumber", visible: false },
 				{ data: "policyExpirationDate", visible: false },
-				{ data: "fileupload" },
+				{ data: null,
+					"bSortable": false,
+					"mRender": function (o) {
+					    var filename = o.fileupload.split(".");
+					    return filename[0];
+                    }
+				},
 				{
 					data: null,
 					"bSortable": false,
