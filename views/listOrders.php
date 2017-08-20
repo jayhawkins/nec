@@ -151,14 +151,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
           if (result) { 
             verifyAndPost(function(data) {
-                      alert(data);
-                      $("#load").html("Save Changes");
-                      $("#load").prop("disabled", false);
-                    });
-                    
-                    return true;
-            } 
-            else { return false; }
+                alert(data);
+                $("#load").html("Save Changes");
+                $("#load").prop("disabled", false);
+            });
+
+              return true;
+        } 
+        else { return false; }
       }
 
 
@@ -535,7 +535,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
             //The URL will change with each "View Commit" button click
           // Must load new Url each time.
             var reload_table = $('#order-details-table').DataTable();
-            reload_table.ajax.url(url).load());
+            reload_table.ajax.url(url).load();
         }
         
         
