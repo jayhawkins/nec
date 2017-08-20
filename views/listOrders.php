@@ -165,9 +165,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
       function verifyAndPost() {
 
-          //if ( $('#formEditOrder').parsley().validate() ) {
-
-                
                 $("#load").html("<i class='fa fa-spinner fa-spin'></i> Editing Order");
                 $("#load").prop("disabled", true);
 
@@ -213,7 +210,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                               var destinationlng = response.destinationlng;
                               var distance = response.distance;
 
-                                var url = '<?php echo API_HOST."/api/orders" ?>/' + $("#id").val();
+                                var url = '<?php echo API_HOST."/api/orders/"; ?>' + $("#id").val();
                                 type = "PUT";
                               
 
@@ -227,9 +224,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                                   podArray.push(item);
                               }
                               
-                              console.log(podArray);
-                              
-                              var $contacts = podArray;
 
                               // Build the needsDataPoints
                               var needsarray = [];
@@ -242,7 +236,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                               var needsdatapoints = needsarray;
 
                             var date = today;
-                            var data = {qty: $("#qty").val(), customerRate: $("#rate").val(), rateType: $('input[name="rateType"]:checked').val(), transportationMode: $("#transportationMode").val(), originationAddress: $("#originationAddress").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress: $("#destinationAddress").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, distance: distance, needsDataPoints: needsdatapoints, podList: $contacts, updatedAt: date};
+                            var data = {qty: $("#qty").val(), customerRate: $("#rate").val(), rateType: $('input[name="rateType"]:checked').val(), transportationMode: $("#transportationMode").val(), originationAddress: $("#originationAddress").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress: $("#destinationAddress").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, distance: distance, needsDataPoints: needsdatapoints, podList: podArray, updatedAt: date};
                               
 
                               $.ajax({
@@ -287,9 +281,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
                               return passValidation;
               });
-
-            //} else { return false; }
-
       }
 
     function loadTableAJAX() {        
@@ -330,7 +321,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                             var carrierIDs = order.carrierIDs;
                             
                             for(var i = 0; i < carrierIDs.length; i++){
-                                carrierIDs[i].carrierID 
+                                carrierIDs[i].carrierID;
                                 if(carrierIDs[i].carrierID == entityid){
                                     carrierOrders.push(order);
                                     break;
@@ -399,7 +390,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                         var status = o.status;
                         
                         if(status == "Open"){                            
-                            buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"fa fa-book\"></i> <span>View Order Details</span></button>';
+                            buttons += '<button class="btn btn-primary btn-xs" role="button"><i class="fa fa-book"></i> <span>View Order Details</span></button>';
 
                         }
                         else{
@@ -527,7 +518,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                         "mRender": function (o) {
                             var buttons = '';
 
-                            buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text-info\"></i> <span class=\"text-info\">Edit</span></button>';
+                            buttons += '<button class="btn btn-primary btn-xs" role="button"><i class="glyphicon glyphicon-edit text-info"></i> <span class="text-info">Edit</span></button>';
 
                             return buttons;
                         }, visible: blnShow
@@ -624,7 +615,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                         "mRender": function (o) {
                             var buttons = '';
 
-                            buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\" disabled><i class=\"fa fa-download text-info\"></i> <span class=\"text-info\">Download POD</span></button>';
+                            buttons += '<button class="btn btn-primary btn-xs" role="button" disabled><i class="fa fa-download text-info"></i> <span class="text-info">Download POD</span></button>';
 
                             return buttons;
                         }
@@ -635,7 +626,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                         "mRender": function (o) {
                             var buttons = '';
 
-                            buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\" disabled><i class=\"fa fa-upload text-info\"></i> <span class=\"text-info\">Upload POD</span></button>';
+                            buttons += '<button class="btn btn-primary btn-xs" role="button" disabled><i class="fa fa-upload text-info"></i> <span class="text-info">Upload POD</span></button>';
 
                             return buttons;
                         }
@@ -791,7 +782,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                   });
 
                   if (contactdata.length > 0) {
-                      var url = '<?php echo HTTP_HOST."/deletelocationcontacts" ?>';
+                      var url = '<?php echo HTTP_HOST."/deletelocationcontacts"; ?>';
                       var data = {location_id: $("#id").val()};
                       var type = "POST";
 
@@ -887,7 +878,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
       function getLocationContacts() {
 
-          var url = '<?php echo API_HOST."/api/locations_contacts?columns=location_id,contact_id&filter=entityID,eq," . $_SESSION['entityid'] ?>';
+          var url = '<?php echo API_HOST."/api/locations_contacts?columns=location_id,contact_id&filter=entityID,eq," . $_SESSION['entityid']; ?>';
           var type = "GET";
 
           $.ajax({
@@ -905,7 +896,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
       function getLocations(city) {
 
-          var url = '<?php echo API_HOST."/api/locations?columns=id,city,state,zip&filter[]=entityID,eq," . $_SESSION['entityid'] ?>';
+          var url = '<?php echo API_HOST."/api/locations?columns=id,city,state,zip&filter[]=entityID,eq," . $_SESSION['entityid']; ?>';
           url += "&filter[]=city,sw," + city;
           var type = "GET";
 
@@ -1440,7 +1431,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         var orderStatus = {orderID: id, city: city, state: state, status: status, note: notes, createdAt: today, updatedAt: today};
         
         $.ajax({
-           url: '<?php echo API_HOST."/api/order_statuses" ?>/',
+           url: '<?php echo API_HOST."/api/order_statuses"; ?>',
            type: "POST",
            data: JSON.stringify(orderStatus),
            contentType: "application/json",
@@ -1506,7 +1497,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
     function addVINNumber(){
         var li = '';
 
-        li += '<li class=\"list-group-item\"><input type="text" class="form-control" value=""></li>\n';
+        li += '<li class="list-group-item"><input type="text" class="form-control" value=""></li>\n';
         
         $("#input-list-box").append(li);
     }
@@ -1560,7 +1551,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                 var li = '';
                 for (var i = 0; i < pod.length; i++) {
 
-                    li += '<li class=\"list-group-item\"><input type="text" class="form-control" value="' + pod[i].vinNumber + '"></li>\n';
+                    li += '<li class="list-group-item"><input type="text" class="form-control" value="' + pod[i].vinNumber + '"></li>\n';
                 }
                 $("#input-list-box").html(li);
                 

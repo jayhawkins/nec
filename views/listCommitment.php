@@ -352,15 +352,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
       
     function loadTableAJAX() {        
         
-        var baseUrl = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate&filter[]=rootCustomerNeedsID,eq,0';
+        var baseUrl = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate&filter[]=rootCustomerNeedsID,eq,0&filter[]=status,eq,Available';
              
-        if (<?php echo $_SESSION['entityid']; ?> > 0) {
-            var url = baseUrl + '&satisfy=any&order[]=rootCustomerNeedsID&order[]=availableDate,desc&transform=1';
-            var show = false;
-        } else {
-            var url = baseUrl + '&satisfy=any&order[]=entityID&order[]=rootCustomerNeedsID&order[]=availableDate,desc&transform=1';
-            var show = true;
-        }
+        var url = baseUrl + '&order[]=entityID&order[]=rootCustomerNeedsID&order[]=availableDate,desc&transform=1';        
 
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
@@ -376,7 +370,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                     "data":           null,
                     "defaultContent": ''
                 },
-                { data: "entities[0].name", visible: show },
+                { data: "entities[0].name" },
                 { data: "id", visible: false },
                 { data: "rootCustomerNeedsID", visible: false},
                 { data: "entityID", visible: false },
@@ -1092,7 +1086,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
             </div>   
             <div class="col-sm-4 col-sm-offset-4">
                 <div class="form-group">
-                    <button id="completeOrder" class="btn btn-primary btn-block" role="button" onclick="completeOrder();"><i class="fa fa-check-square-o text-info"></i> <span class="text-info">Complete Order</span></button>
+                    <button id="completeOrder" class="btn btn-primary btn-block" role="button" onclick="completeOrder();"><i class="fa fa-check-square-o text-info"></i> <span class="text-info">Availability Approved</span></button>
                 </div>
             </div>
         </div>
@@ -1596,7 +1590,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
             contentType: "application/json",
             async: false,
             success: function(){
-                alert("Purchase Order Completed.");
+                alert("Customer Availability Successfully Completed.");
             },
             error: function(){
                 alert("Error with adding Order Details.");
