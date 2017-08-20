@@ -23,5 +23,14 @@ class Quickbooks
         
         return "connected";
     }
+    
+    public function oauth() {
+        if ($this->QuickBooks->handle()) {
+            ; // The user has been connected, and will be redirected to $that_url automatically. 
+        } else {
+            // If this happens, something went wrong with the OAuth handshake
+            die('Oh no, something bad happened');
+        }
+    }
 
 }
