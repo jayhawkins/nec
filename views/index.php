@@ -129,8 +129,8 @@ if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
               }
            });
          }
-         
-         
+
+
         function countUserOrders(){
              
         var entityid = <?php echo $_SESSION['entityid']; ?>;
@@ -149,7 +149,7 @@ if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
                     url += '/api/orders?include=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,distance,needsDataPoints,status,qty,rateType,transportationMode,enitities.id,entities.name,documents.id,documents.documentURL&satisfy=all&transform=1';
                     break;
             }
-            
+
 
             $.ajax({
                url: '<?php echo API_HOST."/api/orders" ?>?transform=1',
@@ -157,10 +157,10 @@ if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
                contentType: "application/json",
                async: false,
                success: function(json){
-               
+
                     var orders = json.orders;
 
-                    if(entityType == 2) {                                                  
+                    if(entityType == 2) {
 
                         orders.forEach(function(order){
                             var carrierIDs = order.carrierIDs;
@@ -176,13 +176,13 @@ if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
                     else {
                         orderCount = orders.length;
                     }
-                    
+
                     $('#orderCount').html(orderCount);
                },
                error: function() {
                   alert("There Was An Error Saving the Status");
                }
-            }); 
+            });
 
         }
 
@@ -294,7 +294,7 @@ if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
              </li>
  <?php
     }
-    
+
  ?>
             <li>
                 <a href="#" onclick="ajaxFormCall('listOrders');">
@@ -303,7 +303,7 @@ if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
                     </span>
                     Orders
                     <span id="orderCount" class="label label-danger">
-                        
+
                     </span>
                 </a>
             </li>
@@ -329,9 +329,6 @@ if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
                         <i class="fa fa-money"></i>
                     </span>
                     Collections
-                    <span class="label label-danger">
-                        1
-                    </span>
                 </a>
             </li>
         </ul>
