@@ -40,7 +40,7 @@ class CustomerNeed
 
           /******** WE ARE NOT USING THE LNG AND LAT FROM THIS CALL - WE WILL NEED TO GO GET THE GEOCODE BASED ON THE NEW ORIGINATION AND DESTINATION *****/
 
-          // Load the carrier need data to send notification
+          // Load the customer need data to send notification
           $this->load($api_host,$id);
 
           $original_originationaddress = $this->originationCity . ", " . $this->originationState;
@@ -402,7 +402,7 @@ class CustomerNeed
     }
 
     public function sendNotification($api_host,$id) {
-        // Load the carrier need data to send notification
+        // Load the customer need data to send notification
         $this->load($api_host,$id);
 
         if (count($this->contactEmails) > 0) {
@@ -539,16 +539,52 @@ class CustomerNeed
     }
 
     public function availabilityMatching($api_host, $id) {
-        // Load the carrier need data to send notification
+        // Load the customer need data to send notification
         $this->load($api_host,$id);
 
-        //- Exact match of Origination and Destination City and State
-        //- Exact match of Origination City and State
-        //- Exact match of Destination City and State
-        //- Match of Origination City
-        //- Match of Destination City
-        //- Match of Origination State
-        //- Match of Destination State
+        /* Go out to the carrier_needs table and get any matching needs based on:
+        - Exact match of Origination and Destination City and State
+        - Exact match of Origination City and State
+        - Exact match of Destination City and State
+        - Match of Origination City
+        - Match of Destination City
+        - Match of Origination State
+        - Match of Destination State
+        */
+
+        $originargs = array(
+            "transform"=>1,
+            "filter[]"=>"originationState,eq,".$this->originationState,
+            "filter[]"=>"status,eq,Available",
+            "filter[]"=>"availableDate,gt,".date("Y-m-d")
+        );
+        $originurl = API_HOST."/api/carrier_needs?".http_build_query($originargs);
+        $originoptions = array(
+            'http' => array(
+                'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                'method'  => 'GET'
+            )
+        );
+        $origincontext  = stream_context_create($originoptions);
+        $originresult = json_decode(file_get_contents($originurl,false,$origincontext),true);
+        $origincitiesfound = 0;
+        if (count($originresult) > 0) {
+            for ($i = 0; $i < count($originresult['carrier_needs']); $i++ ) {
+                if ($originresult['carrier_needs'][$i]['originationCity'] == $this->originationCity) {
+                    $origincitiesfound++;
+                }
+            }
+            reset($originresult);
+            $originstatesfound = 0;
+            for ($i = 0; $i < count($originresult['carrier_needs']); $i++ ) {
+                echo $originresult['carrier_needs'][$i]['originationState'] . "<br/>";
+                if ($originresult['carrier_needs'][$i]['originationState'] == $this->originationState) {
+                    $originstatesfound++;
+                }
+            }
+        }
+
+        return $origincitiesfound . " : " . $originstatesfound;
 
 
     }

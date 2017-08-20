@@ -431,6 +431,18 @@ $app->route('POST /createcustomerneedsfromexisting', function() {
     }
 });
 
+$app->route('GET|POST /availabilitymatching/@id', function($id) {
+    //$customerneedid = Flight::request()->data->id;
+    $customerneed = Flight::customerneed();
+    $matchingresult = $customerneed->availabilityMatching(API_HOST,$id);
+    if ($matchingresult) {
+        print_r($matchingresult);
+        //echo "success";
+    } else {
+        print_r($matchingresult);
+    }
+});
+
 
 $app->route('POST /uploaddocument', function() {
 	$name = Flight::request()->data->name;
@@ -460,17 +472,17 @@ $app->route('POST /viewdocument', function() {
 // POD API Process
 /*****************************************************************************/
 $app->route('POST /pod_api', function() {
-    
+
     // Data will be passed through using the format below
     //$customerneedid = Flight::request()->data->id;
-    
+
     // This is setup using config/setup.php
     $podAPI = Flight::quickbooks();
-    
+
     // This is the calling method inside the class
     $apiResponse = $podAPI->testMethod();
-    
-    
+
+
     if ($apiResponse) {
         print_r($apiResponse);
         //echo "success";
