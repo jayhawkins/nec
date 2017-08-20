@@ -109,9 +109,6 @@ if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
          https://code.google.com/p/chromium/issues/detail?id=332189
          */
 
-        var entityid = <?php echo $_SESSION['entityid']; ?>;
-        var entityType = <?php echo $_SESSION['entitytype'];  ?>;
-    
          // Main call to change main content area based on menu item selected
          function ajaxFormCall(form) {
            var host = location.protocol+'//'+window.location.hostname;
@@ -136,6 +133,9 @@ if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
          
         function countUserOrders(){
              
+        var entityid = <?php echo $_SESSION['entityid']; ?>;
+        var entityType = <?php echo $_SESSION['entitytype'];  ?>;
+    
             var url = '<?php echo API_HOST; ?>';
             var orderCount = 0;
             switch(entityType){
@@ -166,7 +166,6 @@ if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
                             var carrierIDs = order.carrierIDs;
 
                             for(var i = 0; i < carrierIDs.length; i++){
-                                carrierIDs[i].carrierID 
                                 if(carrierIDs[i].carrierID == entityid){
                                     orderCount++;
                                     break;
