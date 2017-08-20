@@ -2,3 +2,4 @@ html_files
 .git
 .gitignore
 
+/nbproject/private/
