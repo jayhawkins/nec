@@ -1,6 +1,6 @@
 <?php
 
-session_start();
+//session_start();
 
 require '../../nec_config.php';
 require '../lib/common.php';
