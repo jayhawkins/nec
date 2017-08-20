@@ -496,7 +496,7 @@ $app->route('POST /pod_api', function() {
 // Quickbooks API Status Page
 /*****************************************************************************/
 
- $app->route('/qb_api_status', function() {   
+$app->route('POST|GET /qb_api_status', function() { 
     // Data will be passed through using the format below
     //$customerneedid = Flight::request()->data->id;
     
