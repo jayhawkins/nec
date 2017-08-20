@@ -4,8 +4,8 @@
 
 require '../../nec_config.php';
 require '../lib/common.php';
-
- ?>
+$quickbooks_oauth_url = "http://nec.dubtel.com/oauth";
+?>
 
 <script type="text/javascript" src="https://appcenter.intuit.com/Content/IA/intuit.ipp.anywhere.js"></script>
 <script type="text/javascript">
