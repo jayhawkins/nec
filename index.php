@@ -507,7 +507,9 @@ $app->route('GET|POST /qb_api_status', function() {
     $apiResponse = $podAPI->isConnected();
     
     
-   Flight::render('qbstatus', array('response'=> $apiResponse));
+   //Flight::render('qbstatus', array('response'=> $apiResponse));
+    
+    print_r($apiResponse);
 });
 
 
