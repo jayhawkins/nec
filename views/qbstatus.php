@@ -9,9 +9,9 @@ $quickbooks_oauth_url = "http://nec.dubtel.com/oauth";
 
 <script type="text/javascript" src="https://appcenter.intuit.com/Content/IA/intuit.ipp.anywhere.js"></script>
 <script type="text/javascript">
-    intuit.ipp.anywhere.setup({
-        grantUrl: '<?php print($quickbooks_oauth_url); ?>'
-    });
+    //intuit.ipp.anywhere.setup({
+      //  grantUrl: '<?php print($quickbooks_oauth_url); ?>'
+   // });
 </script>
 
  
