@@ -245,10 +245,14 @@
 				{ data: "policyNumber", visible: false },
 				{ data: "policyExpirationDate", visible: false },
 				{ data: null,
-					"bSortable": false,
+                    "bSortable": false,
 					"mRender": function (o) {
-					    var filename = o.fileupload.split(".");
-					    return filename[0];
+					    var buttons = '';
+                        if (o.fileupload > '') {
+                            buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-eye-open text\"></i> <span class=\"text\">Upload/View Policy</span></button> &nbsp;';
+                        }
+                        buttons += "</div>";
+                        return buttons;
                     }
 				},
 				{
@@ -256,9 +260,6 @@
 					"bSortable": false,
 					"mRender": function (o) {
 					    var buttons = '<div class="pull-right text-nowrap">';
-                        if (o.fileupload > '') {
-                            buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-eye-open text\"></i> <span class=\"text\">View Policy</span></button> &nbsp;';
-                        }
                         buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text\"></i> <span class=\"text\">Edit</span></button>';
 						if (o.status == "Active") {
 							buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text\"></i> <span class=\"text\">Disable</span></button>";
@@ -527,8 +528,8 @@
                     <div class="col-md-5 pull-right">
                         <label for="btnView">&nbsp;</label>
                         <div class="form-group">
-                            <button type="button" class="btn btn-primary" id="btnReplace">Replace Document</button>
-                            <button type="button" class="btn btn-primary" id="btnView">View Document</button>
+                            <button type="button" class="btn btn-primary" id="btnReplace">Upload/View Policy</button>
+                            <button type="button" class="btn btn-primary" id="btnView">View Policy</button>
                         </div>
                     </div>
                 </form>
@@ -581,7 +582,7 @@
 			$("#policyExpirationDate").val(data["policyExpirationDate"]);
 			$("#docToView").val(data["fileupload"]);
 			$("#myModal").modal('show');
-        } else if (this.textContent.indexOf("View Policy") > -1) {
+        } else if (this.textContent.indexOf("Upload/View Policy") > -1) {
             $("#replaceID").val(data['id']);
             $("#docToView").val(data['fileupload']);
             $("#divUploadPolicyFile").hide();
