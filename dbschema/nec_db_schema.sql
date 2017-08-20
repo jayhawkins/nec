@@ -383,9 +383,25 @@ AUTO_INCREMENT = 1;
 -- -------------------------------------------------------------
 -- ---------------------------------------------------------
 
+-- CREATE TABLE "needs_match_types" --------------------------------
+CREATE TABLE IF NOT EXISTS `needs_match` (
+	`id` Int( 11 ) UNSIGNED AUTO_INCREMENT NOT NULL,
+	`description` VarChar( 255 ) NOT NULL,
+	`status` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'Active',
+	`createdAt` DateTime NOT NULL,
+	`updatedAt` DateTime NOT NULL,
+	CONSTRAINT `unique_id` UNIQUE( `id` ) )
+CHARACTER SET = utf8
+COLLATE = utf8_general_ci
+ENGINE = InnoDB
+AUTO_INCREMENT = 1;
+-- -------------------------------------------------------------
+-- ---------------------------------------------------------
+
 -- CREATE TABLE "needs_match" --------------------------------
 CREATE TABLE IF NOT EXISTS `needs_match` (
 	`id` Int( 11 ) UNSIGNED AUTO_INCREMENT NOT NULL,
+	`typeID` Int(11) UNSIGNED NOT NULL DEFAULT 0,
 	`customerEntityID` Int( 11 ) UNSIGNED NOT NULL,
 	`carrierEntityID` Int(11) UNSIGNED NOT NULL,
 	`customerNeedsID` Int(11) UNSIGNED NOT NULL DEFAULT 0,
