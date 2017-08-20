@@ -3,9 +3,19 @@
 //session_start();
 
 require '../../nec_config.php';
-require_once("./config.php");
 require '../lib/quickbooksconfig.php';
+require_once("./config.php");
+$quickbooks_oauth_url = "http://nec.dubtel.com/oauth";
 ?>
+
+<script type="text/javascript" src="https://appcenter.intuit.com/Content/IA/intuit.ipp.anywhere.js"></script>
+<script type="text/javascript">
+    //intuit.ipp.anywhere.setup({
+      //  grantUrl: '<?php echo $quickbooks_oauth_url; ?>'
+   // });
+</script>
+
+ 
 
  <ol class="breadcrumb">
    <li>ADMIN</li>
