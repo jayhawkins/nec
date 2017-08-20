@@ -561,6 +561,7 @@ class CustomerNeed
         - Match of Destination State for expired or completed orders (historical data)
         */
 
+        // Look at current data
         $args = array(
             "transform"=>1,
             "filter[]"=>"originationState,eq,".$this->originationState,
@@ -625,6 +626,43 @@ class CustomerNeed
                     $type7found++;
                 }
 
+            }
+        }
+
+        // Look at historical data
+        $args = array(
+            "transform"=>1,
+            "filter[]"=>"originationState,eq,".$this->originationState,
+            "filter[]"=>"status,ne,Available",
+            "filter[]"=>"availableDate,lt,".date("Y-m-d")
+        );
+        $url = API_HOST."/api/carrier_needs?".http_build_query($args);
+        $options = array(
+            'http' => array(
+                'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                'method'  => 'GET'
+            )
+        );
+        $context  = stream_context_create($options);
+        $result = json_decode(file_get_contents($url,false,$context),true);
+
+        if (count($result) > 0) {
+            for ($i = 0; $i < count($result['carrier_needs']); $i++ ) {
+
+                // 1 - Exact Match of Origination City and State
+                $type1found = 0;
+                if ($result['carrier_needs'][$i]['originationCity'] == $this->originationCity &&
+                    $result['carrier_needs'][$i]['originationState'] == $this->originationState &&
+                    $result['carrier_needs'][$i]['destinationCity'] == $this->destinationCity &&
+                    $result['carrier_needs'][$i]['destinationState'] == $this->destinationState) {
+                    $type1found++;
+                }
+
+                // 2 - Exact Match of Origination City and State
+                $type2found = 0;
+                if ($result['carrier_needs'][$i]['originationCity'] == $this->originationCity && $result['carrier_needs'][$i]['originationState'] == $this->originationState) {
+                    $type2found++;
+                }
 
             }
         }

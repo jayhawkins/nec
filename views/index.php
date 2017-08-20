@@ -295,6 +295,22 @@ if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
  <?php
     }
 
+    if ($_SESSION['entityid'] == 0) {
+ ?>
+             <li>
+                 <a href="#" onclick="ajaxFormCall('qbstatus');">
+                     <span class="icon">
+                         <i class="fa fa-thumbs-up"></i>
+                     </span>
+                     Quickbooks Test
+                     <span class="label label-danger">
+                         <?php echo $cncount; ?>
+                     </span>
+                 </a>
+             </li>
+ <?php
+    }
+
  ?>
             <li>
                 <a href="#" onclick="ajaxFormCall('listOrders');">
