@@ -364,7 +364,7 @@ if ($_SESSION['entityid'] > 0) {
              <li>
                  <a href="#" onclick="ajaxFormCall('qbstatus');">
                      <span class="icon">
-                         <i class="fa fa-thumbs-up"></i>
+                         <i class="fa fa-cloud-upload"></i>
                      </span>
                      QuickBooks Status
                      <span class="label label-danger">
