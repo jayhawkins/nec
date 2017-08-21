@@ -10,7 +10,7 @@ define('OAUTH_REQUEST_URL', 'https://oauth.intuit.com/oauth/v1/get_request_token
 define('OAUTH_ACCESS_URL', 'https://oauth.intuit.com/oauth/v1/get_access_token');
 define('OAUTH_AUTHORISE_URL', 'https://appcenter.intuit.com/Connect/Begin');
 // The url to this page. it needs to be dynamic to handle runnable's dynamic urls
-define('CALLBACK_URL', HTTP_HOST . '/qb_api_status');
+define('CALLBACK_URL', 'http://nec.dubtel.com/qb_api_status');
 // cleans out the token variable if comming from
 // connect to QuickBooks button
 if ( isset($_GET['start'] ) ) {
@@ -27,7 +27,7 @@ try {
 		$_SESSION['secret'] = $request_token['oauth_token_secret'];
 		// step 2: send user to intuit to authorize 
 		
-                //echo 'Not Authorized';
+                echo 'Not Authorized';
                 //exit();
                 header('Location: '. OAUTH_AUTHORISE_URL .'?oauth_token='.$request_token['oauth_token']);
 	}
