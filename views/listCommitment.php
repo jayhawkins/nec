@@ -1296,6 +1296,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
  <script>
 
     loadTableAJAX();
+    
 
     $('.datepicker').datepicker({
         autoclose: true,
@@ -1484,6 +1485,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                                 contentType: "application/json",
                                 async: false,
                                 success: function(){
+                                    countUserOrders();
+                                    countCommitments();
                                     closeCommitTransport();
                                 },
                                 error: function(){
