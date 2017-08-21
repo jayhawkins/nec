@@ -1,4 +1,5 @@
 <?php 
+session_start();
 require_once("./lib/quickbooksconfig.php");
  
 define('OAUTH_REQUEST_URL', 'https://oauth.intuit.com/oauth/v1/get_request_token');
