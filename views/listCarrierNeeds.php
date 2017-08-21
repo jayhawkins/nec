@@ -340,13 +340,15 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                         data: null,
                         "bSortable": false,
                         "mRender": function (o) {
-                            var buttons = '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text-info\"></i> <span class=\"text-info\">Edit</span></button>';
+                            var buttons = '<div class="pull-right text-nowrap">';
+                            buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text\"></i> <span class=\"text\">Edit</span></button>';
 
                             if (o.status == "Available") {
-                                      buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text-info\"></i> <span class=\"text-info\">Available</span></button>";
+                                      buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text\"></i> <span class=\"text\">Available</span></button>";
                             } else {
-                                      buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text-info\"></i> <span class=\"text-info\">Unavailable</span></button>";
+                                      buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text\"></i> <span class=\"text\">Unavailable</span></button>";
                             }
+                            buttons += "</div>";
 
                             return buttons;
                         }
@@ -388,13 +390,15 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                         data: null,
                         "bSortable": false,
                         "mRender": function (o) {
-                            var buttons = '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text-info\"></i> <span class=\"text-info\">Edit</span></button>';
+                            var buttons = '<div class="pull-right text-nowrap">';
+                            buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text\"></i> <span class=\"text\">Edit</span></button>';
 
                             if (o.status == "Available") {
-                                      buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text-info\"></i> <span class=\"text-info\">Available</span></button>";
+                                      buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text\"></i> <span class=\"text\">Available</span></button>";
                             } else {
-                                      buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text-info\"></i> <span class=\"text-info\">Unavailable</span></button>";
+                                      buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text\"></i> <span class=\"text\">Unavailable</span></button>";
                             }
+                            buttons += '</div>';
 
                             return buttons;
                         }
@@ -414,7 +418,134 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
           //myApp.hidePleaseWait();
 
       }
+      function loadModal() {
+      	console.log("loading");
+			var li = '';
+			var checked = '';
+			var dpli = '';
+			var dpchecked = '';
+			var emptyMode = '';
+			var loadMode = '';
+			var eitherMode = '';
+			$("#id").val('');
+			$("#qty").val('');
+			$("#availableDate").val('');
+			$("#expirationDate").val('');
+			$("#originationAddress1").val('');
+			$("#originationCity").val('');
+			$("#originationState").val('');
+			$("#originationZip").val('');
+			$("#destinationAddress1").val('');
+			$("#destinationCity").val('');
+			$("#destinationState").val('');
+			$("#destinationZip").val('');
 
+			transMode = '<select id="transportationMode" name="transportationMode" class="form-control chzn-select" required="required">' + '<option value="" selected=selected>*Select Mode...</option>';
+
+			transMode += '<option value="Empty" ' + emptyMode + '>Empty</option>';
+			transMode += '<option value="Load Out" ' + loadMode + '>Load Out</option>';
+			transMode += '<option value="Both (Empty or Load Out)" ' + eitherMode + '>Both (Empty or Load Out)</option>';
+			transMode += '</select>';
+			$("#divTransportationMode").html(transMode);
+
+			for (var i = 0; i < contacts.contacts.records.length; i++) {
+				li += '<li id=\"' + contacts.contacts.records[i][0] + '\" class=\"list-group-item\" ' + checked + '>' + contacts.contacts.records[i][1] + ' ' + contacts.contacts.records[i][2] + '</li>\n';
+			}
+			$("#check-list-box").html(li);
+			for (var i = 0; i < dataPoints.object_type_data_points.length; i++) {
+				dpli += '<li>' + dataPoints.object_type_data_points[i].title +
+				' <select class="form-control mb-sm" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '">\n' +
+				' <option value="" selected=selected>-Select From List-</option>\n';
+				for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
+					dpli += '<option>' + dataPoints.object_type_data_points[i].object_type_data_point_values[v].value + '</option>\n';
+				}
+				dpli += '</select>\n' +
+				'</li>\n';
+			}
+			$("#dp-check-list-box").html(dpli);
+			formatListBox();
+			formatListBoxDP();
+			$("#entityID").prop('disabled', false);
+			$("#exampleModalLabel").html('Add New Need');
+			//$("#suggesstion-box").hide();
+			//$("#myModal").modal('show');
+      }
+    	//setTimeout("loadModal();", 100);
+function replaceDocument() {
+        var data,date;
+        var passValidation = false;
+        var type = "";
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth()+1; //January is 0!
+        var yyyy = today.getFullYear();
+        var hours = today.getHours();
+        var min = today.getMinutes();
+        var sec = today.getSeconds();
+        var url = "";
+        if(dd<10) {
+            dd='0'+dd;
+        }
+        if(mm<10) {
+            mm='0'+mm;
+        }
+        if(hours<10) {
+            hours='0'+hours;
+        }
+        if(min<10) {
+            min='0'+min;
+        }
+        today = mm+'/'+dd+'/'+yyyy;
+        today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+        var date = today;
+
+	    url = '<?php echo HTTP_HOST."/uploaddocument" ?>';
+        type = "POST";
+        var formData = new FormData();
+        formData.append('fileupload', $('#updatePolicyFile')[0].files[0]);
+        formData.append('entityID', $("#entityID").val());
+        $.ajax({
+            url : url,
+            type : 'POST',
+            data : formData,
+            processData: false,  // tell jQuery not to process the data
+            contentType: false,  // tell jQuery not to set contentType
+            success : function(data) {
+                /*
+                // update listInsurance
+                url = '<?php echo API_HOST."/api/insurance_carriers/" ?>' + $("#replaceID").val();
+                type = "PUT";
+                var files = $('#updatePolicyFile').prop("files");
+                var fileNames = $.map(files, function(val) { return val.name; }).join(',');
+                data = {id: $("#replaceID").val(), fileupload: fileNames, entityID: $("#entityID").val(), updatedAt: date};
+                console.log(data);
+                $.ajax({
+                    url: url,
+                    type: type,
+                    data: JSON.stringify(data),
+                    contentType: "application/json",
+                    async: false,
+                    success: function(data){
+                        if (data > 0) {
+                            $("#myModal2").modal('hide');
+                            loadTableAJAX();
+                            passValidation = true;
+                        } else {
+                            alert("Bulk Import Failed!");
+                        }
+                    },
+                    error: function() {
+                        alert("There Was An Error Importing Carrier Needs!");
+                    }
+                });
+                */
+                console.log('Carrier Needs updated');
+            },
+            error: function() {
+                alert("Failed");
+            }
+        });
+	}
       function recordEnableDisable(status) {
           var passValidation = false;
 
@@ -515,11 +646,9 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
               // Initialization
               function init() {
-
                   if ($widget.data('checked') == true) {
                       $checkbox.prop('checked', !$checkbox.is(':checked'));
                   }
-
                   updateDisplay();var checkedItems = {}, counter = 0;
                   $("#check-list-box li.active").each(function(idx, li) {
                       //console.log($(li));
@@ -531,10 +660,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                       $widget.prepend('<span class="state-icon ' + settings[$widget.data('state')].icon + '"></span>');
                   }
               }
-
               init();
           });
-
           // Doesn't get called - this is from the example but copied to the Save Changes button click
           $('#get-checked-data').on('click', function(event) {
               event.preventDefault();
@@ -774,7 +901,9 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
              Column sorting, live search, pagination. Built with
              <a href="http://www.datatables.net/" target="_blank">jQuery DataTables</a>
          </p -->
+         <button type="button" id="uploadTemplate" class="btn btn-primary pull-xs-right" data-target="#myModal2" >Upload Bulk Template</button>
          <button type="button" id="addNeed" class="btn btn-primary pull-xs-right" data-target="#myModal">Add New Need</button>
+         <a id="downloadTemplate" href="#">Download Bulk Template</a>
          <br /><br />
          <div id="dataTable" class="mt">
              <table id="datatable-table" class="table table-striped table-hover">
@@ -817,7 +946,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
    <div class="modal-dialog modal-lg" role="document">
      <div class="modal-content">
        <div class="modal-header">
-         <h5 class="modal-title" id="exampleModalLabel"><strong>Need</strong></h5>
+         <h5 class="modal-title" id="exampleModalLabel" style="position:absolute;"><strong>Need</strong></h5>
          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
            <span aria-hidden="true">&times;</span>
          </button>
@@ -876,7 +1005,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                            <input type="text" id="originationCity" name="originationCity" class="form-control mb-sm" placeholder="Origin City"
                            required="required" />
                          </div>
-                         <div id="suggesstion-box" class="frmSearch"></div>
+                         <div id="suggesstion-box-origin" class="frmSearch"></div>
                      </div>
                      <div class="col-sm-4">
                          <label for="originationAddress1">Origination Address</label>
@@ -914,6 +1043,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                          <input type="text" id="destinationCity" name="destinationCity" class="form-control mb-sm" placeholder="Dest. City"
                          required="required" />
                        </div>
+                       <div id="suggesstion-box-dest" class="frmSearch"></div>
                    </div>
                    <div class="col-sm-4">
                        <label for="destinationAddress1">Destination Address</label>
@@ -986,6 +1116,126 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
     </div>
   </div>
 
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel"><strong>Insurance</strong></h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<form id="formInsurance" class="register-form mt-lg" action="<?php echo HTTP_HOST."/uploaddocument" ?>" method="POST" enctype="multipart/form-data">
+					<input type="hidden" id="entityID" name="entityID" value="<?php echo $_SESSION['entityid']; ?>" />
+					<input type="hidden" id="id" name="id" value="" />
+					<div class="row">
+						<div class="col-sm-6">
+							<label for="name">Insurer</label>
+							<div class="form-group">
+								<input type="text" id="name" name="name" class="form-control mb-sm" placeholder="*Name" required="required" />
+							</div>
+						</div>
+						<div class="col-sm-6">
+							<label for="contactName">Contact Name</label>
+							<div class="form-group">
+								<input type="text" id="contactName" name="contactName" class="form-control mb-sm" placeholder="*Contact Name" required="required" />
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-6">
+							<label for="contactEmail">Contact Email</label>
+							<div class="form-group">
+								<input type="email" id="contactEmail" name="contactEmail" class="form-control mb-sm" placeholder="*Contact Email" required="required" />
+							</div>
+						</div>
+						<div class="col-sm-6">
+							<label for="contactPhone">Contact Phone</label>
+							<div class="form-group">
+								<input type="text" id="contactPhone" name="contactPhone" class="form-control mb-sm" placeholder="Contact Phone" required="required" />
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-6">
+							<label for="policyNumber">Policy Number</label>
+							<div class="form-group">
+								<input type="text" id="policyNumber" name="policyNumber" class="form-control mb-sm" placeholder="*Policy Number" required="required" />
+							</div>
+						</div>
+						<div class="col-sm-6">
+							<label for="policyExpirationDate">Expiration Date</label>
+							<div class="form-group">
+								<!--input type="text" id="policyExpirationDate" name="policyExpirationDate" class="form-control mb-sm" placeholder="Policy Expiration Date (YYYY-MM-DD)" required="required" /-->
+								<div id="sandbox-container" class="input-group date datepicker">
+									<input type="text" id="policyExpirationDate" name="policyExpirationDate" class="form-control" placeholder="Policy Expiration Date"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-12">
+							<label for="fileupload">Policy File Upload</label>
+							<div class="form-group">
+								<input type="file" id="fileupload" name="fileupload" class="form-control mb-sm" placeholder="*Policy Number" required="required" data-filesize="20000000"
+								data-filetype="image/bmp,image/gif,image/jpeg,application/zip,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/rtf"
+								onchange="validateFile(this);" />
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-primary" onclick="return verifyAndPost();">Save Changes</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="enableDialogLabel">Upload Bulk Import Carrier Needs</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+                <div class="row">
+                <form>
+                    <input type="hidden" id="entityID" value="<?php echo $_SESSION['entityid']; ?>" />
+                    <input type="hidden" id="replaceID" name="replaceID" value="" />
+                    <input type="hidden" id="docToView" value="" />
+                    <div id="divUploadPolicyFile" class="col-md-7">
+                        <label for="updatePolicyFile">Upload Bulk Import Carrier Needs</label>
+                        <div class="form-group">
+                            <input type="file" id="updatePolicyFile" name="updatePolicyFile" class="form-control mb-sm" placeholder="Update Policy" data-filesize="20000000"
+                            data-filetype="text/csv"
+                            onchange="validateFile(this);" />
+                        </div>
+                    </div>
+                    <!--
+                    <div class="col-md-5 pull-right">
+                        <label for="btnView">&nbsp;</label>
+                        <div class="form-group">
+                            <button type="button" class="btn btn-primary" id="btnReplace">Upload/View Policy</button>
+                            <button type="button" class="btn btn-primary" id="btnView">View Policy</button>
+                        </div>
+                    </div>
+                    -->
+                </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btnSave">Save</button>
+            </div>
+		</div>
+	</div>
+</div>
   <!-- Modal -->
   <div class="modal fade" id="myDisableDialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-md" role="document">
@@ -1058,12 +1308,56 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
     var tableContact = $("#datatable-table-contact").DataTable();
     var tableDataPoints = $("#datatable-table-datapoints").DataTable();
 
+	function validateFile(file) {
+		var ext = $(file).val().split(".");
+		ext = ext[ext.length-1].toLowerCase();
+		var arrayExtensions = ["csv"];
+		if (arrayExtensions.lastIndexOf(ext) == -1) {
+			alert("File must be one of the following valid types; csv.");
+			$(file).val("");
+			$(file).focus();
+			return false;
+		} else {
+			return true;
+		}
+	}
     $('.datepicker').datepicker({
         autoclose: true,
         todayHighlight: true,
         format: "yyyy-mm-dd"
     });
-
+    $("#downloadTemplate").click(function(){
+    	loadModal();
+		var labels="";
+		var secondRow="";
+		$("#myModal label").each(function(e){
+			if (e==0) {
+				labels+=$(this).html();
+			} else {
+				labels+=","+$(this).html();
+				secondRow+=",";
+			}
+		});
+		// Build the needsDataPoints
+		var obj = $("#dp-check-list-box li select");
+		for (var i = 0; i < obj.length; i++) {
+			labels+=",Trailer "+obj[i].id +" "+obj[i].innerText.replace(/\n -Select From List-\n/g, '(').replace(/\n/g, '/').slice(0, -1)+")";
+			secondRow+=",";
+		}
+		// Build the contacts
+		var obj = $("#check-list-box li");
+		for (var i = 0; i < obj.length; i++) {
+			labels+=",Contact ("+obj[i].id+") "+obj[i].innerText;
+			secondRow+=",no";
+		}
+		//labels+="\r\n"+secondRow;
+		labels+="\n"+secondRow;
+		$("#downloadTemplate").attr("href","data:application/octet-stream;charset=utf-8;base64,"+btoa(labels.replace(/\n/g, '\r\n')));
+		$("#downloadTemplate").attr("download","carrier_needs_bulk_import_template.csv");
+	});
+	$("#uploadTemplate").click(function(){
+		$("#myModal2").modal('show');
+	});
     $("#addNeed").click(function(){
       var li = '';
       var checked = '';
@@ -1071,7 +1365,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       var dpchecked = '';
       var emptyMode = '';
       var loadMode = '';
-      var eitherMode = 'selected=selected';
+      var eitherMode = '';
       $("#id").val('');
       $("#qty").val('');
       $("#availableDate").val('');
@@ -1087,7 +1381,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       //alert(JSON.stringify(contacts));
 
       transMode = '<select id="transportationMode" name="transportationMode" class="form-control chzn-select" required="required">' +
-                             '<option value="">*Select Mode...</option>';
+                             '<option value="" selected=selected>*Select Mode...</option>';
 
       transMode += '<option value="Empty" ' + emptyMode + '>Empty</option>';
       transMode += '<option value="Load Out" ' + loadMode + '>Load Out</option>';
@@ -1102,7 +1396,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       for (var i = 0; i < dataPoints.object_type_data_points.length; i++) {
           dpli += '<li>' + dataPoints.object_type_data_points[i].title +
                   ' <select class="form-control mb-sm" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '">\n' +
-                  ' <option value="">-Select One-</option>\n';
+                  ' <option value="" selected=selected>-Select From List-</option>\n';
           for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
               dpli += '<option>' + dataPoints.object_type_data_points[i].object_type_data_point_values[v].value + '</option>\n';
           }
@@ -1208,7 +1502,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
                 dpli += '<li>' + dataPoints.object_type_data_points[i].title +
                         ' <select class="form-control mb-sm" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '">\n' +
-                        ' <option value="">-Select One-</option>\n';
+                        ' <option value="">-Select From List-</option>\n';
                 for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
 
                     if (dataPoints.object_type_data_points[i].object_type_data_point_values[v].value === value) {
@@ -1282,6 +1576,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         });
     });
 
+/* Taken out per FS257
     $("#originationCity").keyup(function(){
         $("#originationCity").css("background","#FFF url(img/loaderIcon.gif) no-repeat 165px");
 
@@ -1300,12 +1595,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                   li += '<li onClick="selectOrgCity(\'' + data.locations[t].id + '\');" id=\"' + data.locations[t].id + '\">' + data.locations[t].city + ' [' + data.locations[t].name + ']</li>\n';
               }
               li += '</ul>';
-              $("#suggesstion-box").html(li);
-        			$("#suggesstion-box").show();
+              $("#suggesstion-box-origin").html(li);
+        			$("#suggesstion-box-origin").show();
         			$("#originationCity").css("background","#FFF");
         		}
     		});
   	});
+*/
 
     function selectOrgCity(val) {
         var params = {id: val};
@@ -1326,7 +1622,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
              var li = setContactsOnLocationSelected();
              $("#check-list-box").html(li);
              formatListBox();
-             $("#suggesstion-box").hide();
+             $("#suggesstion-box-origin").hide();
            },
            error: function() {
                 alert('Error Selecting Origination City!');
@@ -1334,6 +1630,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         });
     }
 
+/* Taken out per FS257
     $("#destinationCity").keyup(function(){
         $("#destinationCity").css("background","#FFF url(img/loaderIcon.gif) no-repeat 165px");
 
@@ -1352,12 +1649,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                   li += '<li onClick="selectDestCity(\'' + data.locations[t].id + '\');" id=\"' + data.locations[t].id + '\">' + data.locations[t].city + ' [' + data.locations[t].name + ']</li>\n';
               }
               li += '</ul>';
-              $("#suggesstion-box").html(li);
-        			$("#suggesstion-box").show();
+              $("#suggesstion-box-dest").html(li);
+        			$("#suggesstion-box-dest").show();
         			$("#destinationCity").css("background","#FFF");
         		}
     		});
   	});
+*/
 
     function selectDestCity(val) {
         var params = {id: val};
@@ -1374,7 +1672,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
              $("#destinationCity").val(response.city);
              $("#destinationState").val(response.state);
              $("#destinationZip").val(response.zip);
-             $("#suggesstion-box").hide();
+             $("#suggesstion-box-dest").hide();
            },
            error: function() {
                 alert('Error Selecting Destination City!');
@@ -1406,4 +1704,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         return li;
     }
 
+	$("#btnSave").unbind('click').bind('click',function(){ // Doing it like this because it was double posting document giving me duplicates
+	    replaceDocument();
+	    return false;
+	});
  </script>
