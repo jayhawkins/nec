@@ -45,6 +45,9 @@ try {
             window.close();
           </script>';
   }
+  else{
+      echo 'connected';
+  }
  
 } catch(OAuthException $e) {
 	echo "Got auth exception";
