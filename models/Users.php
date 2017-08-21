@@ -233,7 +233,7 @@ class User
                     $contactcontext  = stream_context_create($contactoptions);
                     $contactresult = file_get_contents($contacturl, false, $contactcontext);
 //----------------------------------------------------------------------------
-
+/* Don't use now
                     $admimargs = array(
                         "transform"=>1,
                         "columns"=>"id",
@@ -250,9 +250,9 @@ class User
 
                     $admincontext  = stream_context_create($adminoptions);
                     $adminresult = json_decode(file_get_contents($adminurl,false,$admincontext));
-                    echo $adminresult;
-                    die();
+
                     $admincontactid = $adminresult->contacts[0]->id;
+*/
 
                     // Update entity contact id with newly created contact
                     $entityupdateurl = API_HOST.'/api/entities/' . $entity_id;
