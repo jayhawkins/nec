@@ -20,51 +20,86 @@ $eoptions = array(
 $econtext  = stream_context_create($eoptions);
 $eresult = json_decode(file_get_contents($eurl,false,$econtext), true);
 
-if ( $eresult['entities'][0]['entityTypeID'] == 1 ) {
-    $cnargs = array(
-          "transform"=>"1",
-          "filter[]"=>"entityID,eq," . $_SESSION['entityid'],
-          "filter[]"=>"status,eq,Available"
-    );
-} elseif ( $eresult['entities'][0]['entityTypeID'] == 2 ) {
-    $cnargs = array(
-          "transform"=>"1",
-          "filter[]"=>"entityID,eq," . $_SESSION['entityid'],
-          "filter[]"=>"status,eq,Available"
-    );
-} else {
-    $cnargs = array(
-          "transform"=>"1",
-          "filter[]"=>"status,eq,Available"
-    );
-}
+$cncount = 0;
 
-if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
-    $entityname = $eresult['entities'][0]['name'] . " - (Customer)";
-    $cnurl = API_HOST."/api/carrier_needs?".http_build_query($cnargs);
-} elseif ( $eresult['entities'][0]['entityTypeID'] == 2 ) { // Carrier
-    $entityname = $eresult['entities'][0]['name'] . " - (Carrier)";
-    $cnurl = API_HOST."/api/customer_needs?".http_build_query($cnargs);
+if ($_SESSION['entityid'] > 0) {
+    if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
+        $cnargs = array(
+              "transform"=>"1",
+              "filter[]"=>"entityID,eq," . $_SESSION['entityid'],
+              "filter[]"=>"status,eq,Available"
+        );
+    } elseif ( $eresult['entities'][0]['entityTypeID'] == 2 ) { // Carrier
+        $cnargs = array(
+              "transform"=>"1",
+              "filter[]"=>"entityID,eq," . $_SESSION['entityid'],
+              "filter[]"=>"status,eq,Available"
+        );
+    }
+
+    if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
+        $entityname = $eresult['entities'][0]['name'] . " - (Customer)";
+        $cnurl = API_HOST."/api/carrier_needs?".http_build_query($cnargs);
+    } elseif ( $eresult['entities'][0]['entityTypeID'] == 2 ) { // Carrier
+        $entityname = $eresult['entities'][0]['name'] . " - (Carrier)";
+        $cnurl = API_HOST."/api/customer_needs?".http_build_query($cnargs);
+    }
+
+    $cnoptions = array(
+        'http' => array(
+            'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+            'method'  => 'GET'
+        )
+    );
+    $cncontext  = stream_context_create($cnoptions);
+    $cnresult = file_get_contents($cnurl,false,$cncontext);
+    $cnresult2 = json_decode($cnresult,true);
+    if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
+        $cncount = count($cnresult2['carrier_needs']);
+    } elseif ( $eresult['entities'][0]['entityTypeID'] == 2 ) { // Carrier
+        $cncount = count($cnresult2['customer_needs']);
+    }
+
 } else {
+
+    // Now get counts for Admin Logins
+    $cnargs = array(
+          "transform"=>"1",
+          "filter[]"=>"entityID,eq," . $_SESSION['entityid'],
+          "filter[]"=>"status,eq,Available"
+    );
+
+    $entityname = $eresult['entities'][0]['name'] . " - (Admin)";
+    $cnurl = API_HOST."/api/carrier_needs?".http_build_query($cnargs);
+    $cnoptions = array(
+        'http' => array(
+            'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+            'method'  => 'GET'
+        )
+    );
+    $cncontext  = stream_context_create($cnoptions);
+    $cnresult = file_get_contents($cnurl,false,$cncontext);
+    $cnresult2 = json_decode($cnresult,true);
+    $carrierncount = count($cnresult2['carrier_needs']);
+
+    $cnargs = array(
+          "transform"=>"1",
+          "filter[]"=>"entityID,eq," . $_SESSION['entityid'],
+          "filter[]"=>"status,eq,Available"
+    );
+
     $entityname = $eresult['entities'][0]['name'] . " - (Admin)";
     $cnurl = API_HOST."/api/customer_needs?".http_build_query($cnargs);
-}
-
-$cnoptions = array(
-    'http' => array(
-        'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
-        'method'  => 'GET'
-    )
-);
-$cncontext  = stream_context_create($cnoptions);
-$cnresult = file_get_contents($cnurl,false,$cncontext);
-$cnresult2 = json_decode($cnresult,true);
-if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
-    $cncount = count($cnresult2['carrier_needs']);
-} elseif ( $eresult['entities'][0]['entityTypeID'] == 2 ) { // Carrier
-    $cncount = count($cnresult2['customer_needs']);
-} else {
-    $cncount = count($cnresult2['customer_needs']);
+    $cnoptions = array(
+        'http' => array(
+            'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+            'method'  => 'GET'
+        )
+    );
+    $cncontext  = stream_context_create($cnoptions);
+    $cnresult = file_get_contents($cnurl,false,$cncontext);
+    $cnresult2 = json_decode($cnresult,true);
+    $customerncount = count($cnresult2['customer_needs']);
 }
 
 ?>
@@ -269,7 +304,13 @@ if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
                     </span>
                     Needs
                     <span class="label label-danger">
-                        <?php echo $cncount; ?>
+                        <?php
+                            if ( $_SESSION['entitytype'] == 1 ) {
+                                echo $cncount;
+                            } elseif ( $_SESSION['entityid'] == 0 ) {
+                                echo $carrierncount;
+                            }
+                        ?>
                     </span>
                 </a>
             </li>
@@ -286,7 +327,13 @@ if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
                      </span>
                      Availability
                      <span class="label label-danger">
-                         <?php echo $cncount; ?>
+                         <?php
+                            if ( $_SESSION['entitytype'] == 2 ) {
+                                echo $cncount;
+                            } elseif ( $_SESSION['entityid'] == 0 ) {
+                                echo $customerncount;
+                            }
+                        ?>
                      </span>
                  </a>
              </li>
@@ -295,6 +342,7 @@ if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
 
 
     if ($_SESSION['entityid'] == 0) {
+    /*
  ?>
              <li>
                  <a href="#" onclick="ajaxFormCall('listCommitment');">
@@ -308,6 +356,7 @@ if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
                  </a>
              </li>
  <?php
+    */
     }
 
     if ($_SESSION['entityid'] == 0) {
