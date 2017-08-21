@@ -15,9 +15,9 @@ class Documents
 
     }
     public function viewdocument($entityID,$file_location,$filename) {
-		$dir = $file_location . "users/".floor($entityID / 65535)."/".$entityID."/";
+		$dir = $file_location . "users/".floor($entityID / 65535)."/".$entityID;
 		$file = $dir . "/" . $filename;
-		$fileType = pathinfo($fileupload['name'],PATHINFO_EXTENSION);
+		$fileType = pathinfo($filename,PATHINFO_EXTENSION);
 		$mime_type="";
 		if(@is_array(getimagesize($mediapath))){
 			$mime_type = "image/jpeg, image/png, image/bmp, image/gif";

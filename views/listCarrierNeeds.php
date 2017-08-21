@@ -774,6 +774,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
              Column sorting, live search, pagination. Built with
              <a href="http://www.datatables.net/" target="_blank">jQuery DataTables</a>
          </p -->
+         <button type="button" id="downloadTemplate" class="btn btn-primary pull-xs-right" >Download Bulk Template</button>
+         <button type="button" id="uploadTemplate" class="btn btn-primary pull-xs-right" >Upload Bulk Template</button>
          <button type="button" id="addNeed" class="btn btn-primary pull-xs-right" data-target="#myModal">Add New Need</button>
          <br /><br />
          <div id="dataTable" class="mt">
@@ -817,7 +819,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
    <div class="modal-dialog modal-lg" role="document">
      <div class="modal-content">
        <div class="modal-header">
-         <h5 class="modal-title" id="exampleModalLabel"><strong>Need</strong></h5>
+         <h5 class="modal-title" id="exampleModalLabel" style="position:absolute;"><strong>Need</strong></h5>
          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
            <span aria-hidden="true">&times;</span>
          </button>
@@ -1064,6 +1066,22 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         format: "yyyy-mm-dd"
     });
 
+	$("#downloadTemplate").click(function(){
+		var labels="";
+		$("#myModal label").each(function(){
+			labels+=$(this).html();
+		});
+		var w = window.open('','csvWindow'); // popup, may be blocked though
+		// the following line does not actually do anything interesting with the
+		// parameter given in current browsers, but really should have.
+		// Maybe in some browser it will. It does not hurt anyway to give the mime type
+		w.document.open("text/csv");
+		w.document.write(labels); // the csv string from for example a jquery plugin
+		w.document.close();
+	});
+	$("#uploadTemplate").click(function(){
+		alert("uploadTemplate");
+	});
     $("#addNeed").click(function(){
       var li = '';
       var checked = '';
