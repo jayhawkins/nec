@@ -1086,7 +1086,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
             </div>   
             <div class="col-sm-4 col-sm-offset-4">
                 <div class="form-group">
-                    <button id="completeOrder" class="btn btn-primary btn-block" role="button" onclick="completeOrder();"><i class="fa fa-check-square-o text-info"></i> <span class="text-info">Availability Approved</span></button>
+                    <button id="completeOrder" class="btn btn-primary btn-block" role="button" onclick="completeOrder();"><i class="fa fa-check-square-o text-info"></i> <span class="text-info">Submit for Order</span></button>
                 </div>
             </div>
         </div>
