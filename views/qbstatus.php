@@ -26,7 +26,10 @@ try {
     $request_token = $oauth->getRequestToken( OAUTH_REQUEST_URL, CALLBACK_URL );
 		$_SESSION['secret'] = $request_token['oauth_token_secret'];
 		// step 2: send user to intuit to authorize 
-		header('Location: '. OAUTH_AUTHORISE_URL .'?oauth_token='.$request_token['oauth_token']);
+		
+                echo 'Not Authorized';
+                exit();
+                //header('Location: '. OAUTH_AUTHORISE_URL .'?oauth_token='.$request_token['oauth_token']);
 	}
 	
 	if ( isset($_GET['oauth_token']) && isset($_GET['oauth_verifier']) ){
