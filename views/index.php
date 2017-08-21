@@ -60,7 +60,8 @@ if ($_SESSION['entityid'] > 0) {
         $cncount = count($cnresult2['customer_needs']);
     }
 
-} else {
+} 
+else {
 
     // Now get counts for Admin Logins
     $cnargs = array(
