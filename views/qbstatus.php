@@ -27,7 +27,7 @@ try {
 		$_SESSION['secret'] = $request_token['oauth_token_secret'];
 		// step 2: send user to intuit to authorize 
 		
-                //echo 'Not Authorized';
+                echo 'Not Authorized';
                 //exit();
                 header('Location: '. OAUTH_AUTHORISE_URL .'?oauth_token='.$request_token['oauth_token']);
 	}
