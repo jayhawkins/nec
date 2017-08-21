@@ -57,7 +57,7 @@ try {
 }
 ?>
 
- ?>
+ 
 
  <script src="vendor/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
 
