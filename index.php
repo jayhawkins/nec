@@ -313,35 +313,6 @@ $app->route('POST /getcontactsbycarrier', function() {
 });
 
 /*****************************************************************************/
-// Insurance Carrier Processes
-/*****************************************************************************/
-$app->route('POST /uploadpolicy', function() {
-	$fileupload = Flight::request()->files['fileupload'];
-	$fileName = $fileupload['name'];
-	$entityID = Flight::request()->data["entityID"];
-	$insurancecarriers = Flight::insurancecarrier();
-    $result = $insurancecarriers->uploadPolicy(HTTP_HOST,FILE_LOCATION,$fileupload,$fileName,$entityID);
-    if ($result) {
-        print_r($result);
-    } else {
-        print_r($result);
-    }
-});
-
-$app->route('GET /viewpolicy', function() {
-	$entityID = Flight::request()->query['entityID'];
-	$filename = Flight::request()->query['filename'];
-    $theFile = FILE_LOCATION."users/0/".$entityID."/".$filename;
-    $fileType = pathinfo($filename,PATHINFO_EXTENSION);
-
-    header("Content-type: application/".$fileType."\r\n");
-    header('Content-Disposition: inline; filename='.$filename.'\r\n');
-    header("Content-Length: " . filesize($theFile) . "\r\n");
-    readfile(FILE_LOCATION."users/0/".$entityID."/".$filename);
-
-});
-
-/*****************************************************************************/
 // Carrier Needs Processes
 /*****************************************************************************/
 $app->route('POST /carrierneedsnotification', function() {
