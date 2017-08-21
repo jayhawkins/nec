@@ -10,7 +10,7 @@ define('OAUTH_REQUEST_URL', 'https://oauth.intuit.com/oauth/v1/get_request_token
 define('OAUTH_ACCESS_URL', 'https://oauth.intuit.com/oauth/v1/get_access_token');
 define('OAUTH_AUTHORISE_URL', 'https://appcenter.intuit.com/Connect/Begin');
 // The url to this page. it needs to be dynamic to handle runnable's dynamic urls
-define('http://nec.dubtel.com/qb_api_status');
+define('CALLBACK_URL','http://nec.dubtel.com/qb_api_status');
 // cleans out the token variable if comming from
 // connect to QuickBooks button
 if ( isset($_GET['start'] ) ) {
