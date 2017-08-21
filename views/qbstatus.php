@@ -3,7 +3,7 @@
 //session_start();
 
 require '../../nec_config.php';
-require '../lib/quickbooksconfig.php';
+//require '../lib/quickbooksconfig.php';
 //require_once("./config.php");
 $quickbooks_oauth_url = "http://nec.dubtel.com/oauth";
 //193514475422329
