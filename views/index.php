@@ -20,9 +20,24 @@ $eoptions = array(
 $econtext  = stream_context_create($eoptions);
 $eresult = json_decode(file_get_contents($eurl,false,$econtext), true);
 
-$cnargs = array(
-      "transform"=>"1"
-);
+if ( $eresult['entities'][0]['entityTypeID'] == 1 ) {
+    $cnargs = array(
+          "transform"=>"1",
+          "filter[]"=>"entityID,eq," . $_SESSION['entityid'],
+          "filter[]"=>"status,eq,Available"
+    );
+} elseif ( $eresult['entities'][0]['entityTypeID'] == 2 ) {
+    $cnargs = array(
+          "transform"=>"1",
+          "filter[]"=>"entityID,eq," . $_SESSION['entityid'],
+          "filter[]"=>"status,eq,Available"
+    );
+} else {
+    $cnargs = array(
+          "transform"=>"1",
+          "filter[]"=>"status,eq,Available"
+    );
+}
 
 if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
     $entityname = $eresult['entities'][0]['name'] . " - (Customer)";
@@ -132,10 +147,10 @@ if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
 
 
         function countUserOrders(){
-             
+
         var entityid = <?php echo $_SESSION['entityid']; ?>;
         var entityType = <?php echo $_SESSION['entitytype'];  ?>;
-    
+
             var url = '<?php echo API_HOST; ?>';
             var orderCount = 0;
             switch(entityType){
