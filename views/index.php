@@ -366,7 +366,7 @@ if ($_SESSION['entityid'] > 0) {
                      <span class="icon">
                          <i class="fa fa-thumbs-up"></i>
                      </span>
-                     QuickBooks Connection Status
+                     QuickBooks Status
                      <span class="label label-danger">
                          <?php //echo $cncount; ?>
                      </span>
