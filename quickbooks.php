@@ -28,9 +28,9 @@ try {
 		// step 3: request a access token from Intuit
     $oauth->setToken($_GET['oauth_token'], $_SESSION['secret']);
 		$access_token = $oauth->getAccessToken( OAUTH_ACCESS_URL );
-		
+		//123145766093222
 		$_SESSION['token'] = serialize( $access_token );
-   $_SESSION['realmId'] = '193514475422329'; 
+   $_SESSION['realmId'] = $_REQUEST['realmId'];
     $_SESSION['dataSource'] = $_REQUEST['dataSource'];
 	
 	 $token = $_SESSION['token'] ;
