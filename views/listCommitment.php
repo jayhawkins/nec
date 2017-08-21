@@ -1468,6 +1468,42 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                             rateType: selectedCustomerNeed.rateType, customerRate: $('#customerRate').val(), carrierTotalRate: $('#carrierTotalRate').val(),
                             totalRevenue: $('#totalRevenue').val(), createdAt: today, updatedAt: today};
                         
+                        
+                        
+                        
+                        
+                        
+                       // Yaw, here is the information you requested.
+                       
+                       // This is the Selected Customer Transport Table at the top of Committed Transport
+                       console.log(selectedCustomerNeed);
+                       
+                       var customerName = selectedCustomerNeed.entities[0].name;
+                       var originationCity = selectedCustomerNeed.originationCity;
+                       var originationState = selectedCustomerNeed.originationState;
+                       var destinationCity = selectedCustomerNeed.destinationCity;
+                       var destinationState = selectedCustomerNeed.destinationState;
+                       var customerRate = $('#customerRate').val();
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
                     $.ajax({
                         url: url,
                         type: type,
@@ -1494,9 +1530,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                                     closeCommitTransport();
                                 }
                             });
-                            
-                            
-                            
                         },
                         error: function(){
                             alert("Purchase Order Uploaded. Unable to Complete the Order. ");
