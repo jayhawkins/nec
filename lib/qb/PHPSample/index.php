@@ -1,7 +1,7 @@
 <?php
   ob_start();
-  require_once("./config.php");
-  require_once("./CSS Styles/StyleElements.php");
+  require_once("config.php");
+  require_once("CSS Styles/StyleElements.php");
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -119,15 +119,15 @@
 ?>
 <script>
 function myFunction(parameter){
-window.location.href = "http://localhost/PHPSample/SampleAppHomePage.php";
+window.location.href = "SampleAppHomePage.php";
 }
 
 function Disconnect(parameter){
-window.location.href = "http://localhost/PHPSample/Disconnect.php";
+window.location.href = "Disconnect.php";
 }
 
 function Reconnect(parameter){
-window.location.href = "http://localhost/PHPSample/Reconnect.php";
+window.location.href = "Reconnect.php";
 }
 </script>
 </body>
