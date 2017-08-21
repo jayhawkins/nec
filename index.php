@@ -466,7 +466,7 @@ $app->route('POST /pod_api', function() {
 // Quickbooks API Status Page
 /*****************************************************************************/
 
-$app->route('GET|POST /qb_api_status', function() {
+$app->route('GET /qb_api_status', function() {
 
     // Data will be passed through using the format below
 
@@ -478,7 +478,7 @@ $app->route('GET|POST /qb_api_status', function() {
     // This is the calling method inside the class
     $apiResponse = $podAPI->isConnected();
 
-    echo $apiResponse;
+    //echo $apiResponse;
 
    //Flight::render('qbstatus', array('response'=> $apiResponse));
 
@@ -487,7 +487,7 @@ $app->route('GET|POST /qb_api_status', function() {
     print_r($apiResponse);
 
 
-   Flight::render('qbstatus', array('response'=> $apiResponse));
+   //Flight::render('qbstatus', array('response'=> $apiResponse));
 
 });
 

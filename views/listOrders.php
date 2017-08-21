@@ -639,7 +639,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                         "mRender": function (o) {
                             var buttons = '';
 
-                            buttons += '<button class="btn btn-primary btn-xs" role="button" disabled><i class="fa fa-download text-info"></i> <span class="text-info">Download POD</span></button>';
+                            buttons += '<a class="btn btn-primary btn-xs" href="../downloadfiles/POD-Template.pdf" target="_blank"><i class="fa fa-download text-info"></i> <span class="text-info">Download POD</span></a>';
 
                             return buttons;
                         }
