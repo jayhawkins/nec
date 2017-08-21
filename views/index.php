@@ -163,6 +163,7 @@ if ($_SESSION['entityid'] > 0) {
          function ajaxFormCall(form) {
            var host = location.protocol+'//'+window.location.hostname;
            var url = host+'/views/'+form+'.php';
+           console.log(url);
            $.ajax({
               type: "GET",
               url: url,
@@ -366,10 +367,7 @@ if ($_SESSION['entityid'] > 0) {
                      <span class="icon">
                          <i class="fa fa-cloud-upload"></i>
                      </span>
-                     QuickBooks Status
-                     <span class="label label-danger">
-                         <?php //echo $cncount; ?>
-                     </span>
+                     QuickBooks
                  </a>
              </li>
  <?php
