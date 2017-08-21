@@ -76,6 +76,23 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
       function post() {
 
+          // Verify date carrier selects is not before date available of the trailer
+          var d1 = Date.parse($("#havailableDate").val());
+          var d2 = Date.parse($("#pickupDate").val());
+          var d3 = Date.parse($("#deliveryDate").val());
+          if (d1 > d2) {
+              alert ("Your pickup date is prior to the availability date!");
+              return false;
+          }
+          if (d1 > d3) {
+              alert ("Your delivery date is prior to the availability date!");
+              return false;
+          }
+          if (d2 > d3) {
+              alert ("Your pickup date is after your delivery date!");
+              return false;
+          }
+
           //var originationaddress = $("#originationAddress1").val() + ', ' + $("#originationCity").val() + ', ' + $("#originationState").val() + ', ' + $("#originationZip").val();
           //var destinationaddress = $("#destinationAddress1").val() + ', ' + $("#destinationCity").val() + ', ' + $("#destinationState").val() + ', ' + $("#destinationZip").val();
           var originationaddress = $("#originationCity").val() + ', ' + $("#originationState").val();
@@ -311,7 +328,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
       }
 
-      function loadTableAJAX() {
+      function loadTableAJAX_NOT_USED() {
 
         if (<?php echo $_SESSION['entityid']; ?> > 0) {
             var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate&order[0]=rootCustomerNeedsID&order[1]=createdAt,desc&transform=1';
@@ -429,6 +446,90 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                                   buttons += "No Longer Available";
                         }
 
+                        return buttons;
+                    }
+                }
+            ]
+          });
+
+          example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
+
+          //To Reload The Ajax
+          //See DataTables.net for more information about the reload method
+          example_table.ajax.reload();
+          $("#entityID").prop('disabled', false);
+          $("#load").html("Commit");
+          $("#load").prop("disabled", false);
+
+      }
+
+      function loadTableAJAXNEW() {
+
+        if (<?php echo $_SESSION['entityid']; ?> > 0) {
+            var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=entities&columns=id,rootCustomerNeedsID,entityID,qty,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,entities.name,entities.rateType,entities.negotiatedRate&filter[]=rootCustomerNeedsID,eq,0&order[]=createdAt,desc&transform=1';
+            var show = false;
+        } else {
+            var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate&satisfy=all&order[0]=entityID&order[1]=rootCustomerNeedsID&order[2]=createdAt,desc&transform=1';
+            var show = true;
+        }
+
+        var example_table = $('#datatable-table').DataTable({
+            retrieve: true,
+            processing: true,
+            ajax: {
+                url: url,
+                dataSrc: 'customer_needs'
+            },
+            columns: [
+                {
+                    "className":      'details-control-add',
+                    "orderable":      false,
+                    "data":           null,
+                    "defaultContent": ''
+                },
+                { data: "entities[0].name", visible: show },
+                { data: "id", visible: false },
+                { data: "rootCustomerNeedsID", visible: false},
+                { data: "entityID", visible: false },
+                { data: "qty" },
+                { data: "availableDate" },
+                {
+                    data: null,
+                    "bSortable": true,
+                    "render": function(o) {
+                      if (o.expirationDate == "0000-00-00") {
+                          return '';
+                      } else {
+                          return o.expirationDate;
+                      }
+                    }
+                },
+                { data: "transportationMode", visible: false },
+                { data: "originationAddress1", visible: false },
+                { data: "originationCity" },
+                { data: "originationState" },
+                { data: "originationZip", visible: false },
+                { data: "originationLat", visible: false },
+                { data: "originationLng", visible: false },
+                { data: "destinationAddress1", visible: false },
+                { data: "destinationCity" },
+                { data: "destinationState" },
+                { data: "destinationZip", visible: false },
+                { data: "destinationLat", visible: false },
+                { data: "destinationLng", visible: false },
+                { data: "distance", render: $.fn.dataTable.render.number(',', '.', 0, '')  },
+                { data: "needsDataPoints", visible: false },
+                { data: "entities[0].name", visible: false },
+                { data: "entities[0].rateType", visible: false },
+                { data: "entities[0].negotiatedRate", visible: false},
+                {
+                    data: null,
+                    "bSortable": false,
+                    "mRender": function (o) {
+                        var buttons = '<div class="pull-right text-nowrap">';
+                        buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-link text\"></i> <span class=\"text\">View Relays</span></button>';
+                        buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-plus text\"></i> <span class=\"text\">Commit</span></button>";
+                        buttons += '</div>';
                         return buttons;
                     }
                 }
@@ -883,11 +984,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                      <th class="hidden-sm-down">Dest. Long.</th>
                      <th class="hidden-sm-down">Mileage</th>
                      <th class="hidden-sm-down">Data Points</th>
-                     <th>Status</th>
-                     <th>Commit ID</th>
-                     <th>Commit Status</th>
-                     <th>Commit Rate</th>
-                     <th>Transportation Mode</th>
                      <th>Name</th>
                      <th>Rate Type</th>
                      <th>Negotiated Rate</th>
@@ -1019,6 +1115,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                   <input type="hidden" id="dcity" name="dcity" value="" />
                   <input type="hidden" id="dstate" name=""dstate value="" />
                   <input type="hidden" id="dzip" name="dzip" value="" />
+                  <input type="hidden" id="havailableDate" name="havailableDate" value="" />
                   <div class="row">
                       <div class="col-sm-2">
                           <label for="qtyDiv"># of Trailers</label>
@@ -1299,7 +1396,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
     //$( "#originationState" ).select2();
     //$( "#destinationState" ).select2();
 
-    loadTableAJAX();
+    loadTableAJAXNEW();
 
     var table = $("#datatable-table").DataTable();
     var tableContact = $("#datatable-table-contact").DataTable();
@@ -1346,7 +1443,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
   		$("#myModal").modal('show');
   	});
 
-    $('#datatable-table tbody').on( 'click', 'button', function () {
+    $('#datatable-table tbody').unbind('click').on( 'click', 'button', function () {
         var data = table.row( $(this).parents('tr') ).data();
 
         if (this.textContent.indexOf("View Details") > -1) {
@@ -1427,6 +1524,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             $("#dcity").val(data["destinationCity"]);
             $("#dstate").val(data["destinationState"]);
             $("#dzip").val(data["destinationZip"]);
+            $("#havailableDate").val(data["availableDate"]);
             // Set up the matching addresses like we do up in the verifyAndPost() - makes it easy to do a compare
             //$("#originToMatch").val(data["originationAddress1"] + ', ' + data["originationCity"] + ', ' + data["originationState"] + ', ' + data["originationZip"]);
             //$("#destToMatch").val(data["destinationAddress1"] + ', ' + data["destinationCity"] + ', ' + data["destinationState"] + ', ' + data["destinationZip"]);
@@ -1492,6 +1590,17 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
           } else if (this.textContent.indexOf("Cancel") > -1) {
               $("#commitid").val(data["customer_needs_commit"][0].id);
               $("#myCancelDialog").modal('show');
+          } else if (this.textContent.indexOf("View Relays") > -1) {
+              var tr = $(this).closest('tr');
+              var row = table.row( tr );
+
+              if ( row.child.isShown() ) {
+                row.child.hide();
+                tr.removeClass('shown');
+              } else {
+                row.child( formatRelays(row.data()) ).show();
+                tr.addClass('shown');
+              }
           } else {
             //Nothing - Somehow got in here???
           }
@@ -1694,6 +1803,87 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         return table;
 
     }
+
+    /* Formatting function for row details - modify as you need */
+    function formatRelays ( d ) {
+
+        var div = $('<div/>')
+            .addClass( 'loading' )
+            .text( 'Loading...' );
+        var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate&filter[]=rootCustomerNeedsID,eq,' + d.id + '&order[]=createdAt,desc&transform=1';
+        var params = {id: d.id};
+        $.ajax({
+           url: url,
+           type: 'GET',
+           //data: JSON.stringify(params),
+           contentType: "application/json",
+           async: false,
+           success: function(response){
+                console.log(response);
+                var table = '<table  class="col-sm-12" cellpadding="5" cellspacing="0" border="0">';
+                    table += '<tr><th>Qty</th><th>Available</th><th>Expires</th><th>Orig. City</th><th>Orig. State</th><th>Dest. City</th><th>Dest. State</th><th>Mileage</th><th></th></tr>';
+
+                // `d` is the original data object for the row
+                if (response.customer_needs.length > 0) {
+
+                    for (var i = 0; i < response.customer_needs.length; i++) {
+                        table += '</tr>\n';
+                        table += '<td>' + response.customer_needs[i].qty + '</td>';
+                        table += '<td>' + response.customer_needs[i].availableDate + '</td>';
+                        table += '<td>' + response.customer_needs[i].expirationDate + '</td>';
+                        table += '<td>' + response.customer_needs[i].originationCity + '</td>';
+                        table += '<td>' + response.customer_needs[i].originationState + '</td>';
+                        table += '<td>' + response.customer_needs[i].destinationCity + '</td>';
+                        table += '<td>' + response.customer_needs[i].destinationState + '</td>';
+                        table += '<td>' + response.customer_needs[i].distance + '</td>';
+
+                        var buttons = '';
+                        if ( (response.customer_needs[i].status != "Committed" && response.customer_needs[i].status != "Cancelled") && response.customer_needs[i].customer_needs_commit.length == 0) {
+                                  buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-plus text\"></i> <span class=\"text\">Commit</span></button>";
+                        } else if (response.customer_needs[i].customer_needs_commit.length > 0) {
+                                  var showAmount = response.customer_needs[i].customer_needs_commit[0].rate.toString().split(".");
+                                  showAmount[0] = showAmount[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                  if (showAmount.length > 1) {
+                                      if (showAmount[1].length < 2) {
+                                          showAmount[1] = showAmount[1] + '0';
+                                      }
+                                      showAmount = "$" + showAmount[0] + "." + showAmount[1];
+                                  } else {
+                                      showAmount = "$" + showAmount[0] + ".00";
+                                  }
+                                  //buttons += " &nbsp;<div class=\"d-inline-block\"><div class=\"btn btn-primary btn-xs\"><i class=\"glyphicon glyphicon-flag text\"></i> <span class=\"btn-primary\">Rate " + showAmount + "</span></div>";
+                                  if (response.customer_needs[i].customer_needs_commit[0].status == "Cancelled") {
+
+                                  } else {
+                                      buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text\"></i> <span class=\"text\">Cancel</span></button></div>";
+                                  }
+                        }
+                        table += '<td>' + buttons + '</td>';
+
+                        table += '</tr>\n';
+                    }
+
+                } else {
+
+                    table += '<tr><td colspan="10" align="center" bgcolor="#444444"><font color="#FFFFFF"><b> ***** No Relays Found ***** </b></font></td>';
+
+                }
+
+                table += '</table>\n';
+
+                div
+                .html( table )
+                .removeClass( 'loading' );
+            },
+            error: function() {
+                alert('Failed Getting Relays!');
+            }
+        } );
+
+        return div;
+
+    }
+
 /*
     $('#datatable-table tbody').on('click', 'td.details-control', function () {
 

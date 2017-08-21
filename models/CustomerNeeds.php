@@ -40,7 +40,7 @@ class CustomerNeed
 
           /******** WE ARE NOT USING THE LNG AND LAT FROM THIS CALL - WE WILL NEED TO GO GET THE GEOCODE BASED ON THE NEW ORIGINATION AND DESTINATION *****/
 
-          // Load the carrier need data to send notification
+          // Load the customer need data to send notification
           $this->load($api_host,$id);
 
           $original_originationaddress = $this->originationCity . ", " . $this->originationState;
@@ -52,7 +52,8 @@ class CustomerNeed
           try {
 
               $data = array(
-                "rootCustomerNeedsID"=>$rootCustomerNeedsID,
+                //"rootCustomerNeedsID"=>$rootCustomerNeedsID,
+                "rootCustomerNeedsID"=>$id,
                 "qty"=>$qty,
                 //"originationAddress1"=>$originationAddress1,
                 "originationCity"=>$originationCity,
@@ -154,7 +155,8 @@ class CustomerNeed
                         $distance = ( ($details['rows'][0]['elements'][0]['distance']['value'] / 1000) * .6214 );
 
                         $data = array(
-                            "rootCustomerNeedsID"=>$rootCustomerNeedsID,
+                            //"rootCustomerNeedsID"=>$rootCustomerNeedsID,
+                            "rootCustomerNeedsID"=>$id,
                             "qty"=>$qty,
                             //"originationAddress1"=>$this->originationAddress1,
                             "originationCity"=>$this->originationCity,
@@ -173,7 +175,7 @@ class CustomerNeed
                             "entityID"=>$this->entityID,
                             "needsDataPoints"=>$this->needsDataPoints,
                             "status"=>$this->status,
-                            "availableDate"=>$this->availableDate,
+                            "availableDate"=>$deliveryDate,
                             "contactEmails"=>$this->contactEmails,
                             "createdAt" => date('Y-m-d H:i:s'),
                             "updatedAt" => date('Y-m-d H:i:s')
@@ -206,7 +208,8 @@ class CustomerNeed
                         $distance = ( ($details['rows'][0]['elements'][0]['distance']['value'] / 1000) * .6214 );
 
                         $data = array(
-                            "rootCustomerNeedsID"=>$rootCustomerNeedsID,
+                            //"rootCustomerNeedsID"=>$rootCustomerNeedsID,
+                            "rootCustomerNeedsID"=>$id,
                             "qty"=>$qty,
                             //"originationAddress1"=>$this->originationAddress1,
                             "originationCity"=>$destinationCity,
@@ -225,7 +228,7 @@ class CustomerNeed
                             "entityID"=>$this->entityID,
                             "needsDataPoints"=>$this->needsDataPoints,
                             "status"=>$this->status,
-                            "availableDate"=>$this->availableDate,
+                            "availableDate"=>$deliveryDate,
                             "contactEmails"=>$this->contactEmails,
                             "createdAt" => date('Y-m-d H:i:s'),
                             "updatedAt" => date('Y-m-d H:i:s')
@@ -399,7 +402,7 @@ class CustomerNeed
     }
 
     public function sendNotification($api_host,$id) {
-        // Load the carrier need data to send notification
+        // Load the customer need data to send notification
         $this->load($api_host,$id);
 
         if (count($this->contactEmails) > 0) {
@@ -536,16 +539,143 @@ class CustomerNeed
     }
 
     public function availabilityMatching($api_host, $id) {
-        // Load the carrier need data to send notification
+        // Load the customer need data to send notification
         $this->load($api_host,$id);
 
-        //- Exact match of Origination and Destination City and State
-        //- Exact match of Origination City and State
-        //- Exact match of Destination City and State
-        //- Match of Origination City
-        //- Match of Destination City
-        //- Match of Origination State
-        //- Match of Destination State
+        /* Go out to the carrier_needs table and get any matching needs based on:
+        - Exact match of Origination and Destination City and State
+        - Exact match of Origination City and State
+        - Exact match of Destination City and State
+        - Match of Origination City
+        - Match of Destination City
+        - Match of Origination State
+        - Match of Destination State
+        - Match of Origination and Destination City and State for expired or completed orders (historical data)
+        - Match of Origination City and State for expired or completed orders (historical data)
+        - Match of Destination City and State for expired or completed orders (historical data)
+        - Match of Origination and Destination City for expired or completed orders (historical data)
+        - Match of Origination City for expired or completed orders (historical data)
+        - Match of Destination City for expired or completed orders (historical data)
+        - Match of Origination and Destination State for expired or completed orders (historical data)
+        - Match of Origination State for expired or completed orders (historical data)
+        - Match of Destination State for expired or completed orders (historical data)
+        */
+
+        // Look at current data
+        $args = array(
+            "transform"=>1,
+            "filter[]"=>"originationState,eq,".$this->originationState,
+            "filter[]"=>"status,eq,Available",
+            "filter[]"=>"availableDate,gt,".date("Y-m-d")
+        );
+        $url = API_HOST."/api/carrier_needs?".http_build_query($args);
+        $options = array(
+            'http' => array(
+                'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                'method'  => 'GET'
+            )
+        );
+        $context  = stream_context_create($options);
+        $result = json_decode(file_get_contents($url,false,$context),true);
+
+        if (count($result) > 0) {
+            for ($i = 0; $i < count($result['carrier_needs']); $i++ ) {
+
+                // 1 - Exact Match of Origination City and State
+                $type1found = 0;
+                if ($result['carrier_needs'][$i]['originationCity'] == $this->originationCity &&
+                    $result['carrier_needs'][$i]['originationState'] == $this->originationState &&
+                    $result['carrier_needs'][$i]['destinationCity'] == $this->destinationCity &&
+                    $result['carrier_needs'][$i]['destinationState'] == $this->destinationState) {
+                    $type1found++;
+                }
+
+                // 2 - Exact Match of Origination City and State
+                $type2found = 0;
+                if ($result['carrier_needs'][$i]['originationCity'] == $this->originationCity && $result['carrier_needs'][$i]['originationState'] == $this->originationState) {
+                    $type2found++;
+                }
+
+                // 3 - Exact Match of Destination City and State
+                $type3found = 0;
+                if ($result['carrier_needs'][$i]['destinationCity'] == $this->destinationCity && $result['carrier_needs'][$i]['destinationState'] == $this->destinationState) {
+                    $type3found++;
+                }
+
+                // 4 - Match of Origination City
+                $type4found = 0;
+                if ($result['carrier_needs'][$i]['originationCity'] == $this->originationCity) {
+                    $type4found++;
+                }
+
+                // 5 - Match of Destination City
+                $type5found = 0;
+                if ($result['carrier_needs'][$i]['destinationCity'] == $this->destinationCity) {
+                    $type5found++;
+                }
+
+                // 6 - Match of Origination State
+                $type6found = 0;
+                if ($result['carrier_needs'][$i]['originationState'] == $this->originationState) {
+                    $type6found++;
+                }
+
+                // 7 - Match of Destination State
+                $type7found = 0;
+                if ($result['carrier_needs'][$i]['destinationState'] == $this->destinationState) {
+                    $type7found++;
+                }
+
+            }
+        }
+
+        // Look at historical data
+        $args = array(
+            "transform"=>1,
+            "filter[]"=>"originationState,eq,".$this->originationState,
+            "filter[]"=>"status,ne,Available",
+            "filter[]"=>"availableDate,lt,".date("Y-m-d")
+        );
+        $url = API_HOST."/api/carrier_needs?".http_build_query($args);
+        $options = array(
+            'http' => array(
+                'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                'method'  => 'GET'
+            )
+        );
+        $context  = stream_context_create($options);
+        $result = json_decode(file_get_contents($url,false,$context),true);
+
+        if (count($result) > 0) {
+            for ($i = 0; $i < count($result['carrier_needs']); $i++ ) {
+
+                // 1 - Exact Match of Origination City and State
+                $type1found = 0;
+                if ($result['carrier_needs'][$i]['originationCity'] == $this->originationCity &&
+                    $result['carrier_needs'][$i]['originationState'] == $this->originationState &&
+                    $result['carrier_needs'][$i]['destinationCity'] == $this->destinationCity &&
+                    $result['carrier_needs'][$i]['destinationState'] == $this->destinationState) {
+                    $type1found++;
+                }
+
+                // 2 - Exact Match of Origination City and State
+                $type2found = 0;
+                if ($result['carrier_needs'][$i]['originationCity'] == $this->originationCity && $result['carrier_needs'][$i]['originationState'] == $this->originationState) {
+                    $type2found++;
+                }
+
+            }
+        }
+
+        return  $type1found . "<br />" .
+                $type2found . "<br />" .
+                $type3found . "<br />" .
+                $type4found . "<br />" .
+                $type5found . "<br />" .
+                $type6found . "<br />" .
+                $type7found . "<br />"
+                ;
+
 
 
     }

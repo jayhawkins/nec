@@ -3,6 +3,7 @@
 	require '../../nec_config.php';
 	require '../lib/common.php';
 ?>
+
 <script src="vendor/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
 <script>
 	var myApp;
@@ -236,32 +237,36 @@
 				dataSrc: 'insurance_carriers'
 			},
 			columns: [
-                {
-					data: null,
-					"bSortable": false,
-					"mRender": function (o) {
-						var buttons = '<button class=\"btn btn-primary\" role=\"button\"><i class=\"glyphicon glyphicon-eye-open text-info\"></i> <span class=\"text-info\">View Policy</span></button>';
-						return buttons;
-					}
-				},
-				{ data: "id", visible: false },
+                { data: "id", visible: false },
 				{ data: "name" },
 				{ data: "contactName" },
 				{ data: "contactEmail" },
 				{ data: "contactPhone" },
 				{ data: "policyNumber", visible: false },
 				{ data: "policyExpirationDate", visible: false },
-				{ data: "fileupload" },
+				{ data: null,
+                    "bSortable": false,
+					"mRender": function (o) {
+					    var buttons = '';
+                        if (o.fileupload > '') {
+                            buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-eye-open text\"></i> <span class=\"text\">Upload/View Policy</span></button> &nbsp;';
+                        }
+                        buttons += "</div>";
+                        return buttons;
+                    }
+				},
 				{
 					data: null,
 					"bSortable": false,
 					"mRender": function (o) {
-						var buttons = '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text-info\"></i> <span class=\"text-info\">Edit</span></button>';
+					    var buttons = '<div class="pull-right text-nowrap">';
+                        buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text\"></i> <span class=\"text\">Edit</span></button>';
 						if (o.status == "Active") {
-							buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text-info\"></i> <span class=\"text-info\">Disable</span></button>";
+							buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text\"></i> <span class=\"text\">Disable</span></button>";
 						} else {
-							buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text-info\"></i> <span class=\"text-info\">Enable</span></button>";
+							buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text\"></i> <span class=\"text\">Enable</span></button>";
 						}
+						buttons += '</div>';
 						return buttons;
 					}
 				}
@@ -342,7 +347,6 @@
 			<table id="datatable-table" class="table table-striped table-hover">
 				<thead>
 					<tr>
-                    <th class="no-sort pull-right">&nbsp;</th>
 					<th>ID</th>
 					<th class="hidden-sm-down">Name</th>
 					<th class="hidden-sm-down">Contact Name</th>
@@ -513,7 +517,7 @@
                     <input type="hidden" id="entityID" value="<?php echo $_SESSION['entityid']; ?>" />
                     <input type="hidden" id="replaceID" name="replaceID" value="" />
                     <input type="hidden" id="docToView" value="" />
-                    <div id="divUploadPolicyFile" class="col-sm-6">
+                    <div id="divUploadPolicyFile" class="col-md-7">
                         <label for="updatePolicyFile">Update Policy File</label>
                         <div class="form-group">
                             <input type="file" id="updatePolicyFile" name="updatePolicyFile" class="form-control mb-sm" placeholder="Update Policy" data-filesize="20000000"
@@ -521,11 +525,11 @@
                             onchange="validateFile(this);" />
                         </div>
                     </div>
-                    <div class="col-sm-6 pull-right">
+                    <div class="col-md-5 pull-right">
                         <label for="btnView">&nbsp;</label>
                         <div class="form-group">
-                            <button type="button" class="btn btn-primary" id="btnReplace">Replace Document</button>
-                            <button type="button" class="btn btn-primary" id="btnView">View Document</button>
+                            <button type="button" class="btn btn-primary" id="btnReplace">Upload/View Policy</button>
+                            <button type="button" class="btn btn-primary" id="btnView">View Policy</button>
                         </div>
                     </div>
                 </form>
@@ -578,7 +582,7 @@
 			$("#policyExpirationDate").val(data["policyExpirationDate"]);
 			$("#docToView").val(data["fileupload"]);
 			$("#myModal").modal('show');
-        } else if (this.textContent.indexOf("View Policy") > -1) {
+        } else if (this.textContent.indexOf("Upload/View Policy") > -1) {
             $("#replaceID").val(data['id']);
             $("#docToView").val(data['fileupload']);
             $("#divUploadPolicyFile").hide();

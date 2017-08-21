@@ -335,7 +335,7 @@ $app->route('GET /viewpolicy', function() {
     $fileType = pathinfo($filename,PATHINFO_EXTENSION);
 
     header("Content-type: application/".$fileType."\r\n");
-    header('Content-Disposition: inline; filename="$theFile"\r\n');
+    header('Content-Disposition: inline; filename='.$filename.'\r\n');
     header("Content-Length: " . filesize($theFile) . "\r\n");
     readfile(FILE_LOCATION."users/0/".$entityID."/".$filename);
 
@@ -431,6 +431,18 @@ $app->route('POST /createcustomerneedsfromexisting', function() {
     }
 });
 
+$app->route('GET|POST /availabilitymatching/@id', function($id) {
+    //$customerneedid = Flight::request()->data->id;
+    $customerneed = Flight::customerneed();
+    $matchingresult = $customerneed->availabilityMatching(API_HOST,$id);
+    if ($matchingresult) {
+        print_r($matchingresult);
+        //echo "success";
+    } else {
+        print_r($matchingresult);
+    }
+});
+
 $app->route('POST /uploaddocument', function() {
 	$name = Flight::request()->data->name;
 	$fileupload = Flight::request()->files['fileupload'];
@@ -453,6 +465,84 @@ $app->route('GET /viewdocument', function() {
 	$documents = Flight::documents();
     $result = $documents->viewdocument($entityID,FILE_LOCATION,$filename);
 });
+
+
+/*****************************************************************************/
+// POD API Process
+/*****************************************************************************/
+$app->route('POST /pod_api', function() {
+
+    // Data will be passed through using the format below
+    //$customerneedid = Flight::request()->data->id;
+
+    // This is setup using config/setup.php
+    $podAPI = Flight::quickbooks();
+
+    // This is the calling method inside the class
+    $apiResponse = $podAPI->testMethod();
+
+
+    if ($apiResponse) {
+        print_r($apiResponse);
+        //echo "success";
+    } else {
+        print_r($apiResponse);
+    }
+});
+
+
+/*****************************************************************************/
+// Quickbooks API Status Page
+/*****************************************************************************/
+
+$app->route('GET|POST /qb_api_status', function() {
+
+    // Data will be passed through using the format below
+
+    //$customerneedid = Flight::request()->data->id;
+
+    // This is setup using config/setup.php
+    $podAPI = Flight::quickbooks();
+
+    // This is the calling method inside the class
+    $apiResponse = $podAPI->isConnected();
+
+    echo $apiResponse;
+
+   //Flight::render('qbstatus', array('response'=> $apiResponse));
+
+   //Flight::render('qbstatus', array('response'=> $apiResponse));
+
+    print_r($apiResponse);
+
+
+   Flight::render('qbstatus', array('response'=> $apiResponse));
+
+});
+
+
+$app->route('GET|POST /oauth', function() {
+    // Data will be passed through using the format below
+    //$customerneedid = Flight::request()->data->id;
+
+    // This is setup using config/setup.php
+    $podAPI = Flight::quickbooks();
+
+    // This is the calling method inside the class
+    $apiResponse = $podAPI->oauth();
+
+
+   if ($apiResponse) {
+        print_r($apiResponse);
+        //echo "success";
+    } else {
+        print_r($apiResponse);
+    }
+
+});
+
+
+//oauth
 
 // Start the framework
 $app->start();

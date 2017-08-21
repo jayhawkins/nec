@@ -20,36 +20,86 @@ $eoptions = array(
 $econtext  = stream_context_create($eoptions);
 $eresult = json_decode(file_get_contents($eurl,false,$econtext), true);
 
-$cnargs = array(
-      "transform"=>"1"
-);
+$cncount = 0;
 
-if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
-    $entityname = $eresult['entities'][0]['name'] . " - (Customer)";
-    $cnurl = API_HOST."/api/carrier_needs?".http_build_query($cnargs);
-} elseif ( $eresult['entities'][0]['entityTypeID'] == 2 ) { // Carrier
-    $entityname = $eresult['entities'][0]['name'] . " - (Carrier)";
-    $cnurl = API_HOST."/api/customer_needs?".http_build_query($cnargs);
+if ($_SESSION['entityid'] > 0) {
+    if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
+        $cnargs = array(
+              "transform"=>"1",
+              "filter[]"=>"entityID,eq," . $_SESSION['entityid'],
+              "filter[]"=>"status,eq,Available"
+        );
+    } elseif ( $eresult['entities'][0]['entityTypeID'] == 2 ) { // Carrier
+        $cnargs = array(
+              "transform"=>"1",
+              "filter[]"=>"entityID,eq," . $_SESSION['entityid'],
+              "filter[]"=>"status,eq,Available"
+        );
+    }
+
+    if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
+        $entityname = $eresult['entities'][0]['name'] . " - (Customer)";
+        $cnurl = API_HOST."/api/carrier_needs?".http_build_query($cnargs);
+    } elseif ( $eresult['entities'][0]['entityTypeID'] == 2 ) { // Carrier
+        $entityname = $eresult['entities'][0]['name'] . " - (Carrier)";
+        $cnurl = API_HOST."/api/customer_needs?".http_build_query($cnargs);
+    }
+
+    $cnoptions = array(
+        'http' => array(
+            'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+            'method'  => 'GET'
+        )
+    );
+    $cncontext  = stream_context_create($cnoptions);
+    $cnresult = file_get_contents($cnurl,false,$cncontext);
+    $cnresult2 = json_decode($cnresult,true);
+    if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
+        $cncount = count($cnresult2['carrier_needs']);
+    } elseif ( $eresult['entities'][0]['entityTypeID'] == 2 ) { // Carrier
+        $cncount = count($cnresult2['customer_needs']);
+    }
+
 } else {
+
+    // Now get counts for Admin Logins
+    $cnargs = array(
+          "transform"=>"1",
+          "filter[]"=>"entityID,eq," . $_SESSION['entityid'],
+          "filter[]"=>"status,eq,Available"
+    );
+
+    $entityname = $eresult['entities'][0]['name'] . " - (Admin)";
+    $cnurl = API_HOST."/api/carrier_needs?".http_build_query($cnargs);
+    $cnoptions = array(
+        'http' => array(
+            'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+            'method'  => 'GET'
+        )
+    );
+    $cncontext  = stream_context_create($cnoptions);
+    $cnresult = file_get_contents($cnurl,false,$cncontext);
+    $cnresult2 = json_decode($cnresult,true);
+    $carrierncount = count($cnresult2['carrier_needs']);
+
+    $cnargs = array(
+          "transform"=>"1",
+          "filter[]"=>"entityID,eq," . $_SESSION['entityid'],
+          "filter[]"=>"status,eq,Available"
+    );
+
     $entityname = $eresult['entities'][0]['name'] . " - (Admin)";
     $cnurl = API_HOST."/api/customer_needs?".http_build_query($cnargs);
-}
-
-$cnoptions = array(
-    'http' => array(
-        'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
-        'method'  => 'GET'
-    )
-);
-$cncontext  = stream_context_create($cnoptions);
-$cnresult = file_get_contents($cnurl,false,$cncontext);
-$cnresult2 = json_decode($cnresult,true);
-if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
-    $cncount = count($cnresult2['carrier_needs']);
-} elseif ( $eresult['entities'][0]['entityTypeID'] == 2 ) { // Carrier
-    $cncount = count($cnresult2['customer_needs']);
-} else {
-    $cncount = count($cnresult2['customer_needs']);
+    $cnoptions = array(
+        'http' => array(
+            'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+            'method'  => 'GET'
+        )
+    );
+    $cncontext  = stream_context_create($cnoptions);
+    $cnresult = file_get_contents($cnurl,false,$cncontext);
+    $cnresult2 = json_decode($cnresult,true);
+    $customerncount = count($cnresult2['customer_needs']);
 }
 
 ?>
@@ -130,6 +180,62 @@ if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
            });
          }
 
+
+        function countUserOrders(){
+
+        var entityid = <?php echo $_SESSION['entityid']; ?>;
+        var entityType = <?php echo $_SESSION['entitytype'];  ?>;
+
+            var url = '<?php echo API_HOST; ?>';
+            var orderCount = 0;
+            switch(entityType){
+                case 0:     // URL for the Admin. The admin can see ALL Orders.
+                    url += '/api/orders?include=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,distance,needsDataPoints,status,qty,rateType,transportationMode,enitities.id,entities.name,documents.id,documents.documentURL&satisfy=all&transform=1';
+                    break;
+                case 1:    // URL for Customer. The Customer can only see their orders.
+                    url += '/api/orders?include=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,distance,needsDataPoints,status,qty,rateType,transportationMode,enitities.id,entities.name,documents.id,documents.documentURL&filter=customerID,eq,' + entityid + '&satisfy=all&transform=1';
+                    break;
+                case 2:     // URL for the Carrier. Same as the admin but will be filtered below.
+                    url += '/api/orders?include=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,distance,needsDataPoints,status,qty,rateType,transportationMode,enitities.id,entities.name,documents.id,documents.documentURL&satisfy=all&transform=1';
+                    break;
+            }
+
+
+            $.ajax({
+               url: '<?php echo API_HOST."/api/orders" ?>?transform=1',
+               type: "GET",
+               contentType: "application/json",
+               async: false,
+               success: function(json){
+
+                    var orders = json.orders;
+
+                    if(entityType == 2) {
+
+                        orders.forEach(function(order){
+                            var carrierIDs = order.carrierIDs;
+
+                            for(var i = 0; i < carrierIDs.length; i++){
+                                if(carrierIDs[i].carrierID == entityid){
+                                    orderCount++;
+                                    break;
+                                }
+                            }
+                        });
+                    }
+                    else {
+                        orderCount = orders.length;
+                    }
+
+                    $('#orderCount').html(orderCount);
+               },
+               error: function() {
+                  alert("There Was An Error Saving the Status");
+               }
+            });
+
+        }
+
     </script>
 </head>
 <body>
@@ -198,7 +304,13 @@ if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
                     </span>
                     Needs
                     <span class="label label-danger">
-                        <?php echo $cncount; ?>
+                        <?php
+                            if ( $_SESSION['entitytype'] == 1 ) {
+                                echo $cncount;
+                            } elseif ( $_SESSION['entityid'] == 0 ) {
+                                echo $carrierncount;
+                            }
+                        ?>
                     </span>
                 </a>
             </li>
@@ -215,7 +327,13 @@ if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
                      </span>
                      Availability
                      <span class="label label-danger">
-                         <?php echo $cncount; ?>
+                         <?php
+                            if ( $_SESSION['entitytype'] == 2 ) {
+                                echo $cncount;
+                            } elseif ( $_SESSION['entityid'] == 0 ) {
+                                echo $customerncount;
+                            }
+                        ?>
                      </span>
                  </a>
              </li>
@@ -224,6 +342,7 @@ if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
 
 
     if ($_SESSION['entityid'] == 0) {
+    /*
  ?>
              <li>
                  <a href="#" onclick="ajaxFormCall('listCommitment');">
@@ -237,17 +356,34 @@ if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
                  </a>
              </li>
  <?php
+    */
     }
-    
+
+    if ($_SESSION['entityid'] == 0) {
+ ?>
+             <li>
+                 <a href="#" onclick="ajaxFormCall('qbstatus');">
+                     <span class="icon">
+                         <i class="fa fa-thumbs-up"></i>
+                     </span>
+                     Quickbooks Test
+                     <span class="label label-danger">
+                         <?php echo $cncount; ?>
+                     </span>
+                 </a>
+             </li>
+ <?php
+    }
+
  ?>
             <li>
-                <a href="#">
+                <a href="#" onclick="ajaxFormCall('listOrders');">
                     <span class="icon">
                         <i class="fa fa-check-square-o"></i>
                     </span>
                     Orders
-                    <span class="label label-danger">
-                        9
+                    <span id="orderCount" class="label label-danger">
+
                     </span>
                 </a>
             </li>
@@ -273,9 +409,6 @@ if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
                         <i class="fa fa-money"></i>
                     </span>
                     Collections
-                    <span class="label label-danger">
-                        1
-                    </span>
                 </a>
             </li>
         </ul>
@@ -1048,6 +1181,8 @@ if ($_SESSION['entityid'] == 0) {
 <!--script src="js/index.js"></script-->
 
 <script type="text/javascript">
+
+    countUserOrders();
 
 $(function() {
 
