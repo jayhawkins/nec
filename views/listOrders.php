@@ -419,14 +419,15 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         
         switch(entityType){
             case 0:     // URL for the Admin.
-                url += '/api/order_details?include=orders&columns=id,carrierID,orderID,originationCity,originationState,destinationCity,destinationState,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID&filter=orderID,eq,' + orderID + '&transform=1';
+                url += '/api/order_details?include=orders,entities&columns=id,carrierID,orderID,originationCity,originationState,destinationCity,destinationState,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,entities.name&filter=orderID,eq,' + orderID + '&transform=1';
+                blnShow = true;    
                 break;
             case 1:    // URL for Customer.
-                url += '/api/order_details?include=orders&columns=id,carrierID,orderID,originationCity,originationState,destinationCity,destinationState,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID&filter=orderID,eq,' + orderID + '&transform=1';
-                blnShow = true;
+                url += '/api/order_details?include=orders,entities&columns=id,carrierID,orderID,originationCity,originationState,destinationCity,destinationState,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,entities.name&filter=orderID,eq,' + orderID + '&transform=1';
+                //blnShow = true;
                 break;
             case 2:     // URL for the Carrier. The Customer can only see order details of their route.
-                url += '/api/order_details?include=orders&columns=id,carrierID,orderID,originationCity,originationState,destinationCity,destinationState,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID&filter[]=orderID,eq,' + orderID + '&filter[]=carrierID,eq,' + entityid + '&transform=1';
+                url += '/api/order_details?include=orders,entities&columns=id,carrierID,orderID,originationCity,originationState,destinationCity,destinationState,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,entities.name&filter[]=orderID,eq,' + orderID + '&filter[]=carrierID,eq,' + entityid + '&transform=1';
                 break;
         }        
         
@@ -442,11 +443,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
                         var order_details = json.order_details;
 
-                        if(entityType == 2) return order_details;   // Carrier is already set
+                        if(entityType == 2 || entityType == 0) return order_details;   // Carrier and Admin is already set
                         else {                                      // Have to manipulate Admin and Customer Data
 
                             var orderDetails = new Array();
-                            
+                                                        
                             var earliestPickup = order_details[0].pickupDate;
                             var latestDelivery = order_details[0].deliveryDate;
                             
@@ -479,6 +480,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                             }
                             
                             var orderDetail = {
+                                entities: order_details[0].entities,
                                 orders: order_details[0].orders,
                                 status: order_details[0].orders[0].status,
                                 qty: order_details[0].qty,
@@ -500,7 +502,25 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                     }
                 },
                 columns: [
-                    { data: "orders[0].orderID" },
+                    { data: "orders[0].orderID", visible: !blnShow },
+                    {                     
+                        data: null,
+                        "bSortable": true,
+                        "mRender": function (o) {
+                            var carrierID = o.carrierID;
+
+                                allEntities.entities.forEach(function(entity){
+
+                                    if(carrierID == entity.id){
+
+                                        entityName = entity.name;
+                                    }                            
+                                });
+
+                            return entityName;
+                        },
+                        visible: blnShow
+                    },
                     { data: "status", visible: false },
                     { data: "qty" },
                     { data: "transportationMode" },
@@ -521,7 +541,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                             buttons += '<button class="btn btn-primary btn-xs" role="button"><i class="glyphicon glyphicon-edit text-info"></i> <span class="text-info">Edit</span></button>';
 
                             return buttons;
-                        }, visible: blnShow
+                        }
                     }
                 ]
               });
@@ -545,7 +565,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
     
     function loadOrderStatusesAJAX(orderID){
         
-        var url = '<?php echo API_HOST; ?>/api/order_statuses?columns=id,orderID,city,state,status,note,createdAt&filter=orderID,eq,' + orderID + '&transform=1';
+        var url = '<?php echo API_HOST; ?>/api/order_statuses?include=entities&columns=id,orderID,carrierID,city,state,status,note,createdAt,entities.id,entities.name&filter=orderID,eq,' + orderID + '&transform=1';
         var blnShow = false;
         
         if(entityType != 1) blnShow = true;
@@ -560,6 +580,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                     dataSrc: 'order_statuses'
                 },
                 columns: [
+                    { data: "entities[0].name" },
                     { data: "createdAt" },
                     { data: "city" },
                     { data: "state" },
@@ -585,7 +606,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
     function loadPODListAJAX(orderID){
         
         var url = '<?php echo API_HOST; ?>/api/orders?columns=podList&filter=id,eq,' + orderID + '&transform=1';
+        var blnShow = false;
         
+        if(entityType == 0) blnShow = true;
         
         if ( ! $.fn.DataTable.isDataTable( '#pod-list-table' ) ) {
         
@@ -607,6 +630,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                 },
                 columns: [
                     { data: "vinNumber" },
+                    { data: "notes", visible: blnShow },
                     { data: "deliveryDate" },
                     { data: "notes" },
                     {  
@@ -650,6 +674,39 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         
     }
     
+    function getOrderIDAndCustomerName(orderID){
+        
+        var url = '<?php echo API_HOST; ?>';
+        url += '/api/orders?columns=id,customerID,orderID&filter=id,eq,' + orderID + '&transform=1';
+    
+          $.ajax({
+             url: url,
+             type: "GET",
+             async: false,
+             success: function(data){
+                  var customerID = data.orders[0].customerID;
+                  var orderID = data.orders[0].orderID;
+                  
+                  $("#orderNumber").html(orderID);
+                  
+                  
+                var url = '<?php echo API_HOST; ?>';
+                url += '/api/entities?columns=id,name&filter=id,eq,' + customerID + '&transform=1';
+                      
+                $.ajax({
+                   url: url,
+                   type: "GET",
+                   async: false,
+                   success: function(data){
+                        var customerName = data.entities[0].name;
+
+                        $("#customerName").html(customerName);
+
+                   }
+                });
+             }
+          });
+    }
     
       function formatListBox() {
           // Bootstrap Listbox
@@ -1043,6 +1100,20 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
          </header>
         <br>
         <br>
+        
+                  <?php 
+
+                  if ($_SESSION['entitytype'] == 0){ 
+
+                      ?>
+
+        <h5><span class="fw-semi-bold">Order ID: </span><p id="orderNumber" style="display: inline;"></p></h5>
+        <h5><span class="fw-semi-bold">Customer Name: </span><p id="customerName" style="display: inline;"></p></h5>
+        <br>
+            <?php
+            
+                  }
+            ?>
         <div class="widget-body">
 
             <div id="dataTable-1" class="mt">
@@ -1050,6 +1121,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                     <thead>
                     <tr>
                         <th>Order ID</th>
+                        <th>Carrier</th>
                         <th>Status</th>
                         <th>Qty</th>
                         <th>Transport Mode</th>
@@ -1069,72 +1141,69 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                     </tbody>
                 </table>
             </div>
-        </div>
-        
-    <br>
-    
-        <div id="dataTable-2" class="mt">
-            <h5><span class="fw-semi-bold">Order Tracking History</span></h5>
-            <table id="order-history-table" class="table table-striped table-hover">
-                <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>City</th>
-                    <th>State</th>
-                    <th>Status</th>
-                    <th>Note</th>
-                </tr>
-                </thead>
-                <tbody>
-                    <!-- loadTableAJAX() is what populates this area -->
-                </tbody>
-             </table>
-        </div>
-    
-              <?php 
-              
-              if ($_SESSION['entitytype'] != 1){ 
-                  
+            <br>
+            <div id="dataTable-2" class="mt">
+                <h5><span class="fw-semi-bold">Order Tracking History</span></h5>
+                <table id="order-history-table" class="table table-striped table-hover">
+                    <thead>
+                    <tr>
+                        <th>Carrier</th>
+                        <th>Date</th>
+                        <th>City</th>
+                        <th>State</th>
+                        <th>Status</th>
+                        <th>Note</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <!-- loadTableAJAX() is what populates this area -->
+                    </tbody>
+                 </table>
+            </div>
+
+                  <?php 
+
+                  if ($_SESSION['entitytype'] != 1){ 
+
+                      ?>
+
+            <div class="row">            
+                <div class="col-sm-4">
+                    <a data-widgster="addDeliveryStatus" title="Add" href="Javascript:addDeliveryStatus();"><i class="fa fa-plus-square-o"></i> Add Delivery Status</a>
+                </div>
+            </div>
+
+                  <?php 
+
+                  } 
+
                   ?>
     
-        <div class="row">            
-            <div class="col-sm-4">
-                <a data-widgster="addDeliveryStatus" title="Add" href="Javascript:addDeliveryStatus();"><i class="fa fa-plus-square-o"></i> Add Delivery Status</a>
+            <br>
+            <div id="dataTable-3" class="mt">
+                <h5><span class="fw-semi-bold">POD List</span></h5>
+                <table id="pod-list-table" class="table table-striped table-hover">
+                    <thead>
+                    <tr>
+                        <th>Trailer VIN</th>
+                        <th>Carrier</th>
+                        <th>Delivery Date</th>
+                        <th>Notes</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <!-- loadTableAJAX() is what populates this area -->
+                    </tbody>
+                 </table>
             </div>
+    
+            
         </div>
-    
-              <?php 
-              
-              } 
-              
-              ?>
-    
-    <br>
-    
-        <div id="dataTable-3" class="mt">
-            <h5><span class="fw-semi-bold">POD List</span></h5>
-            <table id="pod-list-table" class="table table-striped table-hover">
-                <thead>
-                <tr>
-                    <th>Trailer VIN</th>
-                    <th>Delivery Date</th>
-                    <th>Notes</th>
-                    <th></th>
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody>
-                    <!-- loadTableAJAX() is what populates this area -->
-                </tbody>
-             </table>
-        </div>
-    
-    
+        
      </section>
      
-     
-
-      
  </div>
     
 <!-- Modal -->
@@ -1427,8 +1496,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         var state = $("#state").val();
         var status = $("#orderStatus").val();
         var notes = $("#statusNotes").val();
+        var entityid = <?php echo $_SESSION['entityid']; ?>;
         
-        var orderStatus = {orderID: id, city: city, state: state, status: status, note: notes, createdAt: today, updatedAt: today};
+        var orderStatus = {orderID: id, carrierID:entityid, city: city, state: state, status: status, note: notes, createdAt: today, updatedAt: today};
         
         $.ajax({
            url: '<?php echo API_HOST."/api/order_statuses"; ?>',
@@ -1600,10 +1670,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         var data = table.row( $(this).parents('tr') ).data();
 
         var orderID = data["id"];
-
+        
+        getOrderIDAndCustomerName(orderID);
         loadOrderDetailsAJAX(orderID);
         loadOrderStatusesAJAX(orderID);
         loadPODListAJAX(orderID);
+        
     });
     
     /* Formatting function for row details - modify as you need */
