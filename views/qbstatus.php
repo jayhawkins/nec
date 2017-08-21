@@ -35,12 +35,12 @@ try {
 		$access_token = $oauth->getAccessToken( OAUTH_ACCESS_URL );
 		
 		$_SESSION['token'] = serialize( $access_token );
-    $_SESSION['realmId'] = $_REQUEST['realmId'];  // realmId is legacy for customerId
-    $_SESSION['dataSource'] = $_REQUEST['dataSource'];
+    $_SESSION['realmId'] = '193514475422329';  // realmId is legacy for customerId
+    //$_SESSION['dataSource'] = $_REQUEST['dataSource'];
 	
 	 $token = $_SESSION['token'] ;
 	 $realmId = $_SESSION['realmId'];
-	 $dataSource = $_SESSION['dataSource'];
+	 //$dataSource = $_SESSION['dataSource'];
 	 $secret = $_SESSION['secret'] ;
 	 
     // write JS to pup up to refresh parent and close popup
