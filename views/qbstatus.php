@@ -29,7 +29,7 @@ try {
     $request_token = $oauth->getRequestToken( OAUTH_REQUEST_URL, CALLBACK_URL );
 
 		$_SESSION['secret'] = $request_token['oauth_token_secret'];
-<<<<<<< HEAD
+
         try {
             // step 2: send user to intuit to authorize
             //header('Location: '. OAUTH_AUTHORISE_URL .'?oauth_token='.$request_token['oauth_token']);
@@ -55,13 +55,15 @@ try {
             die();
         }
 
-=======
+
+
 		// step 2: send user to intuit to authorize 
 		
                 echo 'Not Authorized';
                 //exit();
                 header('Location: '. OAUTH_AUTHORISE_URL .'?oauth_token='.$request_token['oauth_token']);
->>>>>>> 37eda68a4e439687e4467cc78282c7b4716d5540
+
+
 	}
 
 	if ( isset($_GET['oauth_token']) && isset($_GET['oauth_verifier']) ){
