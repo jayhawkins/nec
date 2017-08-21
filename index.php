@@ -496,6 +496,9 @@ $app->route('POST /pod_api', function() {
 // Quickbooks API Status Page
 /*****************************************************************************/
 
+$app->route('GET|POST /qb_api_status', function() {
+
+    // Data will be passed through using the format below
 
  $app->route('GET /qb_api_status', function() {
 
@@ -506,25 +509,32 @@ $app->route('POST /pod_api', function() {
 
     // This is the calling method inside the class
     $apiResponse = $podAPI->isConnected();
-    
-    
+
+    echo $apiResponse;
+
+   //Flight::render('qbstatus', array('response'=> $apiResponse));
+
+   //Flight::render('qbstatus', array('response'=> $apiResponse));
+
+    print_r($apiResponse);
+
+
    Flight::render('qbstatus', array('response'=> $apiResponse));
-    
-  
+
 });
 
 
-$app->route('GET|POST /oauth', function() { 
+$app->route('GET|POST /oauth', function() {
     // Data will be passed through using the format below
     //$customerneedid = Flight::request()->data->id;
-    
+
     // This is setup using config/setup.php
     $podAPI = Flight::quickbooks();
-    
+
     // This is the calling method inside the class
     $apiResponse = $podAPI->oauth();
-    
-    
+
+
    if ($apiResponse) {
         print_r($apiResponse);
         //echo "success";
