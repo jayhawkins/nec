@@ -340,15 +340,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                         data: null,
                         "bSortable": false,
                         "mRender": function (o) {
-                            var buttons = '<div class="pull-right text-nowrap">';
-                            buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text\"></i> <span class=\"text\">Edit</span></button>';
+                            var buttons = '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text-info\"></i> <span class=\"text-info\">Edit</span></button>';
 
                             if (o.status == "Available") {
-                                      buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text\"></i> <span class=\"text\">Available</span></button>";
+                                      buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text-info\"></i> <span class=\"text-info\">Available</span></button>";
                             } else {
-                                      buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text\"></i> <span class=\"text\">Unavailable</span></button>";
+                                      buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text-info\"></i> <span class=\"text-info\">Unavailable</span></button>";
                             }
-                            buttons += "</div>";
 
                             return buttons;
                         }
@@ -390,15 +388,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                         data: null,
                         "bSortable": false,
                         "mRender": function (o) {
-                            var buttons = '<div class="pull-right text-nowrap">';
-                            buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text\"></i> <span class=\"text\">Edit</span></button>';
+                            var buttons = '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text-info\"></i> <span class=\"text-info\">Edit</span></button>';
 
                             if (o.status == "Available") {
-                                      buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text\"></i> <span class=\"text\">Available</span></button>";
+                                      buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text-info\"></i> <span class=\"text-info\">Available</span></button>";
                             } else {
-                                      buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text\"></i> <span class=\"text\">Unavailable</span></button>";
+                                      buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text-info\"></i> <span class=\"text-info\">Unavailable</span></button>";
                             }
-                            buttons += '</div>';
 
                             return buttons;
                         }
@@ -778,8 +774,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
              Column sorting, live search, pagination. Built with
              <a href="http://www.datatables.net/" target="_blank">jQuery DataTables</a>
          </p -->
-         <button type="button" id="downloadTemplate" class="btn btn-primary pull-xs-right" >Download Bulk Template</button>
-         <button type="button" id="uploadTemplate" class="btn btn-primary pull-xs-right" >Upload Bulk Template</button>
          <button type="button" id="addNeed" class="btn btn-primary pull-xs-right" data-target="#myModal">Add New Need</button>
          <br /><br />
          <div id="dataTable" class="mt">
@@ -823,7 +817,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
    <div class="modal-dialog modal-lg" role="document">
      <div class="modal-content">
        <div class="modal-header">
-         <h5 class="modal-title" id="exampleModalLabel" style="position:absolute;"><strong>Need</strong></h5>
+         <h5 class="modal-title" id="exampleModalLabel"><strong>Need</strong></h5>
          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
            <span aria-hidden="true">&times;</span>
          </button>
@@ -882,7 +876,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                            <input type="text" id="originationCity" name="originationCity" class="form-control mb-sm" placeholder="Origin City"
                            required="required" />
                          </div>
-                         <div id="suggesstion-box-origin" class="frmSearch"></div>
+                         <div id="suggesstion-box" class="frmSearch"></div>
                      </div>
                      <div class="col-sm-4">
                          <label for="originationAddress1">Origination Address</label>
@@ -920,7 +914,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                          <input type="text" id="destinationCity" name="destinationCity" class="form-control mb-sm" placeholder="Dest. City"
                          required="required" />
                        </div>
-                       <div id="suggesstion-box-dest" class="frmSearch"></div>
                    </div>
                    <div class="col-sm-4">
                        <label for="destinationAddress1">Destination Address</label>
@@ -1071,22 +1064,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         format: "yyyy-mm-dd"
     });
 
-	$("#downloadTemplate").click(function(){
-		var labels="";
-		$("#myModal label").each(function(){
-			labels+=$(this).html();
-		});
-		var w = window.open('','csvWindow'); // popup, may be blocked though
-		// the following line does not actually do anything interesting with the
-		// parameter given in current browsers, but really should have.
-		// Maybe in some browser it will. It does not hurt anyway to give the mime type
-		w.document.open("text/csv");
-		w.document.write(labels); // the csv string from for example a jquery plugin
-		w.document.close();
-	});
-	$("#uploadTemplate").click(function(){
-		alert("uploadTemplate");
-	});
     $("#addNeed").click(function(){
       var li = '';
       var checked = '';
@@ -1094,7 +1071,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       var dpchecked = '';
       var emptyMode = '';
       var loadMode = '';
-      var eitherMode = '';
+      var eitherMode = 'selected=selected';
       $("#id").val('');
       $("#qty").val('');
       $("#availableDate").val('');
@@ -1110,7 +1087,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       //alert(JSON.stringify(contacts));
 
       transMode = '<select id="transportationMode" name="transportationMode" class="form-control chzn-select" required="required">' +
-                             '<option value="" selected=selected>*Select Mode...</option>';
+                             '<option value="">*Select Mode...</option>';
 
       transMode += '<option value="Empty" ' + emptyMode + '>Empty</option>';
       transMode += '<option value="Load Out" ' + loadMode + '>Load Out</option>';
@@ -1125,7 +1102,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       for (var i = 0; i < dataPoints.object_type_data_points.length; i++) {
           dpli += '<li>' + dataPoints.object_type_data_points[i].title +
                   ' <select class="form-control mb-sm" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '">\n' +
-                  ' <option value="" selected=selected>-Select From List-</option>\n';
+                  ' <option value="">-Select One-</option>\n';
           for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
               dpli += '<option>' + dataPoints.object_type_data_points[i].object_type_data_point_values[v].value + '</option>\n';
           }
@@ -1231,7 +1208,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
                 dpli += '<li>' + dataPoints.object_type_data_points[i].title +
                         ' <select class="form-control mb-sm" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '">\n' +
-                        ' <option value="">-Select From List-</option>\n';
+                        ' <option value="">-Select One-</option>\n';
                 for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
 
                     if (dataPoints.object_type_data_points[i].object_type_data_point_values[v].value === value) {
@@ -1305,7 +1282,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         });
     });
 
-/* Taken out per FS257
     $("#originationCity").keyup(function(){
         $("#originationCity").css("background","#FFF url(img/loaderIcon.gif) no-repeat 165px");
 
@@ -1324,13 +1300,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                   li += '<li onClick="selectOrgCity(\'' + data.locations[t].id + '\');" id=\"' + data.locations[t].id + '\">' + data.locations[t].city + ' [' + data.locations[t].name + ']</li>\n';
               }
               li += '</ul>';
-              $("#suggesstion-box-origin").html(li);
-        			$("#suggesstion-box-origin").show();
+              $("#suggesstion-box").html(li);
+        			$("#suggesstion-box").show();
         			$("#originationCity").css("background","#FFF");
         		}
     		});
   	});
-*/
 
     function selectOrgCity(val) {
         var params = {id: val};
@@ -1351,7 +1326,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
              var li = setContactsOnLocationSelected();
              $("#check-list-box").html(li);
              formatListBox();
-             $("#suggesstion-box-origin").hide();
+             $("#suggesstion-box").hide();
            },
            error: function() {
                 alert('Error Selecting Origination City!');
@@ -1359,7 +1334,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         });
     }
 
-/* Taken out per FS257
     $("#destinationCity").keyup(function(){
         $("#destinationCity").css("background","#FFF url(img/loaderIcon.gif) no-repeat 165px");
 
@@ -1378,13 +1352,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                   li += '<li onClick="selectDestCity(\'' + data.locations[t].id + '\');" id=\"' + data.locations[t].id + '\">' + data.locations[t].city + ' [' + data.locations[t].name + ']</li>\n';
               }
               li += '</ul>';
-              $("#suggesstion-box-dest").html(li);
-        			$("#suggesstion-box-dest").show();
+              $("#suggesstion-box").html(li);
+        			$("#suggesstion-box").show();
         			$("#destinationCity").css("background","#FFF");
         		}
     		});
   	});
-*/
 
     function selectDestCity(val) {
         var params = {id: val};
@@ -1401,7 +1374,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
              $("#destinationCity").val(response.city);
              $("#destinationState").val(response.state);
              $("#destinationZip").val(response.zip);
-             $("#suggesstion-box-dest").hide();
+             $("#suggesstion-box").hide();
            },
            error: function() {
                 alert('Error Selecting Destination City!');
