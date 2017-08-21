@@ -237,6 +237,31 @@ if ($_SESSION['entityid'] > 0) {
 
         }
 
+        function countCommitments(){
+            
+            var baseUrl = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate&filter[]=rootCustomerNeedsID,eq,0&filter[]=status,eq,Available';
+
+            var url = baseUrl + '&order[]=entityID&order[]=rootCustomerNeedsID&order[]=availableDate,desc&transform=1';        
+
+        
+            $.ajax({
+               url: url,
+               type: "GET",
+               contentType: "application/json",
+               async: false,
+               success: function(json){
+
+                    var commitmentCount = json.customer_needs.length;
+
+                    $('#commitmentCount').html(commitmentCount);
+               },
+               error: function() {
+                  alert("There Was An Error Saving the Status");
+               }
+            });
+
+        }
+
     </script>
 </head>
 <body>
@@ -351,8 +376,8 @@ if ($_SESSION['entityid'] > 0) {
                          <i class="fa fa-thumbs-up"></i>
                      </span>
                      Commitment
-                     <span class="label label-danger">
-                         <?php echo $cncount; ?>
+                     <span id="commitmentCount" class="label label-danger">
+                         
                      </span>
                  </a>
              </li>
@@ -1181,7 +1206,8 @@ if ($_SESSION['entityid'] == 0) {
 <script type="text/javascript">
 
     countUserOrders();
-
+    countCommitments();
+    
 $(function() {
 
    // Show loading message
