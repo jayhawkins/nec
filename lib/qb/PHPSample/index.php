@@ -29,12 +29,12 @@
 
 <?php
     # This sample uses the LightOpenID library located here:  https://gitorious.org/lightopenid
-    echo '<div> Please refer to the <a target="_blank" href="http://localhost/PHPSample/ReadMe.htm">Read Me</a> page for detailed instructions and information regarding this sample </div><br />';
+    echo '<div> Please refer to the <a target="_blank" href="ReadMe.htm">Read Me</a> page for detailed instructions and information regarding this sample </div><br />';
             
     require 'lightopenid-lightopenid/openid.php';
     try {
         # Change 'localhost' to your domain name.
-        $openid = new LightOpenID('localhost');
+        $openid = new LightOpenID('nec.dubtel.com');
         if(!$openid->mode) {
         	echo '<div> This sample uses PHP 5.6.3 and Intuit PHP SDK version v3-php-sdk-2.2.0-RC
 			</div><br />';
@@ -55,7 +55,7 @@
                 header('Location: ' . $openid->authUrl());
             }else{
                 # Show the login button.  The user is not in the process of loggin in
-                echo '<div><ipp:login href="index.php?connectWithIntuitOpenId" type="vertical"></div>';
+                echo '<div><ipp:login href="http://nec.dubtel.com/lib/qb/PHPSample/index.php?connectWithIntuitOpenId" type="vertical"></div>';
             }
         } elseif($openid->mode == 'cancel') {
             echo 'User has canceled authentication!';
@@ -63,7 +63,7 @@
             # Print the OpenID attributes that we requested above, email and full name
             //print_r($openid->getAttributes());
             # Add a link to allow the user to logout. The link makes a JavaScript call to intuit.ipp.anywhere.logout()
-            echo '<br /><a href="javascript:void(0)" onclick="return intuit.ipp.anywhere.logout(function () { window.location.href = \'http://localhost/PHPSample/index.php\'; });">Sign Out</a>';
+            echo '<br /><a href="javascript:void(0)" onclick="return intuit.ipp.anywhere.logout(function () { window.location.href = \'http://nec.dubtel.com/lib/qb/PHPSample/index.php\'; });">Sign Out</a>';
 			
 			//oAuth code
 			
