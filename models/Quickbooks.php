@@ -7,6 +7,7 @@ use QuickBooks_IPP_Service_Payment;
 use QuickBooks_IPP_Service_ChangeDataCapture;
 use QuickBooks_IPP_Service_Class;
 
+
 class Quickbooks
 {
     public function __construct() {
