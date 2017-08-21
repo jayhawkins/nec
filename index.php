@@ -443,7 +443,6 @@ $app->route('GET|POST /availabilitymatching/@id', function($id) {
     }
 });
 
-
 $app->route('POST /uploaddocument', function() {
 	$name = Flight::request()->data->name;
 	$fileupload = Flight::request()->files['fileupload'];
@@ -460,10 +459,10 @@ $app->route('POST /uploaddocument', function() {
     }
 });
 
-$app->route('POST /viewdocument', function() {
-	$entityID = Flight::request()->data->entityID;
-	$file_location = Flight::request()->data->file_location;
-	$filename = Flight::request()->data->filename;
+$app->route('GET /viewdocument', function() {
+	$entityID = Flight::request()->query['entityID'];
+	$filename = Flight::request()->query['filename'];
+	$documents = Flight::documents();
     $result = $documents->viewdocument($entityID,FILE_LOCATION,$filename);
 });
 

@@ -719,6 +719,11 @@ ALTER TABLE `order_statuses`
 	ON DELETE No Action
 	ON UPDATE No Action;
 
+ALTER TABLE `order_statuses`
+	ADD CONSTRAINT `lnk_entities_order_statuses` FOREIGN KEY ( `carrierID` )
+	REFERENCES `entities`( `id` )
+	ON DELETE No Action
+	ON UPDATE No Action;
 -- -------------------------------------------------------------
 -- ---------------------------------------------------------
 
