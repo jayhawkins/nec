@@ -4,38 +4,8 @@ session_start();
 
 require '../../nec_config.php';
 require '../lib/common.php';
+require '../lib/quickbooksconfig.php';
 
-$state = '';
-$states = json_decode(file_get_contents(API_HOST.'/api/states?columns=abbreviation,name&order=name'));
-
-$entity = '';
-$entity = json_decode(file_get_contents(API_HOST.'/api/entities?columns=rateType,negotiatedRate&filter[]=id,eq,' . $_SESSION['entityid']));
-
-$entities = '';
-$entities = json_decode(file_get_contents(API_HOST.'/api/entities?columns=id,name&order=name&filter[]=id,gt,0&filter[]=entityTypeID,eq,2'));
-
-$allEntities = '';
-$allEntities = json_decode(file_get_contents(API_HOST.'/api/entities?columns=id,name&order=name&filter[]=id,gt,0&transform=1'));
-
-
-$locationTypeID = '';
-$locationTypes = json_decode(file_get_contents(API_HOST."/api/location_types?columns=id,name,status&filter[]=entityID,eq," . $_SESSION['entityid'] . "&filter[]=id,gt,0&satisfy=all&order=name"));
-
-$contacts = '';
-$contacts = json_decode(file_get_contents(API_HOST."/api/contacts?columns=id,firstName,lastName&order=lastName&filter=entityID,eq," . $_SESSION['entityid'] ));
-
-$locations_contacts = '';
-$locations_contacts = json_decode(file_get_contents(API_HOST."/api/locations_contacts?columns=location_id,contact_id&filter=entityID,eq," . $_SESSION['entityid'] ));
-
-$loccon = array();
-for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
-    $loccon[$locations_contacts->locations_contacts->records[$lc][0]] = $locations_contacts->locations_contacts->records[$lc][1];
-}
-
-$dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_points?include=object_type_data_point_values&transform=1&columns=id,columnName,title,status,object_type_data_point_values.value&filter[]=entityID,in,(0," . $_SESSION['entityid'] . ")&filter[]=status,eq,Active" ));
-
-$customer_needs_root = '';
-$customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_needs?columns=rootCustomerNeedsID&filter=rootCustomerNeedsID,neq,0&transform=1"));
 
 
  ?>
