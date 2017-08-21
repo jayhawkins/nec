@@ -96,11 +96,12 @@
 
 			} else {
 
-				url = '<?php echo HTTP_HOST."/uploadpolicy" ?>';
+				url = '<?php echo HTTP_HOST."/uploaddocument" ?>';
 				type = "POST";
 				var formData = new FormData();
 				formData.append('fileupload', $('#fileupload')[0].files[0]);
 				formData.append('entityID', $("#entityID").val());
+				formData.append('name', $("#name").val());
 				$.ajax({
 					url : url,
 					type : 'POST',
@@ -181,7 +182,7 @@
         today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
         var date = today;
 
-	    url = '<?php echo HTTP_HOST."/uploadpolicy" ?>';
+	    url = '<?php echo HTTP_HOST."/uploaddocument" ?>';
         type = "POST";
         var formData = new FormData();
         formData.append('fileupload', $('#updatePolicyFile')[0].files[0]);
@@ -608,7 +609,7 @@
 	});
 
 	$("#btnView").unbind('click').bind('click',function(){
-	    window.open( '<?php echo HTTP_HOST."/viewpolicy" ?>?filename=' + $("#docToView").val() + '&entityID=' + $("#entityID").val(), '_blank');
+	    window.open( '<?php echo HTTP_HOST."/viewdocument" ?>?filename=' + $("#docToView").val() + '&entityID=' + $("#entityID").val(), '_blank');
 	    /*
 	    url = '<?php echo HTTP_HOST."/viewpolicy" ?>';
         type = "POST";
