@@ -34,6 +34,10 @@ $customer_name = $_REQUEST['customerName'];
 $customer_rate = $_REQUEST['customerRate'];
 $customer_notes = $_REQUEST['customerNotes'];
 
+$customer_name = 'Yaw Tandoh';
+$customer_rate = '150.00';
+$customer_notes = 'This is a Test';
+
 // Add a customer
 $customerObj = new IPPCustomer();
 $customerObj->Name = $customer_name;
@@ -47,31 +51,31 @@ echo "Created Customer Id={$resultingCustomerObj->Id}. :\n\n";
 //$xmlBody = XmlObjectSerializer::getPostXmlFromArbitraryEntity($resultingCustomerObj, $urlResource);
 //echo $xmlBody . "\n";
 
-$estimateObj = new IPPEstimate();
-$estimateObj->TotalAmt = $customer_rate;
-$estimateObj->CustomerRef = $resultingCustomerObj->Id;
-$estimateObj->PrivateNote = $customer_notes;
-$resultEstimateobj = $dataService.Add($estimateObj);
+//$estimateObj = new IPPEstimate();
+//$estimateObj->TotalAmt = $customer_rate;
+//$estimateObj->CustomerRef = $resultingCustomerObj->Id;
+//$estimateObj->PrivateNote = $customer_notes;
+//$resultEstimateobj = $dataService.Add($estimateObj);
 
-echo "Created Estimate Id={$resultEstimateobj->Id}. :\n\n";
+//echo "Created Estimate Id={$resultEstimateobj->Id}. :\n\n";
 
-$vendorObj = new IPPVendor();
-$vendorObj->CompanyName = $customer_name;
-$vendorObj->DisplayName = $customer_name;
-$vendorObj->Notes = $customer_notes;
-$resultVendorObj = $dataService->Add($vendorObj);
-$vendorID = $resultVendorObj->Id;
+//$vendorObj = new IPPVendor();
+//$vendorObj->CompanyName = $customer_name;
+//$vendorObj->DisplayName = $customer_name;
+//$vendorObj->Notes = $customer_notes;
+//$resultVendorObj = $dataService->Add($vendorObj);
+//$vendorID = $resultVendorObj->Id;
 
-echo "Created Vendor Id={$vendorID}. :\n\n";
+//echo "Created Vendor Id={$vendorID}. :\n\n";
 
 
-$workOrderObj = new IPPPurchaseOrder();
-$workOrderObj->VendorRef = $vendorID;
-$workOrderObj->TotalAmt =  $customer_rate;
-$workOrderObj->Memo = $customer_notes;
-$resultPOObj = $dataService->Add($workOrderObj);
-$PoID = $resultPOObj->id;
-echo "Created Purchase Order Id={$PoID}. :\n\n";
+//$workOrderObj = new IPPPurchaseOrder();
+//$workOrderObj->VendorRef = $vendorID;
+//$workOrderObj->TotalAmt =  $customer_rate;
+//$workOrderObj->Memo = $customer_notes;
+//$resultPOObj = $dataService->Add($workOrderObj);
+//$PoID = $resultPOObj->id;
+//echo "Created Purchase Order Id={$PoID}. :\n\n";
 /*
 Created Customer Id=801. Reconstructed response body:
 
