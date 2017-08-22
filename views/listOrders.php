@@ -685,7 +685,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                         "mRender": function (o) {
                             var buttons = '';
 
-                            buttons += '<button class="btn btn-primary btn-xs" role="button" disabled><i class="fa fa-upload text-info"></i> <span class="text-info">Upload POD</span></button>';
+                            buttons += '<button class="btn btn-primary btn-xs upload-pod" role="button"><i class="fa fa-upload text-info"></i> <span class="text-info">Upload POD</span></button>';
 
                             return buttons;
                         }
@@ -1318,6 +1318,62 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
     </div>
   </div>
 
+<!-- Modal -->
+  <div class="modal fade" id="uploadPOD" tabindex="-1" aria-hidden="true" aria-label="exampleModalCommitLabel">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalCommitLabel"><strong>Upload POD</strong></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+                <form id="formUploadPOD" class="register-form mt-lg">
+                  <input type="hidden" id="orderID" name="orderID" value="" />
+                  <input type="hidden" id="index" name="index" value="" />
+                  <input type="hidden" id="customerID" name="customerID" value="" />
+                  <div class="row">
+                        <div class="col-sm-3">
+                            <label for="vinNumber">VIN Number</label>
+                            <div class="form-group">
+                                <input type="text" id="vinNumber" name="vinNumber" class="form-control mb-sm" placeholder="VIN Number" readonly />
+                            </div>
+                        </div>    
+                        <div class="col-sm-3">
+                            <label for="deliveryDate">Delivery Date</label>
+                            <div class="form-group">
+                              <div id="sandbox-container" class="input-group date  datepicker">
+                                 <input type="text" id="deliveryDate" name="deliveryDate" class="form-control" placeholder="Delivery Date" required="required"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                              </div>
+                            </div>
+                        </div>    
+                        <div class="col-sm-3">
+                            <label for="filePOD">Upload POD</label>
+                            <div class="form-group">
+                              <input type="file" id="filePOD" name="filePOD" class="form-control-file mb-sm"/>
+                            </div>
+                        </div>
+                  </div>
+                  <hr/>
+                  <div class="row">                 
+                      <div class="col-sm-12">
+                        <label for="podNotes">Notes</label>
+                        <div class="form-group">
+                            <textarea id="podNotes" rows="4" cols="50" class="form-control mb-sm" maxlength="600"></textarea>
+                        </div>
+                      </div>
+                  </div>
+                </form>
+        </div>
+        <div class="modal-footer">
+           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+           <button type="button" class="btn btn-primary btn-md" onclick="uploadPOD();" id="btnUploadPOD">Save POD</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
  
  <!-- Edit Order Modal -->
  <div class="modal fade" id="editOrder" z-index="1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -1492,13 +1548,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
     loadTableAJAX();
     
-/*
     $('.datepicker').datepicker({
         autoclose: true,
         todayHighlight: true,
         format: "yyyy-mm-dd"
     });
-*/
+
 
     var table = $("#orders-table").DataTable();
     
@@ -1833,5 +1888,87 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         td.addClass('details-control-add');
 
     } );
+
+    $('#pod-list-table tbody').on('click', 'button.upload-pod', function () {
+
+        var podTable = $("#pod-list-table").DataTable();    
+        var data = podTable.row( $(this).parents('tr') ).data();
+        var podList = podTable.ajax.json().orders[0].podList;
+        var index = podList.indexOf(data);
+        var vinNumber = data.vinNumber;
+        
+        var orderDetailsTable = $("#order-details-table").DataTable();
+        var orderDetails = orderDetailsTable.ajax.json();
+                
+        var orderID = orderDetails.order_details[0].orderID;
+        var customerID = orderDetails.order_details[0].orders[0].customerID;
+        
+        $('#vinNumber').val(vinNumber);
+        $('#index').val(index);
+        $('#orderID').val(orderID);
+        $('#customerID').val(customerID);
+
+        $("#uploadPOD").modal('show');
+    } );
+
+    function uploadPOD(){
+        
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth()+1; //January is 0!
+        var yyyy = today.getFullYear();
+        var hours = today.getHours();
+        var min = today.getMinutes();
+        var sec = today.getSeconds();
+
+        if(dd<10) {
+            dd='0'+dd;
+        }
+
+        if(mm<10) {
+            mm='0'+mm;
+        }
+
+        if(hours<10) {
+            hours='0'+hours;
+        }
+
+        if(min<10) {
+            min='0'+min;
+        }
+
+        if(sec<10) {
+            sec='0'+sec;
+        }
+
+        today = mm+'/'+dd+'/'+yyyy;
+        today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+
+        
+        var formData = new FormData();
+        var fileData = $('#filePOD')[0].files[0];
+        formData.append('entityID', $("#customerID").val());
+        formData.append('name', $("#vinNumber").val());
+        formData.append('fileupload', fileData);
+        
+        var url = '<?php echo HTTP_HOST."/uploaddocument" ?>';
+	var type = "POST";
+				
+        $.ajax({
+            url : url,
+            type : 'POST',
+            data : formData,
+            processData: false,  // tell jQuery not to process the data
+            contentType: false,  // tell jQuery not to set contentType
+            success : function(data) {
+                var files = $('#filePOD').prop("files");
+                var fileNames = $.map(files, function(val) { return val.name; }).join(',');
+                
+                var pod = {vinNumber: $('#vinNumber').val(), notes: $('#podNotes').val, deliveryDate: $('#deliveryDate'), fileName: fileNames};
+                
+            },
+            error: function(error){}
+        });
+    }
 
  </script>
