@@ -48,7 +48,7 @@ foreach($entities as $oneCustomer)
 	echo "DisplayName: {$oneCustomer->DisplayName}	
 		ID: {$oneCustomer->Id}
 		
-		(Created at {$oneCustomer->MetaData->CreateTime})\n";
+		\n";
 	$i++;
 }
 
