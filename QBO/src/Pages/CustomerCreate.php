@@ -45,9 +45,9 @@ $entities = $dataService->Query("SELECT * FROM Customer");
 $i = 0;
 foreach($entities as $oneCustomer)
 {
-	echo "Customer[$i] DisplayName: {$oneCustomer->DisplayName}	
+	echo "DisplayName: {$oneCustomer->DisplayName}	
 		ID: {$oneCustomer->Id}
-		Phone: {$oneCustomer->PrimaryPhone->FreeFormNumber}
+		
 		(Created at {$oneCustomer->MetaData->CreateTime})\n";
 	$i++;
 }
