@@ -93,7 +93,58 @@ echo 'Success';
 // Echo some formatted output
 
 
+//create invoice
+$invoiceobj = new IPPInvoice();
+ $invoiceObj = new IPPInvoice();
+    $invoiceObj->Deposit = '0';
+    $invoiceObj->AllowIPNPayment = 'true';
+    $invoiceObj->AllowOnlinePayment = 'true';
+    $invoiceObj->AllowOnlineCreditCardPayment = 'true';
+    $invoiceObj->AllowOnlineACHPayment = 'true';
+    $invoiceObj->Balance = $customer_rate;
+    $invoiceObj->CustomerRef = $customerid;
+    $invoiceObj->CustomerMemo = $customer_notes;
 
+    //$billAddr = new IPPPhysicalAddress();
+    //$billAddr->Id = '2';
+    //$billAddr->Line1 = '4581 Banani St.';
+    //$billAddr->City = 'Dhaka';
+    //$invoiceObj->BillAddr =  $billAddr;
+
+    //$billEmailAddr = new IPPEmailAddress();
+    //$billEmailAddr->Address = 'test'.rand(0,100).'@gmail.com';
+    //$invoiceObj->BillEmail = $billEmailAddr;
+
+    $invoiceObj->CurrencyRef = 'USD';
+    $invoiceObj->DueDate = date(strtotime('+30 days'));
+
+    $invoiceObj->TotalAmt = $customer_rate;
+    $invoiceObj->ApplyTaxAfterDiscount = 'false';
+    $invoiceObj->PrintStatus = 'NeedToPrint';
+    $invoiceObj->EmailStatus = 'NotSet';
+
+    $Line = new IPPline();
+    $Line->Amount = floatval($customer_rate); 
+    $Line->DetailType = 'Nationwide Transport Commitment'; 
+    $Line->Description = $customer_notes;
+    $saleItemLineDetail = new IPPSalesItemLineDetail();
+    $saleItemLineDetail->ItemRef = '1'; 
+    $saleItemLineDetail->Quantity = 1;
+    $saleItemLineDetail->UnitPrice = floatval($customer_rate);
+    $Line->SalesItemLineDetail = $saleItemLineDetail; 
+    $invoiceObj->Line = $Line;
+
+
+    $txnTaxDetail = new IPPTxnTaxDetail();
+    $txnTaxDetail->TotalTax = '0';
+
+    $invoiceObj->TxnTaxDetail = $txnTaxDetail;
+    $invoiceObj->SyncToken = '0';
+
+    $resultInvoiceObj = $dataService->Add($invoiceObj);
+
+    echo '<br>';
+    echo 'Invoice ID:'. $resultInvoiceObj->id;
 exit();
 //$xmlBody = XmlObjectSerializer::getPostXmlFromArbitraryEntity($resultingCustomerObj, $urlResource);
 //echo $xmlBody . "\n";
