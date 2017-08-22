@@ -1482,14 +1482,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                         
                         //submit to Quickbooks vendor create script
                             
-    
+  //http://nec.dubtel.com/QBO/src/Pages/CustomerCreate.php?customerName=Trailers%20r%20Us&customerRate=150&customerNotes=This%20is%20a%20test  
                           <?php $quickbooks_host = "http://nec.dubtel.com";?>
                             $.ajax({
                                 url: '<?php echo $quickbooks_host; ?>' + '/QBO/src/Pages/CustomerCreate.php',
                                 type: "POST",
                                 data: jQuery.param({customerName: customerName,customerRate:customerRate,customerNotes:notes}),
-                                contentType: "application/json",
-                                async: false,
                                 success: function(){
                                     console.log(customerName + ' ' + customerRate + ' ' + notes);
                                 },
