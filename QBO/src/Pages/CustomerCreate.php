@@ -34,21 +34,24 @@ if (!$dataService)
 
 
 
+$serviceContext = new ServiceContext($realmId, $serviceType, $requestValidator);
+if (!$serviceContext)
+	exit("Problem while initializing ServiceContext.\n");
+
 // Run a query
 $entities = $dataService->Query("SELECT * FROM Customer");
-$error = $dataService->getLastError();
-if ($error != null) {
-    echo "The Status code is: " . $error->getHttpStatusCode() . "\n";
-    echo "The Helper message is: " . $error->getOAuthHelperError() . "\n";
-    echo "The Response message is: " . $error->getResponseBody() . "\n";
-    exit();
-}
+
 // Echo some formatted output
 $i = 0;
-foreach ($entities as $oneCustomer) {
-    echo "Customer[$i] DisplayName: {$oneCustomer->DisplayName}	(Created at {$oneCustomer->MetaData->CreateTime})\n";
-    $i++;
+foreach($entities as $oneCustomer)
+{
+	echo "Customer[$i] DisplayName: {$oneCustomer->DisplayName}	
+		ID: {$oneCustomer->Id}
+		Phone: {$oneCustomer->PrimaryPhone->FreeFormNumber}
+		(Created at {$oneCustomer->MetaData->CreateTime})\n";
+	$i++;
 }
+
 exit();
 
 
