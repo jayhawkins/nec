@@ -93,9 +93,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
               return false;
           }
 
-
-          if (confirm("You have selected to Commit to this Availability. A Nationwide Equipment Control team member will contact you within 4 buisness hours to start the order process. Do you wish to proceed with this commitment?") == true) {
-
                 var result = true;
 
                 var params = {
@@ -183,11 +180,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                     return false;
                 }
 
-          } else {
-
-                $("#myModalCommit").modal('hide');
-
-          }
+          
       }
 
       function verifyAndPost() {
