@@ -39,6 +39,8 @@ if (!$serviceContext)
 	exit("Problem while initializing ServiceContext.\n");
 
 
+
+$carrier_name = $_REQUEST['carrierName'];
 $customer_name = $_REQUEST['customerName'];
 $customer_rate = $_REQUEST['customerRate'];
 $customer_notes = $_REQUEST['customerNotes'];
