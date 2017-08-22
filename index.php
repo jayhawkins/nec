@@ -439,6 +439,36 @@ $app->route('GET /viewdocument', function() {
 
 
 /*****************************************************************************/
+// Order Processes
+/*****************************************************************************/
+$app->route('POST /sendorderupdatenotification', function() {
+    
+    $rateType = Flight::request()->data->rateType;
+    $transportationMode = Flight::request()->data->transportationMode;
+    $originationAddress = Flight::request()->data->originationAddress;
+    $originationCity = Flight::request()->data->originationCity;
+    $originationState = Flight::request()->data->originationState;
+    $originationZip = Flight::request()->data->originationZip;
+    $destinationAddress = Flight::request()->data->destinationAddress;
+    $destinationCity = Flight::request()->data->destinationCity;
+    $destinationState = Flight::request()->data->destinationState;
+    $destinationZip = Flight::request()->data->destinationZip;
+    $distance = Flight::request()->data->distance;
+    $updatedAt = Flight::request()->data->updatedAt;
+    $orderNumber = Flight::request()->data->orderNumber;
+    $customerID = Flight::request()->data->customerID;
+    $podList = Flight::request()->data->podList;
+    
+    $orderNotification = Flight::order();
+    
+    $result = $orderNotification->sendEmailNotification($rateType, $transportationMode, $originationAddress, $originationCity, $originationState, $originationZip,
+            $destinationAddress, $destinationCity, $destinationState, $destinationZip, $distance, $updatedAt, $orderNumber, $customerID, $podList);
+    
+    print_r($result);
+});
+
+
+/*****************************************************************************/
 // POD API Process
 /*****************************************************************************/
 $app->route('POST /pod_api', function() {

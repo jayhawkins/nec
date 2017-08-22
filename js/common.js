@@ -158,9 +158,9 @@ function newGetMapDirectionFromGoogle(p1,p2,callback) {
 				var destinationlat = response.routes[0].legs[0].end_location.lat();
 				var destinationlng = response.routes[0].legs[0].end_location.lng();
 				var send = {"distance": distance, "originationlat": originationlat, "originationlng": originationlng, "destinationlat": destinationlat, "destinationlng": destinationlng};
-				console.log(JSON.stringify(send));
+				//console.log(JSON.stringify(send));
         if (response.status === 'OK') {
-						console.log('run callback');
+						//console.log('run callback');
 						callback(send);
         } else {
             return ( "Unable to determine distance for writing information." );

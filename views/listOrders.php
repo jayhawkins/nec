@@ -220,8 +220,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                               var item = {};
                               for (var i = 0; i < obj.length; i++) {
                                   
-                                  item = {vinNumber: obj[i].firstChild.value, deliveryDate: "", notes: ""};
-                                  podArray.push(item);
+                                  if (obj[i].firstChild.value != ""){
+                                    item = {vinNumber: obj[i].firstChild.value, deliveryDate: "", notes: ""};
+                                    podArray.push(item);
+                                  }
                               }
                               
 
@@ -236,9 +238,24 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                               var needsdatapoints = needsarray;
 
                             var date = today;
-                            var data = {qty: $("#qty").val(), customerRate: $("#rate").val(), rateType: $('input[name="rateType"]:checked').val(), transportationMode: $("#transportationMode").val(), originationAddress: $("#originationAddress").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress: $("#destinationAddress").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, distance: distance, needsDataPoints: needsdatapoints, podList: podArray, updatedAt: date};
+                            var data = {qty: $("#qty").val(), customerRate: $("#rate").val(), rateType: $('input[name="rateType"]:checked').val(), transportationMode: $("#transportationMode").val(), originationAddress: $("#originationAddress").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress: $("#destinationAddress").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, distance: distance, needsDataPoints: needsdatapoints, updatedAt: date};
                               
+                              if (podArray.length > 0){
+                                  data.podList = podArray;
+                              }
+                              
+                              var emailData = data;
+                              var orderDetailTable = $('#order-details-table').DataTable();
+                              var orderDetailJSON = orderDetailTable.ajax.json();
+                              
+                              var orderNumber = orderDetailJSON.order_details[0].orders[0].orderID;
+                              var customerID = orderDetailJSON.order_details[0].orders[0].customerID;
 
+                              emailData.orderNumber = orderNumber;
+                              emailData.customerID = customerID;
+                              
+                              //console.log(JSON.stringify(emailData));
+                                                            
                               $.ajax({
                                  url: url,
                                  type: type,
@@ -248,33 +265,55 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                                  success: function(data){
                                     if (data > 0) {
                                       
-                                      alert("Will Send Notification to NEC Admin and Customer.");
+                                      $.ajax({
+                                          url: '<?php echo HTTP_HOST; ?>' + '/sendorderupdatenotification',
+                                          type: "POST",
+                                          data: JSON.stringify(emailData),
+                                          contentType: "application/json",
+                                          async:false,
+                                          success: function(data){
+                                              
+                                        $("#load").html("Save Changes");
+                                        $("#load").prop("disabled", false);
+                                        
+                                        alert(data);
 
-                                      $("#editOrder").modal('hide');
+                                        $("#editOrder").modal('hide');
+
+                                        var orderDetailTable = $('#order-details-table').DataTable();
+                                        var podListTable = $('#pod-list-table').DataTable();
+
+                                        orderDetailTable.ajax.reload();
+                                        podListTable.ajax.reload();
+
+                                        $("#id").val('');
+                                        $("#qty").val('');
+                                        $("#rate").val('');
+                                        $("#originationAddress").val('');
+                                        $("#originationCity").val('');
+                                        $("#originationState").val('');
+                                        $("#originationZip").val('');
+                                        $("#destinationAddress").val('');
+                                        $("#destinationCity").val('');
+                                        $("#destinationState").val('');
+                                        $("#destinationZip").val('');
+                                        passValidation = true;
+                                              
+                                          },
+                                          error: function(data){
+                                              console.log("Notification Error: ", JSON.stringify(data));
+                                          }
+                                      });
                                       
-                                      var orderDetailTable = $('#order-details-table').DataTable();
-                                      var podListTable = $('#pod-list-table').DataTable();
-                                      
-                                      orderDetailTable.ajax.reload();
-                                      podListTable.ajax.reload();
-                                      
-                                      $("#id").val('');
-                                      $("#qty").val('');
-                                      $("#rate").val('');
-                                      $("#originationAddress").val('');
-                                      $("#originationCity").val('');
-                                      $("#originationState").val('');
-                                      $("#originationZip").val('');
-                                      $("#destinationAddress").val('');
-                                      $("#destinationCity").val('');
-                                      $("#destinationState").val('');
-                                      $("#destinationZip").val('');
-                                      passValidation = true;
                                     } else {
-                                      alert("Editing Order Failed! Please Verify Your Data.");
+                                        $("#load").html("Save Changes");
+                                        $("#load").prop("disabled", false);
+                                        alert("Editing Order Failed! Please Verify Your Data.");
                                     }
                                  },
                                  error: function() {
+                                    $("#load").html("Save Changes");
+                                    $("#load").prop("disabled", false);
                                     alert("There Was An Error Editing The Order!");
                                  }
                               });
@@ -315,13 +354,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                     else {                                                  // Have to filter Carriers
                         
                         var carrierOrders = new Array();   
-                        var carrier = {"carrierID": entityid};
                                             
                         orders.forEach(function(order){
                             var carrierIDs = order.carrierIDs;
                             
                             for(var i = 0; i < carrierIDs.length; i++){
-                                carrierIDs[i].carrierID;
                                 if(carrierIDs[i].carrierID == entityid){
                                     carrierOrders.push(order);
                                     break;
@@ -419,15 +456,15 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         
         switch(entityType){
             case 0:     // URL for the Admin.
-                url += '/api/order_details?include=orders,entities&columns=id,carrierID,orderID,originationCity,originationState,destinationCity,destinationState,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,entities.name&filter=orderID,eq,' + orderID + '&transform=1';
+                url += '/api/order_details?include=orders,entities&columns=id,carrierID,orderID,originationCity,originationState,destinationCity,destinationState,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,orders.customerID,entities.name&filter=orderID,eq,' + orderID + '&transform=1';
                 blnShow = true;    
                 break;
             case 1:    // URL for Customer.
-                url += '/api/order_details?include=orders,entities&columns=id,carrierID,orderID,originationCity,originationState,destinationCity,destinationState,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,entities.name&filter=orderID,eq,' + orderID + '&transform=1';
+                url += '/api/order_details?include=orders,entities&columns=id,carrierID,orderID,originationCity,originationState,destinationCity,destinationState,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,orders.customerID,entities.name&filter=orderID,eq,' + orderID + '&transform=1';
                 //blnShow = true;
                 break;
             case 2:     // URL for the Carrier. The Customer can only see order details of their route.
-                url += '/api/order_details?include=orders,entities&columns=id,carrierID,orderID,originationCity,originationState,destinationCity,destinationState,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,entities.name&filter[]=orderID,eq,' + orderID + '&filter[]=carrierID,eq,' + entityid + '&transform=1';
+                url += '/api/order_details?include=orders,entities&columns=id,carrierID,orderID,originationCity,originationState,destinationCity,destinationState,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,orders.customerID,entities.name&filter[]=orderID,eq,' + orderID + '&filter[]=carrierID,eq,' + entityid + '&transform=1';
                 break;
         }        
         
@@ -1641,7 +1678,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                 });
 
                 dpli += '<li>' + dataPoints.object_type_data_points[i].title +
-                        ' <select class="form-control mb-sm" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '">';
+                        ' <select class="form-control mb-sm" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '" disabled>';
                 for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
 
                     if (dataPoints.object_type_data_points[i].object_type_data_point_values[v].value === value) {
