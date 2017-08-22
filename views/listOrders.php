@@ -461,7 +461,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                 break;
             case 1:    // URL for Customer.
                 url += '/api/order_details?include=orders,entities&columns=id,carrierID,orderID,originationCity,originationState,destinationCity,destinationState,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,orders.customerID,entities.name&filter=orderID,eq,' + orderID + '&transform=1';
-                //blnShow = true;
+                blnShow = true;
                 break;
             case 2:     // URL for the Carrier. The Customer can only see order details of their route.
                 url += '/api/order_details?include=orders,entities&columns=id,carrierID,orderID,originationCity,originationState,destinationCity,destinationState,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,orders.customerID,entities.name&filter[]=orderID,eq,' + orderID + '&filter[]=carrierID,eq,' + entityid + '&transform=1';
@@ -578,7 +578,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                             buttons += '<button class="btn btn-primary btn-xs" role="button"><i class="glyphicon glyphicon-edit text-info"></i> <span class="text-info">Edit</span></button>';
 
                             return buttons;
-                        }
+                        },visible: blnShow
                     }
                 ]
               });
@@ -1283,6 +1283,24 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                             
                         </div>
                       </div>
+                      <div class="col-sm-3">
+                          <div class="form-group">
+              <?php if ($_SESSION['entityid'] > 0) { ?>
+                             <input type="hidden" id="carrierID" name="carrierID" value="<?php echo $_SESSION['entityid']; ?>" />
+              <?php } else { ?>
+                              <label for="carrierID">Carrier</label>
+                              <select id="carrierID" name="carrierID" data-placeholder="Carrier" class="form-control chzn-select" required="required">
+                                <option value="">*Select Carrier...</option>
+               <?php
+                                foreach($entities->entities->records as $value) {
+                                    $selected = ($value[0] == $entity) ? 'selected=selected':'';
+                                    echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
+                                }
+               ?>
+                              </select>
+               <?php } ?>
+                          </div>
+                      </div>
                   </div>
                   <hr/>
                   <div class="row">                 
@@ -1495,7 +1513,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         table.ajax.reload();
     }
     
-    function saveDeliveryStatus(){        
+    function saveDeliveryStatus(){  
+        
+        
+        $("#saveOrderStatus").html("<i class='fa fa-spinner fa-spin'></i> Saving Order Status");
+        $("#saveOrderStatus").prop("disabled", true);
+        
         var today = new Date();
         var dd = today.getDate();
         var mm = today.getMonth()+1; //January is 0!
@@ -1527,15 +1550,23 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
 
         var orderHistoryTable = $('#order-history-table').DataTable();
+        var orderDetailTable = $('#order-details-table').DataTable();
+        var orderDetailJSON = orderDetailTable.ajax.json();
+
+        var orderNumber = orderDetailJSON.order_details[0].orders[0].orderID;
+        var customerID = orderDetailJSON.order_details[0].orders[0].customerID;
+
         
         var id = $("#id").val();
         var city = $("#city").val();
         var state = $("#state").val();
         var status = $("#orderStatus").val();
         var notes = $("#statusNotes").val();
-        var entityid = <?php echo $_SESSION['entityid']; ?>;
+        var carrierID = $("#carrierID").val();
         
-        var orderStatus = {orderID: id, carrierID:entityid, city: city, state: state, status: status, note: notes, createdAt: today, updatedAt: today};
+        var orderStatus = {orderID: id, carrierID:carrierID, city: city, state: state, status: status, note: notes, createdAt: today, updatedAt: today};
+        
+        var emailData = {carrierID: carrierID, customerID: customerID, orderNumber: orderNumber};
         
         $.ajax({
            url: '<?php echo API_HOST."/api/order_statuses"; ?>',
@@ -1543,12 +1574,40 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
            data: JSON.stringify(orderStatus),
            contentType: "application/json",
            async: false,
-           success: function(data){
-                orderHistoryTable.ajax.reload();
-                $("#addOrderStatus").modal('hide');
+           success: function(data){               
+               
+                $.ajax({
+                    url: '<?php echo HTTP_HOST; ?>' + '/sendorderstatusnotification',
+                    type: "POST",
+                    data: JSON.stringify(emailData),
+                    contentType: "application/json",
+                    async:false,
+                    success: function(data){
+                        alert(data);
+                        $("#id").val('');
+                        $("#city").val('');
+                        $("#state").val('');
+                        $("#orderStatus").val('');
+                        $("#statusNotes").val('');
+                        $("#carrierID").val('');
+                        
+                        $("#saveOrderStatus").html("Save");
+                        $("#saveOrderStatus").prop("disabled", false);
+                        orderHistoryTable.ajax.reload();
+                        $("#addOrderStatus").modal('hide');                        
+                    },
+                    error: function(error){
+                        alert("Unable to send notification about status change.");
+                        $("#saveOrderStatus").html("Save");
+                        $("#saveOrderStatus").prop("disabled", false);
+                    }
+                });
+                                              
            },
            error: function() {
               alert("There Was An Error Saving the Status");
+                $("#saveOrderStatus").html("Save");
+                $("#saveOrderStatus").prop("disabled", false);
            }
         }); 
         
@@ -1715,7 +1774,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         
     });
     
-    /* Formatting function for row details - modify as you need */
+    // Formatting function for row details - modify as you need 
     function format ( d ) {
 
         var table = '<table  class="col-sm-12" cellpadding="5" cellspacing="0" border="0"><tr>';
