@@ -56,7 +56,7 @@ class Order
             $contactargs = array(
                 "transform"=>1
             );
-            $contacturl = API_HOST."/api/contacts/".$entityresult['assignedMemberID']."?".http_build_query($contactargs);
+            $contacturl = API_HOST."/api/contacts/".$customerresult['assignedMemberID']."?".http_build_query($contactargs);
             $contactoptions = array(
                 'http' => array(
                     'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -121,7 +121,7 @@ class Order
                     $body .= $changeList . "<br/><br/>";
                     
                     if (sendmail($to, $subject, $body, $from)) {
-                        $numSent++;
+                        $numSent = 1;
                     } else {
                         return $mailex;
                     }
@@ -143,13 +143,114 @@ class Order
                     $body .= "Nationwide Equipment Control<br/>";
                     
                     if (sendmail($to, $subject, $body, $from)) {
-                        $numSent++;
+                        $numSent = 1;
                     } else {
                         return $mailex;
                     }
               } catch (Exception $mailex) {
                 return $mailex;
               }
+    }
+    
+    public function sendOrderStatusNotification($orderNumber, $carrierID, $customerID){
+        
+        $carrierContact = $this->getContactInformation($carrierID);
+        $customerContact = $this->getContactInformation($customerID);
+        $adminContact = $this->getContactInformation(0);
+                
+        // Setting up Email
+        $subject = "Status update To Order #" . $orderNumber;
+        $from = array("operations@nationwide-equipment.com" => "Nationwide Operations Control Manager");
+
+        $adminBody = "An order status has changed for Order #" . $orderNumber . " with Nationwide Equipment Control has a status change. "
+                . "To view the status of this order please visit the Nationwide Equipment Control website " . HTTP_HOST . "/login.  "
+                . "Login to the website to view the order status. ";
+        
+        $body = "Order #" . $orderNumber . " with Nationwide Equipment Control has a status change. "
+                . "To view the status of this order please visit the Nationwide Equipment Control website " . HTTP_HOST . "/login.  "
+                . "Login to the website to view the order status. <br /><br />"
+                . "Thank you,<br />"
+                . $adminContact['firstName'] . " " . $adminContact['lastName'] . "<br />"
+                . "Nationwide Equipment Control";
+        
+        // Send to Admin
+        try {
+            $to = array($adminContact['emailAddress'] => $adminContact['firstName'] . " " . $adminContact['lastName']);
+
+            if (sendmail($to, $subject, $adminBody, $from)) {
+                $numSent = 1;
+            } else {
+                return $mailex;
+            }
+        } 
+        catch (Exception $mailex) {
+          return $mailex;
+        }
+        
+        
+        // Send to Carrier
+        try {
+            $to = array($carrierContact['emailAddress'] => $carrierContact['firstName'] . " " . $carrierContact['lastName']);
+
+            if (sendmail($to, $subject, $body, $from)) {
+                $numSent++;
+            } else {
+                return $mailex;
+            }
+        } 
+        catch (Exception $mailex) {
+          return $mailex;
+        }
+        
+        
+        // Send to Customer
+        try {
+            $to = array($customerContact['emailAddress'] => $customerContact['firstName'] . " " . $customerContact['lastName']);
+
+            if (sendmail($to, $subject, $body, $from)) {
+                $numSent++;
+            } else {
+                return $mailex;
+            }
+        } 
+        catch (Exception $mailex) {
+          return $mailex;
+        }
+        
+        return "The order status has been successfully updated.";
+    }
+    
+    private function getContactInformation($entityID){
+        
+            // Entity
+            $entityargs = array(
+                "transform"=>1
+            );
+            $entityurl = API_HOST."/api/entities/" . $entityID . "?".http_build_query($entityargs);
+            $entityoptions = array(
+                'http' => array(
+                    'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                    'method'  => 'GET'
+                )
+            );
+            $entitycontext  = stream_context_create($entityoptions);
+            $entityresult = json_decode(file_get_contents($entityurl,false,$entitycontext),true);
+            
+            // Contact
+            $contactargs = array(
+                "transform"=>1
+            );
+            $contacturl = API_HOST."/api/contacts/".$entityresult['assignedMemberID']."?".http_build_query($contactargs);
+            $contactoptions = array(
+                'http' => array(
+                    'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                    'method'  => 'GET'
+                )
+            );
+            $contactcontext  = stream_context_create($contactoptions);
+            $contactresult = json_decode(file_get_contents($contacturl,false,$contactcontext),true);
+
+            return $contactresult;
     }
 }
 
