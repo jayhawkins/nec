@@ -1493,6 +1493,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                                     customer_need.customer_needs_commit[0].status == "Close"){
                                 
                                 var entityName = "";
+                                var entityID = customer_need.customer_needs_commit[0].entityID;
+                                
                                 
                                 allEntities.entities.forEach(function(entity){
 
