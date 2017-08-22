@@ -90,6 +90,20 @@ else{
 echo 'Success'; 
     
 }
+
+
+
+
+
+
+$serviceContext2 = new ServiceContext($realmId, $serviceType, $requestValidator);
+if (!$serviceContext2)
+	exit("Problem while initializing ServiceContext2.\n");
+
+// Prep Data Services
+$dataService2 = new DataService($serviceContext2);
+if (!$dataService2)
+	exit("Problem while initializing DataService2.\n");
 // Echo some formatted output
 
 
@@ -141,7 +155,7 @@ echo 'Success';
     $invoiceObj->TxnTaxDetail = $txnTaxDetail;
     $invoiceObj->SyncToken = '0';
 
-    $resultInvoiceObj = $dataService->Add($invoiceObj);
+    $resultInvoiceObj = $dataService2->Add($invoiceObj);
 
     echo '<br>';
     echo 'Invoice ID:'. $resultInvoiceObj->id;
