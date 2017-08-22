@@ -30,14 +30,16 @@ if (!$dataService)
 	exit("Problem while initializing DataService.\n");
 
 
-$customer_name = $_REQUEST['Cname'];
+$customer_name = $_REQUEST['customerName'];
+$customer_rate = $_REQUEST['customerRate'];
+$customer_notes = $_REQUEST['customerNotes'];
 
 // Add a customer
 $customerObj = new IPPCustomer();
-$customerObj->Name = $_REQUEST['customerName'];
-$customerObj->CompanyName = $_REQUEST['customerName'];
-$customerObj->GivenName = $_REQUEST['customerName'];
-$customerObj->DisplayName = $_REQUEST['customerName'];
+$customerObj->Name = $customer_name;
+$customerObj->CompanyName = $customer_name;
+$customerObj->GivenName = $customer_name;
+$customerObj->DisplayName = $customer_name;
 $resultingCustomerObj = $dataService->Add($customerObj);
 
 // Echo some formatted output
@@ -46,17 +48,17 @@ echo "Created Customer Id={$resultingCustomerObj->Id}. :\n\n";
 //echo $xmlBody . "\n";
 
 $estimateObj = new IPPEstimate();
-$estimateObj->TotalAmt = $_REQUEST['customerRate'];
+$estimateObj->TotalAmt = $customer_rate;
 $estimateObj->CustomerRef = $resultingCustomerObj->Id;
-$estimateObj->PrivateNote = $_REQUEST['customerNotes'];
+$estimateObj->PrivateNote = $customer_notes;
 $resultEstimateobj = $dataService.Add($estimateObj);
 
 echo "Created Estimate Id={$resultEstimateobj->Id}. :\n\n";
 
 $vendorObj = new IPPVendor();
-$vendorObj->CompanyName = $_REQUEST['customerName'];
-$vendorObj->DisplayName = $_REQUEST['customerName'];
-$vendorObj->Notes = $_REQUEST['customerNotes'];
+$vendorObj->CompanyName = $customer_name;
+$vendorObj->DisplayName = $customer_name;
+$vendorObj->Notes = $customer_notes;
 $resultVendorObj = $dataService->Add($vendorObj);
 $vendorID = $resultVendorObj->Id;
 
@@ -65,8 +67,8 @@ echo "Created Vendor Id={$vendorID}. :\n\n";
 
 $workOrderObj = new IPPPurchaseOrder();
 $workOrderObj->VendorRef = $vendorID;
-$workOrderObj->TotalAmt =  $_REQUEST['customerRate'];
-$workOrderObj->Memo = $_REQUEST['customerNotes'];
+$workOrderObj->TotalAmt =  $customer_rate;
+$workOrderObj->Memo = $customer_notes;
 $resultPOObj = $dataService->Add($workOrderObj);
 $PoID = $resultPOObj->id;
 echo "Created Purchase Order Id={$PoID}. :\n\n";
