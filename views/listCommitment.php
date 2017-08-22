@@ -809,7 +809,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                       contentType: "application/json",
                       async: false,
                       success: function(notification){
-                          alert(notification);
+                          //alert(notification);
                       },
                       error: function() {
                          alert('Failed Sending Notifications! - Notify NEC of this failure.');
