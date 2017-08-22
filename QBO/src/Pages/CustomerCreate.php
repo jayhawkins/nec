@@ -94,7 +94,7 @@ echo 'Success';
 
 
 //create invoice
-$invoiceobj = new IPPInvoice();
+
  $invoiceObj = new IPPInvoice();
     $invoiceObj->Deposit = '0';
     $invoiceObj->AllowIPNPayment = 'true';
