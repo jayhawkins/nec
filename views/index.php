@@ -164,7 +164,6 @@ else {
          function ajaxFormCall(form) {
            var host = location.protocol+'//'+window.location.hostname;
            var url = host+'/views/'+form+'.php';
-           console.log(url);
            $.ajax({
               type: "GET",
               url: url,
