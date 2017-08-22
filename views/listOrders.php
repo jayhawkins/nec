@@ -219,7 +219,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                               for (var i = 0; i < obj.length; i++) {
                                   
                                   if (obj[i].firstChild.value != ""){
-                                    item = {vinNumber: obj[i].firstChild.value, deliveryDate: "", notes: "", documentID: 0};
+                                    item = {vinNumber: obj[i].firstChild.value, deliveryDate: "", notes: "", fileName: ""};
                                     podArray.push(item);
                                   }
                               }
