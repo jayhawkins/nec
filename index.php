@@ -467,6 +467,17 @@ $app->route('POST /sendorderupdatenotification', function() {
     print_r($result);
 });
 
+$app->route('POST /sendorderstatusnotification', function() {
+    
+    $orderNumber = Flight::request()->data->orderNumber;
+    $customerID = Flight::request()->data->customerID;
+    $carrierID = Flight::request()->data->carrierID;
+    
+    $orderNotification = Flight::order();
+    
+    $result = $orderNotification->sendOrderStatusNotification($orderNumber, $carrierID, $customerID);
+    print_r($result);
+});
 
 /*****************************************************************************/
 // POD API Process

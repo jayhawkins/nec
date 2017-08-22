@@ -1,5 +1,6 @@
 <?php
-error_reporting(E_ALL);
+//error_reporting(E_ALL);
+error_reporting(E_ALL ^ E_WARNING); 
 ini_set('display_errors', 1);
 
 require_once('../config.php');
@@ -50,6 +51,10 @@ $resultingCustomerObj = $dataService->Add($customerObj);
 
 // Echo some formatted output
 echo "Created Customer Id={$resultingCustomerObj->Id}. :\n\n";
+echo 'Success';
+
+
+exit();
 //$xmlBody = XmlObjectSerializer::getPostXmlFromArbitraryEntity($resultingCustomerObj, $urlResource);
 //echo $xmlBody . "\n";
 
