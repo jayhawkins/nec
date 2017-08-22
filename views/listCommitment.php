@@ -1461,11 +1461,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                             rateType: selectedCustomerNeed.rateType, customerRate: $('#customerRate').val(), carrierTotalRate: $('#carrierTotalRate').val(),
                             totalRevenue: $('#totalRevenue').val(), createdAt: today, updatedAt: today};
                         
-                        
-                        
-                        
-                        
-                        
                        // Yaw, here is the information you requested.
                        
                        // This is the Selected Customer Transport Table at the top of Committed Transport
@@ -1477,6 +1472,64 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                        var destinationCity = selectedCustomerNeed.destinationCity;
                        var destinationState = selectedCustomerNeed.destinationState;
                        var customerRate = $('#customerRate').val();
+                       
+                       
+                       
+                        
+                        
+                        
+                        
+                        
+                        
+                        // Yaw,
+                        // The thing about Carriers is that there can be many different carriers per order.
+                        // So it has to be gathered as an array.
+                        // If you have any questions about this, let me know.
+                        // Dennis
+                        
+                        var needsCommitTable = $("#customer-needs-commit-table").DataTable();
+                        var needsCommitJSON = needsCommitTable.ajax.json();        
+
+                        var customer_needs_commit = needsCommitJSON.customer_needs;
+                        var carrier_detail_list = new Array();
+
+                        customer_needs_commit.forEach(function(customer_need){
+
+                            if(customer_need.customer_needs_commit.length > 0 && 
+                                    customer_need.customer_needs_commit[0].status == "Close"){
+                                
+                                var entityName = "";
+                                
+                                allEntities.entities.forEach(function(entity){
+
+                                    if(entityID == entity.id){
+
+                                        entityName = entity.name;
+                                    }                            
+                                });
+                                
+                                var carrier_detail = {
+                                    carrierName: entityName,                // This is the carrier's Name
+                                    carrierRate: customer_need.customer_needs_commit[0].rate    // This is that carrier's rate.
+                                };                
+
+                                carrier_detail_list.push(carrier_detail);
+                            }
+                        });
+                        
+                        // This will be the Carrier Data you will need to use.
+                        console.log(JSON.stringify(carrier_detail_list));
+                        
+                       // You need the total Carrier...
+                       var carrierTotalRate = $('#carrierTotalRate').val();
+                       
+                       
+                       
+                       
+                       
+                       
+                       
+                       
                        
                        var notes = 'From ' + originationCity + ',' + originationState + ' to ' + destinationCity + ',' + destinationState;
                         
@@ -1497,23 +1550,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                                    
                                 }
                             });
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
+                                                
                         
                     $.ajax({
                         url: url,
