@@ -36,9 +36,9 @@ $customer_name = $_REQUEST['customerName'];
 $customer_rate = $_REQUEST['customerRate'];
 $customer_notes = $_REQUEST['customerNotes'];
 
-$customer_name = 'Yaw Tandoh';
-$customer_rate = '150.00';
-$customer_notes = 'This is a Test';
+//$customer_name = 'Yaw Tandoh';
+//$customer_rate = '150.00';
+//$customer_notes = 'This is a Test';
 
 // Add a customer
 $customerObj = new IPPCustomer();
