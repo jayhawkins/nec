@@ -29,19 +29,49 @@ $dataService = new DataService($serviceContext);
 if (!$dataService)
 	exit("Problem while initializing DataService.\n");
 
+
+$customer_name = $_REQUEST['customerName'];
+$customer_rate = $_REQUEST['customerRate'];
+$customer_notes = $_REQUEST['customerNotes'];
+
 // Add a customer
 $customerObj = new IPPCustomer();
-$customerObj->Name = "Name" . rand();
-$customerObj->CompanyName = "CompanyName" . rand();
-$customerObj->GivenName = "GivenName" . rand();
-$customerObj->DisplayName = "DisplayName" . rand();
+$customerObj->Name = $customer_name;
+$customerObj->CompanyName = $customer_name;
+$customerObj->GivenName = $customer_name;
+$customerObj->DisplayName = $customer_name;
 $resultingCustomerObj = $dataService->Add($customerObj);
 
 // Echo some formatted output
-echo "Created Customer Id={$resultingCustomerObj->Id}. Reconstructed response body:\n\n";
-$xmlBody = XmlObjectSerializer::getPostXmlFromArbitraryEntity($resultingCustomerObj, $urlResource);
-echo $xmlBody . "\n";
+echo "Created Customer Id={$resultingCustomerObj->Id}. :\n\n";
+//$xmlBody = XmlObjectSerializer::getPostXmlFromArbitraryEntity($resultingCustomerObj, $urlResource);
+//echo $xmlBody . "\n";
 
+$estimateObj = new IPPEstimate();
+$estimateObj->TotalAmt = $customer_rate;
+$estimateObj->CustomerRef = $resultingCustomerObj->Id;
+$estimateObj->PrivateNote = $customer_notes;
+$resultEstimateobj = $dataService.Add($estimateObj);
+
+echo "Created Estimate Id={$resultEstimateobj->Id}. :\n\n";
+
+$vendorObj = new IPPVendor();
+$vendorObj->CompanyName = $customer_name;
+$vendorObj->DisplayName = $customer_name;
+$vendorObj->Notes = $customer_notes;
+$resultVendorObj = $dataService->Add($vendorObj);
+$vendorID = $resultVendorObj->Id;
+
+echo "Created Vendor Id={$vendorID}. :\n\n";
+
+
+$workOrderObj = new IPPPurchaseOrder();
+$workOrderObj->VendorRef = $vendorID;
+$workOrderObj->TotalAmt =  $customer_rate;
+$workOrderObj->Memo = $customer_notes;
+$resultPOObj = $dataService->Add($workOrderObj);
+$PoID = $resultPOObj->id;
+echo "Created Purchase Order Id={$PoID}. :\n\n";
 /*
 Created Customer Id=801. Reconstructed response body:
 

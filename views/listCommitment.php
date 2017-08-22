@@ -1484,8 +1484,27 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                        var destinationCity = selectedCustomerNeed.destinationCity;
                        var destinationState = selectedCustomerNeed.destinationState;
                        var customerRate = $('#customerRate').val();
+                       
+                       var notes = 'From ' + originationCity + ',' + originationState + ' to ' + destinationCity + ',' + destinationState;
                         
-                        
+                        //submit to Quickbooks vendor create script
+                            
+    
+                          <?php $quickbooks_host = "http://nec.dubtel.com";?>
+                            $.ajax({
+                                url: '<?php echo $quickbooks_host; ?>' + '/QBO/src/Pages/CustomerCreate.php',
+                                type: "POST",
+                                data: jQuery.param({customerName: customerName,customerRate:customerRate,customerNotes:notes}),
+                                contentType: "application/json",
+                                async: false,
+                                success: function(){
+                                    
+                                },
+                                error: function(){
+                                    alert("Could not Create Quickbooks Workorder");                                    
+                                   
+                                }
+                            });
                         
                         
                         
