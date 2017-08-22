@@ -50,6 +50,9 @@ $resultingCustomerObj = $dataService->Add($customerObj);
 
 // Echo some formatted output
 echo "Created Customer Id={$resultingCustomerObj->Id}. :\n\n";
+
+
+exit();
 //$xmlBody = XmlObjectSerializer::getPostXmlFromArbitraryEntity($resultingCustomerObj, $urlResource);
 //echo $xmlBody . "\n";
 
