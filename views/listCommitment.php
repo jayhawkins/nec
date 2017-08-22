@@ -1491,9 +1491,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                                 contentType: "application/json",
                                 async: false,
                                 success: function(){
-                                    
+                                    console.log(customerName + ' ' + customerRate + ' ' + notes);
                                 },
                                 error: function(){
+                                    console.log(customerName + ' ' + customerRate + ' ' + notes);
                                     alert("Could not Create Quickbooks Workorder");                                    
                                    
                                 }
