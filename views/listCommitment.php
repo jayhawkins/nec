@@ -1473,14 +1473,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                        var destinationState = selectedCustomerNeed.destinationState;
                        var customerRate = $('#customerRate').val();
                        
-                       
-                       
-                        
-                        
-                        
-                        
-                        
-                        
+
                         // Yaw,
                         // The thing about Carriers is that there can be many different carriers per order.
                         // So it has to be gathered as an array.
@@ -1492,6 +1485,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
                         var customer_needs_commit = needsCommitJSON.customer_needs;
                         var carrier_detail_list = new Array();
+                        var carrier = "";
 
                         customer_needs_commit.forEach(function(customer_need){
 
@@ -1511,7 +1505,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                                 var carrier_detail = {
                                     carrierName: entityName,                // This is the carrier's Name
                                     carrierRate: customer_need.customer_needs_commit[0].rate    // This is that carrier's rate.
-                                };                
+                                };
+                                
+                                carrier = carrier_detail.carrierName;
 
                                 carrier_detail_list.push(carrier_detail);
                             }
@@ -1540,12 +1536,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                             $.ajax({
                                 url: '<?php echo $quickbooks_host; ?>' + '/QBO/src/Pages/CustomerCreate.php',
                                 type: "POST",
-                                data: jQuery.param({customerName: customerName,customerRate:customerRate,customerNotes:notes}),
+                                data: jQuery.param({customerName: customerName,customerRate:customerRate,customerNotes:notes,carrierName:carrier}),
                                 success: function(){
-                                    console.log(customerName + ' ' + customerRate + ' ' + notes);
+                                    console.log(customerName + ' ' + customerRate + ' ' + notes + ' ' + carrier);
                                 },
                                 error: function(){
-                                    console.log(customerName + ' ' + customerRate + ' ' + notes);
+                                    console.log(customerName + ' ' + customerRate + ' ' + notes + ' ' + carrier);
                                     alert("Could not Create Quickbooks Workorder");                                    
                                    
                                 }
