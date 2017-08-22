@@ -154,6 +154,8 @@ if (!$dataService2)
 
     $invoiceObj->TxnTaxDetail = $txnTaxDetail;
     $invoiceObj->SyncToken = '0';
+    
+    print_r($invoiceObj)
 
     $resultInvoiceObj = $dataService2->Add($invoiceObj);
 
