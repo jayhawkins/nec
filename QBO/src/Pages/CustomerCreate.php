@@ -38,44 +38,58 @@ $serviceContext = new ServiceContext($realmId, $serviceType, $requestValidator);
 if (!$serviceContext)
 	exit("Problem while initializing ServiceContext.\n");
 
-// Run a query
+
+$customer_name = $_REQUEST['customerName'];
+$customer_rate = $_REQUEST['customerRate'];
+$customer_notes = $_REQUEST['customerNotes'];
+$customer_found = FALSE;
+// Run a query to see if customer exists
 $entities = $dataService->Query("SELECT * FROM Customer");
 
 // Echo some formatted output
 $i = 0;
 foreach($entities as $oneCustomer)
 {
-	echo "DisplayName: {$oneCustomer->DisplayName}	
-		ID: {$oneCustomer->Id}
-		
-		\n";
+	
+    
+    if ($customer_name==$oneCustomer->DisplayName){
+        $customer_found = TRUE;
+        $customerid = $oneCustomer->Id;
+    }
+    
+   
 	$i++;
 }
 
-exit();
 
 
-$customer_name = $_REQUEST['customerName'];
-$customer_rate = $_REQUEST['customerRate'];
-$customer_notes = $_REQUEST['customerNotes'];
+
+
 
 //$customer_name = 'Yaw Tandoh';
 //$customer_rate = '150.00';
 //$customer_notes = 'This is a Test';
 
-$queryObj = new IPPCDCQuery();
-
 // Add a customer
+if ($customer_found == FALSE){
 $customerObj = new IPPCustomer();
 $customerObj->Name = $customer_name;
 $customerObj->CompanyName = $customer_name;
 $customerObj->GivenName = $customer_name;
 $customerObj->DisplayName = $customer_name;
 $resultingCustomerObj = $dataService->Add($customerObj);
-
-// Echo some formatted output
-echo "Created Customer Id={$resultingCustomerObj->Id}. :\n\n";
+$customerid = $resultingCustomerObj->Id;
+echo "Created Customer Id={$customerid}. :\n\n";
 echo 'Success';
+}
+else{
+    
+   echo "Customer already exists Id={$customerid}. :\n\n";
+echo 'Success'; 
+    
+}
+// Echo some formatted output
+
 
 
 exit();
