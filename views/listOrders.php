@@ -161,8 +161,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         else { return false; }
       }
 
-
-
       function verifyAndPost() {
 
                 $("#load").html("<i class='fa fa-spinner fa-spin'></i> Editing Order");
@@ -221,7 +219,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                               for (var i = 0; i < obj.length; i++) {
                                   
                                   if (obj[i].firstChild.value != ""){
-                                    item = {vinNumber: obj[i].firstChild.value, deliveryDate: "", notes: ""};
+                                    item = {vinNumber: obj[i].firstChild.value, deliveryDate: "", notes: "", documentID: 0};
                                     podArray.push(item);
                                   }
                               }
@@ -1226,8 +1224,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                         <th>Carrier</th>
                         <th>Delivery Date</th>
                         <th>Notes</th>
-                        <th></th>
-                        <th></th>
+                        <th class="no-sort pull-right"></th>
+                        <th class="no-sort pull-right"></th>
                     </tr>
                     </thead>
                     <tbody>
