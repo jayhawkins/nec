@@ -43,7 +43,7 @@ if (!$serviceContext)
 $carrier_name = $_REQUEST['carrierName'];
 $customer_name = $_REQUEST['customerName'];
 $customer_rate = $_REQUEST['customerRate'];
-$customer_notes = $_REQUEST['customerNotes'];
+$customer_notes = "Nationwide Equipment Control: ".$_REQUEST['customerNotes'];
 $customer_found = FALSE;
 // Run a query to see if customer exists
 $entities = $dataService->Query("SELECT * FROM Customer");
@@ -113,6 +113,24 @@ try{
  print_r($resultingInvoiceObj); 
 } catch (Exception $e){
  echo $e->getMessage();
+}
+
+
+
+if ($carrier_name>''){
+$vendorObj = new IPPVendor();
+$vendObj->GivenName  = $carrier_name;
+$vendObj->FamilyName = $carrier_name;
+$vendObj->DisplayName = $carrier_name;   
+$vendObj->CompanyName = $carrier_name;   
+$vendObj->Active= true;
+
+try{
+ $resultVendorObj = $dataService->Add($vendObj);
+ print_r($resultVendorObj); 
+} catch (Exception $e){
+ echo $e->getMessage();
+}
 }
 
 exit();
