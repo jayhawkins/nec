@@ -118,6 +118,7 @@ try{
 
 
 if (isset($carrier_name)){
+    //IF CARRIER IS SUBMITTED
 $vendorObj = new IPPVendor();
 $vendorObj->GivenName  = $carrier_name;
 $vendorObj->DisplayName = $carrier_name;   
