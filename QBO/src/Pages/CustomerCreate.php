@@ -120,10 +120,9 @@ try{
 if (isset($carrier_name)){
 $vendorObj = new IPPVendor();
 $vendorObj->GivenName  = $carrier_name;
-$vendorObj->FamilyName = $carrier_name;
 $vendorObj->DisplayName = $carrier_name;   
 $vendorObj->CompanyName = $carrier_name;   
-$vendorObj->Active= true;
+
 
 try{
  $resultVendorObj = $dataService->Add($vendorObj);
