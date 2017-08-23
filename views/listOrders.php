@@ -1352,10 +1352,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                       <div class="col-sm-3">
                           <div class="form-group">
               <?php if ($_SESSION['entityid'] > 0) { ?>
-                             <input type="hidden" id="carrierID" name="carrierID" value="<?php echo $_SESSION['entityid']; ?>" />
+                             <input type="hidden" id="podCarrierID" name="podCarrierID" value="<?php echo $_SESSION['entityid']; ?>" />
               <?php } else { ?>
-                              <label for="carrierID">Carrier</label>
-                              <select id="carrierID" name="carrierID" data-placeholder="Carrier" class="form-control chzn-select" required="required">
+                              <label for="podCarrierID">Carrier</label>
+                              <select id="podCarrierID" name="podCarrierID" data-placeholder="Carrier" class="form-control chzn-select" required="required">
                                 <option value="">*Select Carrier...</option>
                <?php
                                 foreach($entities->entities->records as $value) {
@@ -1915,7 +1915,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         var podList = podTable.ajax.json().orders[0].podList;
         var index = podList.indexOf(data);
         var vinNumber = data.vinNumber;
-        
+                
         var orderDetailsTable = $("#order-details-table").DataTable();
         var orderDetails = orderDetailsTable.ajax.json();
                 
@@ -1926,6 +1926,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         $('#index').val(index);
         $('#orderID').val(orderID);
         $('#customerID').val(customerID);
+        $('#filePOD').val('');
+        $('#deliveryDate').val('');
+        $('#podNotes').val('');
 
         $("#uploadPOD").modal('show');
     } );
@@ -1963,7 +1966,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         today = mm+'/'+dd+'/'+yyyy;
         today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
 
-        var carrierID = $('#carrierID').val();
+        var carrierID = $('#podCarrierID').val();
         var carrier = "";
                             
         allEntities.entities.forEach(function(entity){
@@ -1974,16 +1977,19 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
             }                            
         });
         
+        console.log(carrierID, carrier);
+        
         
         var formData = new FormData();
         var fileData = $('#filePOD')[0].files[0];
         formData.append('entityID', $("#customerID").val());
         formData.append('name', $("#vinNumber").val());
-        formData.append('fileupload', fileData);
+        formData.append('fileupload', fileData); 
         
         var url = '<?php echo HTTP_HOST."/uploaddocument" ?>';
 	var type = "POST";
-				
+	
+        
         $.ajax({
             url : url,
             type : 'POST',
@@ -1994,13 +2000,50 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                 var files = $('#filePOD').prop("files");
                 var fileNames = $.map(files, function(val) { return val.name; }).join(',');
                 var podTable = $("#pod-list-table").DataTable();    
-                var podList = podTable.ajax.json().orders[0].podList;                
+                var podList = podTable.ajax.json().orders[0].podList;  
+                var index = $('#index').val();
+                var orderID = $('#orderID').val();
                 
-                var pod = {vinNumber: $('#vinNumber').val(), notes: $('#podNotes').val, deliveryDate: $('#deliveryDate'), fileName: fileNames, carrier: carrier};
+                var pod = {vinNumber: $('#vinNumber').val(), notes: $('#podNotes').val(), deliveryDate: $('#deliveryDate').val(), fileName: fileNames, carrier: carrier};
+                
+                podList.splice(index, 1, pod);
+                
+                var orderData = {podList: podList};
+                
+                $.ajax({
+                    url: '<?php echo API_HOST."/api/orders/"; ?>' + orderID,
+                    type: 'PUT',
+                    data: JSON.stringify(orderData),
+                    contentType: "application/json",
+                    async: false,
+                    success: function(){
+                        
+                        alert("POD Successfully Uploaded.");
+                        var podListTable = $('#pod-list-table').DataTable();
+                        podListTable.ajax.reload();
+
+                        // Clear Form
+                        $('#orderID').val('');
+                        $('#index').val('');
+                        $('#customerID').val('');                        
+                        $('#vinNumber').val('');
+                        $('#deliveryDate').val('');
+                        $('#podCarrierID').val('');
+                        $('#podNotes').val('');
+                        $("#uploadPOD").modal('hide');
+
+                    },
+                    error: function(error){
+                        alert("Unable to Save POD List to Orders.");
+                    }                    
+                });
                 
             },
-            error: function(error){}
+            error: function(error){
+                alert("Unable to Upload POD File.");
+            }
         });
+        
     }
 
  </script>
