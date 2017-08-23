@@ -118,19 +118,44 @@ try{
 
 
 if (isset($carrier_name)){
+    //IF CARRIER IS SUBMITTED
 $vendorObj = new IPPVendor();
 $vendorObj->GivenName  = $carrier_name;
-$vendorObj->FamilyName = $carrier_name;
 $vendorObj->DisplayName = $carrier_name;   
 $vendorObj->CompanyName = $carrier_name;   
-$vendorObj->Active= true;
+
 
 try{
  $resultVendorObj = $dataService->Add($vendorObj);
+ $vendorid = $resultVendorObj->id;
  print_r($resultVendorObj); 
 } catch (Exception $e){
  echo $e->getMessage();
 }
+
+$purchaseorderObject = new IPPPurchaseOrder();
+$purchaseorderObject->Memo = $customer_notes;
+$purchaseorderObject->VendorRef =  intval($vendorid);
+$Line2 = new IPPline();
+$Line2->Amount = floatval($customer_rate);
+$Line2->DetailType = 'SalesItemLineDetail';
+$Line2->Description = $customer_notes;
+ 
+$saleItemLineDetail2 = new IPPSalesItemLineDetail();
+$saleItemLineDetail2->ItemRef = 1;
+$Line2->SalesItemLineDetail = $saleItemLineDetail2;
+
+$purchaseorderObject->Line = $Line2;
+
+try{
+ $resultingPoObj = $dataService->Add($purchaseorderObject);
+ print_r($resultingPoObj); 
+} catch (Exception $e){
+ echo $e->getMessage();
+}
+
+
+
 }
 
 exit();
