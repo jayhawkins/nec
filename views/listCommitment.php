@@ -1516,7 +1516,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                         });
                         
                         // This will be the Carrier Data you will need to use.
-                        console.log(JSON.stringify(carrier_detail_list));
+                        console.log(carrier);
                         
                        // You need the total Carrier...
                        var carrierTotalRate = $('#carrierTotalRate').val();

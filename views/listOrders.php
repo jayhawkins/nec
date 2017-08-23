@@ -219,7 +219,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                               for (var i = 0; i < obj.length; i++) {
                                   
                                   if (obj[i].firstChild.value != ""){
-                                    item = {vinNumber: obj[i].firstChild.value, deliveryDate: "", notes: "", fileName: ""};
+                                    item = {vinNumber: obj[i].firstChild.value, deliveryDate: "", notes: "", fileName: "", carrier: ""};
                                     podArray.push(item);
                                   }
                               }
@@ -543,14 +543,15 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                         "bSortable": true,
                         "mRender": function (o) {
                             var carrierID = o.carrierID;
+                            var entityName = "";
+                            
+                            allEntities.entities.forEach(function(entity){
 
-                                allEntities.entities.forEach(function(entity){
+                                if(carrierID == entity.id){
 
-                                    if(carrierID == entity.id){
-
-                                        entityName = entity.name;
-                                    }                            
-                                });
+                                    entityName = entity.name;
+                                }                            
+                            });
 
                             return entityName;
                         },
@@ -665,7 +666,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                 },
                 columns: [
                     { data: "vinNumber" },
-                    { data: "notes", visible: blnShow },
+                    { data: "carrier", visible: blnShow },
                     { data: "deliveryDate" },
                     { data: "notes" },
                     {  
@@ -1347,7 +1348,25 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                                  <input type="text" id="deliveryDate" name="deliveryDate" class="form-control" placeholder="Delivery Date" required="required"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
                               </div>
                             </div>
-                        </div>    
+                        </div>
+                      <div class="col-sm-3">
+                          <div class="form-group">
+              <?php if ($_SESSION['entityid'] > 0) { ?>
+                             <input type="hidden" id="carrierID" name="carrierID" value="<?php echo $_SESSION['entityid']; ?>" />
+              <?php } else { ?>
+                              <label for="carrierID">Carrier</label>
+                              <select id="carrierID" name="carrierID" data-placeholder="Carrier" class="form-control chzn-select" required="required">
+                                <option value="">*Select Carrier...</option>
+               <?php
+                                foreach($entities->entities->records as $value) {
+                                    $selected = ($value[0] == $entity) ? 'selected=selected':'';
+                                    echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
+                                }
+               ?>
+                              </select>
+               <?php } ?>
+                          </div>
+                      </div>    
                         <div class="col-sm-3">
                             <label for="filePOD">Upload POD</label>
                             <div class="form-group">
@@ -1944,6 +1963,17 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         today = mm+'/'+dd+'/'+yyyy;
         today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
 
+        var carrierID = $('#carrierID').val();
+        var carrier = "";
+                            
+        allEntities.entities.forEach(function(entity){
+
+            if(carrierID == entity.id){
+
+                carrier = entity.name;
+            }                            
+        });
+        
         
         var formData = new FormData();
         var fileData = $('#filePOD')[0].files[0];
@@ -1963,8 +1993,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
             success : function(data) {
                 var files = $('#filePOD').prop("files");
                 var fileNames = $.map(files, function(val) { return val.name; }).join(',');
+                var podTable = $("#pod-list-table").DataTable();    
+                var podList = podTable.ajax.json().orders[0].podList;                
                 
-                var pod = {vinNumber: $('#vinNumber').val(), notes: $('#podNotes').val, deliveryDate: $('#deliveryDate'), fileName: fileNames};
+                var pod = {vinNumber: $('#vinNumber').val(), notes: $('#podNotes').val, deliveryDate: $('#deliveryDate'), fileName: fileNames, carrier: carrier};
                 
             },
             error: function(error){}
