@@ -117,16 +117,16 @@ try{
 
 
 
-if ($carrier_name>''){
+if (isset($carrier_name)){
 $vendorObj = new IPPVendor();
-$vendObj->GivenName  = $carrier_name;
-$vendObj->FamilyName = $carrier_name;
-$vendObj->DisplayName = $carrier_name;   
-$vendObj->CompanyName = $carrier_name;   
-$vendObj->Active= true;
+$vendorObj->GivenName  = $carrier_name;
+$vendorObj->FamilyName = $carrier_name;
+$vendorObj->DisplayName = $carrier_name;   
+$vendorObj->CompanyName = $carrier_name;   
+$vendorObj->Active= true;
 
 try{
- $resultVendorObj = $dataService->Add($vendObj);
+ $resultVendorObj = $dataService->Add($vendorObj);
  print_r($resultVendorObj); 
 } catch (Exception $e){
  echo $e->getMessage();
