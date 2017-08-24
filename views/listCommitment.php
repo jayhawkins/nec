@@ -183,6 +183,28 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
           
       }
 
+    function getBillingAddress(entityID){
+    
+        var billingAddress = {};
+    
+        $.ajax({
+            url: '<?php echo API_HOST."/api/locations" ?>?columns=address1,city,state,zip&transform=1&filter[]=locationTypeID,eq,1&filter[]=status,eq,Active&filter[]=entityID,eq,' + entityID,
+            type: 'GET',
+            contentType: "application/json",
+            async: false,
+            success: function(data){
+                
+                billingAddress = data.locations[0];
+                
+            },
+            error: function() {
+                alert("Unable to get billing Address");
+            }
+         });
+         
+         return billingAddress;
+    }
+
       function verifyAndPost() {
 
           if ( $('#formNeed').parsley().validate() ) {
@@ -1478,7 +1500,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                        var destinationCity = selectedCustomerNeed.destinationCity;
                        var destinationState = selectedCustomerNeed.destinationState;
                        var customerRate = $('#customerRate').val();
-                       
+                       var customerID = $("#entityID").val();
 
                         // Yaw,
                         // The thing about Carriers is that there can be many different carriers per order.
@@ -1510,13 +1532,15 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                                     }                            
                                 });
                                 
+                                var carrierBillingAddress = getBillingAddress(entityID);
+                                
                                 var carrier_detail = {
                                     carrierName: entityName,                // This is the carrier's Name
                                     carrierRate: customer_need.customer_needs_commit[0].rate,    // This is that carrier's rate.
-                                    billingAddress: "",
-                                    billingCity: "",
-                                    billingState: "",
-                                    billingZip: ""
+                                    billingAddress: carrierBillingAddress.address1,
+                                    billingCity: carrierBillingAddress.city,
+                                    billingState: carrierBillingAddress.state,
+                                    billingZip: carrierBillingAddress.zip
                                 };
                                 
                                 carrier = carrier_detail.carrierName;
@@ -1526,18 +1550,20 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                         });
                         
                         // This is a list of all the carriers accepted and associated with the commit.
-                        console.log(carrier_detail_list);
+                        console.log(JSON.stringify(carrier_detail_list));
                         
                        // You need the total Carrier...
                        var carrierTotalRate = $('#carrierTotalRate').val();
                        
+                       var customerBillingAddress = getBillingAddress(customerID);
                        
-                       
+                        console.log(JSON.stringify(customerBillingAddress));
+                        
                        // Here is empty data for Customer Billing Address
-                       var customerBillingAddress = "";
-                       var customerBillingCity = "";
-                       var customerBillingState = "";
-                       var customerBillingZip = "";
+                       var customerBillingAddress1 = customerBillingAddress.address1;
+                       var customerBillingCity = customerBillingAddress.city;
+                       var customerBillingState = customerBillingAddress.state;
+                       var customerBillingZip = customerBillingAddress.zip;
                        
                        
                        
