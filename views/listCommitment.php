@@ -272,15 +272,21 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                                      async: false,
                                      success: function(notification){
                                          //alert("Create from existing: " + notification);
+                                        $("#load").html("Commit");
+                                        $("#load").prop("disabled", false);
                                          $("#myModalCommit").modal('hide');
                                      },
                                      error: function() {
                                         alert('Failed creating a new Need from an existing.');
+                                        $("#load").html("Commit");
+                                        $("#load").prop("disabled", false);
                                         $("#myModalCommit").modal('hide');
                                      }
                                   });
                               //}
 
+                            $("#load").html("Commit");
+                            $("#load").prop("disabled", false);
                               $("#myModal").modal('hide');
                               loadCustomerNeedsCommitAJAX ($("#id").val());
                               $("#id").val('');
@@ -1506,7 +1512,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                                 
                                 var carrier_detail = {
                                     carrierName: entityName,                // This is the carrier's Name
-                                    carrierRate: customer_need.customer_needs_commit[0].rate    // This is that carrier's rate.
+                                    carrierRate: customer_need.customer_needs_commit[0].rate,    // This is that carrier's rate.
+                                    billingAddress: "",
+                                    billingCity: "",
+                                    billingState: "",
+                                    billingZip: ""
                                 };
                                 
                                 carrier = carrier_detail.carrierName;
@@ -1515,15 +1525,19 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                             }
                         });
                         
-                        // This will be the Carrier Data you will need to use.
-                        console.log(carrier);
+                        // This is a list of all the carriers accepted and associated with the commit.
+                        console.log(carrier_detail_list);
                         
                        // You need the total Carrier...
                        var carrierTotalRate = $('#carrierTotalRate').val();
                        
                        
                        
-                       
+                       // Here is empty data for Customer Billing Address
+                       var customerBillingAddress = "";
+                       var customerBillingCity = "";
+                       var customerBillingState = "";
+                       var customerBillingZip = "";
                        
                        
                        
