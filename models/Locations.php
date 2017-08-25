@@ -69,6 +69,38 @@ class Location
           }
     }
 
+    public function getLocationByCityState($city,$state,$entityID) {
+          try {
+                //$locationurl = API_HOST.'/api/locations?transform=1&filter[]=entityID,eq,'.$entityID.'&filter[]=city,eq,'.$city.'&filter[]=state,eq,'.$state.'&filter[]=status,eq,Active';
+                $locationargs = array(
+                      "transform"=>1,
+                      "filter[0]"=>"entityID,eq,".$entityID,
+                      "filter[1]"=>"city,eq,".$city,
+                      "filter[2]"=>"state,eq,".$state,
+                      "filter[4]"=>"status,eq,Active"
+                );
+                // use key 'http' even if you send the request to https://...
+                $locationoptions = array(
+                    'http' => array(
+                        'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                        'method'  => 'GET'
+                    )
+                );
+                $locationurl = API_HOST.'/api/locations?'.http_build_query($locationargs);
+                $locationcontext  = stream_context_create($locationoptions);
+                $locationresult = json_decode(file_get_contents($locationurl, false, $locationcontext));
+                if (count($locationresult->locations) > 0) {
+                    return count($locationresult);
+                } else {
+                    return 0;
+                }
+          } catch (Exception $e) { // The authorization query failed verification
+                header('HTTP/1.1 401 Unauthorized');
+                header('Content-Type: text/plain; charset=utf8');
+                return $e->getMessage();
+          }
+    }
+
     public function getLocationByCityStateZip($city,$state,$zip,$entityID) {
           try {
                 //$locationurl = API_HOST.'/api/locations?transform=1&filter[]=entityID,eq,'.$entityID.'&filter[]=city,eq,'.$city.'&filter[]=state,eq,'.$state.'&filter[]=zip,eq,'.$zip.'&filter[]=status,eq,Active';

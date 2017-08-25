@@ -11,9 +11,11 @@ class Documents
     public function __construct() {
 
     }
+
     public function post($api_host,$id) {
 
     }
+
     public function viewdocument($entityID,$file_location,$filename) {
 		$dir = $file_location . "users/".floor($entityID / 65535)."/".$entityID;
 		$file = $dir . "/" . $filename;
@@ -72,6 +74,7 @@ class Documents
     		}
 		}
     }
+
     public function createFromExisting($api_host,$file_location,$fileupload,$name,$documentID,$documentURL,$updatedAt,$entityID) {
 		$rename_file = null;
 		$filebase = pathinfo($fileupload['name'],PATHINFO_FILENAME);;//md5(time());
@@ -139,6 +142,7 @@ class Documents
 		}
 		return "failed";
 	}
+
     public function bulkUpload($api_host,$http_host,$file_location,$fileupload,$name,$documentID,$documentURL,$updatedAt,$entityID) {
 		$rename_file = null;
 		$filebase = pathinfo($fileupload['name'],PATHINFO_FILENAME);
@@ -243,6 +247,9 @@ class Documents
 										try {
 											$result = file_get_contents($url,false,$context);
 											if ($result == "success") {
+											    echo $line[5];
+											    echo $line[6];
+											    die();
 												$originationaddress = $line[4] . ' ' + $line[3] + ' ' + $line[5] + ' ' + $line[6];
 												$destinationaddress = $line[8] . ' ' + $line[7] + ' ' + $line[9] + ' ' + $line[10];
 												$originationlatitude="";
@@ -253,6 +260,8 @@ class Documents
 												$destinationformatted_address="";
 												// get latitude, longitude and formatted address
 												$data_arr = $this->geocode($originationaddress);
+												echo $data_arr;
+												die();
 												if ($data_arr) {
 													$originationlatitude = $data_arr[0];
 													$originationlongitude = $data_arr[1];
@@ -338,38 +347,7 @@ class Documents
 															$failureReason[$counter]=$counter.":Invalid need option for option ".$key."-".$value.": ".$line[$key].": possible values are ".implode(",",$pieces);
 														}
 													}
-													/*
-													if (type == "PUT") {
-														var date = today;
-														var data = {qty: $("#qty").val(), transportationMode: $("#transportationMode").val(),
-														 originationAddress1: $("#originationAddress1").val(), originationCity: $("#originationCity").val(),
-														  originationState: $("#originationState").val(), originationZip: $("#originationZip").val(),
-														  destinationAddress1: $("#destinationAddress1").val(), destinationCity: $("#destinationCity").val(),
-														   destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(),
-														   originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat,
-														    destinationLng: destinationlng, needsDataPoints: needsdatapoints, contactEmails: $contacts,
-														    availableDate: $("#availableDate").val(), expirationDate: $("#expirationDate").val(),
-														    updatedAt: date};
-													} else {
-														var date = today;
-														var recStatus = 'Available';
-														var data = {entityID: $entityID, qty: $("#qty").val(), transportationMode: $("#transportationMode").val(),
-														 originationAddress1: $("#originationAddress1").val(), originationCity: $("#originationCity").val(),
-														  originationState: $("#originationState").val(), originationZip: $("#originationZip").val(),
-														   destinationAddress1: $("#destinationAddress1").val(), destinationCity: $("#destinationCity").val(),
-														    destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(),
-														     originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat,
-														      destinationLng: destinationlng,
 
-														       needsDataPoints: needsdatapoints,
-														        status: recStatus,
-														        contactEmails: $contacts,
-														         availableDate: $("#availableDate").val(),
-														          expirationDate: $("#expirationDate").val(),
-														           createdAt: date,
-														            updatedAt: date};
-													}
-													*/
 													if (!isset($failureReason[$counter])) {
 														$dttime=new DateTime();
 														$dttime->format('Y-m-d H:i:s');
@@ -566,11 +544,14 @@ class Documents
 		}
 		return "failed";
 	}
+
 	// function to geocode address, it will return false if unable to geocode address
 	public function geocode($address){
 
 		// url encode the address
 		$address = urlencode($address);
+		echo $address;
+		die();
 
 		// google map geocode api url
 		$url = "http://maps.google.com/maps/api/geocode/json?address={$address}";
@@ -633,6 +614,7 @@ class Documents
       $this->createdAt = $result["createdAt"];
       $this->updatedAt = $result["updatedAt"];
     }
+
     public function put($locationid,$address1,$address2,$city,$state,$zip) {
         try {
 
@@ -642,6 +624,7 @@ class Documents
               return $e->getMessage();
         }
     }
+
     public function delete() {
 
     }

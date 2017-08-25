@@ -417,8 +417,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
           //myApp.hidePleaseWait();
 
       }
+
       function loadModal() {
-      	console.log("loading");
+
+            console.log("loading");
+
 			var li = '';
 			var checked = '';
 			var dpli = '';
@@ -469,67 +472,69 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 			//$("#suggesstion-box").hide();
 			//$("#myModal").modal('show');
       }
-    	//setTimeout("loadModal();", 100);
-function replaceDocument() {
-        var data,date;
-        var passValidation = false;
-        var type = "";
-        var today = new Date();
-        var dd = today.getDate();
-        var mm = today.getMonth()+1; //January is 0!
-        var yyyy = today.getFullYear();
-        var hours = today.getHours();
-        var min = today.getMinutes();
-        var sec = today.getSeconds();
-        var url = "";
-        if(dd<10) {
-            dd='0'+dd;
-        }
-        if(mm<10) {
-            mm='0'+mm;
-        }
-        if(hours<10) {
-            hours='0'+hours;
-        }
-        if(min<10) {
-            min='0'+min;
-        }
-        today = mm+'/'+dd+'/'+yyyy;
-        today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
-        var date = today;
+      //setTimeout("loadModal();", 100);
 
-	    url = '<?php echo HTTP_HOST."/bulkimport" ?>';
-        type = "POST";
-        var formData = new FormData();
-        formData.append('fileupload', $('#updatePolicyFile')[0].files[0]);
-        formData.append('entityID', $("#entityID").val());
-        $.ajax({
-            url : url,
-            type : 'POST',
-            data : formData,
-            processData: false,  // tell jQuery not to process the data
-            contentType: false,  // tell jQuery not to set contentType
-            success : function(data) {
-
-				var alertString="";
-				var obj = $.parseJSON(data);
-				for (var x=1;x<Object.keys(obj).length;x++) {
-					alertString+="\n"+obj[x];
-				}
-				alert("Success:"+ alertString);
-
-				console.log(JSON.stringify(data));
-                //console.log('Carrier Needs updated');
-                if (data > 0) {
-                	//$("#myModal").modal('hide');
-                	$(myDialog).modal('hide');
-                }
-            },
-            error: function(data) {
-                alert("Error: "+JSON.stringify(data));
+      function replaceDocument() {
+            var data,date;
+            var passValidation = false;
+            var type = "";
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth()+1; //January is 0!
+            var yyyy = today.getFullYear();
+            var hours = today.getHours();
+            var min = today.getMinutes();
+            var sec = today.getSeconds();
+            var url = "";
+            if(dd<10) {
+                dd='0'+dd;
             }
-        });
-	}
+            if(mm<10) {
+                mm='0'+mm;
+            }
+            if(hours<10) {
+                hours='0'+hours;
+            }
+            if(min<10) {
+                min='0'+min;
+            }
+            today = mm+'/'+dd+'/'+yyyy;
+            today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+            var date = today;
+
+            url = '<?php echo HTTP_HOST."/bulkimport" ?>';
+            type = "POST";
+            var formData = new FormData();
+            formData.append('fileupload', $('#updatePolicyFile')[0].files[0]);
+            formData.append('entityID', $("#entityID").val());
+            $.ajax({
+                url : url,
+                type : 'POST',
+                data : formData,
+                processData: false,  // tell jQuery not to process the data
+                contentType: false,  // tell jQuery not to set contentType
+                success : function(data) {
+
+                    var alertString="";
+                    var obj = $.parseJSON(data);
+                    for (var x=1;x<Object.keys(obj).length;x++) {
+                        alertString+="\n"+obj[x];
+                    }
+                    alert("Success:"+ alertString);
+
+                    console.log(JSON.stringify(data));
+                    //console.log('Carrier Needs updated');
+                    if (data > 0) {
+                        //$("#myModal").modal('hide');
+                        $(myDialog).modal('hide');
+                    }
+                },
+                error: function(data) {
+                    alert("Error: "+JSON.stringify(data));
+                }
+            });
+	  }
+
       function recordEnableDisable(status) {
           var passValidation = false;
 

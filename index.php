@@ -469,7 +469,7 @@ $app->route('POST /bulkimport', function() {
 // Order Processes
 /*****************************************************************************/
 $app->route('POST /sendorderupdatenotification', function() {
-    
+
     $rateType = Flight::request()->data->rateType;
     $transportationMode = Flight::request()->data->transportationMode;
     $originationAddress = Flight::request()->data->originationAddress;
@@ -485,23 +485,23 @@ $app->route('POST /sendorderupdatenotification', function() {
     $orderNumber = Flight::request()->data->orderNumber;
     $customerID = Flight::request()->data->customerID;
     $podList = Flight::request()->data->podList;
-    
+
     $orderNotification = Flight::order();
-    
+
     $result = $orderNotification->sendEmailNotification($rateType, $transportationMode, $originationAddress, $originationCity, $originationState, $originationZip,
             $destinationAddress, $destinationCity, $destinationState, $destinationZip, $distance, $updatedAt, $orderNumber, $customerID, $podList);
-    
+
     print_r($result);
 });
 
 $app->route('POST /sendorderstatusnotification', function() {
-    
+
     $orderNumber = Flight::request()->data->orderNumber;
     $customerID = Flight::request()->data->customerID;
     $carrierID = Flight::request()->data->carrierID;
-    
+
     $orderNotification = Flight::order();
-    
+
     $result = $orderNotification->sendOrderStatusNotification($orderNumber, $carrierID, $customerID);
     print_r($result);
 });
