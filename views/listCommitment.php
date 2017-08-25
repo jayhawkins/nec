@@ -93,9 +93,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
               return false;
           }
 
-
-          if (confirm("You have selected to Commit to this Availability. A Nationwide Equipment Control team member will contact you within 4 buisness hours to start the order process. Do you wish to proceed with this commitment?") == true) {
-
                 var result = true;
 
                 var params = {
@@ -183,12 +180,30 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                     return false;
                 }
 
-          } else {
-
-                $("#myModalCommit").modal('hide');
-
-          }
+          
       }
+
+    function getBillingAddress(entityID){
+    
+        var billingAddress = {};
+    
+        $.ajax({
+            url: '<?php echo API_HOST."/api/locations" ?>?columns=address1,city,state,zip&transform=1&filter[]=locationTypeID,eq,1&filter[]=status,eq,Active&filter[]=entityID,eq,' + entityID,
+            type: 'GET',
+            contentType: "application/json",
+            async: false,
+            success: function(data){
+                
+                billingAddress = data.locations[0];
+                
+            },
+            error: function() {
+                alert("Unable to get billing Address");
+            }
+         });
+         
+         return billingAddress;
+    }
 
       function verifyAndPost() {
 
@@ -279,15 +294,21 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                                      async: false,
                                      success: function(notification){
                                          //alert("Create from existing: " + notification);
+                                        $("#load").html("Commit");
+                                        $("#load").prop("disabled", false);
                                          $("#myModalCommit").modal('hide');
                                      },
                                      error: function() {
                                         alert('Failed creating a new Need from an existing.');
+                                        $("#load").html("Commit");
+                                        $("#load").prop("disabled", false);
                                         $("#myModalCommit").modal('hide');
                                      }
                                   });
                               //}
 
+                            $("#load").html("Commit");
+                            $("#load").prop("disabled", false);
                               $("#myModal").modal('hide');
                               loadCustomerNeedsCommitAJAX ($("#id").val());
                               $("#id").val('');
@@ -816,7 +837,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                       contentType: "application/json",
                       async: false,
                       success: function(notification){
-                          alert(notification);
+                          //alert(notification);
                       },
                       error: function() {
                          alert('Failed Sending Notifications! - Notify NEC of this failure.');
@@ -1086,7 +1107,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
             </div>   
             <div class="col-sm-4 col-sm-offset-4">
                 <div class="form-group">
-                    <button id="completeOrder" class="btn btn-primary btn-block" role="button" onclick="completeOrder();"><i class="fa fa-check-square-o text-info"></i> <span class="text-info">Availability Approved</span></button>
+                    <button id="completeOrder" class="btn btn-primary btn-block" role="button" onclick="completeOrder();"><i class="fa fa-check-square-o text-info"></i> <span class="text-info">Submit for Order</span></button>
                 </div>
             </div>
         </div>
@@ -1296,6 +1317,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
  <script>
 
     loadTableAJAX();
+    
 
     $('.datepicker').datepicker({
         autoclose: true,
@@ -1467,6 +1489,107 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                             rateType: selectedCustomerNeed.rateType, customerRate: $('#customerRate').val(), carrierTotalRate: $('#carrierTotalRate').val(),
                             totalRevenue: $('#totalRevenue').val(), createdAt: today, updatedAt: today};
                         
+                       // Yaw, here is the information you requested.
+                       
+                       // This is the Selected Customer Transport Table at the top of Committed Transport
+                       console.log(selectedCustomerNeed);
+                       
+                       var customerName = selectedCustomerNeed.entities[0].name;
+                       var originationCity = selectedCustomerNeed.originationCity;
+                       var originationState = selectedCustomerNeed.originationState;
+                       var destinationCity = selectedCustomerNeed.destinationCity;
+                       var destinationState = selectedCustomerNeed.destinationState;
+                       var customerRate = $('#customerRate').val();
+                       var customerID = $("#entityID").val();
+
+                        // Yaw,
+                        // The thing about Carriers is that there can be many different carriers per order.
+                        // So it has to be gathered as an array.
+                        // If you have any questions about this, let me know.
+                        // Dennis
+                        
+                        var needsCommitTable = $("#customer-needs-commit-table").DataTable();
+                        var needsCommitJSON = needsCommitTable.ajax.json();        
+
+                        var customer_needs_commit = needsCommitJSON.customer_needs;
+                        var carrier_detail_list = new Array();
+                        var carrier = "";
+
+                        customer_needs_commit.forEach(function(customer_need){
+
+                            if(customer_need.customer_needs_commit.length > 0 && 
+                                    customer_need.customer_needs_commit[0].status == "Close"){
+                                
+                                var entityName = "";
+                                var entityID = customer_need.customer_needs_commit[0].entityID;
+                                
+                                
+                                allEntities.entities.forEach(function(entity){
+
+                                    if(entityID == entity.id){
+
+                                        entityName = entity.name;
+                                    }                            
+                                });
+                                
+                                var carrierBillingAddress = getBillingAddress(entityID);
+                                
+                                var carrier_detail = {
+                                    carrierName: entityName,                // This is the carrier's Name
+                                    carrierRate: customer_need.customer_needs_commit[0].rate,    // This is that carrier's rate.
+                                    billingAddress: carrierBillingAddress.address1,
+                                    billingCity: carrierBillingAddress.city,
+                                    billingState: carrierBillingAddress.state,
+                                    billingZip: carrierBillingAddress.zip
+                                };
+                                
+                                carrier = carrier_detail.carrierName;
+
+                                carrier_detail_list.push(carrier_detail);
+                            }
+                        });
+                        
+                        // This is a list of all the carriers accepted and associated with the commit.
+                        console.log(JSON.stringify(carrier_detail_list));
+                        
+                       // You need the total Carrier...
+                       var carrierTotalRate = $('#carrierTotalRate').val();
+                       
+                       var customerBillingAddress = getBillingAddress(customerID);
+                       
+                        console.log(JSON.stringify(customerBillingAddress));
+                        
+                       // Here is empty data for Customer Billing Address
+                       var customerBillingAddress1 = customerBillingAddress.address1;
+                       var customerBillingCity = customerBillingAddress.city;
+                       var customerBillingState = customerBillingAddress.state;
+                       var customerBillingZip = customerBillingAddress.zip;
+                       
+                       
+                       
+                       
+                       
+                       var notes = 'From ' + originationCity + ',' + originationState + ' to ' + destinationCity + ',' + destinationState;
+                        
+                        //submit to Quickbooks vendor create script
+                            
+  //http://nec.dubtel.com/QBO/src/Pages/CustomerCreate.php?customerName=Trailers%20r%20Us&customerRate=150&customerNotes=This%20is%20a%20test  
+                          <?php $quickbooks_host = "http://nec.dubtel.com";?>
+                            $.ajax({
+                                url: '<?php echo $quickbooks_host; ?>' + '/QBO/src/Pages/CustomerCreate.php',
+                                type: "POST",
+                                data: jQuery.param({customerName: customerName,customerRate:customerRate,customerNotes:notes,carrierName:carrier}),
+                                success: function(){
+                                    console.log(customerName + ' ' + customerRate + ' ' + notes + ' ' + carrier);
+                                },
+                                error: function(){
+                                    console.log(customerName + ' ' + customerRate + ' ' + notes + ' ' + carrier);
+                                    alert("Could not Create Quickbooks Workorder");                                    
+                                   
+                                }
+                            });
+                                                
+                        
                     $.ajax({
                         url: url,
                         type: type,
@@ -1484,6 +1607,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                                 contentType: "application/json",
                                 async: false,
                                 success: function(){
+                                    countUserOrders();
+                                    countCommitments();
                                     closeCommitTransport();
                                 },
                                 error: function(){
@@ -1491,9 +1616,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                                     closeCommitTransport();
                                 }
                             });
-                            
-                            
-                            
                         },
                         error: function(){
                             alert("Purchase Order Uploaded. Unable to Complete the Order. ");
