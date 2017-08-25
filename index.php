@@ -18,7 +18,7 @@ $app = new Engine();
 // Test routes
 $app->route('GET|POST /gmail', function() {
 
-  $to = array('jhawkins@dynamasys.com' => 'Jay Hawkins');
+  $to = array('dsmith@dubtel.com' => 'Dennis Smith');
   $from = array('jaycarl.hawkins@gmail.com' => 'Jay Hawkins');
   $subject = "NEC Test email";
   $body = "Body of NEC test email";
