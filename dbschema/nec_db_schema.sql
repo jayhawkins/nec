@@ -401,7 +401,7 @@ AUTO_INCREMENT = 1;
 -- CREATE TABLE "needs_match" --------------------------------
 CREATE TABLE IF NOT EXISTS `needs_match` (
 	`id` Int( 11 ) UNSIGNED AUTO_INCREMENT NOT NULL,
-	`typeID` Int(11) UNSIGNED NOT NULL DEFAULT 0,
+	`needsMatchTypeID` Int(11) UNSIGNED NOT NULL DEFAULT 0,
 	`customerEntityID` Int( 11 ) UNSIGNED NOT NULL,
 	`carrierEntityID` Int(11) UNSIGNED NOT NULL,
 	`customerNeedsID` Int(11) UNSIGNED NOT NULL DEFAULT 0,

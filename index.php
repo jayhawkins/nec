@@ -18,7 +18,7 @@ $app = new Engine();
 // Test routes
 $app->route('GET|POST /gmail', function() {
 
-  $to = array('jhawkins@dynamasys.com' => 'Jay Hawkins');
+  $to = array('dsmith@dubtel.com' => 'Dennis Smith');
   $from = array('jaycarl.hawkins@gmail.com' => 'Jay Hawkins');
   $subject = "NEC Test email";
   $body = "Body of NEC test email";
@@ -354,20 +354,6 @@ $app->route('POST /commitacceptednotification', function() {
     }
 });
 
-/*
-$app->route('POST /customerneedscommitnotification', function() {
-    $customerneedcommitid = Flight::request()->data->id;
-    $customerneedcommit = Flight::customerneedcommit();
-    $notificationresult = $customerneedcommit->sendRepNotification(API_HOST,$customerneedcommitid);
-    if ($notificationresult) {
-        print_r($notificationresult);
-        //echo "success";
-    } else {
-        print_r($notificationresult);
-    }
-});
-*/
-
 $app->route('POST /createcustomerneedsfromexisting', function() {
     $id = Flight::request()->data->id;
     $rootCustomerNeedsID = Flight::request()->data->rootCustomerNeedsID;
@@ -413,7 +399,9 @@ $app->route('GET|POST /availabilitymatching/@id', function($id) {
         print_r($matchingresult);
     }
 });
-
+/*****************************************************************************/
+// Ducument Upload
+/*****************************************************************************/
 $app->route('POST /uploaddocument', function() {
 	$name = Flight::request()->data->name;
 	$fileupload = Flight::request()->files['fileupload'];
@@ -429,20 +417,59 @@ $app->route('POST /uploaddocument', function() {
         print_r($result);
     }
 });
-
 $app->route('GET /viewdocument', function() {
 	$entityID = Flight::request()->query['entityID'];
 	$filename = Flight::request()->query['filename'];
 	$documents = Flight::documents();
     $result = $documents->viewdocument($entityID,FILE_LOCATION,$filename);
 });
-
-
+/*****************************************************************************/
+// Bulk Import
+/*****************************************************************************/
+$app->route('POST /bulkimport', function() {
+	$name = Flight::request()->data->name;
+	$fileupload = Flight::request()->files['fileupload'];
+	$documentID = Flight::request()->data->documentID;
+	$updatedAt = Flight::request()->data->updatedAt;
+	$entityID = Flight::request()->data->entityID;
+	$documentURL = HTTP_HOST."/viewdocument?entityID=".$entityID."&filename=".$fileupload['name'];
+	$documents = Flight::documents();
+    $result = $documents->bulkUpload(API_HOST,HTTP_HOST,FILE_LOCATION,$fileupload,$name,$documentID,$documentURL,$updatedAt,$entityID);
+	//echo json_encode($result, 128);
+/*
+    $output = array();
+    //echo "{";
+    foreach ($result as $key => $value) {
+		// $arr[3] will be updated with each value from $arr...
+		//echo "{$key} => {$value} ";
+		//echo "\"{$key}\":\"{$value}\"";
+		$output[key($v)] = current($v);
+	}
+	echo json_encode($output, 128);
+	//echo "}";
+*/
+	echo $result;
+/*
+	$output = array();
+	foreach($result as $v) {
+		$output[key($v)] = current($v);
+	}
+	echo json_encode($output, 128);
+*/
+	//print_r($result);
+    /*
+    if ($result) {
+        print_r($result);
+    } else {
+        print_r($result);
+    }
+    */
+});
 /*****************************************************************************/
 // Order Processes
 /*****************************************************************************/
 $app->route('POST /sendorderupdatenotification', function() {
-    
+
     $rateType = Flight::request()->data->rateType;
     $transportationMode = Flight::request()->data->transportationMode;
     $originationAddress = Flight::request()->data->originationAddress;
@@ -458,23 +485,23 @@ $app->route('POST /sendorderupdatenotification', function() {
     $orderNumber = Flight::request()->data->orderNumber;
     $customerID = Flight::request()->data->customerID;
     $podList = Flight::request()->data->podList;
-    
+
     $orderNotification = Flight::order();
-    
+
     $result = $orderNotification->sendEmailNotification($rateType, $transportationMode, $originationAddress, $originationCity, $originationState, $originationZip,
             $destinationAddress, $destinationCity, $destinationState, $destinationZip, $distance, $updatedAt, $orderNumber, $customerID, $podList);
-    
+
     print_r($result);
 });
 
 $app->route('POST /sendorderstatusnotification', function() {
-    
+
     $orderNumber = Flight::request()->data->orderNumber;
     $customerID = Flight::request()->data->customerID;
     $carrierID = Flight::request()->data->carrierID;
-    
+
     $orderNotification = Flight::order();
-    
+
     $result = $orderNotification->sendOrderStatusNotification($orderNumber, $carrierID, $customerID);
     print_r($result);
 });
