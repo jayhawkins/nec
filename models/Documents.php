@@ -139,6 +139,480 @@ class Documents
 		}
 		return "failed";
 	}
+    public function bulkUpload($api_host,$http_host,$file_location,$fileupload,$name,$documentID,$documentURL,$updatedAt,$entityID) {
+		$rename_file = null;
+		$filebase = pathinfo($fileupload['name'],PATHINFO_FILENAME);
+		$imageFileType = strtolower(pathinfo($fileupload['name'],PATHINFO_EXTENSION));
+		$filename = $filebase . "." .$imageFileType;
+		$target_directory = $file_location . "users/".floor($entityID / 65535)."/".$entityID."/";
+		$target_file = $target_directory.$filename;
+		$uploadOk = 1;
+		// Check file size
+		if ($fileupload["size"] > 20000000) {
+			// File Too Large
+			$uploadOk = 0;
+		}
+		// Allow certain file formats
+		if($imageFileType != "csv") {
+			// Only CSV files are allowed
+			$uploadOk = 0;
+		}
+		// Check if file already exists
+		if ((file_exists($target_file)) && ($uploadOk == 1)) {
+			$i = count(glob($target_directory . $filename)) + 1;
+			$rf = $filebase . "_".$i.".".$imageFileType;
+			$rename_file = $target_directory.$rf;
+			rename($target_file,$rename_file);
+		}
+		if ($uploadOk == 1) { //($this->status == 0) && (
+			// Check if $uploadOk is set to 0 by an error
+			if ($uploadOk == 0) {
+				// file was not uploaded
+				return "failed";
+			} else {
+				// make user file directory
+				try { mkdir($file_location . "users/".floor($entityID / 65535)."/".$entityID."/", 0755, true); } catch(Exception $e) {/*echo 'Message: ' .$e->getMessage();*/}
+				file_put_contents($target_file, file_get_contents($fileupload["tmp_name"]));
+				// Load the documents data to send notification
+				//$this->load($api_host,$id);
+
+				/*
+				try {
+					$result = json_decode(file_get_contents($url,false,$context),true);
+					if ($result > 0) {
+				*/
+						$file = fopen($target_file, 'r');
+						$counter=0;
+						$goodCounter=0;
+						$badCounter=0;
+						$failureReason=array();
+						$contacts_iterator=array();
+						$needs_iterator=array();
+						while (($line = fgetcsv($file)) !== FALSE) {
+							//$line is an array of the csv elements
+							if ($counter==0) {
+								foreach ($line as $key => $value) {
+									$pieces = explode(" ", $value);
+									if ($pieces[0]=="Contact") {
+										$contacts_iterator[$key]=$value;
+									} else {
+										if ($pieces[0]=="Trailer") {
+											$needs_iterator[$key]=strtolower($value);
+										}
+									}
+								}
+							} else {
+								$data = array(
+									"address1"=>$line[4],
+									"city"=>$line[3],
+									"state"=>$line[5],
+									"zip"=>$line[6],
+									"entityID" => $entityID,
+									"locationType" => "Origination"
+								);
+								$url = $http_host."/getlocationbycitystatezip";
+								$options = array(
+									'http' => array(
+										'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+										'method'  => 'POST',
+										'content' => http_build_query($data)
+									)
+								);
+								$context  = stream_context_create($options);
+								try {
+									$result = file_get_contents($url,false,$context);
+									//return $url.":".file_get_contents($url,false,$context);
+									if ($result == "success") {
+										$data = array(
+											"address1"=>$line[8],
+											"city"=>$line[7],
+											"state"=>$line[9],
+											"zip"=>$line[10],
+											"entityID" => $entityID,
+											"locationType" => "Destination"
+										);
+										$url = $http_host."/getlocationbycitystatezip";
+										$options = array(
+											'http' => array(
+												'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+												'method'  => 'POST',
+												'content' => http_build_query($data)
+											)
+										);
+										$context  = stream_context_create($options);
+										try {
+											$result = file_get_contents($url,false,$context);
+											if ($result == "success") {
+												$originationaddress = $line[4] . ' ' + $line[3] + ' ' + $line[5] + ' ' + $line[6];
+												$destinationaddress = $line[8] . ' ' + $line[7] + ' ' + $line[9] + ' ' + $line[10];
+												$originationlatitude="";
+												$originationlongitude="";
+												$originationformatted_address="";
+												$destinationlatitude="";
+												$destinationlongitude="";
+												$destinationformatted_address="";
+												// get latitude, longitude and formatted address
+												$data_arr = $this->geocode($originationaddress);
+												if ($data_arr) {
+													$originationlatitude = $data_arr[0];
+													$originationlongitude = $data_arr[1];
+													$originationformatted_address = $data_arr[2];
+												} else {
+													$badCounter++;
+													$failureReason[$counter]=$counter.":Origination address not found.";
+												}
+												// get latitude, longitude and formatted address
+												$data_arr = $this->geocode($destinationaddress);
+												if ($data_arr) {
+													$destinationlatitude = $data_arr[0];
+													$destinationlongitude = $data_arr[1];
+													$destinationformatted_address = $data_arr[2];
+												} else {
+													$badCounter++;
+													$failureReason[$counter]=$counter.":Destination address not found.";
+												}
+												if (!isset($failureReason[$counter])) {
+													/*
+													if ($("#id").val() > '') {
+														var url = '<?php echo API_HOST."/api/carrier_needs" ?>/' + $("#id").val();
+														type = "PUT";
+													} else {
+														var url = '<?php echo API_HOST."/api/carrier_needs" ?>';
+														type = "POST";
+													}
+													*/
+													if ((isset($line[0])) && ($line[0] != '')) {
+														$url = $api_host."/api/carrier_needs/" . $line[0];
+														$type = "PUT";
+													} else {
+														$url = $api_host."/api/carrier_needs";
+														$type = "POST";
+													}
+													/*
+													 // Build the contacts
+													var contactsarray = [];
+													var obj = $("#check-list-box li.active");
+													for (var i = 0; i < obj.length; i++) {
+														item = {};
+														item[obj[i].id] = obj[i].innerText;
+														contactsarray.push(item);
+													}
+													var $contacts = contactsarray;
+													*/
+													$contacts= array();
+													foreach ($contacts_iterator as $key => $value) {
+														$pieces = explode(" ", $value);
+														$contactIndex=substr($pieces[1], 1,-1);
+														unset($pieces[0]);
+														unset($pieces[1]);
+														$contactName = implode(" ", $pieces);
+														if (strtolower($line[$key])=="yes") {
+															$contacts[$contactIndex]=$contactName;
+														}
+													}
+													if (count($contacts)==0) {
+														$badCounter++;
+														$failureReason[$counter]=$counter.":No contact selected.";
+													}
+													/*
+													// Build the needsDataPoints
+													var needsarray = [];
+													var obj = $("#dp-check-list-box li select");
+													for (var i = 0; i < obj.length; i++) {
+														item = {};
+														item[obj[i].id] = obj[i].value;
+														needsarray.push(item);
+													}
+													var needsdatapoints = needsarray;
+													*/
+													$needsDataPoints= array();
+													foreach ($needs_iterator as $key => $value) {
+														$dataName = explode(" ", $value)[1];
+														$pieces = explode("(", $value);
+														$dataValues=substr($pieces[1], 0,-1);
+														$pieces = explode("/", $dataValues);
+														if (in_array(strtolower($line[$key]), $pieces)) {
+															$needsDataPoints[$dataName]=$line[$key];
+														} else {
+															$badCounter++;
+															$failureReason[$counter]=$counter.":Invalid need option for option ".$key."-".$value.": ".$line[$key].": possible values are ".implode(",",$pieces);
+														}
+													}
+													/*
+													if (type == "PUT") {
+														var date = today;
+														var data = {qty: $("#qty").val(), transportationMode: $("#transportationMode").val(),
+														 originationAddress1: $("#originationAddress1").val(), originationCity: $("#originationCity").val(),
+														  originationState: $("#originationState").val(), originationZip: $("#originationZip").val(),
+														  destinationAddress1: $("#destinationAddress1").val(), destinationCity: $("#destinationCity").val(),
+														   destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(),
+														   originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat,
+														    destinationLng: destinationlng, needsDataPoints: needsdatapoints, contactEmails: $contacts,
+														    availableDate: $("#availableDate").val(), expirationDate: $("#expirationDate").val(),
+														    updatedAt: date};
+													} else {
+														var date = today;
+														var recStatus = 'Available';
+														var data = {entityID: $entityID, qty: $("#qty").val(), transportationMode: $("#transportationMode").val(),
+														 originationAddress1: $("#originationAddress1").val(), originationCity: $("#originationCity").val(),
+														  originationState: $("#originationState").val(), originationZip: $("#originationZip").val(),
+														   destinationAddress1: $("#destinationAddress1").val(), destinationCity: $("#destinationCity").val(),
+														    destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(),
+														     originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat,
+														      destinationLng: destinationlng,
+
+														       needsDataPoints: needsdatapoints,
+														        status: recStatus,
+														        contactEmails: $contacts,
+														         availableDate: $("#availableDate").val(),
+														          expirationDate: $("#expirationDate").val(),
+														           createdAt: date,
+														            updatedAt: date};
+													}
+													*/
+													if (!isset($failureReason[$counter])) {
+														$dttime=new DateTime();
+														$dttime->format('Y-m-d H:i:s');
+														if ($type == "PUT") {
+															$data = array(
+																"entityID"=>$entityID,
+																"qty" => $line[0],
+																"transportationMode" => $line[11],
+																"originationAddress1" => $line[4],
+																"originationCity" => $line[3],
+																"originationState" => $line[5],
+																"originationZip" => $line[6],
+																"destinationAddress1"=>$line[8],
+																"destinationCity"=>$line[7],
+																"destinationState"=>$line[9],
+																"destinationZip"=>$line[10],
+																"originationLat"=>$originationlatitude,
+																"originationLng"=>$originationlongitude,
+																"destinationLat"=>$destinationlatitude,
+																"destinationLng"=>$destinationlongitude,
+																"needsDataPoints"=>$needsDataPoints,
+																"status"=>'Available',
+																"contactEmails"=>$contacts,
+																"availableDate"=>$line[1],
+																"expirationDate"=>$line[2],
+																"createdAt"=>$dttime,
+																"updatedAt"=>$dttime
+															);
+														} else {
+															$data = array(
+																"entityID"=>$entityID,
+																"qty" => $line[0],
+																"transportationMode" => $line[11],
+																"originationAddress1" => $line[4],
+																"originationCity" => $line[3],
+																"originationState" => $line[5],
+																"originationZip" => $line[6],
+																"destinationAddress1"=>$line[8],
+																"destinationCity"=>$line[7],
+																"destinationState"=>$line[9],
+																"destinationZip"=>$line[10],
+																"originationLat"=>$originationlatitude,
+																"originationLng"=>$originationlongitude,
+																"destinationLat"=>$destinationlatitude,
+																"destinationLng"=>$destinationlongitude,
+																"needsDataPoints"=>$needsDataPoints,
+																"status"=>'Available',
+																"contactEmails"=>$contacts,
+																"availableDate"=>$line[1],
+																"expirationDate"=>$line[2],
+																"createdAt"=>$dttime,
+																"updatedAt"=>$dttime
+															);
+														}
+														/*
+														$.ajax({
+														 url: url,
+														 type: type,
+														 data: JSON.stringify(data),
+														 contentType: "application/json",
+														 async: false,
+														*/
+														$options = array(
+															'http' => array(
+																'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+																'method'  => 'POST',
+																'content' => http_build_query($data)
+															)
+														);
+														$context = stream_context_create($options);
+														try {
+															//$result = json_decode(file_get_contents($url,false,$context));
+															$result = file_get_contents($url,false,$context);
+															/*
+															 success: function(data){
+																if (data > 0) {
+															*/
+															//return $result;
+															//return $url;
+															//return http_build_query($data);
+
+															if ($result > 0) {
+															//if ($result == "success") {
+																/*
+															  		if (type == 'POST') {
+																	var params = {id: data};
+																*/
+																if ($type == 'POST') {
+																	$data = array(
+																		"id" => $result
+																	);
+																	$url = $http_host."/api/carrierneedsnotification";
+																	/*
+																			$.ajax({
+																			   url: '<?php echo HTTP_HOST."/carrierneedsnotification" ?>',
+																			   type: 'POST',
+																			   data: JSON.stringify(params),
+																	 },
+																	*/
+																	$options = array(
+																		'http' => array(
+																			'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+																			'method'  => 'POST',
+																			'content' => http_build_query($data)
+																		)
+																	);
+																	$context  = stream_context_create($options);
+																	try {
+																		$result = json_decode(file_get_contents($url,false,$context),true);
+																		/*
+																		 success: function(notification){
+																			  alert(notification);
+																		   },
+																		*/
+																		if ($result > 0) {
+																			//success
+																		} else {
+																			/*
+																				   error: function() {
+																					  alert('Failed Sending Notifications! - Notify NEC of this failure.');
+																				   }
+																				});
+																			  }
+																			} else {
+																			  alert("Adding Need Failed! Invalid Data...");
+																			}
+																			*/
+																			//failed sending notification
+																		}
+																		$goodCounter++;
+																	} catch (Exception $e) {
+																		$badCounter++;
+																		$failureReason[$counter]=$counter.":There Was An Error Adding Location!";
+																		//return $e;
+																	}
+																	//return $result;
+																}
+															} else {
+																/*
+																 error: function() {
+																	alert("There Was An Error Adding Location!");
+																 }
+																});
+																*/
+																$badCounter++;
+																$failureReason[$counter]=$counter.":Adding Need Failed! Invalid Data...";
+																//return "failed";
+															}
+														} catch (Exception $e) {
+															$badCounter++;
+															$failureReason[$counter]=$counter.":There Was An Error Adding Location! ".$e->getMessage();
+															//return $e;
+														}
+													}
+												}
+											}
+										} catch (Exception $e) {
+											$badCounter++;
+											$failureReason[$counter]=$counter.":There Was An Error Adding Location!";
+											//return $e;
+										}
+									} else {
+										$badCounter++;
+										$failureReason[$counter]=$counter.":".$result;
+										//return "failed";
+									}
+								} catch (Exception $e) {
+									$badCounter++;
+									$failureReason[$counter]=$counter.":No results returned!".$e->getMessage();
+									//return $e;
+								}
+							}
+							$counter++;
+						}
+						fclose($file);
+						for ($i = 1; $i < $counter-1; $i++) {
+							if (!isset($failureReason[$counter])) {
+								$failureReason[$counter]="Row #".$i.": Imported successfully.";
+							} else {
+								$failureReason[$counter]="Row #".$i.": ".$failureReason[$counter];
+							}
+						}
+						$result = $failureReason;
+						return json_encode($result, 128);
+				/*
+					} else {
+						return "failed";
+					}
+				} catch (Exception $e) {
+					return $e;
+				}
+				*/
+			}
+		}
+		return "failed";
+	}
+	// function to geocode address, it will return false if unable to geocode address
+	public function geocode($address){
+
+		// url encode the address
+		$address = urlencode($address);
+
+		// google map geocode api url
+		$url = "http://maps.google.com/maps/api/geocode/json?address={$address}";
+
+		// get the json response
+		$resp_json = file_get_contents($url);
+
+		// decode the json
+		$resp = json_decode($resp_json, true);
+
+		// response status will be 'OK', if able to geocode given address
+		if($resp['status']=='OK'){
+
+			// get the important data
+			$lati = $resp['results'][0]['geometry']['location']['lat'];
+			$longi = $resp['results'][0]['geometry']['location']['lng'];
+			$formatted_address = $resp['results'][0]['formatted_address'];
+
+			// verify if data is complete
+			if($lati && $longi && $formatted_address){
+
+				// put the data in the array
+				$data_arr = array();
+
+				array_push(
+					$data_arr,
+						$lati,
+						$longi,
+						$formatted_address
+					);
+
+				return $data_arr;
+
+			}else{
+				return false;
+			}
+
+		}else{
+			return false;
+		}
+	}
+
     public function load($api_host,$id) {
       $args = array(
             "transform"=>"1"

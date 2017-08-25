@@ -65,7 +65,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       })();
 
       function post() {
-
           if ( $('#formNeed').parsley().validate() ) {
 
                 // Build the contacts to verify one was chosen
@@ -499,7 +498,7 @@ function replaceDocument() {
         today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
         var date = today;
 
-	    url = '<?php echo HTTP_HOST."/uploaddocument" ?>';
+	    url = '<?php echo HTTP_HOST."/bulkimport" ?>';
         type = "POST";
         var formData = new FormData();
         formData.append('fileupload', $('#updatePolicyFile')[0].files[0]);
@@ -511,38 +510,23 @@ function replaceDocument() {
             processData: false,  // tell jQuery not to process the data
             contentType: false,  // tell jQuery not to set contentType
             success : function(data) {
-                /*
-                // update listInsurance
-                url = '<?php echo API_HOST."/api/insurance_carriers/" ?>' + $("#replaceID").val();
-                type = "PUT";
-                var files = $('#updatePolicyFile').prop("files");
-                var fileNames = $.map(files, function(val) { return val.name; }).join(',');
-                data = {id: $("#replaceID").val(), fileupload: fileNames, entityID: $("#entityID").val(), updatedAt: date};
-                console.log(data);
-                $.ajax({
-                    url: url,
-                    type: type,
-                    data: JSON.stringify(data),
-                    contentType: "application/json",
-                    async: false,
-                    success: function(data){
-                        if (data > 0) {
-                            $("#myModal2").modal('hide');
-                            loadTableAJAX();
-                            passValidation = true;
-                        } else {
-                            alert("Bulk Import Failed!");
-                        }
-                    },
-                    error: function() {
-                        alert("There Was An Error Importing Carrier Needs!");
-                    }
-                });
-                */
-                console.log('Carrier Needs updated');
+
+				var alertString="";
+				var obj = $.parseJSON(data);
+				for (var x=1;x<Object.keys(obj).length;x++) {
+					alertString+="\n"+obj[x];
+				}
+				alert("Success:"+ alertString);
+
+				console.log(JSON.stringify(data));
+                //console.log('Carrier Needs updated');
+                if (data > 0) {
+                	//$("#myModal").modal('hide');
+                	$(myDialog).modal('hide');
+                }
             },
-            error: function() {
-                alert("Failed");
+            error: function(data) {
+                alert("Error: "+JSON.stringify(data));
             }
         });
 	}
@@ -592,7 +576,6 @@ function replaceDocument() {
       function formatListBox() {
           // Bootstrap Listbox
           $('.list-group.checked-list-box .list-group-item').each(function () {
-
               // Settings
               var $widget = $(this),
                   $checkbox = $('<input type="checkbox" class="hidden" style="display: none" />'),
@@ -620,22 +603,13 @@ function replaceDocument() {
               $checkbox.on('change', function () {
                   updateDisplay();
               });
-
-
-
-
               // Actions
               function updateDisplay() {
                   var isChecked = $checkbox.is(':checked');
-
                   // Set the button's state
                   $widget.data('state', (isChecked) ? "on" : "off");
-
                   // Set the button's icon
-                  $widget.find('.state-icon')
-                      .removeClass()
-                      .addClass('state-icon ' + settings[$widget.data('state')].icon);
-
+                  $widget.find('.state-icon').removeClass().addClass('state-icon ' + settings[$widget.data('state')].icon);
                   // Update the button's color
                   if (isChecked) {
                       $widget.addClass(style + color + ' active');
@@ -643,7 +617,6 @@ function replaceDocument() {
                       $widget.removeClass(style + color + ' active');
                   }
               }
-
               // Initialization
               function init() {
                   if ($widget.data('checked') == true) {
@@ -671,13 +644,11 @@ function replaceDocument() {
                   counter++;
               });
           });
-
       }
 
       function formatListBoxDP() {
           // Bootstrap Listbox
           $('.list-group.dp-checked-list-box .list-group-item').each(function () {
-
               // Settings
               var $widget = $(this),
                   $checkbox = $('<input type="checkbox" class="hidden" style="display: none" />'),
@@ -691,10 +662,8 @@ function replaceDocument() {
                           icon: 'glyphicon glyphicon-unchecked'
                       }
                   };
-
               $widget.css('cursor', 'pointer');
               $widget.append($checkbox);
-
               // Event Handlers
               $widget.on('click', function () {
                   //$checkbox.prop('checked', !$checkbox.is(':checked'));
@@ -1330,7 +1299,7 @@ function replaceDocument() {
     	loadModal();
 		var labels="";
 		var secondRow="";
-		$("#myModal label").each(function(e){
+		$("#formNeed label").each(function(e){
 			if (e==0) {
 				labels+=$(this).html();
 			} else {
