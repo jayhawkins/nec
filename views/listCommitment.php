@@ -1404,6 +1404,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         $("#entityID").prop('disabled', true);
         $("#myModalCommit").modal('show');
     }
+    
+    function addVendorInfo(){
+        
+        
+        
+    }
 
     function completeOrder(){
         var today = new Date();
