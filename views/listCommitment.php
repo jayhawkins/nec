@@ -1540,7 +1540,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                                 success: function(data){
                                     return data;
                                     //result = data;
-                                    console.log('success result is:' + result);
+                                    //console.log('success result is:' + result);
                                     //console.log(customerName + ' ' + customerAddress + ' ' + customerCity + ' ' + customerPrice);
                                 },
                                 error: function(){
@@ -1549,7 +1549,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                                    
                                 }
                             });
-                            console.log('result is:' + result);
+                            //console.log('result is:' + result);
                             //return result;
         
     }
