@@ -451,11 +451,13 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         
         var url = '<?php echo API_HOST; ?>';
         var blnShow = false;
+        var blnCarrierRate = false;
         
         switch(entityType){
             case 0:     // URL for the Admin.
                 url += '/api/order_details?include=orders,entities&columns=id,carrierID,orderID,originationCity,originationState,destinationCity,destinationState,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,orders.customerID,entities.name&filter=orderID,eq,' + orderID + '&transform=1';
                 blnShow = true;    
+                blnCarrierRate = true;
                 break;
             case 1:    // URL for Customer.
                 url += '/api/order_details?include=orders,entities&columns=id,carrierID,orderID,originationCity,originationState,destinationCity,destinationState,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,orders.customerID,entities.name&filter=orderID,eq,' + orderID + '&transform=1';
@@ -463,6 +465,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                 break;
             case 2:     // URL for the Carrier. The Customer can only see order details of their route.
                 url += '/api/order_details?include=orders,entities&columns=id,carrierID,orderID,originationCity,originationState,destinationCity,destinationState,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,orders.customerID,entities.name&filter[]=orderID,eq,' + orderID + '&filter[]=carrierID,eq,' + entityid + '&transform=1';
+                blnCarrierRate = true;
                 break;
         }        
         
@@ -555,7 +558,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
                             return entityName;
                         },
-                        visible: blnShow
+                        visible: blnCarrierRate
                     },
                     { data: "status", visible: false },
                     { data: "qty" },
@@ -567,7 +570,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                     { data: "destinationCity" },
                     { data: "destinationState" },
                     { data: "distance" },
-                    { data: "carrierRate" },
+                    { data: "carrierRate", visible: blnCarrierRate },
                     {
                         data: null,
                         "bSortable": false,
@@ -1511,11 +1514,16 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                  <hr />
                  <div class="row">
                      <div class="col-sm-3">
-                         <label for="rate">Rate</label>
-                         <div class="form-group">
+                         <?php if ($_SESSION['entityid'] > 0) { ?>
+                            <input type="hidden" id="rate" name="rate" />
+             <?php } else { ?>
+                        <label for="rate">Rate</label>
+                        <div class="form-group">
                            <input type="text" id="rate" name="rate" class="form-control mb-sm"
-                              placeholder="Rate $" required="required" data-parsley-type="number" readonly/>
-                         </div>
+                              placeholder="Rate $" data-parsley-type="number" />
+                        </div>
+              <?php } ?>
+                             
                      </div>
                      <div class="col-sm-3">
                          <label for="rateType">Rate Type</label>
