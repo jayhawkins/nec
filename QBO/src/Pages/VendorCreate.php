@@ -68,11 +68,6 @@ foreach($entities as $oneCustomer)
 }
 
 
-
-//$customer_name = 'Yaw Tandoh';
-//$customer_rate = '150.00';
-//$customer_notes = 'This is a Test';
-
 // Add a customer
 ////vendorName,vendorAddress,vendorCity,vendorState,vendorZip,vendorPrice,vendorNotes
 if ($customer_found == FALSE){
@@ -82,10 +77,7 @@ $customerObj->CompanyName = $vendorName;
 $customerObj->GivenName = $vendorName;
 $customerObj->DisplayName = $vendorName;
 
-$vendorAddress = $_REQUEST['vendorAddress'];
-$vendorCity = $_REQUEST['vendorCity'];
-$vendorState = $_REQUEST['vendorState'];
-$vendorZip = $_REQUEST['vendorZip'];
+
 
 $BillAddr = new IPPPhysicalAddress();
 $BillAddr->Line1 = $vendorAddress;
@@ -102,8 +94,26 @@ echo "Vendor Id={$vendorid}. :\n\n";
 echo 'Success';
 }
 else{
+    //vendorName,vendorAddress,vendorCity,vendorState,vendorZip,vendorPrice,vendorNotes
+    $customerObj = $dataService->FindById(new IPPCustomer( array('Id' => $customerid), true));
+
+    $customerObj->Name = $vendorName;
+    $customerObj->CompanyName = $vendorName;
+    $customerObj->GivenName = $vendorName;
+    $customerObj->DisplayName = $vendorName;
+
+    $BillAddr = new IPPPhysicalAddress();
+    $BillAddr->Line1 = $vendorAddress;        
+    $BillAddr->City = $vendorCity;
+    $BillAddr->CountrySubDivisionCode = $vendorState;
+    $BillAddr->PostalCode = $vendorZip;
+    $customerObj->BillAddr = $vendorAddress;
+
+    //update Vendor
+
+    $resultingCustomerObj = $dataService->Add($customerObj);
     
-   echo "vendor already exists Id={$vendorid}. :\n\n";
+   echo "vendor already exists but has been updated Id={$vendorid}. :\n\n";
 echo 'Success'; 
     
 }
