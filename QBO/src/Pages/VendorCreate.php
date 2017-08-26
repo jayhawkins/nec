@@ -88,7 +88,7 @@ $BillAddr->PostalCode = $vendorZip;
 $customerObj->BillAddr = $BillAddr;
 
 
-$resultingCustomerObj = $dataService->Add($customerObj);
+$resultingVendorObj = $dataService->Add($customerObj);
 $vendorid = $resultingVendorObj->Id;
 echo "Vendor Id={$vendorid}. :\n\n";
 echo 'Success';
@@ -120,12 +120,12 @@ echo 'Success';
 
 ////vendorName,vendorAddress,vendorCity,vendorState,vendorZip,vendorPrice,vendorNotes
 $purchaseorderObject = new IPPPurchaseOrder();
-$purchaseorderObject->Memo = $customer_notes;
+$purchaseorderObject->Memo = $vendorNotes;
 $purchaseorderObject->VendorRef =  intval($vendorid);
 $Line2 = new IPPline();
 $Line2->Amount = floatval($vendorPrice);
 $Line2->DetailType = 'SalesItemLineDetail';
-$Line2->Description = $customer_notes;
+$Line2->Description = $vendorNotes;
 
 $iBillAddr = new IPPPhysicalAddress();
     $iBillAddr->Line1 = $vendorAddress;        
