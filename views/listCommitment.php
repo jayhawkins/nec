@@ -1508,7 +1508,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         });
     }
     
-    var retCustomerID = "";
+    
     
     function addVendorInfo(vendorName,vendorAddress,vendorCity,vendorState,vendorZip,vendorPrice,vendorNotes,customerID){
         <?php $quickbooks_host = "http://nec.dubtel.com";?>
@@ -1531,14 +1531,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
     
     
     function addCustomerInfo(customerName,customerAddress,customerCity,customerState,customerZip,customerPrice,customerNotes){
-        
+        var result = '';
         <?php $quickbooks_host = "http://nec.dubtel.com";?>
                             $.ajax({
                                 url: '<?php echo $quickbooks_host; ?>' + '/QBO/src/Pages/CustomerCreate.php',
                                 type: "POST",
                                 data: jQuery.param({customerName: customerName,customerPrice:customerPrice,customerNotes:customerNotes,customerAddress:customerAddress,customerCity:customerCity,customerState:customerState,customerZip:customerZip}),
                                 success: function(data){
-                                    retCustomerID = data;
+                                    result = data;
                                     console.log(customerName + ' ' + customerAddress + ' ' + customerCity + ' ' + customerPrice);
                                 },
                                 error: function(){
@@ -1547,6 +1547,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                                    
                                 }
                             });
+                            return result;
         
     }
     
@@ -1671,7 +1672,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                        var customerNotes = originationCity + ', ' + originationState + ' to ' + destinationCity + ', ' + destinationState;
                        
                        //Dennis Review
-                       addCustomerInfo(customerName,customerAddress,customerCity,customerState,customerZip,customerRate,customerNotes);
+                       var retCustomerID = addCustomerInfo(customerName,customerAddress,customerCity,customerState,customerZip,customerRate,customerNotes);
 
                         // Yaw,
                         // The thing about Carriers is that there can be many different carriers per order.
