@@ -60,7 +60,7 @@ foreach($entities as $oneCustomer)
     
     if ($vendorName==$oneCustomer->DisplayName){
         $customer_found = TRUE;
-        $customerid = $oneCustomer->Id;
+        $vendorid = $oneCustomer->Id;
     }
     
    
