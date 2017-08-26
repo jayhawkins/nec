@@ -1539,8 +1539,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                                 dataType: "json",
                                 data: jQuery.param({customerName: customerName,customerPrice:customerPrice,customerNotes:customerNotes,customerAddress:customerAddress,customerCity:customerCity,customerState:customerState,customerZip:customerZip}),
                                 success: function(data){
-                                    console.log(data);
-                                    return data['customer_id'];
+                                    console.log(data.customer_id);
+                                    return data.customer_id;
                                     //result = data;
                                     //console.log('success result is:' + result);
                                     //console.log(customerName + ' ' + customerAddress + ' ' + customerCity + ' ' + customerPrice);
