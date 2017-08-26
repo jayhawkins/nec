@@ -140,6 +140,7 @@ $iBillAddr->PostalCode = $customerZip;
 
 $invoiceObj->Line = $Line;
 $invoiceObj->BillAddr = $iBillAddr;
+$invoiceObj->ShipAddr = $BillAddr;
 $invoiceObj->CustomerRef = intval($customerid);
 
 try{
