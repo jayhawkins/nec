@@ -89,7 +89,7 @@ $customerObj->BillAddr = $BillAddr;
 
 $resultingCustomerObj = $dataService->Add($customerObj);
 $customerid = $resultingCustomerObj->Id;
-echo $customerid;
+//echo $customerid;
 
 }
 else{
@@ -113,7 +113,7 @@ $customerObj->BillAddr = $BillAddr;
 
 $resultingCustomerObj = $dataService->Add($customerObj);
     
-  echo $customerid;
+  //echo $customerid;
     
 }
 
@@ -147,8 +147,12 @@ try{
  $resultingInvoiceObj = $dataService->Add($invoiceObj);
  //print_r($resultingInvoiceObj); 
 } catch (Exception $e){
- //echo $e->getMessage();
+ echo $e->getMessage();
 }
+
+
+$return["customer_id"] = $customerid;
+echo json_encode($return);
 
 
 //exit();
