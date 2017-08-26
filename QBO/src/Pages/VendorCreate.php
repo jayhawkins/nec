@@ -52,6 +52,8 @@ $customer_found = FALSE;
 // Run a query to see if customer exists
 $entities = $dataService->Query("SELECT * FROM Vendor");
 
+print_r($entities);
+exit();
 // Echo some formatted output
 $i = 0;
 foreach($entities as $oneCustomer)
