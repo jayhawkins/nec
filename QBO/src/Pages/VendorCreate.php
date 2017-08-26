@@ -95,7 +95,7 @@ echo 'Success';
 }
 else{
     //vendorName,vendorAddress,vendorCity,vendorState,vendorZip,vendorPrice,vendorNotes
-    $customerObj = $dataService->FindById(new IPPCustomer( array('Id' => $customerid), true));
+    $customerObj = $dataService->FindById(new IPPVendor( array('Id' => $vendorid), true));
 
     $customerObj->Name = $vendorName;
     $customerObj->CompanyName = $vendorName;
