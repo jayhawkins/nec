@@ -69,81 +69,54 @@ foreach($entities as $oneCustomer)
 
 
 
-
-
-
 //$customer_name = 'Yaw Tandoh';
 //$customer_rate = '150.00';
 //$customer_notes = 'This is a Test';
 
 // Add a customer
+////vendorName,vendorAddress,vendorCity,vendorState,vendorZip,vendorPrice,vendorNotes
 if ($customer_found == FALSE){
-$customerObj = new IPPCustomer();
-$customerObj->Name = $customer_name;
-$customerObj->CompanyName = $customer_name;
-$customerObj->GivenName = $customer_name;
-$customerObj->DisplayName = $customer_name;
+$customerObj = new IPPvendor();
+$customerObj->Name = $vendorName;
+$customerObj->CompanyName = $vendorName;
+$customerObj->GivenName = $vendorName;
+$customerObj->DisplayName = $vendorName;
+
+$vendorAddress = $_REQUEST['vendorAddress'];
+$vendorCity = $_REQUEST['vendorCity'];
+$vendorState = $_REQUEST['vendorState'];
+$vendorZip = $_REQUEST['vendorZip'];
+
+$BillAddr = new IPPPhysicalAddress();
+$BillAddr->Line1 = $vendorAddress;
+        
+$BillAddr->City = $vendorCity;
+$BillAddr->CountrySubDivisionCode = $vendorState;
+$BillAddr->PostalCode = $vendorZip;
+$customerObj->BillAddr = $BillAddr;
+
+
 $resultingCustomerObj = $dataService->Add($customerObj);
-$customerid = $resultingCustomerObj->Id;
-echo "Created Customer Id={$customerid}. :\n\n";
+$vendorid = $resultingVendorObj->Id;
+echo "Vendor Id={$vendorid}. :\n\n";
 echo 'Success';
 }
 else{
     
-   echo "Customer already exists Id={$customerid}. :\n\n";
+   echo "vendor already exists Id={$vendorid}. :\n\n";
 echo 'Success'; 
     
 }
 
-
-
-
-$invoiceObj = new IPPInvoice();
-
-$Line = new IPPline();
-$Line->Amount = floatval($customer_rate);
-$Line->DetailType = 'SalesItemLineDetail';
-$Line->Description = $customer_notes;
- 
-$saleItemLineDetail = new IPPSalesItemLineDetail();
-$saleItemLineDetail->ItemRef = 1;
-$Line->SalesItemLineDetail = $saleItemLineDetail;
-
-$invoiceObj->Line = $Line;
-$invoiceObj->CustomerRef = intval($customerid);
-
-try{
- $resultingInvoiceObj = $dataService->Add($invoiceObj);
- print_r($resultingInvoiceObj); 
-} catch (Exception $e){
- echo $e->getMessage();
-}
-
-
-
-if (isset($carrier_name)){
-    //IF CARRIER IS SUBMITTED
-$vendorObj = new IPPVendor();
-$vendorObj->GivenName  = $carrier_name;
-$vendorObj->DisplayName = $carrier_name;   
-$vendorObj->CompanyName = $carrier_name;   
-
-
-try{
- $resultVendorObj = $dataService->Add($vendorObj);
- $vendorid = $resultVendorObj->id;
- print_r($resultVendorObj); 
-} catch (Exception $e){
- echo $e->getMessage();
-}
-
+////vendorName,vendorAddress,vendorCity,vendorState,vendorZip,vendorPrice,vendorNotes
 $purchaseorderObject = new IPPPurchaseOrder();
 $purchaseorderObject->Memo = $customer_notes;
 $purchaseorderObject->VendorRef =  intval($vendorid);
 $Line2 = new IPPline();
-$Line2->Amount = floatval($customer_rate);
+$Line2->Amount = floatval($vendorPrice);
 $Line2->DetailType = 'SalesItemLineDetail';
 $Line2->Description = $customer_notes;
+
  
 $saleItemLineDetail2 = new IPPSalesItemLineDetail();
 $saleItemLineDetail2->ItemRef = 1;
@@ -156,10 +129,6 @@ try{
  print_r($resultingPoObj); 
 } catch (Exception $e){
  echo $e->getMessage();
-}
-
-
-
 }
 
 exit();
