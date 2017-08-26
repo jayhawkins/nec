@@ -1665,6 +1665,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                        var destinationState = selectedCustomerNeed.destinationState;
                        var customerRate = $('#customerRate').val();
                        var customerID = $("#entityID").val();
+                       var customerAddress = '';
+                       var customerCity = '';
+                       var customerState = '';
+                       var customerZip = '';
+                       var customerNotes = originationCity + ', ' + originationState + ' to ' + destinationCity + ', ' + destinationState;
+                       
+                       //Dennis Review
+                       addCustomerInfo(customerName,customerAddress,customerCity,customerState,customerZip,customerRate,customerNotes);
 
                         // Yaw,
                         // The thing about Carriers is that there can be many different carriers per order.
@@ -1708,7 +1716,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                                 };
                                 
                                 carrier = carrier_detail.carrierName;
-
+                                var carrierNotes = customerNotes;
+                                
+                                    addVendorInfo(carrier_detail.carrierName,carrier_detail.billingAddress,carrier_detail.billingCity,carrier_detail.billingState,carrier_detail.billingZip,carrier_detail.carrierRate,carrierNotes);
                                 carrier_detail_list.push(carrier_detail);
                             }
                         });
@@ -1735,24 +1745,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                        
                        var notes = 'From ' + originationCity + ',' + originationState + ' to ' + destinationCity + ',' + destinationState;
                         
-                        //submit to Quickbooks vendor create script
-                            
-  //http://nec.dubtel.com/QBO/src/Pages/CustomerCreate.php?customerName=Trailers%20r%20Us&customerRate=150&customerNotes=This%20is%20a%20test  
-                          <?php $quickbooks_host = "http://nec.dubtel.com";?>
-                            $.ajax({
-                                url: '<?php echo $quickbooks_host; ?>' + '/QBO/src/Pages/CustomerCreate.php',
-                                type: "POST",
-                                data: jQuery.param({customerName: customerName,customerRate:customerRate,customerNotes:notes,carrierName:carrier}),
-                                success: function(){
-                                    console.log(customerName + ' ' + customerRate + ' ' + notes + ' ' + carrier);
-                                },
-                                error: function(){
-                                    console.log(customerName + ' ' + customerRate + ' ' + notes + ' ' + carrier);
-                                    alert("Could not Create Quickbooks Workorder");                                    
-                                   
-                                }
-                            });
-                                                
+                                 
                         
                     $.ajax({
                         url: url,
