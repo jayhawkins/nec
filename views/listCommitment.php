@@ -1405,11 +1405,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         $("#myModalCommit").modal('show');
     }
     
-    function addVendorInfo(){
-        
-        
-        
-    }
+ 
 
     function closeCustomerCommitLegs(customerNeedID){
         
@@ -1512,12 +1508,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         });
     }
     
-    function addVendorInfo(vendorName,vendorAddress,vendorCity,vendorState,vendorZip,vendorPrice,vendorNotes){
+    var retCustomerID = "";
+    
+    function addVendorInfo(vendorName,vendorAddress,vendorCity,vendorState,vendorZip,vendorPrice,vendorNotes,customerID){
         <?php $quickbooks_host = "http://nec.dubtel.com";?>
                             $.ajax({
                                 url: '<?php echo $quickbooks_host; ?>' + '/QBO/src/Pages/VendorCreate.php',
                                 type: "POST",
-                                data: jQuery.param({vendorName: vendorName,vendorPrice:vendorPrice,vendorNotes:vendorNotes,vendorAddress:vendorAddress,vendorCity:vendorCity,vendorState:vendorState,vendorZip:vendorZip}),
+                                data: jQuery.param({vendorName: vendorName,vendorPrice:vendorPrice,vendorNotes:vendorNotes,vendorAddress:vendorAddress,vendorCity:vendorCity,vendorState:vendorState,vendorZip:vendorZip,customerID:customerID}),
                                 success: function(){
                                     console.log(vendorName + ' ' + vendorAddress + ' ' + vendorCity + ' ' + vendorPrice);
                                 },
@@ -1539,7 +1537,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                                 url: '<?php echo $quickbooks_host; ?>' + '/QBO/src/Pages/CustomerCreate.php',
                                 type: "POST",
                                 data: jQuery.param({customerName: customerName,customerPrice:customerPrice,customerNotes:customerNotes,customerAddress:customerAddress,customerCity:customerCity,customerState:customerState,customerZip:customerZip}),
-                                success: function(){
+                                success: function(data){
+                                    retCustomerID = data;
                                     console.log(customerName + ' ' + customerAddress + ' ' + customerCity + ' ' + customerPrice);
                                 },
                                 error: function(){
@@ -1718,7 +1717,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                                 carrier = carrier_detail.carrierName;
                                 var carrierNotes = customerNotes;
                                 
-                                    addVendorInfo(carrier_detail.carrierName,carrier_detail.billingAddress,carrier_detail.billingCity,carrier_detail.billingState,carrier_detail.billingZip,carrier_detail.carrierRate,carrierNotes);
+                                    addVendorInfo(carrier_detail.carrierName,carrier_detail.billingAddress,carrier_detail.billingCity,carrier_detail.billingState,carrier_detail.billingZip,carrier_detail.carrierRate,carrierNotes,retCustomerID);
                                 carrier_detail_list.push(carrier_detail);
                             }
                         });
