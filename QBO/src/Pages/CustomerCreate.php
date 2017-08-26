@@ -123,9 +123,9 @@ echo 'Success';
 $invoiceObj = new IPPInvoice();
 
 $Line = new IPPline();
-$Line->Amount = floatval($customer_rate);
+$Line->Amount = floatval($customerPrice);
 $Line->DetailType = 'SalesItemLineDetail';
-$Line->Description = $customer_notes;
+$Line->Description = $customerNotes;
  
 $saleItemLineDetail = new IPPSalesItemLineDetail();
 $saleItemLineDetail->ItemRef = 1;
