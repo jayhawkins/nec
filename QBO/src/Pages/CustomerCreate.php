@@ -93,6 +93,7 @@ echo "Created Customer Id={$customerid}. :\n\n";
 echo 'Success';
 }
 else{
+    $customerObj = new IPPCustomer();
     $customerObj = $dataService->FindById(
   new IPPCustomer( array('Id' => $customerid), true));
 
