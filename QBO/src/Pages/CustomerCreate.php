@@ -39,11 +39,14 @@ if (!$serviceContext)
 	exit("Problem while initializing ServiceContext.\n");
 
 
-
-$carrier_name = $_REQUEST['carrierName'];
-$customer_name = $_REQUEST['customerName'];
-$customer_rate = $_REQUEST['customerRate'];
-$customer_notes = "Nationwide Equipment Control: ".$_REQUEST['customerNotes'];
+//customerName,customerAddress,customerCity,customerState,customerZip,customerPrice,customerNotes
+$customerName = $_REQUEST['customerName'];
+$customerAddress = $_REQUEST['customerAddress'];
+$customerCity = $_REQUEST['customerCity'];
+$customerState = $_REQUEST['customerState'];
+$customerZip = $_REQUEST['customerZip'];
+$customerPrice = $_REQUEST['customerPrice'];
+$customerNotes = "Nationwide Equipment Control: ".$_REQUEST['customerNotes'];
 $customer_found = FALSE;
 // Run a query to see if customer exists
 $entities = $dataService->Query("SELECT * FROM Customer");
@@ -66,27 +69,50 @@ foreach($entities as $oneCustomer)
 
 
 
-
-
-//$customer_name = 'Yaw Tandoh';
-//$customer_rate = '150.00';
-//$customer_notes = 'This is a Test';
-
+////customerName,customerAddress,customerCity,customerState,customerZip,customerPrice,customerNotes
 // Add a customer
 if ($customer_found == FALSE){
 $customerObj = new IPPCustomer();
-$customerObj->Name = $customer_name;
-$customerObj->CompanyName = $customer_name;
-$customerObj->GivenName = $customer_name;
-$customerObj->DisplayName = $customer_name;
+$customerObj->Name = $customerName;
+$customerObj->CompanyName = $customerName;
+$customerObj->GivenName = $customerName;
+$customerObj->DisplayName = $customerName;
+
+$BillAddr = new IPPPhysicalAddress();
+$BillAddr->Line1 = $customerAddress;        
+$BillAddr->City = $customerCity;
+$BillAddr->CountrySubDivisionCode = $customerState;
+$BillAddr->PostalCode = $customerZip;
+$customerObj->BillAddr = $BillAddr;
+
+
+
 $resultingCustomerObj = $dataService->Add($customerObj);
 $customerid = $resultingCustomerObj->Id;
 echo "Created Customer Id={$customerid}. :\n\n";
 echo 'Success';
 }
 else{
+    $customerObj = $dataService->FindById(
+  new IPPCustomer( array('Id' => $customerid), true));
+
+$customerObj->Name = $customerName;
+$customerObj->CompanyName = $customerName;
+$customerObj->GivenName = $customerName;
+$customerObj->DisplayName = $customerName;
+
+$BillAddr = new IPPPhysicalAddress();
+$BillAddr->Line1 = $customerAddress;        
+$BillAddr->City = $customerCity;
+$BillAddr->CountrySubDivisionCode = $customerState;
+$BillAddr->PostalCode = $customerZip;
+$customerObj->BillAddr = $BillAddr;
+
+
+
+$resultingCustomerObj = $dataService->Add($customerObj);
     
-   echo "Customer already exists Id={$customerid}. :\n\n";
+   echo "Customer already exists but has been updated Id={$customerid}. :\n\n";
 echo 'Success'; 
     
 }
@@ -105,7 +131,16 @@ $saleItemLineDetail = new IPPSalesItemLineDetail();
 $saleItemLineDetail->ItemRef = 1;
 $Line->SalesItemLineDetail = $saleItemLineDetail;
 
+
+$iBillAddr = new IPPPhysicalAddress();
+$iBillAddr->Line1 = $customerAddress;        
+$iBillAddr->City = $customerCity;
+$iBillAddr->CountrySubDivisionCode = $customerState;
+$iBillAddr->PostalCode = $customerZip;
+
 $invoiceObj->Line = $Line;
+$invoiceObj->BillAddr = $iBillAddr;
+$invoiceObj->ShipAddr = $BillAddr;
 $invoiceObj->CustomerRef = intval($customerid);
 
 try{
@@ -115,48 +150,6 @@ try{
  echo $e->getMessage();
 }
 
-
-
-if (isset($carrier_name)){
-    //IF CARRIER IS SUBMITTED
-$vendorObj = new IPPVendor();
-$vendorObj->GivenName  = $carrier_name;
-$vendorObj->DisplayName = $carrier_name;   
-$vendorObj->CompanyName = $carrier_name;   
-
-
-try{
- $resultVendorObj = $dataService->Add($vendorObj);
- $vendorid = $resultVendorObj->id;
- print_r($resultVendorObj); 
-} catch (Exception $e){
- echo $e->getMessage();
-}
-
-$purchaseorderObject = new IPPPurchaseOrder();
-$purchaseorderObject->Memo = $customer_notes;
-$purchaseorderObject->VendorRef =  intval($vendorid);
-$Line2 = new IPPline();
-$Line2->Amount = floatval($customer_rate);
-$Line2->DetailType = 'SalesItemLineDetail';
-$Line2->Description = $customer_notes;
- 
-$saleItemLineDetail2 = new IPPSalesItemLineDetail();
-$saleItemLineDetail2->ItemRef = 1;
-$Line2->SalesItemLineDetail = $saleItemLineDetail2;
-
-$purchaseorderObject->Line = $Line2;
-
-try{
- $resultingPoObj = $dataService->Add($purchaseorderObject);
- print_r($resultingPoObj); 
-} catch (Exception $e){
- echo $e->getMessage();
-}
-
-
-
-}
 
 exit();
 
