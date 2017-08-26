@@ -1531,14 +1531,15 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
     
     
     function addCustomerInfo(customerName,customerAddress,customerCity,customerState,customerZip,customerPrice,customerNotes){
-        var result = '';
+        //var result = '';
         <?php $quickbooks_host = "http://nec.dubtel.com";?>
                             $.ajax({
                                 url: '<?php echo $quickbooks_host; ?>' + '/QBO/src/Pages/CustomerCreate.php',
                                 type: "POST",
                                 data: jQuery.param({customerName: customerName,customerPrice:customerPrice,customerNotes:customerNotes,customerAddress:customerAddress,customerCity:customerCity,customerState:customerState,customerZip:customerZip}),
                                 success: function(data){
-                                    result = data;
+                                    return data;
+                                    //result = data;
                                     console.log('success result is:' + result);
                                     //console.log(customerName + ' ' + customerAddress + ' ' + customerCity + ' ' + customerPrice);
                                 },
@@ -1549,7 +1550,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                                 }
                             });
                             console.log('result is:' + result);
-                            return result;
+                            //return result;
         
     }
     
