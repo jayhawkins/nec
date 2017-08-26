@@ -1672,6 +1672,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                        var customerZip = '';
                        var customerNotes = originationCity + ', ' + originationState + ' to ' + destinationCity + ', ' + destinationState;
                        
+                       var customerBillingAddress = getBillingAddress(customerID);
+                       
+                       // Here is empty data for Customer Billing Address
+                       customerAddress = customerBillingAddress.address1;
+                       customerCity = customerBillingAddress.city;
+                       customerState = customerBillingAddress.state;
+                       customerZip = customerBillingAddress.zip;
+                       
                        //Dennis Review
                        var retCustomerID = addCustomerInfo(customerName,customerAddress,customerCity,customerState,customerZip,customerRate,customerNotes);
                        alert(retCustomerID);
@@ -1730,15 +1738,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                        // You need the total Carrier...
                        var carrierTotalRate = $('#carrierTotalRate').val();
                        
-                       var customerBillingAddress = getBillingAddress(customerID);
-                       
-                        //console.log(JSON.stringify(customerBillingAddress));
-                        
-                       // Here is empty data for Customer Billing Address
-                       var customerBillingAddress1 = customerBillingAddress.address1;
-                       var customerBillingCity = customerBillingAddress.city;
-                       var customerBillingState = customerBillingAddress.state;
-                       var customerBillingZip = customerBillingAddress.zip;
                        
                        
                        
