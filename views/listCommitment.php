@@ -1512,6 +1512,45 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         });
     }
     
+    function addVendorInfo(vendorName,vendorAddress,vendorCity,vendorState,vendorZip,vendorPrice,vendorNotes){
+        <?php $quickbooks_host = "http://nec.dubtel.com";?>
+                            $.ajax({
+                                url: '<?php echo $quickbooks_host; ?>' + '/QBO/src/Pages/VendorCreate.php',
+                                type: "POST",
+                                data: jQuery.param({vendorName: vendorName,vendorPrice:vendorPrice,vendorNotes:vendorNotes,vendorAddress:vendorAddress,vendorCity:vendorCity,vendorState:vendorState,vendorZip:vendorZip}),
+                                success: function(){
+                                    console.log(vendorName + ' ' + vendorAddress + ' ' + vendorCity + ' ' + vendorPrice);
+                                },
+                                error: function(){
+                                    console.log('Error:' + ' ' + vendorAddress + ' ' + vendorCity + ' ' + vendorPrice);
+                                    alert("Could not Create Quickbooks Vendor");                                    
+                                   
+                                }
+                            });
+        
+        
+    }
+    
+    
+    function addCustomerInfo(customerName,customerAddress,customerCity,customerState,customerZip,customerPrice,customerNotes){
+        
+        <?php $quickbooks_host = "http://nec.dubtel.com";?>
+                            $.ajax({
+                                url: '<?php echo $quickbooks_host; ?>' + '/QBO/src/Pages/CustomerCreate.php',
+                                type: "POST",
+                                data: jQuery.param({customerName: customerName,customerPrice:customerPrice,customerNotes:customerNotes,customerAddress:customerAddress,customerCity:customerCity,customerState:customerState,customerZip:customerZip}),
+                                success: function(){
+                                    console.log(customerName + ' ' + customerAddress + ' ' + customerCity + ' ' + customerPrice);
+                                },
+                                error: function(){
+                                    console.log('Error:' + customerName + ' ' + customerAddress + ' ' + customerCity + ' ' + customerPrice);
+                                    alert("Could not Create Quickbooks Customer");                                    
+                                   
+                                }
+                            });
+        
+    }
+    
     $('#completeOrder').unbind('click').bind('click', function(event){
     
     
