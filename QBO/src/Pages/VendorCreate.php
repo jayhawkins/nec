@@ -138,15 +138,20 @@ echo 'Success';
     
 }
 
-////vendorName,vendorAddress,vendorCity,vendorState,vendorZip,vendorPrice,vendorNotes
-$purchaseorderObject = new IPPPurchaseOrder();
-$purchaseorderObject->Memo = $vendorNotes;
-$purchaseorderObject->VendorRef =  intval($vendorid);
-//$purchaseorderObject->
-$Line2 = new IPPline();
-$Line2->Amount = floatval($vendorPrice);
-$Line2->DetailType = 'ItemBasedExpenseLineDetail';
-$Line2->Description = $vendorNotes;
+
+$linedet = new IPPPurchaseOrderItemLineDetail();
+$linedet->CustomerRef  = intval($verdorCustomerID);
+
+$line = new IPPLine();
+$line->Id = 0;
+$line->Description = $vendorNotes;
+$line->Amount = floatval($vendorPrice);
+$line->DetailType= 'ItemBasedExpenseLineDetail ';
+$line->ItemBasedExpenseLineDetail = $linedet;
+$line->BillableStatus = 'Notbillable';
+$line->ItemRef = '2';
+$line->UnitPrice = floatval($vendorPrice);
+$line->Qty = '1';
 
 $iBillAddr = new IPPPhysicalAddress();
     $iBillAddr->Line1 = $vendorName;   
@@ -155,23 +160,22 @@ $iBillAddr = new IPPPhysicalAddress();
     $iBillAddr->City = $vendorCity;
     $iBillAddr->CountrySubDivisionCode = $vendorState;
     $iBillAddr->PostalCode = $vendorZip;
-//$purchaseorderObject->ShipAddr = $iBillAddr;
- 
-$saleItemLineDetail2 = new IPPPurchaseOrderItemLineDetail();
-$saleItemLineDetail2->ItemRef = 1;
-$saleItemLineDetail2->CustomerRef = $verdorCustomerID;
-$saleItemLineDetail2->UnitPrice = floatval($vendorPrice);
-$saleItemLineDetail2->Qty = 1;
-$Line2->SalesItemLineDetail = $saleItemLineDetail2;
 
-$purchaseorderObject->Line = $Line2;
+$purchaseOrder = new IPPPurchaseOrder();
+$purchaseOrder->Line = $line;
+//$purchaseOrder->ShipAddr = $iBillAddr;
+$purchaseOrder->VendorRef = intval($vendorid);
+$purchaseOrder->APAccountRef = 1;
+$purchaseOrder->TotalAmt = floatval($vendorPrice);
+//add purchase order
 
 try{
- $resultingPoObj = $dataService->Add($purchaseorderObject);
- print_r($resultingPoObj); 
+ $result = $dataService->Add($purchaseOrder); 
+ print_r($result); 
 } catch (Exception $e){
  echo $e->getMessage();
 }
+
 
 exit();
 
