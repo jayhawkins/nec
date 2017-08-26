@@ -89,8 +89,8 @@ $customerObj->BillAddr = $BillAddr;
 
 $resultingCustomerObj = $dataService->Add($customerObj);
 $customerid = $resultingCustomerObj->Id;
-echo "Created Customer Id={$customerid}. :\n\n";
-echo 'Success';
+echo $customerid;
+
 }
 else{
     $customerObj = new IPPCustomer();
@@ -113,8 +113,7 @@ $customerObj->BillAddr = $BillAddr;
 
 $resultingCustomerObj = $dataService->Add($customerObj);
     
-   echo "Customer already exists but has been updated Id={$customerid}. :\n\n";
-echo 'Success'; 
+  echo $customerid;
     
 }
 
@@ -146,9 +145,9 @@ $invoiceObj->CustomerRef = intval($customerid);
 
 try{
  $resultingInvoiceObj = $dataService->Add($invoiceObj);
- print_r($resultingInvoiceObj); 
+ //print_r($resultingInvoiceObj); 
 } catch (Exception $e){
- echo $e->getMessage();
+ //echo $e->getMessage();
 }
 
 

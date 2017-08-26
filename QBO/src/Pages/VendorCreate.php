@@ -47,6 +47,7 @@ $vendorCity = $_REQUEST['vendorCity'];
 $vendorState = $_REQUEST['vendorState'];
 $vendorZip = $_REQUEST['vendorZip'];
 $vendorPrice = $_REQUEST['vendorPrice'];
+$verdorCustomerID = $_REQUEST['customerID'];
 $vendorNotes = "Nationwide Equipment Control: ".$_REQUEST['vendorNotes'];
 $customer_found = FALSE;
 // Run a query to see if customer exists
@@ -144,7 +145,7 @@ $purchaseorderObject->VendorRef =  intval($vendorid);
 //$purchaseorderObject->
 $Line2 = new IPPline();
 $Line2->Amount = floatval($vendorPrice);
-$Line2->DetailType = 'SalesItemLineDetail';
+$Line2->DetailType = 'ItemBasedExpenseLineDetail';
 $Line2->Description = $vendorNotes;
 
 $iBillAddr = new IPPPhysicalAddress();
@@ -156,8 +157,11 @@ $iBillAddr = new IPPPhysicalAddress();
     $iBillAddr->PostalCode = $vendorZip;
 //$purchaseorderObject->ShipAddr = $iBillAddr;
  
-$saleItemLineDetail2 = new IPPSalesItemLineDetail();
+$saleItemLineDetail2 = new IPPPurchaseOrderItemLineDetail();
 $saleItemLineDetail2->ItemRef = 1;
+$saleItemLineDetail2->CustomerRef = $verdorCustomerID;
+$saleItemLineDetail2->UnitPrice = floatval($vendorPrice);
+$saleItemLineDetail2->Qty = 1;
 $Line2->SalesItemLineDetail = $saleItemLineDetail2;
 
 $purchaseorderObject->Line = $Line2;
