@@ -141,6 +141,7 @@ echo 'Success';
 $purchaseorderObject = new IPPPurchaseOrder();
 $purchaseorderObject->Memo = $vendorNotes;
 $purchaseorderObject->VendorRef =  intval($vendorid);
+//$purchaseorderObject->
 $Line2 = new IPPline();
 $Line2->Amount = floatval($vendorPrice);
 $Line2->DetailType = 'SalesItemLineDetail';
