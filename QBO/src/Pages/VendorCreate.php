@@ -62,8 +62,8 @@ foreach($entities as $oneCustomer)
     if ($vendorName==$oneCustomer->DisplayName){
         $customer_found = TRUE;
         $vendorid = $oneCustomer->Id;
-        echo $vendorid;
-        exit();
+        //echo $vendorid;
+        //exit();
     }
     
    
@@ -88,7 +88,8 @@ $BillAddr->Line1 = $vendorAddress;
 $BillAddr->City = $vendorCity;
 $BillAddr->CountrySubDivisionCode = $vendorState;
 $BillAddr->PostalCode = $vendorZip;
-$customerObj->BillAddr = $BillAddr;
+echo "adding new vendor";
+//$customerObj->BillAddr = $BillAddr;
 
 
 try{
