@@ -242,7 +242,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                                                     contentType: "application/json",
                                                     async: false,
                                                     success: function(updateneeds){
-                                                        alert(notification);
+                                                        alert(notification);                                                        
+                                                        countCommitments();
                                                     },
                                                     error: function() {
                                                        alert('Failed Updating Root Customer Needs ID! - Notify NEC of this failure.');

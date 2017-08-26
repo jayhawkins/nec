@@ -1107,7 +1107,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
             </div>   
             <div class="col-sm-4 col-sm-offset-4">
                 <div class="form-group">
-                    <button id="completeOrder" class="btn btn-primary btn-block" role="button" onclick="completeOrder();"><i class="fa fa-check-square-o text-info"></i> <span class="text-info">Submit for Order</span></button>
+                    <button id="completeOrder" class="btn btn-primary btn-block" role="button"><i class="fa fa-check-square-o text-info"></i> <span class="text-info">Submit for Order</span></button>
                 </div>
             </div>
         </div>
@@ -1404,8 +1404,118 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         $("#entityID").prop('disabled', true);
         $("#myModalCommit").modal('show');
     }
+    
+    function addVendorInfo(){
+        
+        
+        
+    }
 
-    function completeOrder(){
+    function closeCustomerCommitLegs(customerNeedID){
+        
+        $.ajax({
+            url: '<?php echo API_HOST ?>' + '/api/customer_needs?columns=id&filter=rootCustomerNeedsID,eq,' + customerNeedID + '&transform=1',
+            type: "GET",
+            contentType: "application/json",
+            async: false,
+            success: function(data){
+                
+                data.customer_needs.forEach(function(customerNeedID){
+                    
+                    $.ajax({
+                        url: '<?php echo API_HOST ?>' + '/api/customer_needs/' + customerNeedID,
+                        type: "PUT",
+                        data: JSON.stringify({status: "Closed"}),
+                        contentType: "application/json",
+                        async: false,
+                        success: function(){
+                        },
+                        error: function(){
+                            alert("Could not close availability leg.");
+                        }
+                    });
+                });                
+            },
+            error: function(){
+                alert("Could not Get customer needs Customer Needs.");
+            }
+        });
+        
+    }
+
+    function createNewAvailability(customerNeedID, differenceQty, today){
+        
+        $.ajax({
+            url: '<?php echo API_HOST ?>' + '/api/customer_needs/' + customerNeedID + '?transform=1',
+            type: "GET",
+            contentType: "application/json",
+            success: function(data){
+                var url = '<?php echo API_HOST."/api/customer_needs" ?>';
+                var type = "POST";
+                           
+                var newCustomerNeed = {entityID: data.entityID, originationAddress1: data.originationAddress1, originationCity: data.originationCity, originationState: data.originationState, originationZip: data.originationZip,
+                                    destinationAddress1: data.destinationAddress1, destinationCity: data.destinationCity, destinationState: data.destinationState, destinationZip: data.destinationZip,
+                                    originationLng: data.originationLng, originationLat: data.originationLat, destinationLng: data.destinationLng, destinationLat: data.destinationLat, distance: data.distance,
+                                    needsDataPoints: data.needsDataPoints, status: "Available", qty: differenceQty, rate: 0, rateType: data.rateType, transportationMode: data.transportationMode, contactsEmails: data.contactsEmails,
+                                    availableDate: data.availableDate, expirationDate: data.expirationDate, createdAt: today, updatedAt: today};
+                                
+                $.ajax({
+                   url: url,
+                   type: type,
+                   data: JSON.stringify(newCustomerNeed),
+                   contentType: "application/json",
+                   async: false,
+                   success: function(data){
+                      if (data > 0) {
+                           var params = {id: data};
+                           $.ajax({
+                              url: '<?php echo HTTP_HOST."/customerneedsnotification" ?>',
+                              type: 'POST',
+                              data: JSON.stringify(params),
+                              contentType: "application/json",
+                              async: false,
+                              success: function(notification){
+                                  //var updatedata = {rootCustomerNeedsID: data};
+                                  var updatedata = {rootCustomerNeedsID: 0};
+                                  $.ajax({
+                                      url: '<?php echo API_HOST."/api/customer_needs" ?>/' + data,
+                                      type: 'PUT',
+                                      data: JSON.stringify(updatedata),
+                                      contentType: "application/json",
+                                      async: false,
+                                      success: function(updateneeds){
+                                          //alert(notification);                                                        
+                                          countCommitments();
+                                      },
+                                      error: function() {
+                                         alert('Failed Updating Root Customer Needs ID! - Notify NEC of this failure.');
+                                      }
+                                  });
+                              },
+                              error: function() {
+                                 alert('Failed Sending Notifications! - Notify NEC of this failure.');
+                              }
+                           });
+                      } else {
+                        alert("Adding Need Failed! Please Verify Your Data.");
+                      }
+                   },
+                   error: function() {
+                      alert("There Was An Error Adding Availability!");
+                   }
+                });                  
+            },
+            error: function(error){
+                console.log("Error: " + error);
+            }
+            
+        });
+    }
+    
+    $('#completeOrder').unbind('click').bind('click', function(event){
+    
+    
+        event.preventDefault();
         var today = new Date();
         var orderID = today.getTime().toString();
         var dd = today.getDate();
@@ -1455,16 +1565,19 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         var commitTable = $('#customer-needs-commit-table').DataTable();
         var customer_needs = commitTable.ajax.json().customer_needs;
         var carrierIDs = new Array();
-                    
+        var carrierQty = 0;
         customer_needs.forEach(function(customer_need){
 
             if(customer_need.customer_needs_commit.length > 0 && customer_need.customer_needs_commit[0].status == "Close"){
                 var carrier = {carrierID: customer_need.customer_needs_commit[0].entityID};
                 
-                if (carrierIDs.indexOf(carrier) == -1) carrierIDs.push(carrier);                
+                if (carrierIDs.indexOf(carrier) === -1) carrierIDs.push(carrier);  
+                
+                if (carrierQty === 0) carrierQty = customer_need.qty;                
             }
         });
-                            
+        
+                                    
         if(fileData != undefined){
             $.ajax({
                 url: url,
@@ -1476,6 +1589,18 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                     //alert('Purchase Order Uploaded.');
                     var documentID = parseInt(response);    // Returned is the uploaded document's ID number.
                     
+                    var orderQty = 0;
+                    var differenceQty = 0;
+                    
+                    if(selectedCustomerNeed.qty > carrierQty) {
+                        orderQty = carrierQty;
+                        differenceQty = selectedCustomerNeed.qty - carrierQty;
+                        //createNewAvailability(selectedCustomerNeed.id, differenceQty, today);
+                    }
+                    else {
+                        orderQty = selectedCustomerNeed.qty;
+                    }
+                    
                     var url = '<?php echo API_HOST ?>' + '/api/orders/';
                     var orderData = {customerID: $("#entityID").val(), carrierIDs: carrierIDs, documentID: documentID, orderID: orderID,
                             originationAddress: selectedCustomerNeed.originationAddress1, originationCity: selectedCustomerNeed.originationCity,
@@ -1485,14 +1610,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                             destinationState: selectedCustomerNeed.destinationState, destinationZip: selectedCustomerNeed.destinationZip,
                             destinationLng: selectedCustomerNeed.destinationLng, destinationLat: selectedCustomerNeed.destinationLat,
                             distance: selectedCustomerNeed.distance, needsDataPoints: selectedCustomerNeed.needsDataPoints,
-                            status: "Open", transportationMode: selectedCustomerNeed.transportationMode, qty: selectedCustomerNeed.qty,
+                            status: "Open", transportationMode: selectedCustomerNeed.transportationMode, qty: orderQty,
                             rateType: selectedCustomerNeed.rateType, customerRate: $('#customerRate').val(), carrierTotalRate: $('#carrierTotalRate').val(),
                             totalRevenue: $('#totalRevenue').val(), createdAt: today, updatedAt: today};
-                        
+                                                
                        // Yaw, here is the information you requested.
                        
                        // This is the Selected Customer Transport Table at the top of Committed Transport
-                       console.log(selectedCustomerNeed);
+                       //console.log(selectedCustomerNeed);
                        
                        var customerName = selectedCustomerNeed.entities[0].name;
                        var originationCity = selectedCustomerNeed.originationCity;
@@ -1550,14 +1675,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                         });
                         
                         // This is a list of all the carriers accepted and associated with the commit.
-                        console.log(JSON.stringify(carrier_detail_list));
+                        //console.log(JSON.stringify(carrier_detail_list));
                         
                        // You need the total Carrier...
                        var carrierTotalRate = $('#carrierTotalRate').val();
                        
                        var customerBillingAddress = getBillingAddress(customerID);
                        
-                        console.log(JSON.stringify(customerBillingAddress));
+                        //console.log(JSON.stringify(customerBillingAddress));
                         
                        // Here is empty data for Customer Billing Address
                        var customerBillingAddress1 = customerBillingAddress.address1;
@@ -1599,6 +1724,256 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                         success: function(response){
                             
                             saveOrderDetails(response);
+                            closeCustomerCommitLegs(selectedCustomerNeed.id);
+                            if (differenceQty != 0) createNewAvailability(selectedCustomerNeed.id, differenceQty, today);
+                            
+                            $.ajax({
+                                url: '<?php echo API_HOST ?>' + '/api/customer_needs/' + selectedCustomerNeed.id,
+                                type: "PUT",
+                                data: JSON.stringify({status: "Closed"}),
+                                contentType: "application/json",
+                                async: false,
+                                success: function(){                                   
+                                    
+                                    countUserOrders();
+                                    countCommitments();
+                                    closeCommitTransport();
+                                },
+                                error: function(){
+                                    alert("Could not Close Customer Needs.");                                    
+                                    closeCommitTransport();
+                                }
+                            });
+                        },
+                        error: function(){
+                            alert("Purchase Order Uploaded. Unable to Complete the Order. ");
+                        }
+                        
+                    });
+
+               },
+               error: function(error) {
+                  alert("Could not upload file. Purchase order not completed.");
+               }
+            }); 
+        }
+        else{
+            alert('You must Upload the Customer\'s Purchase Order to Complete the Order.');
+        }
+        
+        return false;
+    });
+    
+    function completeOrder(){
+        var today = new Date();
+        var orderID = today.getTime().toString();
+        var dd = today.getDate();
+        var mm = today.getMonth()+1; //January is 0!
+        var yyyy = today.getFullYear();
+        var hours = today.getHours();
+        var min = today.getMinutes();
+        var sec = today.getSeconds();
+
+        if(dd<10) {
+            dd='0'+dd;
+        }
+
+        if(mm<10) {
+            mm='0'+mm;
+        }
+
+        if(hours<10) {
+            hours='0'+hours;
+        }
+
+        if(min<10) {
+            min='0'+min;
+        }
+
+        if(sec<10) {
+            sec='0'+sec;
+        }
+
+        today = mm+'/'+dd+'/'+yyyy;
+        today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+
+        var url = '<?php echo HTTP_HOST."/uploaddocument" ?>';
+        var type = "POST";
+        var formData = new FormData();
+        var fileData = $('#filePurchaseOrder')[0].files[0];
+        formData.append('entityID', $("#entityID").val());
+        formData.append('name', "Purchase Order: " + today);
+        formData.append('documentID', "purchaseOrder");
+        formData.append('updatedAt', today);
+        formData.append('fileupload', fileData);
+        
+        var selectedTable = $('#selected-customer-need').DataTable();
+        var selectedCustomerNeed = selectedTable.ajax.json().customer_needs[0];
+        
+        
+        var commitTable = $('#customer-needs-commit-table').DataTable();
+        var customer_needs = commitTable.ajax.json().customer_needs;
+        var carrierIDs = new Array();
+        var carrierQty = 0;
+        customer_needs.forEach(function(customer_need){
+
+            if(customer_need.customer_needs_commit.length > 0 && customer_need.customer_needs_commit[0].status == "Close"){
+                var carrier = {carrierID: customer_need.customer_needs_commit[0].entityID};
+                
+                if (carrierIDs.indexOf(carrier) === -1) carrierIDs.push(carrier);  
+                
+                if (carrierQty === 0) carrierQty = customer_need.qty;                
+            }
+        });
+        
+                                    
+        if(fileData != undefined){
+            $.ajax({
+                url: url,
+                type: type,
+                data: formData,
+                processData: false,  // tell jQuery not to process the data
+                contentType: false,  // tell jQuery not to set contentType
+                success: function(response){
+                    //alert('Purchase Order Uploaded.');
+                    var documentID = parseInt(response);    // Returned is the uploaded document's ID number.
+                    
+                    var orderQty = 0;
+                    var differenceQty = 0;
+                    
+                    if(selectedCustomerNeed.qty > carrierQty) {
+                        orderQty = carrierQty;
+                        differenceQty = selectedCustomerNeed.qty - carrierQty;
+                        //createNewAvailability(selectedCustomerNeed.id, differenceQty, today);
+                    }
+                    else {
+                        orderQty = selectedCustomerNeed.qty;
+                    }
+                    
+                    var url = '<?php echo API_HOST ?>' + '/api/orders/';
+                    var orderData = {customerID: $("#entityID").val(), carrierIDs: carrierIDs, documentID: documentID, orderID: orderID,
+                            originationAddress: selectedCustomerNeed.originationAddress1, originationCity: selectedCustomerNeed.originationCity,
+                            originationState: selectedCustomerNeed.originationState, originationZip: selectedCustomerNeed.originationZip,
+                            originationLng: selectedCustomerNeed.originationLng, originationLat: selectedCustomerNeed.originationLat,
+                            destinationAddress: selectedCustomerNeed.destinationAddress1, destinationCity: selectedCustomerNeed.destinationCity,
+                            destinationState: selectedCustomerNeed.destinationState, destinationZip: selectedCustomerNeed.destinationZip,
+                            destinationLng: selectedCustomerNeed.destinationLng, destinationLat: selectedCustomerNeed.destinationLat,
+                            distance: selectedCustomerNeed.distance, needsDataPoints: selectedCustomerNeed.needsDataPoints,
+                            status: "Open", transportationMode: selectedCustomerNeed.transportationMode, qty: orderQty,
+                            rateType: selectedCustomerNeed.rateType, customerRate: $('#customerRate').val(), carrierTotalRate: $('#carrierTotalRate').val(),
+                            totalRevenue: $('#totalRevenue').val(), createdAt: today, updatedAt: today};
+                                                
+                       // Yaw, here is the information you requested.
+                       
+                       // This is the Selected Customer Transport Table at the top of Committed Transport
+                       //console.log(selectedCustomerNeed);
+                       
+                       var customerName = selectedCustomerNeed.entities[0].name;
+                       var originationCity = selectedCustomerNeed.originationCity;
+                       var originationState = selectedCustomerNeed.originationState;
+                       var destinationCity = selectedCustomerNeed.destinationCity;
+                       var destinationState = selectedCustomerNeed.destinationState;
+                       var customerRate = $('#customerRate').val();
+                       var customerID = $("#entityID").val();
+
+                        // Yaw,
+                        // The thing about Carriers is that there can be many different carriers per order.
+                        // So it has to be gathered as an array.
+                        // If you have any questions about this, let me know.
+                        // Dennis
+                        
+                        var needsCommitTable = $("#customer-needs-commit-table").DataTable();
+                        var needsCommitJSON = needsCommitTable.ajax.json();        
+
+                        var customer_needs_commit = needsCommitJSON.customer_needs;
+                        var carrier_detail_list = new Array();
+                        var carrier = "";
+
+                        customer_needs_commit.forEach(function(customer_need){
+
+                            if(customer_need.customer_needs_commit.length > 0 && 
+                                    customer_need.customer_needs_commit[0].status == "Close"){
+                                
+                                var entityName = "";
+                                var entityID = customer_need.customer_needs_commit[0].entityID;
+                                
+                                
+                                allEntities.entities.forEach(function(entity){
+
+                                    if(entityID == entity.id){
+
+                                        entityName = entity.name;
+                                    }                            
+                                });
+                                
+                                var carrierBillingAddress = getBillingAddress(entityID);
+                                
+                                var carrier_detail = {
+                                    carrierName: entityName,                // This is the carrier's Name
+                                    carrierRate: customer_need.customer_needs_commit[0].rate,    // This is that carrier's rate.
+                                    billingAddress: carrierBillingAddress.address1,
+                                    billingCity: carrierBillingAddress.city,
+                                    billingState: carrierBillingAddress.state,
+                                    billingZip: carrierBillingAddress.zip
+                                };
+                                
+                                carrier = carrier_detail.carrierName;
+
+                                carrier_detail_list.push(carrier_detail);
+                            }
+                        });
+                        
+                        // This is a list of all the carriers accepted and associated with the commit.
+                        //console.log(JSON.stringify(carrier_detail_list));
+                        
+                       // You need the total Carrier...
+                       var carrierTotalRate = $('#carrierTotalRate').val();
+                       
+                       var customerBillingAddress = getBillingAddress(customerID);
+                       
+                        //console.log(JSON.stringify(customerBillingAddress));
+                        
+                       // Here is empty data for Customer Billing Address
+                       var customerBillingAddress1 = customerBillingAddress.address1;
+                       var customerBillingCity = customerBillingAddress.city;
+                       var customerBillingState = customerBillingAddress.state;
+                       var customerBillingZip = customerBillingAddress.zip;
+                       
+                       
+                       
+                       
+                       
+                       var notes = 'From ' + originationCity + ',' + originationState + ' to ' + destinationCity + ',' + destinationState;
+                        
+                        //submit to Quickbooks vendor create script
+                            
+  //http://nec.dubtel.com/QBO/src/Pages/CustomerCreate.php?customerName=Trailers%20r%20Us&customerRate=150&customerNotes=This%20is%20a%20test  
+                          <?php $quickbooks_host = "http://nec.dubtel.com";?>
+                            $.ajax({
+                                url: '<?php echo $quickbooks_host; ?>' + '/QBO/src/Pages/CustomerCreate.php',
+                                type: "POST",
+                                data: jQuery.param({customerName: customerName,customerRate:customerRate,customerNotes:notes,carrierName:carrier}),
+                                success: function(){
+                                    console.log(customerName + ' ' + customerRate + ' ' + notes + ' ' + carrier);
+                                },
+                                error: function(){
+                                    console.log(customerName + ' ' + customerRate + ' ' + notes + ' ' + carrier);
+                                    alert("Could not Create Quickbooks Workorder");                                    
+                                   
+                                }
+                            });
+                                                
+                        
+                    $.ajax({
+                        url: url,
+                        type: type,
+                        data: JSON.stringify(orderData),
+                        contentType: "application/json",
+                        async: false,
+                        success: function(response){
+                            
+                            saveOrderDetails(response);
+                            closeCustomerCommitLegs(selectedCustomerNeed.id);
                             
                             $.ajax({
                                 url: '<?php echo API_HOST ?>' + '/api/customer_needs/' + selectedCustomerNeed.id,
