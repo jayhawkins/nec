@@ -52,8 +52,7 @@ $customer_found = FALSE;
 // Run a query to see if customer exists
 $entities = $dataService->Query("SELECT * FROM Vendor");
 
-print_r($entities);
-exit();
+
 // Echo some formatted output
 $i = 0;
 foreach($entities as $oneCustomer)
@@ -63,6 +62,8 @@ foreach($entities as $oneCustomer)
     if ($vendorName==$oneCustomer->DisplayName){
         $customer_found = TRUE;
         $vendorid = $oneCustomer->Id;
+        echo $vendorid;
+        exit();
     }
     
    
@@ -90,12 +91,18 @@ $BillAddr->PostalCode = $vendorZip;
 $customerObj->BillAddr = $BillAddr;
 
 
-$resultingVendorObj = $dataService->Add($customerObj);
-$vendorid = $resultingVendorObj->Id;
+try{
+ $resultingCustomerObj = $dataService->Add($customerObj);
+ print_r($resultingCustomerObj); 
+} catch (Exception $e){
+ echo $e->getMessage();
+}
+$vendorid =  $resultingCustomerObj->Id;
 echo "Vendor Id={$vendorid}. :\n\n";
 echo 'Success';
 }
 else{
+    $customerObj = new IPPvendor();
     //vendorName,vendorAddress,vendorCity,vendorState,vendorZip,vendorPrice,vendorNotes
     $customerObj = $dataService->FindById(new IPPVendor( array('Id' => $vendorid), true));
 
@@ -113,7 +120,14 @@ else{
 
     //update Vendor
 
-    $resultingCustomerObj = $dataService->Add($customerObj);
+   
+    
+    try{
+ $resultingCustomerObj = $dataService->Add($customerObj);
+ print_r($resultingCustomerObj); 
+} catch (Exception $e){
+ echo $e->getMessage();
+}
     
    echo "vendor already exists but has been updated Id={$vendorid}. :\n\n";
 echo 'Success'; 
