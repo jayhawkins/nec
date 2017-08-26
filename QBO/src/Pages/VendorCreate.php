@@ -91,7 +91,7 @@ $BillAddr->City = $vendorCity;
 $BillAddr->CountrySubDivisionCode = $vendorState;
 $BillAddr->PostalCode = $vendorZip;
 echo "adding new vendor";
-$customerObj->BillAddr = $BillAddr;
+//$customerObj->BillAddr = $BillAddr;
 
 
 try{
@@ -119,7 +119,7 @@ else{
     $BillAddr->City = $vendorCity;
     $BillAddr->CountrySubDivisionCode = $vendorState;
     $BillAddr->PostalCode = $vendorZip;
-    $customerObj->BillAddr = $BillAddr;
+    //$customerObj->BillAddr = $BillAddr;
 
     //update Vendor
 
@@ -153,7 +153,7 @@ $iBillAddr = new IPPPhysicalAddress();
     $iBillAddr->City = $vendorCity;
     $iBillAddr->CountrySubDivisionCode = $vendorState;
     $iBillAddr->PostalCode = $vendorZip;
-$purchaseorderObject->ShipAddr = $iBillAddr;
+//$purchaseorderObject->ShipAddr = $iBillAddr;
  
 $saleItemLineDetail2 = new IPPSalesItemLineDetail();
 $saleItemLineDetail2->ItemRef = 1;
