@@ -120,7 +120,7 @@ echo 'Success';
 
 ////vendorName,vendorAddress,vendorCity,vendorState,vendorZip,vendorPrice,vendorNotes
 $purchaseorderObject = new IPPPurchaseOrder();
-$purchaseorderObject->Memo = $customer_notes;
+$purchaseorderObject->Memo = $vendorNotes;
 $purchaseorderObject->VendorRef =  intval($vendorid);
 $Line2 = new IPPline();
 $Line2->Amount = floatval($vendorPrice);
