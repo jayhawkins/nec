@@ -39,11 +39,15 @@ if (!$serviceContext)
 	exit("Problem while initializing ServiceContext.\n");
 
 
+//vendorName,vendorAddress,vendorCity,vendorState,vendorZip,vendorPrice,vendorNotes
 
-$carrier_name = $_REQUEST['carrierName'];
-$customer_rate = $_REQUEST['carrierRate'];
-$carrier_address = $_REQUEST['carrierAddress'];
-$customer_notes = "Nationwide Equipment Control: ".$_REQUEST['customerNotes'];
+$vendorName = $_REQUEST['vendorName'];
+$vendorAddress = $_REQUEST['vendorAddress'];
+$vendorCity = $_REQUEST['vendorCity'];
+$vendorState = $_REQUEST['vendorState'];
+$vendorZip = $_REQUEST['vendorZip'];
+$vendorPrice = $_REQUEST['vendorPrice'];
+$vendorNotes = "Nationwide Equipment Control: ".$_REQUEST['vendorNotes'];
 $customer_found = FALSE;
 // Run a query to see if customer exists
 $entities = $dataService->Query("SELECT * FROM Vendor");
