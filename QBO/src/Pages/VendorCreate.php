@@ -107,7 +107,7 @@ else{
     $BillAddr->City = $vendorCity;
     $BillAddr->CountrySubDivisionCode = $vendorState;
     $BillAddr->PostalCode = $vendorZip;
-    $customerObj->BillAddr = $vendorAddress;
+    $customerObj->BillAddr = $BillAddr;
 
     //update Vendor
 
@@ -127,6 +127,12 @@ $Line2->Amount = floatval($vendorPrice);
 $Line2->DetailType = 'SalesItemLineDetail';
 $Line2->Description = $customer_notes;
 
+$iBillAddr = new IPPPhysicalAddress();
+    $iBillAddr->Line1 = $vendorAddress;        
+    $iBillAddr->City = $vendorCity;
+    $iBillAddr->CountrySubDivisionCode = $vendorState;
+    $iBillAddr->PostalCode = $vendorZip;
+$purchaseorderObject->ShipAddr = $iBillAddr;
  
 $saleItemLineDetail2 = new IPPSalesItemLineDetail();
 $saleItemLineDetail2->ItemRef = 1;
