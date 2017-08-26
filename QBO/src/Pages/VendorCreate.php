@@ -83,13 +83,15 @@ $customerObj->DisplayName = $vendorName;
 
 
 $BillAddr = new IPPPhysicalAddress();
-$BillAddr->Line1 = $vendorAddress;
+$BillAddr->Line1 = $vendorName;   
+    $BillAddr->Line2 = $vendorName;   
+    $BillAddr->Line3 = $vendorAddress; 
         
 $BillAddr->City = $vendorCity;
 $BillAddr->CountrySubDivisionCode = $vendorState;
 $BillAddr->PostalCode = $vendorZip;
 echo "adding new vendor";
-//$customerObj->BillAddr = $BillAddr;
+$customerObj->BillAddr = $BillAddr;
 
 
 try{
@@ -145,7 +147,9 @@ $Line2->DetailType = 'SalesItemLineDetail';
 $Line2->Description = $vendorNotes;
 
 $iBillAddr = new IPPPhysicalAddress();
-    $iBillAddr->Line1 = $vendorAddress;        
+    $iBillAddr->Line1 = $vendorName;   
+    $iBillAddr->Line2 = $vendorName;   
+    $iBillAddr->Line3 = $vendorAddress;  
     $iBillAddr->City = $vendorCity;
     $iBillAddr->CountrySubDivisionCode = $vendorState;
     $iBillAddr->PostalCode = $vendorZip;
