@@ -87,7 +87,12 @@ $customerObj->BillAddr = $BillAddr;
 
 
 
-$resultingCustomerObj = $dataService->Add($customerObj);
+try{
+ $resultingCustomerObj = $dataService->Add($customerObj);
+ //print_r($resultingInvoiceObj); 
+} catch (Exception $e){
+ echo $e->getMessage();
+}
 $customerid = $resultingCustomerObj->Id;
 //echo $customerid;
 
@@ -110,8 +115,13 @@ $BillAddr->PostalCode = $customerZip;
 $customerObj->BillAddr = $BillAddr;
 
 
+try{
+ $resultingCustomerObj = $dataService->Add($customerObj);
+ //print_r($resultingInvoiceObj); 
+} catch (Exception $e){
+ echo $e->getMessage();
+}
 
-$resultingCustomerObj = $dataService->Add($customerObj);
     
   //echo $customerid;
     
@@ -140,7 +150,7 @@ $iBillAddr->PostalCode = $customerZip;
 
 $invoiceObj->Line = $Line;
 $invoiceObj->BillAddr = $iBillAddr;
-$invoiceObj->ShipAddr = $BillAddr;
+//$invoiceObj->ShipAddr = $BillAddr;
 $invoiceObj->CustomerRef = intval($customerid);
 
 try{
