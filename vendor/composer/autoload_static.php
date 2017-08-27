@@ -12,9 +12,20 @@ class ComposerStaticInit30ff1d21984138037905e04596cddc55
         '2c102faa651ef8ea5874edb585946bce' => __DIR__ . '/..' . '/swiftmailer/swiftmailer/lib/swift_required.php',
     );
 
+    public static $prefixesPsr0 = array (
+        'F' => 
+        array (
+            'FileUpload\\' => 
+            array (
+                0 => __DIR__ . '/..' . '/gargron/fileupload/src',
+            ),
+        ),
+    );
+
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
+            $loader->prefixesPsr0 = ComposerStaticInit30ff1d21984138037905e04596cddc55::$prefixesPsr0;
 
         }, null, ClassLoader::class);
     }
