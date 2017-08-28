@@ -120,7 +120,7 @@ else{
     $BillAddr->City = $vendorCity;
     $BillAddr->CountrySubDivisionCode = $vendorState;
     $BillAddr->PostalCode = $vendorZip;
-    //$customerObj->BillAddr = $BillAddr;
+    $customerObj->BillAddr = $BillAddr;
 
     //update Vendor
 
