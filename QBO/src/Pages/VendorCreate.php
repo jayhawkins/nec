@@ -141,6 +141,57 @@ echo 'Success';
     
 }
 
+//create final purchase order
+$purchaseOrder = new IPPPurchaseOrder();
+		
+        $vendor = VendorHelper::getVendor($dataService);
+        $purchaseOrder->VendorRef = $vendor->Id;
+
+        $account = AccountHelper::getLiabilityBankAccount($dataService);
+        $purchaseOrder->APAccountRef = $account->Id;
+        
+        $purchaseOrder->Memo = $vendorNotes;
+        
+        $line1 = new IPPLine();
+        $line1->Amount = floatval($vendorPrice);
+
+        $lineDetailTypeEnum = new IPPLineDetailTypeEnum();
+        $line1->DetailType = $lineDetailTypeEnum::IPPLINEDETAILTYPEENUM_ACCOUNTBASEDEXPENSELINEDETAIL;
+        
+        $detail = new IPPAccountBasedExpenseLineDetail();
+        $account1 = AccountHelper::getExpenseBankAccount($dataService);
+        $detail->AccountRef = $account1->Id;
+        $line1->AccountBasedExpenseLineDetail = $detail;
+
+        $purchaseOrder->Line = array($line1);
+
+        $purchaseOrder->POEmail = Email::getEmailAddress();
+        
+        $purchaseOrder->Domain = "QBO";
+        
+        $globalTaxEnum= new IPPGlobalTaxCalculationEnum();
+        $purchaseOrder->GlobalTaxCalculation = $globalTaxEnum::IPPGLOBALTAXCALCULATIONENUM_NOTAPPLICABLE;
+
+        $purchaseOrder->ReplyEmail = Email::getEmailAddress();
+
+        $purchaseOrder->ShipAddr = Address::getPhysicalAddress();
+
+        $purchaseOrder->TotalAmt = floatval($vendorPrice);
+
+        date_default_timezone_set('UTC');
+        $purchaseOrder->TxnDate = date('Y-m-d', time());
+        
+        print_r($purchaseOrder);
+        try{
+         $result = $dataService->Add($purchaseOrder); 
+         print_r($result); 
+        } catch (Exception $e){
+            //print_r($purchaseOrder);
+         echo $e->getMessage();
+        }
+
+exit();
+
 //create purchase order
 $linedet = new IPPPurchaseOrderItemLineDetail();
 $linedet->CustomerRef  = intval($verdorCustomerID);
@@ -149,7 +200,7 @@ $linedet->Qty = '1';
 
 $line = new IPPLine();
 $line->Id = 0;
-$line->Description = $vendorNotes;;
+$line->Description = $vendorNotes;
 $line->Amount = floatval($vendorPrice);
 $line->DetailType= 'ItemBasedExpenseLineDetail ';
 $line->ItemBasedExpenseLineDetail = $linedet;
