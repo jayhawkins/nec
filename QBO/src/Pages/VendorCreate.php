@@ -154,6 +154,7 @@ $purchaseOrder = new IPPPurchaseOrder();
         
         $line1 = new IPPLine();
         $line1->Amount = floatval($vendorPrice);
+        $line1->CustomerRef  = intval($verdorCustomerID);
 
         $lineDetailTypeEnum = new IPPLineDetailTypeEnum();
         $line1->DetailType = $lineDetailTypeEnum::IPPLINEDETAILTYPEENUM_ACCOUNTBASEDEXPENSELINEDETAIL;
@@ -177,6 +178,8 @@ $purchaseOrder = new IPPPurchaseOrder();
         $purchaseOrder->ShipAddr = Address::getPhysicalAddress();
 
         $purchaseOrder->TotalAmt = floatval($vendorPrice);
+        
+        $purchaseOrder->VendorRef = intval($vendorid);
 
         date_default_timezone_set('UTC');
         $purchaseOrder->TxnDate = date('Y-m-d', time());
