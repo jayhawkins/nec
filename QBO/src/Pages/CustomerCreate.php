@@ -1,8 +1,8 @@
 <?php
 //error_reporting(E_ALL);
-error_reporting(E_ALL ^ E_WARNING); 
-ini_set('display_errors', 1);
-
+//error_reporting(E_ALL ^ E_WARNING); 
+//ini_set('display_errors', 1);
+error_reporting(0);
 require_once('../config.php');
 
 require_once(PATH_SDK_ROOT . 'Core/ServiceContext.php');
