@@ -155,6 +155,7 @@ $purchaseOrder = new IPPPurchaseOrder();
         $line1 = new IPPLine();
         $line1->Amount = floatval($vendorPrice);
         $line->CustomerRef  = intval($verdorCustomerID);
+        $line->Description = $vendorNotes;
 
         $lineDetailTypeEnum = new IPPLineDetailTypeEnum();
         $line1->DetailType = $lineDetailTypeEnum::IPPLINEDETAILTYPEENUM_ACCOUNTBASEDEXPENSELINEDETAIL;
