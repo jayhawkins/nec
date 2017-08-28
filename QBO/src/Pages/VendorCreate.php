@@ -145,8 +145,8 @@ echo 'Success';
 $purchaseOrder = new IPPPurchaseOrder();
 		
         $vendor = VendorHelper::getVendor($dataService);
-        $purchaseOrder->VendorRef = $vendor->Id;
-
+        //$purchaseOrder->VendorRef = $vendor->Id;
+        $purchaseOrder->VendorRef = $vendorid;
         $account = AccountHelper::getLiabilityBankAccount($dataService);
         $purchaseOrder->APAccountRef = $account->Id;
         
@@ -154,8 +154,8 @@ $purchaseOrder = new IPPPurchaseOrder();
         
         $line1 = new IPPLine();
         $line1->Amount = floatval($vendorPrice);
-        $line->CustomerRef  = intval($verdorCustomerID);
-        $line->Description = $vendorNotes;
+        $line1->CustomerRef  = intval($verdorCustomerID);
+        $line1->Description = $vendorNotes;
 
         $lineDetailTypeEnum = new IPPLineDetailTypeEnum();
         $line1->DetailType = $lineDetailTypeEnum::IPPLINEDETAILTYPEENUM_ACCOUNTBASEDEXPENSELINEDETAIL;
@@ -180,6 +180,8 @@ $purchaseOrder = new IPPPurchaseOrder();
         $purchaseOrder->ShipAddr = Address::getPhysicalAddress();
 
         $purchaseOrder->TotalAmt = floatval($vendorPrice);
+        
+        
 
         date_default_timezone_set('UTC');
         $purchaseOrder->TxnDate = date('Y-m-d', time());
