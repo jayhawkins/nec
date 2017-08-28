@@ -10,6 +10,8 @@ require_once(PATH_SDK_ROOT . 'DataService/DataService.php');
 require_once(PATH_SDK_ROOT . 'PlatformService/PlatformService.php');
 require_once(PATH_SDK_ROOT . 'Utility/Configuration/ConfigurationManager.php');
 
+
+
 //Specify QBO or QBD
 $serviceType = IntuitServicesType::QBO;
 
@@ -86,13 +88,13 @@ $BillAddr->Line1 = $vendorName;
     $BillAddr->Line2 = $vendorName;   
     $BillAddr->Line3 = $vendorAddress; 
         
-//$BillAddr->City = $vendorCity;
-//$BillAddr->CountrySubDivisionCode = $vendorState;
-//$BillAddr->PostalCode = $vendorZip;
-echo "adding new vendor";
-//$customerObj->BillAddr = $BillAddr;
- print_r($customerObj); 
+$BillAddr->City = $vendorCity;
+$BillAddr->CountrySubDivisionCode = $vendorState;
+$BillAddr->PostalCode = $vendorZip;
 
+$customerObj->BillAddr = $BillAddr;
+ print_r($customerObj); 
+echo "adding new vendor";
 try{
  $resultingCustomerObj = $dataService->Add($customerObj);
 
