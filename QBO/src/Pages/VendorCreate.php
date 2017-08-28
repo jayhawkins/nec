@@ -132,6 +132,7 @@ else{
     try{
  $resultingCustomerObj = $dataService->Add($customerObj);
  //print_r($resultingCustomerObj); 
+ $vendorid = $customerObj->Id;
 } catch (Exception $e){
  echo $e->getMessage();
 }
