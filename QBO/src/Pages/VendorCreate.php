@@ -169,6 +169,8 @@ $BillAddr = new IPPPhysicalAddress();
 $purchaseOrder->VendorAddr = $BillAddr;
 
 
+print_r($purchaseOrder);
+
 try{
  $result = $dataService->Add($purchaseOrder); 
  print_r($result); 
