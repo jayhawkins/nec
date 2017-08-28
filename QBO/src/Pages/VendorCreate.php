@@ -158,7 +158,7 @@ $line->Qty = '1';
 $purchaseOrder = new IPPPurchaseOrder();
 $purchaseOrder->Line = $line;
 $purchaseOrder->VendorRef = intval($vendorid);
-$purchaseOrder->APAccountRef = 33;
+$purchaseOrder->APAccountRef = 84;
 $purchaseOrder->TotalAmt = floatval($vendorPrice);
 try{
  $result = $dataService->Add($purchaseOrder); 
