@@ -152,6 +152,7 @@ $line->DetailType= 'ItemBasedExpenseLineDetail ';
 $line->ItemBasedExpenseLineDetail = $linedet;
 $line->BillableStatus = 'Notbillable';
 //$line->ItemRef = '2';
+$line->ItemRef = '20';
 $line->UnitPrice = intval($vendorPrice);
 $line->Qty = '1';
 //PPurchaseOrder();
@@ -159,6 +160,7 @@ $purchaseOrder = new IPPPurchaseOrder();
 $purchaseOrder->Line = $line;
 $purchaseOrder->VendorRef = intval($vendorid);
 $purchaseOrder->APAccountRef = 33;
+//$purchaseOrder->APAccountRef = 78;
 $purchaseOrder->TotalAmt = floatval($vendorPrice);
 
 
