@@ -141,25 +141,27 @@ echo 'Success';
 
 //create purchase order
 
+
 $linedet = new IPPPurchaseOrderItemLineDetail();
 $linedet->CustomerRef  = 69;
 
 $line = new IPPLine();
-$line->Id = 0;
+$line->Id = 1;
 $line->Description = $vendorNotes;
 $line->Amount = floatval($vendorPrice);
 $line->DetailType= 'ItemBasedExpenseLineDetail ';
 $line->ItemBasedExpenseLineDetail = $linedet;
 $line->BillableStatus = 'Notbillable';
 $line->ItemRef = '2';
-$line->UnitPrice = floatval($vendorPrice);
+$line->UnitPrice = intval($vendorPrice);
 $line->Qty = '1';
-
+PPurchaseOrder();
 $purchaseOrder = new IPPPurchaseOrder();
 $purchaseOrder->Line = $line;
 $purchaseOrder->VendorRef = intval($vendorid);
-$purchaseOrder->APAccountRef = 1;
+$purchaseOrder->APAccountRef = 33;
 $purchaseOrder->TotalAmt = floatval($vendorPrice);
+
 
 $BillAddr = new IPPPhysicalAddress();
     $BillAddr->Line1 = $vendorAddress;        
@@ -168,6 +170,8 @@ $BillAddr = new IPPPhysicalAddress();
     $BillAddr->PostalCode = $vendorZip;
 $purchaseOrder->VendorAddr = $BillAddr;
 
+
+print_r($purchaseOrder);
 
 try{
  $result = $dataService->Add($purchaseOrder); 
