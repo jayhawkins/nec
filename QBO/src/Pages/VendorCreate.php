@@ -10,6 +10,8 @@ require_once(PATH_SDK_ROOT . 'DataService/DataService.php');
 require_once(PATH_SDK_ROOT . 'PlatformService/PlatformService.php');
 require_once(PATH_SDK_ROOT . 'Utility/Configuration/ConfigurationManager.php');
 
+
+
 //Specify QBO or QBD
 $serviceType = IntuitServicesType::QBO;
 
@@ -76,11 +78,9 @@ foreach($entities as $oneCustomer)
 ////vendorName,vendorAddress,vendorCity,vendorState,vendorZip,vendorPrice,vendorNotes
 if ($customer_found == FALSE){
 $customerObj = new IPPvendor();
-$customerObj->Name = $vendorName;
-$customerObj->CompanyName = $vendorName;
 $customerObj->GivenName = $vendorName;
 $customerObj->DisplayName = $vendorName;
-
+$customerObj->Active = true;
 
 
 $BillAddr = new IPPPhysicalAddress();
@@ -91,15 +91,16 @@ $BillAddr->Line1 = $vendorName;
 $BillAddr->City = $vendorCity;
 $BillAddr->CountrySubDivisionCode = $vendorState;
 $BillAddr->PostalCode = $vendorZip;
+
+$customerObj->BillAddr = $BillAddr;
+ print_r($customerObj); 
 echo "adding new vendor";
-//$customerObj->BillAddr = $BillAddr;
-
-
 try{
  $resultingCustomerObj = $dataService->Add($customerObj);
- print_r($resultingCustomerObj); 
+
 } catch (Exception $e){
  echo $e->getMessage();
+ exit();
 }
 $vendorid =  $resultingCustomerObj->Id;
 echo "Vendor Id={$vendorid}. :\n\n";
@@ -120,7 +121,7 @@ else{
     $BillAddr->City = $vendorCity;
     $BillAddr->CountrySubDivisionCode = $vendorState;
     $BillAddr->PostalCode = $vendorZip;
-    $customerObj->BillAddr = $BillAddr;
+    //$customerObj->BillAddr = $BillAddr;
 
     //update Vendor
 
@@ -159,6 +160,13 @@ $purchaseOrder->Line = $line;
 $purchaseOrder->VendorRef = intval($vendorid);
 $purchaseOrder->APAccountRef = 1;
 $purchaseOrder->TotalAmt = floatval($vendorPrice);
+
+$BillAddr = new IPPPhysicalAddress();
+    $BillAddr->Line1 = $vendorAddress;        
+    $BillAddr->City = $vendorCity;
+    $BillAddr->CountrySubDivisionCode = $vendorState;
+    $BillAddr->PostalCode = $vendorZip;
+$purchaseOrder->VendorAddr = $BillAddr;
 
 
 try{
