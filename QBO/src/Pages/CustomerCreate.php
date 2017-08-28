@@ -67,7 +67,7 @@ foreach($entities as $oneCustomer)
 }
 
 
-
+echo 'Customer Found: '.$customer_found;
 
 ////customerName,customerAddress,customerCity,customerState,customerZip,customerPrice,customerNotes
 // Add a customer
