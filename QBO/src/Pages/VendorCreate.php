@@ -155,7 +155,7 @@ $line->BillableStatus = 'Notbillable';
 $line->ItemRef = '2';
 $line->UnitPrice = intval($vendorPrice);
 $line->Qty = '1';
-PPurchaseOrder();
+//PPurchaseOrder();
 $purchaseOrder = new IPPPurchaseOrder();
 $purchaseOrder->Line = $line;
 $purchaseOrder->VendorRef = intval($vendorid);
