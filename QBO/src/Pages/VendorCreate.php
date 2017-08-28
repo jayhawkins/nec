@@ -92,7 +92,7 @@ $BillAddr->City = $vendorCity;
 $BillAddr->CountrySubDivisionCode = $vendorState;
 $BillAddr->PostalCode = $vendorZip;
 echo "adding new vendor";
-//$customerObj->BillAddr = $BillAddr;
+$customerObj->BillAddr = $BillAddr;
 
 
 try{
