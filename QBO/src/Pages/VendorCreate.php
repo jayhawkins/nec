@@ -146,13 +146,12 @@ $linedet = new IPPPurchaseOrderItemLineDetail();
 $linedet->CustomerRef  = intval($verdorCustomerID);
 
 $line = new IPPLine();
-$line->Id = 1;
 $line->Description = $vendorNotes;
 $line->Amount = floatval($vendorPrice);
 $line->DetailType= 'ItemBasedExpenseLineDetail ';
 $line->ItemBasedExpenseLineDetail = $linedet;
 $line->BillableStatus = 'Notbillable';
-$line->ItemRef = '2';
+//$line->ItemRef = '2';
 $line->UnitPrice = intval($vendorPrice);
 $line->Qty = '1';
 //PPurchaseOrder();
