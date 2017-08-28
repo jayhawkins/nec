@@ -76,11 +76,9 @@ foreach($entities as $oneCustomer)
 ////vendorName,vendorAddress,vendorCity,vendorState,vendorZip,vendorPrice,vendorNotes
 if ($customer_found == FALSE){
 $customerObj = new IPPvendor();
-$customerObj->Name = $vendorName;
-$customerObj->CompanyName = $vendorName;
 $customerObj->GivenName = $vendorName;
 $customerObj->DisplayName = $vendorName;
-
+$customerObj->Active = true;
 
 
 $BillAddr = new IPPPhysicalAddress();
@@ -88,18 +86,19 @@ $BillAddr->Line1 = $vendorName;
     $BillAddr->Line2 = $vendorName;   
     $BillAddr->Line3 = $vendorAddress; 
         
-$BillAddr->City = $vendorCity;
-$BillAddr->CountrySubDivisionCode = $vendorState;
-$BillAddr->PostalCode = $vendorZip;
+//$BillAddr->City = $vendorCity;
+//$BillAddr->CountrySubDivisionCode = $vendorState;
+//$BillAddr->PostalCode = $vendorZip;
 echo "adding new vendor";
 //$customerObj->BillAddr = $BillAddr;
-
+ print_r($customerObj); 
 
 try{
  $resultingCustomerObj = $dataService->Add($customerObj);
- print_r($resultingCustomerObj); 
+
 } catch (Exception $e){
  echo $e->getMessage();
+ exit();
 }
 $vendorid =  $resultingCustomerObj->Id;
 echo "Vendor Id={$vendorid}. :\n\n";
@@ -120,7 +119,7 @@ else{
     $BillAddr->City = $vendorCity;
     $BillAddr->CountrySubDivisionCode = $vendorState;
     $BillAddr->PostalCode = $vendorZip;
-    $customerObj->BillAddr = $BillAddr;
+    //$customerObj->BillAddr = $BillAddr;
 
     //update Vendor
 
@@ -159,6 +158,13 @@ $purchaseOrder->Line = $line;
 $purchaseOrder->VendorRef = intval($vendorid);
 $purchaseOrder->APAccountRef = 1;
 $purchaseOrder->TotalAmt = floatval($vendorPrice);
+
+$BillAddr = new IPPPhysicalAddress();
+    $BillAddr->Line1 = $vendorAddress;        
+    $BillAddr->City = $vendorCity;
+    $BillAddr->CountrySubDivisionCode = $vendorState;
+    $BillAddr->PostalCode = $vendorZip;
+$purchaseOrder->VendorAddr = $BillAddr;
 
 
 try{
