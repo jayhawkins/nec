@@ -143,6 +143,8 @@ echo 'Success';
 //create purchase order
 $linedet = new IPPPurchaseOrderItemLineDetail();
 $linedet->CustomerRef  = intval($verdorCustomerID);
+$linedet->ItemRef = '20';
+$linedet->Qty = '1';
 
 $line = new IPPLine();
 $line->Id = 0;
@@ -160,8 +162,13 @@ $purchaseOrder->Line = $line;
 $purchaseOrder->VendorRef = intval($vendorid);
 $purchaseOrder->APAccountRef = 84;
 
-print_r($purchaseOrder);
+
+
+//TotalAmt
 $purchaseOrder->TotalAmt = floatval($vendorPrice);
+
+
+print_r($purchaseOrder);
 try{
  $result = $dataService->Add($purchaseOrder); 
  print_r($result); 
