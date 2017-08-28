@@ -130,7 +130,7 @@ else{
     
     try{
  $resultingCustomerObj = $dataService->Add($customerObj);
- print_r($resultingCustomerObj); 
+ //print_r($resultingCustomerObj); 
 } catch (Exception $e){
  echo $e->getMessage();
 }
@@ -159,6 +159,8 @@ $purchaseOrder = new IPPPurchaseOrder();
 $purchaseOrder->Line = $line;
 $purchaseOrder->VendorRef = intval($vendorid);
 $purchaseOrder->APAccountRef = 84;
+
+print_r($purchaseOrder);
 $purchaseOrder->TotalAmt = floatval($vendorPrice);
 try{
  $result = $dataService->Add($purchaseOrder); 
