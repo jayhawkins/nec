@@ -1686,7 +1686,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                        
                        //Dennis Review
                        var retCustomerID = addCustomerInfo(customerName,customerAddress,customerCity,customerState,customerZip,customerRate,customerNotes);
-                       alert(retCustomerID);
+                       //alert(retCustomerID);
                         // Yaw,
                         // The thing about Carriers is that there can be many different carriers per order.
                         // So it has to be gathered as an array.
