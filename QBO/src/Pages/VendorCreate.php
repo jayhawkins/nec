@@ -140,7 +140,7 @@ echo 'Success';
 
 
 $linedet = new IPPPurchaseOrderItemLineDetail();
-$linedet->CustomerRef  = intval($verdorCustomerID);
+//$linedet->CustomerRef  = intval($verdorCustomerID);
 
 $line = new IPPLine();
 $line->Id = 0;
@@ -149,7 +149,7 @@ $line->Amount = floatval($vendorPrice);
 $line->DetailType= 'ItemBasedExpenseLineDetail ';
 $line->ItemBasedExpenseLineDetail = $linedet;
 $line->BillableStatus = 'Notbillable';
-$line->ItemRef = '2';
+$line->ItemRef = '19';
 $line->UnitPrice = floatval($vendorPrice);
 $line->Qty = '1';
 
@@ -163,7 +163,7 @@ $iBillAddr = new IPPPhysicalAddress();
 
 $purchaseOrder = new IPPPurchaseOrder();
 $purchaseOrder->Line = $line;
-//$purchaseOrder->ShipAddr = $iBillAddr;
+$purchaseOrder->ShipAddr = $iBillAddr;
 $purchaseOrder->VendorRef = intval($vendorid);
 $purchaseOrder->APAccountRef = 1;
 $purchaseOrder->TotalAmt = floatval($vendorPrice);
@@ -173,6 +173,7 @@ try{
  $result = $dataService->Add($purchaseOrder); 
  print_r($result); 
 } catch (Exception $e){
+    print_r($purchaseOrder);
  echo $e->getMessage();
 }
 
