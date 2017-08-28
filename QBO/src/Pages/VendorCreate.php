@@ -164,6 +164,7 @@ $purchaseOrder = new IPPPurchaseOrder();
         $detail = new IPPAccountBasedExpenseLineDetail();
         $account1 = AccountHelper::getExpenseBankAccount($dataService);
         $detail->AccountRef = $account1->Id;
+        $detail->CustomerRef  = intval($verdorCustomerID);
         //$detail->AccountRef = 78;
         $line1->AccountBasedExpenseLineDetail = $detail;
 
