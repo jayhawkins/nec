@@ -9,6 +9,7 @@ require_once(PATH_SDK_ROOT . 'Core/ServiceContext.php');
 require_once(PATH_SDK_ROOT . 'DataService/DataService.php');
 require_once(PATH_SDK_ROOT . 'PlatformService/PlatformService.php');
 require_once(PATH_SDK_ROOT . 'Utility/Configuration/ConfigurationManager.php');
+require_once('../../CRUD/helper/PurchaseHelper.php'); 
 
 
 
