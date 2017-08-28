@@ -141,41 +141,25 @@ echo 'Success';
 }
 
 //create purchase order
-
-
 $linedet = new IPPPurchaseOrderItemLineDetail();
-$linedet->CustomerRef = intval($verdorCustomerID);
+$linedet->CustomerRef  = intval($verdorCustomerID);
+
 $line = new IPPLine();
-$line->Description = $vendorNotes;
+$line->Id = 0;
+$line->Description = $vendorNotes;;
 $line->Amount = floatval($vendorPrice);
 $line->DetailType= 'ItemBasedExpenseLineDetail ';
 $line->ItemBasedExpenseLineDetail = $linedet;
 $line->BillableStatus = 'Notbillable';
-$line->CustomerRef  = intval($verdorCustomerID);
-$line->Id = '1';
 $line->ItemRef = '20';
-$line->UnitPrice = intval($vendorPrice);
+$line->UnitPrice = $vendorPrice;
 $line->Qty = '1';
-//PPurchaseOrder();
+
 $purchaseOrder = new IPPPurchaseOrder();
 $purchaseOrder->Line = $line;
 $purchaseOrder->VendorRef = intval($vendorid);
-$purchaseOrder->APAccountRef= 33;
-//$purchaseOrder->APAccountRef = 78;
+$purchaseOrder->APAccountRef = 33;
 $purchaseOrder->TotalAmt = floatval($vendorPrice);
-//$purchaseOrder->PurchaseOrderItemLineDetail = "":
-
-
-$BillAddr = new IPPPhysicalAddress();
-    $BillAddr->Line1 = $vendorAddress;        
-    $BillAddr->Line2 = $vendorCity;
-    $BillAddr->Line3 = $vendorState;
-    $BillAddr->line4 = $vendorZip;
-//$purchaseOrder->VendorAddr = $BillAddr;
-//$purchaseOrder->ShipAddr = $BillAddr;
-
-print_r($purchaseOrder);
-
 try{
  $result = $dataService->Add($purchaseOrder); 
  print_r($result); 
@@ -184,6 +168,9 @@ try{
  echo $e->getMessage();
 }
 
+
+
+exit();
 
 //$xmlBody = XmlObjectSerializer::getPostXmlFromArbitraryEntity($resultingCustomerObj, $urlResource);
 //echo $xmlBody . "\n";
