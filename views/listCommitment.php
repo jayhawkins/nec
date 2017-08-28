@@ -1508,12 +1508,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         });
     }
     
-    
-    
     function addVendorInfo(vendorName,vendorAddress,vendorCity,vendorState,vendorZip,vendorPrice,vendorNotes,customerID){
         <?php $quickbooks_host = "http://nec.dubtel.com";?>
                             $.ajax({
-                                url: '<?php echo $quickbooks_host; ?>' + '/QBO/src/Pages/VendorCreate.php',
+                                url: '<?php echo HTTP_HOST; ?>' + '/QBO/src/Pages/VendorCreate.php',
                                 type: "POST",
                                 data: jQuery.param({vendorName: vendorName,vendorPrice:vendorPrice,vendorNotes:vendorNotes,vendorAddress:vendorAddress,vendorCity:vendorCity,vendorState:vendorState,vendorZip:vendorZip,customerID:customerID}),
                                 success: function(){
@@ -1530,29 +1528,44 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
     }
     
     
-    function addCustomerInfo(customerName,customerAddress,customerCity,customerState,customerZip,customerPrice,customerNotes){
+    
+    //Yaw,
+    // While I was investigating, I realized that the javascript was not waiting for a return from the addCustomerInfo function.
+    // So, instead I thought it would be best to grab all of the Customer and Vendor information and push it into the addCustomerInfo function.
+    // ONLY when we succeed, do we loop through our vendors and add them to the quickbooks as well.
+    // I hope this doesn't make things complicated.
+    // Dennis
+    
+    function addCustomerInfo(customerName,customerAddress,customerCity,customerState,customerZip,customerPrice,customerNotes, vendorDetails){
         //var result = '';
         <?php $quickbooks_host = "http://nec.dubtel.com";?>
-                            $.ajax({
-                                url: '<?php echo $quickbooks_host; ?>' + '/QBO/src/Pages/CustomerCreate.php',
-                                type: "POST",
-                                dataType: "json",
-                                data: jQuery.param({customerName: customerName,customerPrice:customerPrice,customerNotes:customerNotes,customerAddress:customerAddress,customerCity:customerCity,customerState:customerState,customerZip:customerZip}),
-                                success: function(data){
-                                    console.log(data.customer_id);
-                                    return data.customer_id;
-                                    //result = data;
-                                    //console.log('success result is:' + result);
-                                    //console.log(customerName + ' ' + customerAddress + ' ' + customerCity + ' ' + customerPrice);
-                                },
-                                error: function(){
-                                    console.log('Error:' + customerName + ' ' + customerAddress + ' ' + customerCity + ' ' + customerPrice);
-                                    alert("Could not Create Quickbooks Customer");                                    
-                                   
-                                }
-                            });
-                            //console.log('result is:' + result);
-                            //return result;
+            $.ajax({
+                url: '<?php echo HTTP_HOST; ?>' + '/QBO/src/Pages/CustomerCreate.php',
+                type: "POST",
+                dataType: "json",
+                data: jQuery.param({customerName: customerName,customerPrice:customerPrice,customerNotes:customerNotes,customerAddress:customerAddress,customerCity:customerCity,customerState:customerState,customerZip:customerZip}),
+                success: function(data){
+                    
+                    vendorDetails.forEach(function(carrier_detail){
+                       addVendorInfo(carrier_detail.carrierName,carrier_detail.billingAddress,carrier_detail.billingCity,carrier_detail.billingState,carrier_detail.billingZip,carrier_detail.carrierRate,customerNotes,data.customer_id);
+                       
+                    });
+                    
+                    //console.log("Customer Created: " + JSON.stringify(data));
+                    //console.log(data.customer_id);
+                    //return data.customer_id;
+                    //result = data;
+                    //console.log('success result is:' + result);
+                    //console.log(customerName + ' ' + customerAddress + ' ' + customerCity + ' ' + customerPrice);
+                },
+                error: function(){
+                    console.log('Error:' + customerName + ' ' + customerAddress + ' ' + customerCity + ' ' + customerPrice);
+                    alert("Could not Create Quickbooks Customer");                                    
+
+                }
+            });
+            //console.log('result is:' + result);
+            //return result;
         
     }
     
@@ -1658,11 +1671,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                             rateType: selectedCustomerNeed.rateType, customerRate: $('#customerRate').val(), carrierTotalRate: $('#carrierTotalRate').val(),
                             totalRevenue: $('#totalRevenue').val(), createdAt: today, updatedAt: today};
                                                 
-                       // Yaw, here is the information you requested.
-                       
-                       // This is the Selected Customer Transport Table at the top of Committed Transport
-                       //console.log(selectedCustomerNeed);
-                       
                        var customerName = selectedCustomerNeed.entities[0].name;
                        var originationCity = selectedCustomerNeed.originationCity;
                        var originationState = selectedCustomerNeed.originationState;
@@ -1684,15 +1692,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                        customerState = customerBillingAddress.state;
                        customerZip = customerBillingAddress.zip;
                        
-                       //Dennis Review
-                       var retCustomerID = addCustomerInfo(customerName,customerAddress,customerCity,customerState,customerZip,customerRate,customerNotes);
+                       var customerData = customerBillingAddress;
+                       customerData.customerName = customerName;
+                       
+                       // We are not calling this yet. 
+                       // We will wait until we have the carrier info as well.
+                       //var retCustomerID = addCustomerInfo(customerName,customerAddress,customerCity,customerState,customerZip,customerRate,customerNotes);
                        //alert(retCustomerID);
-                        // Yaw,
-                        // The thing about Carriers is that there can be many different carriers per order.
-                        // So it has to be gathered as an array.
-                        // If you have any questions about this, let me know.
-                        // Dennis
-                        
+                       
                         var needsCommitTable = $("#customer-needs-commit-table").DataTable();
                         var needsCommitJSON = needsCommitTable.ajax.json();        
 
@@ -1731,7 +1738,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                                 carrier = carrier_detail.carrierName;
                                 var carrierNotes = customerNotes;
                                 
-                                    addVendorInfo(carrier_detail.carrierName,carrier_detail.billingAddress,carrier_detail.billingCity,carrier_detail.billingState,carrier_detail.billingZip,carrier_detail.carrierRate,carrierNotes,retCustomerID);
+                                // We will not be calling addVendorInfo yet. This will be nested inside addCustomerInfo
+                                //addVendorInfo(carrier_detail.carrierName,carrier_detail.billingAddress,carrier_detail.billingCity,carrier_detail.billingState,carrier_detail.billingZip,carrier_detail.carrierRate,carrierNotes,retCustomerID);
                                 carrier_detail_list.push(carrier_detail);
                             }
                         });
@@ -1742,10 +1750,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                        // You need the total Carrier...
                        var carrierTotalRate = $('#carrierTotalRate').val();
                        
-                       
-                       
-                       
-                       
+                       // Now that we have all of the carriers.
+                       // We will now call addCustomerInfo.
+                       // We do not need to wait for a return.
+                       addCustomerInfo(customerName,customerAddress,customerCity,customerState,customerZip,customerRate,customerNotes, carrier_detail_list);
                        
                        var notes = 'From ' + originationCity + ',' + originationState + ' to ' + destinationCity + ',' + destinationState;
                         
