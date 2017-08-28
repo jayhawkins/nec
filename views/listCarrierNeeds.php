@@ -5,6 +5,10 @@ session_start();
 require '../../nec_config.php';
 require '../lib/common.php';
 
+if ($_SESSION['userid'] <= 0 || $_SESSION['userid'] == "") {
+    header("Location: " . HTTP_HOST);
+}
+
 $state = '';
 $states = json_decode(file_get_contents(API_HOST.'/api/states?columns=abbreviation,name&order=name'));
 

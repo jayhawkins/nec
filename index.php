@@ -379,9 +379,8 @@ $app->route('POST /createcustomerneedsfromexisting', function() {
     $deliveryDate = Flight::request()->data->deliveryDate;
     $customerneed = Flight::customerneed();
     $result = $customerneed->createFromExisting(API_HOST,$id,$rootCustomerNeedsID,$carrierID,$qty,$originationAddress1,$originationCity,$originationState,$originationZip,$destinationAddress1,$destinationCity,$destinationState,$destinationZip,$originationLat,$originationLng,$destinationLat,$destinationLng,$distance,$transportationMode,$transportation_mode,$transportation_type,$pickupDate,$deliveryDate,GOOGLE_MAPS_API);
-    if ($result) {
+    if ($result == "success") {
         print_r($result);
-        die();
         //echo "success";
     } else {
         print_r($result);
@@ -434,7 +433,8 @@ $app->route('POST /bulkimport', function() {
 	$entityID = Flight::request()->data->entityID;
 	$documentURL = HTTP_HOST."/viewdocument?entityID=".$entityID."&filename=".$fileupload['name'];
 	$documents = Flight::documents();
-    $result = $documents->bulkUpload(API_HOST,HTTP_HOST,FILE_LOCATION,$fileupload,$name,$documentID,$documentURL,$updatedAt,$entityID);
+    $result = $documents->bulkUploadJAY(API_HOST,HTTP_HOST,FILE_LOCATION,$fileupload,$name,$documentID,$documentURL,$updatedAt,$entityID);
+
 	//echo json_encode($result, 128);
 /*
     $output = array();
