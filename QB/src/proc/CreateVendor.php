@@ -110,7 +110,7 @@ $purchaseObj = PurchaseOrder::create([
     ]
 ]);
 
-$resultingObj = $dataService->Add($purchaseObj);
+$resultingObj2 = $dataService->Add($purchaseObj);
 $error = $dataService->getLastError();
 if ($error != null) {
     echo "The Status code is: " . $error->getHttpStatusCode() . "\n";
@@ -118,7 +118,7 @@ if ($error != null) {
     echo "The Response message is: " . $error->getResponseBody() . "\n";
 }
 else {
-    echo "Created Purchase Order Id={$resultingObj->Id}. Reconstructed response body:\n\n";
-    $xmlBody = XmlObjectSerializer::getPostXmlFromArbitraryEntity($resultingObj, $urlResource);
+    echo "Created Purchase Order Id={$resultingObj2->Id}. Reconstructed response body:\n\n";
+    $xmlBody = XmlObjectSerializer::getPostXmlFromArbitraryEntity($resultingObj2, $urlResource);
     echo $xmlBody . "\n";
 }
