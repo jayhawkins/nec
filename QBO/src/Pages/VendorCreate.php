@@ -92,7 +92,7 @@ $BillAddr->City = $vendorCity;
 $BillAddr->CountrySubDivisionCode = $vendorState;
 $BillAddr->PostalCode = $vendorZip;
 echo "adding new vendor";
-//$customerObj->BillAddr = $BillAddr;
+$customerObj->BillAddr = $BillAddr;
 
 
 try{
@@ -138,9 +138,10 @@ echo 'Success';
     
 }
 
+//create purchase order
 
 $linedet = new IPPPurchaseOrderItemLineDetail();
-//$linedet->CustomerRef  = intval($verdorCustomerID);
+$linedet->CustomerRef  = 69;
 
 $line = new IPPLine();
 $line->Id = 0;
@@ -149,25 +150,16 @@ $line->Amount = floatval($vendorPrice);
 $line->DetailType= 'ItemBasedExpenseLineDetail ';
 $line->ItemBasedExpenseLineDetail = $linedet;
 $line->BillableStatus = 'Notbillable';
-$line->ItemRef = '19';
+$line->ItemRef = '2';
 $line->UnitPrice = floatval($vendorPrice);
 $line->Qty = '1';
 
-$iBillAddr = new IPPPhysicalAddress();
-    $iBillAddr->Line1 = $vendorName;   
-    $iBillAddr->Line2 = $vendorName;   
-    $iBillAddr->Line3 = $vendorAddress;  
-    $iBillAddr->City = $vendorCity;
-    $iBillAddr->CountrySubDivisionCode = $vendorState;
-    $iBillAddr->PostalCode = $vendorZip;
-
 $purchaseOrder = new IPPPurchaseOrder();
 $purchaseOrder->Line = $line;
-$purchaseOrder->ShipAddr = $iBillAddr;
 $purchaseOrder->VendorRef = intval($vendorid);
 $purchaseOrder->APAccountRef = 1;
 $purchaseOrder->TotalAmt = floatval($vendorPrice);
-//add purchase order
+
 
 try{
  $result = $dataService->Add($purchaseOrder); 
@@ -176,11 +168,6 @@ try{
     print_r($purchaseOrder);
  echo $e->getMessage();
 }
-
-
-exit();
-
-
 
 
 //$xmlBody = XmlObjectSerializer::getPostXmlFromArbitraryEntity($resultingCustomerObj, $urlResource);
