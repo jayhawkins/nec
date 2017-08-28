@@ -143,7 +143,7 @@ echo 'Success';
 
 
 $linedet = new IPPPurchaseOrderItemLineDetail();
-$linedet->CustomerRef  = 69;
+$linedet->CustomerRef  = intval($verdorCustomerID);
 
 $line = new IPPLine();
 $line->Id = 1;
@@ -177,7 +177,7 @@ try{
  $result = $dataService->Add($purchaseOrder); 
  print_r($result); 
 } catch (Exception $e){
-    print_r($purchaseOrder);
+    //print_r($purchaseOrder);
  echo $e->getMessage();
 }
 
