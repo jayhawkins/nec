@@ -84,9 +84,10 @@ $customerObj->Active = true;
 
 
 $BillAddr = new IPPPhysicalAddress();
-$BillAddr->Line1 = $vendorName;   
-    $BillAddr->Line2 = $vendorName;   
-    $BillAddr->Line3 = $vendorAddress; 
+  $BillAddr->Line1 = $vendorAddress;        
+    $BillAddr->Line2 = $vendorCity;
+    $BillAddr->Line3 = $vendorState;
+    $BillAddr->line4 = $vendorZip;
         
 $BillAddr->City = $vendorCity;
 $BillAddr->CountrySubDivisionCode = $vendorState;
@@ -117,10 +118,10 @@ else{
     $customerObj->DisplayName = $vendorName;
 
     $BillAddr = new IPPPhysicalAddress();
-    $BillAddr->Line1 = $vendorAddress;        
-    $BillAddr->City = $vendorCity;
-    $BillAddr->CountrySubDivisionCode = $vendorState;
-    $BillAddr->PostalCode = $vendorZip;
+      $BillAddr->Line1 = $vendorAddress;        
+    $BillAddr->Line2 = $vendorCity;
+    $BillAddr->Line3 = $vendorState;
+    $BillAddr->line4 = $vendorZip;
     $customerObj->BillAddr = $BillAddr;
 
     //update Vendor
@@ -143,15 +144,15 @@ echo 'Success';
 
 
 $linedet = new IPPPurchaseOrderItemLineDetail();
-$linedet->CustomerRef  = intval($verdorCustomerID);
-
+$linedet->CustomerRef = intval($verdorCustomerID);
 $line = new IPPLine();
 $line->Description = $vendorNotes;
 $line->Amount = floatval($vendorPrice);
 $line->DetailType= 'ItemBasedExpenseLineDetail ';
 $line->ItemBasedExpenseLineDetail = $linedet;
 $line->BillableStatus = 'Notbillable';
-//$line->ItemRef = '2';
+$line->CustomerRef  = intval($verdorCustomerID);
+$line->Id = '1';
 $line->ItemRef = '20';
 $line->UnitPrice = intval($vendorPrice);
 $line->Qty = '1';
@@ -159,18 +160,19 @@ $line->Qty = '1';
 $purchaseOrder = new IPPPurchaseOrder();
 $purchaseOrder->Line = $line;
 $purchaseOrder->VendorRef = intval($vendorid);
-$purchaseOrder->APAccountRef = 33;
+$purchaseOrder->APAccountRef= 33;
 //$purchaseOrder->APAccountRef = 78;
 $purchaseOrder->TotalAmt = floatval($vendorPrice);
+//$purchaseOrder->PurchaseOrderItemLineDetail = "":
 
 
 $BillAddr = new IPPPhysicalAddress();
     $BillAddr->Line1 = $vendorAddress;        
-    $BillAddr->City = $vendorCity;
-    $BillAddr->CountrySubDivisionCode = $vendorState;
-    $BillAddr->PostalCode = $vendorZip;
-$purchaseOrder->VendorAddr = $BillAddr;
-
+    $BillAddr->Line2 = $vendorCity;
+    $BillAddr->Line3 = $vendorState;
+    $BillAddr->line4 = $vendorZip;
+//$purchaseOrder->VendorAddr = $BillAddr;
+//$purchaseOrder->ShipAddr = $BillAddr;
 
 print_r($purchaseOrder);
 
