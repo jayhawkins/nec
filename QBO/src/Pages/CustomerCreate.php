@@ -90,10 +90,12 @@ $customerObj->BillAddr = $BillAddr;
 try{
  $resultingCustomerObj = $dataService->Add($customerObj);
  //print_r($resultingInvoiceObj); 
+ $customerid = $resultingCustomerObj->Id;
 } catch (Exception $e){
+    print_r($customerObj);
  echo $e->getMessage();
 }
-$customerid = $resultingCustomerObj->Id;
+
 //echo $customerid;
 
 }
