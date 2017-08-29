@@ -765,6 +765,71 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         }
     }
     
+    function loadCustomerNeedsNotesAJAX(id){
+    
+        var entityType = <?php echo $_SESSION['entitytype'];  ?>;
+        var blnShow = false;
+        
+        if (entityType == 0) blnShow = true; 
+    
+        var url = '<?php echo API_HOST; ?>' + '/api/customer_needs_notes?columns=id,customerNeedsID,note,permission,createdAt&filter[]=customerNeedsID,eq,' + id + '&filter[]=permission,cs,' + entityType + '&transform=1';
+        
+        if ( ! $.fn.DataTable.isDataTable( '#customer-needs-note-table' ) ) {
+            
+            var example_table = $('#customer-needs-note-table').DataTable({
+            retrieve: true,
+            processing: true,
+            ajax: {
+                url: url,
+                dataSrc: 'customer_needs_notes'
+            },
+            columns: [
+                {
+                    data: null,
+                    "bSortable": true,
+                    "render": function(o) {
+                        var permission = o.permission;
+                        var viewAccess = "";
+                        
+                        switch(permission){
+                            case "0":
+                                viewAccess = "NEC Admin Only";
+                                break;
+                            case "0,1":
+                                viewAccess = "Customer and NEC Admin";
+                                break;
+                            case "0,2":
+                                viewAccess = "Carrier and NEC Admin";
+                                break;
+                            case "0,1,2":
+                                viewAccess = "All";
+                                break;
+                        }
+                      
+                      return viewAccess;
+                    },
+                    visible: blnShow
+                },
+                { data: "createdAt" },
+                { data: "note" }
+                
+            ]
+          });
+
+            example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
+            
+            //To Reload The Ajax
+            //See DataTables.net for more information about the reload method
+            example_table.ajax.reload();
+        }
+        else{
+          //The URL will change with each "View Commit" button click
+          // Must load new Url each time.
+            var reload_table = $('#customer-needs-note-table').DataTable();
+            reload_table.ajax.url(url).load();
+        }
+    }
+    
     function getCarrierTotal(json){
       
             var customer_needs = json.customer_needs;
@@ -1030,6 +1095,30 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
     <br>
     
          <div id="dataTable-2" class="mt">
+            <h5><span class="fw-semi-bold">Notes</span></h5>
+            <table id="customer-needs-note-table" class="table table-striped table-hover">
+                 <thead>
+                 <tr>
+                     <th>View Access</th>
+                     <th>Date</th>
+                     <th>Note</th>
+                 </tr>
+                 </thead>
+                 <tbody>
+                      <!-- loadTableAJAX() is what populates this area -->
+                 </tbody>
+             </table>
+         </div>
+                
+        <div class="row">            
+            <div class="col-sm-4">
+                <a data-widgster="addNote" title="Add" href="Javascript:addNewNote();"><i class="fa fa-plus-square-o"></i> Add Note</a>
+            </div>
+        </div>
+            
+    <br>
+    
+         <div id="dataTable-2" class="mt">
             <h5><span class="fw-semi-bold">Carrier Committed Transport</span></h5>
             <table id="customer-needs-commit-table" class="table table-striped table-hover">
                  <thead>
@@ -1123,7 +1212,53 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
      </div>
     
  </section>
- 
+  
+<!-- Modal -->
+  <div class="modal fade" id="addNote" tabindex="-1" aria-hidden="true" aria-label="exampleModalCommitLabel">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalCommitLabel"><strong>Add Note</strong></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+                <form id="formAddNote" class="register-form mt-lg">
+                  <input type="hidden" id="customerNeedsID" name="customerNeedsID" value="" />
+                  <div class="row">
+                      
+                      <div class="col-sm-12">
+                          <div class="form-group">
+              
+                              <label for="viewAccess">View Access</label>
+                              <select id="viewAccess" name="viewAccess" data-placeholder="View Access" class="form-control chzn-select" required="required">
+                                <option value="0">NEC Admin Only</option>
+                                <option value="0,1">Customer and NEC Admin</option>
+                                <option value="0,2">Carrier and NEC Admin</option>
+                                <option value="0,1,2">All</option>
+                              </select>
+                          </div>
+                      </div>
+                  </div>
+                  <hr/>
+                  <div class="row">                 
+                      <div class="col-sm-12">
+                        <label for="commitmentNote">Note</label>
+                        <div class="form-group">
+                            <textarea id="commitmentNote" rows="4" cols="50" class="form-control mb-sm" maxlength="600"></textarea>
+                        </div>
+                      </div>
+                  </div>
+        </div>
+        <div class="modal-footer">
+           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+           <button type="button" class="btn btn-primary btn-md" onclick="saveNote();" id="saveNote">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Modal -->
   <div class="modal fade" id="myModalCommit" tabindex="-1" aria-hidden="true" aria-label="exampleModalCommitLabel">
     <div class="modal-dialog modal-lg" role="document">
@@ -1405,7 +1540,18 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         $("#myModalCommit").modal('show');
     }
     
- 
+    function addNewNote(){
+        
+        var selectedTable = $("#selected-customer-need").DataTable();
+        var json = selectedTable.ajax.json();
+        var data = json.customer_needs[0];
+        
+        $("#customerNeedsID").val(data["id"]);
+        $("#viewAccess").val("0");
+        $("#commitmentNote").val("");        
+        
+        $("#addNote").modal('show');
+    }
 
     function closeCustomerCommitLegs(customerNeedID){
         
@@ -1527,7 +1673,71 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         
     }
     
-    
+    function saveNote(){
+        
+        if ( $('#formAddNote').parsley().validate() ) {
+
+            $("#saveNote").html("<i class='fa fa-spinner fa-spin'></i> Saving Note");
+            $("#saveNote").prop("disabled", true);
+            
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth()+1; //January is 0!
+            var yyyy = today.getFullYear();
+            var hours = today.getHours();
+            var min = today.getMinutes();
+            var sec = today.getSeconds();
+
+            if(dd<10) {
+                dd='0'+dd;
+            }
+
+            if(mm<10) {
+                mm='0'+mm;
+            }
+
+            if(hours<10) {
+                hours='0'+hours;
+            }
+
+            if(min<10) {
+                min='0'+min;
+            }
+
+            today = mm+'/'+dd+'/'+yyyy;
+            today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+
+            var url = '<?php echo API_HOST; ?>' + '/api/customer_needs_notes'
+            var data = {customerNeedsID: $("#customerNeedsID").val(), note: $("#commitmentNote").val(), permission: $("#viewAccess").val(), createdAt: today, updatedAt:today};
+            
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: JSON.stringify(data),
+                contentType: "application/json",
+                async: false,
+                success: function(data){
+                    
+                   loadCustomerNeedsNotesAJAX($("#customerNeedsID").val());
+                   $("#saveNote").html("Save");
+                   $("#saveNote").prop("disabled", false);
+                   $("#addNote").modal('hide');
+                },
+                error: function() {
+                   alert('Failed to create note');
+                   $("#saveNote").html("Commit");
+                   $("#saveNote").prop("disabled", false);
+                   $("#addNote").modal('hide');
+                }
+             });
+            
+        }
+        else {
+
+            return false;
+
+        }
+    }
     
     //Yaw,
     // While I was investigating, I realized that the javascript was not waiting for a return from the addCustomerInfo function.
@@ -2170,6 +2380,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
             
         loadSelectedCustomer(id)
         loadCustomerNeedsCommitAJAX(id);
+        loadCustomerNeedsNotesAJAX(id);
     });
 
     function closeCommitTransport(){
