@@ -494,7 +494,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
         if (<?php echo $_SESSION['entityid']; ?> > 0) {
             var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=entities&columns=id,rootCustomerNeedsID,entityID,qty,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,entities.name,entities.rateType,entities.negotiatedRate&filter[0]=rootCustomerNeedsID,eq,0&filter[1]=expirationDate,gt,' + today + '&filter[2]=status,eq,Available&order[]=createdAt,desc&transform=1';
-            alert(url);
+            console.log(url);
             var show = false;
         } else {
             var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate&satisfy=all&filter[]=status,eq,Available&order[0]=entityID&order[1]=rootCustomerNeedsID&order[2]=createdAt,desc&transform=1';
