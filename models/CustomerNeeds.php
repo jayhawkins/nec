@@ -595,6 +595,7 @@ class CustomerNeed
         );
         $context  = stream_context_create($options);
         $result = json_decode(file_get_contents($url,false,$context),true);
+echo $result['carrierNeedsID'] . "<br />";
 
         if ($result['id'] > 0) {
 
@@ -611,7 +612,7 @@ class CustomerNeed
             );
             $carriercontext  = stream_context_create($carrieroptions);
             $carrierresult = json_decode(file_get_contents($carrierurl,false,$carriercontext),true);
-print_r($carrierresult);
+
             $templateargs = array(
                 "transform"=>1,
                 "filter[]"=>"title,eq,Carrier Match Notification"
