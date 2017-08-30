@@ -900,12 +900,9 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                            <input type="text" id="rate" name="rate" class="form-control mb-sm"
                               placeholder="Rate $" data-parsley-type="number" />
                         </div>
-<<<<<<< HEAD
+
               <?php } ?>
 
-=======
-               
->>>>>>> 95f35645b5a5d5438f66d9f6b378b045d6a7a670
                      </div>
                      <div class="col-sm-3">
                          <label for="rateType">Rate Type</label>
