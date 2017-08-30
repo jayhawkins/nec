@@ -595,7 +595,7 @@ class CustomerNeed
         );
         $context  = stream_context_create($options);
         $result = json_decode(file_get_contents($url,false,$context),true);
-echo $result['carrierNeedsID'] . "<br />";
+print_r($result);
 
         if ($result['id'] > 0) {
 
