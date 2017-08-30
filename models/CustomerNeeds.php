@@ -586,6 +586,8 @@ class CustomerNeed
 
     public function sendNeedsMatchNotification($api_host,$id) { // $id is the needs_match id NOT the customer_needs id
 
+        echo "In the send notifications with id: " . $id . "<br />";
+
         $url = $api_host."/api/needs_match/".$id;
         $options = array(
             'http' => array(
