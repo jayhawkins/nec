@@ -26,7 +26,6 @@ if ($_SESSION['entityid'] > 0) {
     if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
         $cnargs = array(
               "transform"=>"1",
-              "filter[0]"=>"entityID,eq," . $_SESSION['entityid'],
               "filter[1]"=>"status,eq,Available",
               "filter[2]"=>"availabilityDate,ge," . date("Y-m-d 00:00:00")
         );
@@ -34,7 +33,6 @@ if ($_SESSION['entityid'] > 0) {
         $cnargs = array(
               "transform"=>"1",
               "filter[0]"=>"rootCustomerNeedsID,eq,0",
-              "filter[1]"=>"entityID,eq," . $_SESSION['entityid'],
               "filter[2]"=>"status,eq,Available",
               "filter[3]"=>"availabilityDate,ge," . date("Y-m-d 00:00:00")
         );
