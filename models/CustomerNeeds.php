@@ -633,6 +633,8 @@ class CustomerNeed
 
             foreach ($carrierresult['carrier_needs'][0]['contactEmails'][0] as $key => $value) {
 
+                echo $value . "<br />";
+
                 $contactargs = array(
                       "transform"=>1,
                       "filter"=>"id,eq,".$key
