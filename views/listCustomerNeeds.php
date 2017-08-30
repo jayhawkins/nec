@@ -901,7 +901,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                               placeholder="Rate $" data-parsley-type="number" />
                         </div>
 
-              <?php } ?>
 
                      </div>
                      <div class="col-sm-3">
