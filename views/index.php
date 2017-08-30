@@ -26,14 +26,17 @@ if ($_SESSION['entityid'] > 0) {
     if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
         $cnargs = array(
               "transform"=>"1",
-              "filter[]"=>"entityID,eq," . $_SESSION['entityid'],
-              "filter[]"=>"status,eq,Available"
+              "filter[0]"=>"entityID,eq," . $_SESSION['entityid'],
+              "filter[1]"=>"status,eq,Available",
+              "filter[2]"=>"availabilityDate,ge," . date("Y-m-d 00:00:00")
         );
     } elseif ( $eresult['entities'][0]['entityTypeID'] == 2 ) { // Carrier
         $cnargs = array(
               "transform"=>"1",
-              "filter[]"=>"entityID,eq," . $_SESSION['entityid'],
-              "filter[]"=>"status,eq,Available"
+              "filter[0]"=>"rootCustomerNeedsID,eq,0",
+              "filter[1]"=>"entityID,eq," . $_SESSION['entityid'],
+              "filter[2]"=>"status,eq,Available",
+              "filter[3]"=>"availabilityDate,ge," . date("Y-m-d 00:00:00")
         );
     }
 
@@ -60,8 +63,7 @@ if ($_SESSION['entityid'] > 0) {
         $cncount = count($cnresult2['customer_needs']);
     }
 
-} 
-else {
+} else {
 
     // Now get counts for Admin Logins
     $cnargs = array(
@@ -85,8 +87,9 @@ else {
 
     $cnargs = array(
           "transform"=>"1",
-          "filter[]"=>"entityID,eq," . $_SESSION['entityid'],
-          "filter[]"=>"status,eq,Available"
+          "filter[0]"=>"entityID,eq," . $_SESSION['entityid'],
+          "filter[1]"=>"status,eq,Available",
+          "filter[2]"=>"availabilityDate,ge," . date("Y-m-d 00:00:00")
     );
 
     $entityname = $eresult['entities'][0]['name'] . " - (Admin)";
@@ -238,12 +241,12 @@ else {
         }
 
         function countCommitments(){
-            
+
             var baseUrl = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate&filter[]=rootCustomerNeedsID,eq,0&filter[]=status,eq,Available';
 
-            var url = baseUrl + '&order[]=entityID&order[]=rootCustomerNeedsID&order[]=availableDate,desc&transform=1';        
+            var url = baseUrl + '&order[]=entityID&order[]=rootCustomerNeedsID&order[]=availableDate,desc&transform=1';
 
-        
+
             $.ajax({
                url: url,
                type: "GET",
@@ -368,7 +371,7 @@ else {
 
 
     if ($_SESSION['entityid'] == 0) {
-    
+
  ?>
              <li>
                  <a href="#" onclick="ajaxFormCall('listCommitment');">
@@ -377,12 +380,12 @@ else {
                      </span>
                      Commitment
                      <span id="commitmentCount" class="label label-danger">
-                         
+
                      </span>
                  </a>
              </li>
  <?php
-    
+
     }
 
     if ($_SESSION['entityid'] == 0) {
@@ -1207,7 +1210,7 @@ if ($_SESSION['entityid'] == 0) {
 
     countUserOrders();
     countCommitments();
-    
+
 $(function() {
 
    // Show loading message
