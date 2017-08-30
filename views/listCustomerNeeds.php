@@ -314,7 +314,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 { data: "id", visible: false },
                 { data: "entityID", visible: false },
                 { data: "qty" },
-                { data: "rate", render: $.fn.dataTable.render.number(',', '.', 2, '$'), visible: show  },
+                { data: "rate", render: $.fn.dataTable.render.number(',', '.', 2, '$')  },
                 { data: "rateType" },
                 { data: "transportationMode", visible: false },
                 { data: "availableDate", visible: false },
@@ -895,16 +895,17 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                  <hr />
                  <div class="row">
                      <div class="col-sm-3">
-                         <?php if ($_SESSION['entityid'] > 0) { ?>
-                            <input type="hidden" id="rate" name="rate" />
-             <?php } else { ?>
                         <label for="rate">Rate</label>
                         <div class="form-group">
                            <input type="text" id="rate" name="rate" class="form-control mb-sm"
                               placeholder="Rate $" data-parsley-type="number" />
                         </div>
+<<<<<<< HEAD
               <?php } ?>
 
+=======
+               
+>>>>>>> 95f35645b5a5d5438f66d9f6b378b045d6a7a670
                      </div>
                      <div class="col-sm-3">
                          <label for="rateType">Rate Type</label>
