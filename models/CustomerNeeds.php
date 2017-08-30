@@ -598,9 +598,6 @@ class CustomerNeed
 
         if ($result['id'] > 0) {
 
-            echo "result id: " . $result['id'] . "<br />";
-
-
             $carrierargs = array(
                 "transform"=>1,
                 "filter"=>"id,eq,".$result['carrierNeedsID']
@@ -617,7 +614,7 @@ class CustomerNeed
 
             $templateargs = array(
                 "transform"=>1,
-                "filter"=>"title,eq,Carrier Match Notification"
+                "filter[]"=>"title,eq,Carrier Match Notification"
             );
             $templateurl = $api_host."/api/email_templates?".http_build_query($templateargs);
             $templateoptions = array(
@@ -628,6 +625,7 @@ class CustomerNeed
             );
             $templatecontext  = stream_context_create($templateoptions);
             $templateresult = json_decode(file_get_contents($templateurl,false,$templatecontext),true);
+            print_r($templateresult);
             if (count($templateresult) > 0) {
                 $subject = $templateresult['email_templates'][0]['subject'];
             } else {
