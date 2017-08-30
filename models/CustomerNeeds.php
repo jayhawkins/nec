@@ -595,7 +595,6 @@ class CustomerNeed
         );
         $context  = stream_context_create($options);
         $result = json_decode(file_get_contents($url,false,$context),true);
-print_r($result);
 
         if ($result['id'] > 0) {
 
@@ -893,9 +892,11 @@ print_r($result);
                     $result['order_details'][$i]['destinationState'] == $this->destinationState) {
                     $historytype8found++;
                     $carrierEntityID = $result['order_details'][$i]['entityID'];
+                    $carrierNeedsID = $result['order_details'][$i]['carrierID'];
                     $customerNeedsID = $this->id;
+                    $customerEntityID = $this->entityID;
                     //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $status = "Matched")
-                    $id = $this->writeNeedsMatch($api_host, 8, 0, $carrierEntityID, $customerNeedsID, 0, "Matched");
+                    $id = $this->writeNeedsMatch($api_host, 8, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, "Matched");
                     break;
                 }
 
@@ -904,9 +905,11 @@ print_r($result);
                     $result['order_details'][$i]['originationState'] == $this->originationState) {
                     $historytype9found++;
                     $carrierEntityID = $result['order_details'][$i]['entityID'];
+                    $carrierNeedsID = $result['order_details'][$i]['carrierID'];
                     $customerNeedsID = $this->id;
+                    $customerEntityID = $this->entityID;
                     //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $status = "Matched")
-                    $id = $this->writeNeedsMatch($api_host, 9, 0, $carrierEntityID, $customerNeedsID, 0, "Matched");
+                    $id = $this->writeNeedsMatch($api_host, 9, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, "Matched");
                     break;
                 }
 
@@ -915,9 +918,11 @@ print_r($result);
                     $result['order_details'][$i]['destinationState'] == $this->destinationState) {
                     $historytype10found++;
                     $carrierEntityID = $result['order_details'][$i]['entityID'];
+                    $carrierNeedsID = $result['order_details'][$i]['carrierID'];
                     $customerNeedsID = $this->id;
+                    $customerEntityID = $this->entityID;
                     //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $status = "Matched")
-                    $id = $this->writeNeedsMatch($api_host, 10, 0, $carrierEntityID, $customerNeedsID, 0, "Matched");
+                    $id = $this->writeNeedsMatch($api_host, 10, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, "Matched");
                     break;
                 }
 
@@ -926,9 +931,11 @@ print_r($result);
                     $result['order_details'][$i]['destinationCity'] == $this->destinationCity) {
                     $historytype11found++;
                     $carrierEntityID = $result['order_details'][$i]['entityID'];
+                    $carrierNeedsID = $result['order_details'][$i]['carrierID'];
                     $customerNeedsID = $this->id;
+                    $customerEntityID = $this->entityID;
                     //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $status = "Matched")
-                    $id = $this->writeNeedsMatch($api_host, 11, 0, $carrierEntityID, $customerNeedsID, 0, "Matched");
+                    $id = $this->writeNeedsMatch($api_host, 11, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, "Matched");
                     break;
                 }
 
@@ -936,9 +943,11 @@ print_r($result);
                 if ($result['order_details'][$i]['originationCity'] == $this->originationCity) {
                     $historytype12found++;
                     $carrierEntityID = $result['order_details'][$i]['entityID'];
+                    $carrierNeedsID = $result['order_details'][$i]['carrierID'];
                     $customerNeedsID = $this->id;
+                    $customerEntityID = $this->entityID;
                     //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $status = "Matched")
-                    $id = $this->writeNeedsMatch($api_host, 12, 0, $carrierEntityID, $customerNeedsID, 0, "Matched");
+                    $id = $this->writeNeedsMatch($api_host, 12, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, "Matched");
                     break;
                 }
 
@@ -946,9 +955,11 @@ print_r($result);
                 if ($result['order_details'][$i]['destinationCity'] == $this->destinationCity) {
                     $historytype13found++;
                     $carrierEntityID = $result['order_details'][$i]['entityID'];
+                    $carrierNeedsID = $result['order_details'][$i]['carrierID'];
                     $customerNeedsID = $this->id;
+                    $customerEntityID = $this->entityID;
                     //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $status = "Matched")
-                    $id = $this->writeNeedsMatch($api_host, 13, 0, $carrierEntityID, $customerNeedsID, 0, "Matched");
+                    $id = $this->writeNeedsMatch($api_host, 13, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, "Matched");
                     break;
                 }
 
@@ -957,9 +968,11 @@ print_r($result);
                     $result['order_details'][$i]['destinationState'] == $this->destinationState) {
                     $historytype14found++;
                     $carrierEntityID = $result['order_details'][$i]['entityID'];
+                    $carrierNeedsID = $result['order_details'][$i]['carrierID'];
                     $customerNeedsID = $this->id;
+                    $customerEntityID = $this->entityID;
                     //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $status = "Matched")
-                    $id = $this->writeNeedsMatch($api_host, 14, 0, $carrierEntityID, $customerNeedsID, 0, "Matched");
+                    $id = $this->writeNeedsMatch($api_host, 14, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, "Matched");
                     break;
                 }
 
@@ -967,9 +980,11 @@ print_r($result);
                 if ($result['order_details'][$i]['originationState'] == $this->originationState) {
                     $historytype15found++;
                     $carrierEntityID = $result['order_details'][$i]['entityID'];
+                    $carrierNeedsID = $result['order_details'][$i]['carrierID'];
                     $customerNeedsID = $this->id;
+                    $customerEntityID = $this->entityID;
                     //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $status = "Matched")
-                    $id = $this->writeNeedsMatch($api_host, 15, 0, $carrierEntityID, $customerNeedsID, 0, "Matched");
+                    $id = $this->writeNeedsMatch($api_host, 15, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, "Matched");
                     break;
                 }
 
@@ -977,9 +992,11 @@ print_r($result);
                 if ($result['order_details'][$i]['destinationState'] == $this->destinationState) {
                     $historytype16found++;
                     $carrierEntityID = $result['order_details'][$i]['entityID'];
+                    $carrierNeedsID = $result['order_details'][$i]['carrierID'];
                     $customerNeedsID = $this->id;
+                    $customerEntityID = $this->entityID;
                     //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $status = "Matched")
-                    $id = $this->writeNeedsMatch($api_host, 16, 0, $carrierEntityID, $customerNeedsID, 0, "Matched");
+                    $id = $this->writeNeedsMatch($api_host, 16, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, "Matched");
                     break;
                 }
 
