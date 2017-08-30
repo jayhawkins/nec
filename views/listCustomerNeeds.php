@@ -242,7 +242,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                                                     contentType: "application/json",
                                                     async: false,
                                                     success: function(updateneeds){
-                                                        alert(notification);                                                        
+                                                        alert(notification);
                                                         countCommitments();
                                                     },
                                                     error: function() {
@@ -295,10 +295,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       function loadTableAJAX() {
         myApp.showPleaseWait();
         if (<?php echo $_SESSION['entityid']; ?> > 0) {
-            var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=entities&columns=entities.name,id,entityID,qty,rate,rateType,transportationMode,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,contactEmails&filter[]=status,eq,Available&filter[]=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&satisfy=all&order[]=createdAt,desc&transform=1';
+            var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=entities&columns=entities.name,id,entityID,qty,rate,rateType,transportationMode,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,contactEmails&filter[0]=status,eq,Available&filter[1]=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&satisfy=all&order[0]=createdAt,desc&transform=1';
             var show = false;
         } else {
-            var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=entities&columns=entities.name,id,entityID,qty,rate,rateType,transportationMode,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,contactEmails&filter[]=status,eq,Available&satisfy=all&order[]=entityID&order[]=createdAt,desc&transform=1';
+            var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=entities&columns=entities.name,id,entityID,qty,rate,rateType,transportationMode,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,contactEmails&filter[0]=status,eq,Available&satisfy=all&order[0]=entityID&order[1]=createdAt,desc&transform=1';
             var show = true;
         }
 
@@ -900,7 +900,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                            <input type="text" id="rate" name="rate" class="form-control mb-sm"
                               placeholder="Rate $" data-parsley-type="number" />
                         </div>
+<<<<<<< HEAD
+              <?php } ?>
+
+=======
                
+>>>>>>> 95f35645b5a5d5438f66d9f6b378b045d6a7a670
                      </div>
                      <div class="col-sm-3">
                          <label for="rateType">Rate Type</label>

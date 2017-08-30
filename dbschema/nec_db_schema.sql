@@ -936,6 +936,12 @@ ALTER TABLE `entities`
 	ON DELETE No Action
 	ON UPDATE No Action;
 
+ALTER TABLE `needs_match`
+	ADD CONSTRAINT `lnk_needs_match_types_needs_match` FOREIGN KEY ( `needsMatchTypeID` )
+	REFERENCES `needs_match_types`( `id` )
+	ON DELETE No Action
+	ON UPDATE No Action;
+
 
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
