@@ -34,7 +34,7 @@ if ($_SESSION['entityid'] > 0) {
               "transform"=>"1",
               "filter[0]"=>"rootCustomerNeedsID,eq,0",
               "filter[2]"=>"status,eq,Available",
-              "filter[3]"=>"expirationDate,ge," . date("Y-m-d 00:00:00")
+              "filter[3]"=>"expirationDate,gt," . date("Y-m-d 00:00:00")
         );
     }
 
