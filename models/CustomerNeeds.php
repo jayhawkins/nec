@@ -676,6 +676,7 @@ class CustomerNeed
                 if (count($templateresult) > 0) {
                   try {
                         $numSent = sendmail($to, $subject, $body, $from);
+                        echo "Notification Sent";
                         $matchdata = array(
                               "status"=>"Notification Sent",
                         );
