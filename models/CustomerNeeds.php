@@ -866,8 +866,6 @@ class CustomerNeed
         // Look at historical data
         $args = array(
             "transform"=>1,
-            "include"=>"entities",
-            "filter[0]"=>"entities.id,eq,order_details.carrierID",
             "filter[1]"=>"originationState,eq,".$this->originationState,
             "filter[3]"=>"createdAt,lt,".date("Y-m-d 00:00:00")
         );
