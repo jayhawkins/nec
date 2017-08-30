@@ -586,8 +586,6 @@ class CustomerNeed
 
     public function sendNeedsMatchNotification($api_host,$id) { // $id is the needs_match id NOT the customer_needs id
 
-        echo "In the send notifications with id: " . $id . "<br />";
-
         $url = $api_host."/api/needs_match/".$id;
         $options = array(
             'http' => array(
@@ -598,7 +596,10 @@ class CustomerNeed
         $context  = stream_context_create($options);
         $result = json_decode(file_get_contents($url,false,$context),true);
 
-        if (count($result) > 0) {
+        if ($result['id'] > 0) {
+
+            echo "result id: " . $result['id'] . "<br />";
+
 
             $carrierargs = array(
                 "transform"=>1,
