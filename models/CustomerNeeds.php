@@ -611,7 +611,7 @@ class CustomerNeed
             );
             $carriercontext  = stream_context_create($carrieroptions);
             $carrierresult = json_decode(file_get_contents($carrierurl,false,$carriercontext),true);
-
+print_r($carrierresult);
             $templateargs = array(
                 "transform"=>1,
                 "filter[]"=>"title,eq,Carrier Match Notification"
@@ -625,7 +625,6 @@ class CustomerNeed
             );
             $templatecontext  = stream_context_create($templateoptions);
             $templateresult = json_decode(file_get_contents($templateurl,false,$templatecontext),true);
-            print_r($templateresult);
             if (count($templateresult) > 0) {
                 $subject = $templateresult['email_templates'][0]['subject'];
             } else {
