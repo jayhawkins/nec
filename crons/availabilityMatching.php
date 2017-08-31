@@ -74,7 +74,7 @@ if (count($result) > 0) {
           for ($nm=0;$nm<count($result['needs_match']);$nm++) {
 
                 $id = $result['needs_match'][$nm]['id'];
-                //echo $result['needs_match'][$nm]['createdAt'] . "<br />\n";
+                echo "ID being passed to notification function: " . $id . "<br />\n";
                 $emailresult = $customerneed->sendNeedsMatchNotification(API_HOST, $id);
 
           }

@@ -589,6 +589,9 @@ class CustomerNeed
 
         if ($result['id'] > 0) {
 
+              print_r($result);
+              echo "<br /><br />";
+
              if ($result['carrierNeedsID'] > 0) {
                 $carrierargs = array(
                     "transform"=>1,
@@ -899,7 +902,7 @@ class CustomerNeed
 
         if (count($result) > 0) {
 
-            echo "availabilityMatching() - Order Details count: " . count($result['order_details']) . "<br />\n";
+            //echo "availabilityMatching() - Order Details count: " . count($result['order_details']) . "<br />\n";
 
             for ($i = 0; $i < count($result['order_details']); $i++ ) {
 
