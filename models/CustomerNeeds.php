@@ -692,8 +692,9 @@ class CustomerNeed
             if (count($templateresult) > 0) {
 
                   try {
+                        echo "Sending email notification to: " . print_r($to);
                         $numSent = sendmail($to, $subject, $body, $from);
-                        echo "Notification Sent";
+                        //echo "Notification Sent<br />\n";
                         $matchdata = array(
                               "status"=>"Notification Sent",
                         );
@@ -765,7 +766,7 @@ class CustomerNeed
             "filter[2]"=>"availableDate,ge,".date("Y-m-d 00:00:00")
         );
         $url = API_HOST."/api/carrier_needs?".http_build_query($args);
-        echo $url . "<br />\n";
+        //echo $url . "<br />\n";
         $options = array(
             'http' => array(
                 'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -895,6 +896,8 @@ class CustomerNeed
         $result = json_decode(file_get_contents($url,false,$context),true);
 
         if (count($result) > 0) {
+
+            echo "availabilityMatching() - Order Details count: " . count($result['order_details']) . "<br />\n";
 
             for ($i = 0; $i < count($result['order_details']); $i++ ) {
 
