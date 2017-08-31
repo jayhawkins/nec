@@ -550,6 +550,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 { data: "entities[0].name", visible: false },
                 { data: "entities[0].rateType", visible: false },
                 { data: "entities[0].negotiatedRate", visible: false},
+                { data: "status", visible: false},
                 {
                     data: null,
                     "bSortable": false,
@@ -1015,6 +1016,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                      <th>Name</th>
                      <th>Rate Type</th>
                      <th>Negotiated Rate</th>
+                     <th>Status</th>
                      <th class="no-sort pull-right"></th>
                  </tr>
                  </thead>
