@@ -618,9 +618,6 @@ class CustomerNeed
 
         if ($result['id'] > 0) {
 
-              print_r($result);
-              echo "<br /><br />";
-
              if ($result['carrierNeedsID'] > 0) {
                 $carrierargs = array(
                     "transform"=>1,
