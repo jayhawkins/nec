@@ -66,6 +66,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
     
     var customerNeedsRootIDs = <?php echo json_encode($customer_needs_root)?>;
      
+     var commitCarrierForm = $('#formNeed').parsley();
+     
     var myApp;
     myApp = myApp || (function () {
         var pleaseWaitDiv = $('<div class="modal hide" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false"><div class="modal-header"><h1>Processing...</h1></div><div class="modal-body"><div class="progress progress-striped active"><div class="bar" style="width: 100%;"></div></div></div></div>');
@@ -208,7 +210,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
       function verifyAndPost() {
 
-          if ( $('#formNeed').parsley().validate() ) {
+          if ( commitCarrierForm.validate() ) {
 
                 $("#load").html("<i class='fa fa-spinner fa-spin'></i> Committing Now");
                 $("#load").prop("disabled", true);
