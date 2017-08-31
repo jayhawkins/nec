@@ -539,7 +539,7 @@ class CustomerNeed
         return true;
     }
 
-    public function writeNeedsMatch($api_host, $typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $status = "Matched") {
+    public function writeNeedsMatch($api_host, $typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $orderID = 0, $status = "Matched") {
 
         try {
 
@@ -549,6 +549,7 @@ class CustomerNeed
                 "carrierEntityID"=>$carrierEntityID,
                 "customerNeedsID"=>$customerNeedsID,
                 "carrierNeedsID"=>$carrierNeedsID,
+                "orderID"=>$orderID,
                 "status"=>$status,
                 "createdAt" => date('Y-m-d H:i:s'),
                 "updatedAt" => date('Y-m-d H:i:s')
@@ -564,16 +565,6 @@ class CustomerNeed
               );
               $context  = stream_context_create($options);
               $result = json_decode(file_get_contents($url,false,$context),true);
-
-              /* Don't send notifications for every one. Just wrap it up at the end of the day or something
-              if ($result > 0) {
-                  if ($notifyResult = $this->sendNeedsMatchNotification() ) {
-                        return "success";
-                  } else {
-                        return "Failed sending Needs Matched Notification " . $notifiyResult;
-                  }
-              }
-              */
 
               return $result;
 
@@ -598,19 +589,62 @@ class CustomerNeed
 
         if ($result['id'] > 0) {
 
-            $carrierargs = array(
-                "transform"=>1,
-                "filter"=>"id,eq,".$result['carrierNeedsID']
-            );
-            $carrierurl = $api_host."/api/carrier_needs?".http_build_query($carrierargs);
-            $carrieroptions = array(
-                'http' => array(
-                    'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
-                    'method'  => 'GET'
-                )
-            );
-            $carriercontext  = stream_context_create($carrieroptions);
-            $carrierresult = json_decode(file_get_contents($carrierurl,false,$carriercontext),true);
+             if ($result['carrierNeedsID'] > 0) {
+                $carrierargs = array(
+                    "transform"=>1,
+                    "filter"=>"id,eq,".$result['carrierNeedsID']
+                );
+                $carrierurl = $api_host."/api/carrier_needs?".http_build_query($carrierargs);
+                $carrieroptions = array(
+                    'http' => array(
+                        'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                        'method'  => 'GET'
+                    )
+                );
+                $carriercontext  = stream_context_create($carrieroptions);
+                $carrierresult = json_decode(file_get_contents($carrierurl,false,$carriercontext),true);
+
+                foreach ($carrierresult['carrier_needs'][0]['contactEmails'][0] as $key => $value) {
+
+                    $contactargs = array(
+                          "transform"=>1,
+                          "filter"=>"id,eq,".$key
+                    );
+
+                    $contacturl = $api_host."/api/contacts?".http_build_query($contactargs);
+                    $contactoptions = array(
+                        'http' => array(
+                            'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                            'method'  => 'GET'
+                        )
+                    );
+                    $contactcontext  = stream_context_create($contactoptions);
+                    $contactresult = json_decode(file_get_contents($contacturl,false,$contactcontext),true);
+
+                    $to = array($contactresult['contacts'][0]['emailAddress'] => $contactresult['contacts'][0]['firstName'] . " " . $contactresult['contacts'][0]['lastName']);
+                }
+
+            } else if ($result['orderID'] > 0) {
+
+                $contactargs = array(
+                      "transform"=>1,
+                      "filter[0]"=>"entityID,eq,".$result['carrierID'],
+                      "filter[1]"=>"contactTypeID,eq,1",
+                      "filter[2]"=>"status,eq,Active"
+                );
+
+                $contacturl = $api_host."/api/contacts?".http_build_query($contactargs);
+                $contactoptions = array(
+                    'http' => array(
+                        'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                        'method'  => 'GET'
+                    )
+                );
+                $contactcontext  = stream_context_create($contactoptions);
+                $contactresult = json_decode(file_get_contents($contacturl,false,$contactcontext),true);
+
+                $to = array($contactresult['contacts'][0]['emailAddress'] => $contactresult['contacts'][0]['firstName'] . " " . $contactresult['contacts'][0]['lastName']);
+            }
 
             $templateargs = array(
                 "transform"=>1,
@@ -631,51 +665,32 @@ class CustomerNeed
                 $subject = "Nationwide Equipment Control - Carrier Match Notification";
             }
 
-            foreach ($carrierresult['carrier_needs'][0]['contactEmails'][0] as $key => $value) {
 
-                echo $value . "<br />";
+            $fromcontactargs = array(
+                  "transform"=>1,
+                  "filter[0]"=>"entityID,eq,".$this->entityID,
+                  "filter[1]"=>"contactTypeID,eq,1",
+                  "filter[2]"=>"status,eq,Active"
+            );
 
-                $contactargs = array(
-                      "transform"=>1,
-                      "filter"=>"id,eq,".$key
-                );
+            $fromcontacturl = $api_host."/api/contacts?".http_build_query($fromcontactargs);
+            $fromcontactoptions = array(
+                'http' => array(
+                    'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                    'method'  => 'GET'
+                )
+            );
+            $fromcontactcontext  = stream_context_create($fromcontactoptions);
+            $fromcontactresult = json_decode(file_get_contents($fromcontacturl,false,$fromcontactcontext),true);
 
-                $contacturl = $api_host."/api/contacts?".http_build_query($contactargs);
-                $contactoptions = array(
-                    'http' => array(
-                        'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
-                        'method'  => 'GET'
-                    )
-                );
-                $contactcontext  = stream_context_create($contactoptions);
-                $contactresult = json_decode(file_get_contents($contacturl,false,$contactcontext),true);
+            $from = array($fromcontactresult['contacts'][0]['emailAddress'] => $fromcontactresult['contacts'][0]['firstName'] . " " . $fromcontactresult['contacts'][0]['lastName']);
 
-                $to = array($contactresult['contacts'][0]['emailAddress'] => $contactresult['contacts'][0]['firstName'] . " " . $contactresult['contacts'][0]['lastName']);
+            $numSent = 0;
 
-                $fromcontactargs = array(
-                      "transform"=>1,
-                      "filter[0]"=>"entityID,eq,".$this->entityID,
-                      "filter[1]"=>"contactTypeID,eq,1",
-                      "filter[2]"=>"status,eq,Active"
-                );
+            $body = "Hello " . $contactresult['contacts'][0]['firstName'] . ",<br /><br />";
+            $body .= $templateresult['email_templates'][0]['body'];
+            if (count($templateresult) > 0) {
 
-                $fromcontacturl = $api_host."/api/contacts?".http_build_query($fromcontactargs);
-                $fromcontactoptions = array(
-                    'http' => array(
-                        'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
-                        'method'  => 'GET'
-                    )
-                );
-                $fromcontactcontext  = stream_context_create($fromcontactoptions);
-                $fromcontactresult = json_decode(file_get_contents($fromcontacturl,false,$fromcontactcontext),true);
-
-                $from = array($fromcontactresult['contacts'][0]['emailAddress'] => $fromcontactresult['contacts'][0]['firstName'] . " " . $fromcontactresult['contacts'][0]['lastName']);
-
-                $numSent = 0;
-
-                $body = "Hello " . $contactresult['contacts'][0]['firstName'] . ",<br /><br />";
-                $body .= $templateresult['email_templates'][0]['body'];
-                if (count($templateresult) > 0) {
                   try {
                         $numSent = sendmail($to, $subject, $body, $from);
                         echo "Notification Sent";
@@ -696,8 +711,8 @@ class CustomerNeed
                   } catch (Exception $mailex) {
                     return $mailex;
                   }
+
                 }
-            }
         }
 
     }
@@ -781,8 +796,8 @@ class CustomerNeed
                     $carrierNeedsID = $result['carrier_needs'][$i]['id'];
                     $customerNeedsID = $this->id;
                     $customerEntityID = $this->entityID;
-                    //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $status = "Matched")
-                    $id = $this->writeNeedsMatch($api_host, 1, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, "Matched");
+                    //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $orderID = 0, $status = "Matched")
+                    $id = $this->writeNeedsMatch($api_host, 1, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, 0, "Matched");
                     break;
                 }
 
@@ -794,8 +809,8 @@ class CustomerNeed
                     $carrierNeedsID = $result['carrier_needs'][$i]['id'];
                     $customerNeedsID = $this->id;
                     $customerEntityID = $this->entityID;
-                    //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $status = "Matched")
-                    $id = $this->writeNeedsMatch($api_host, 2, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, "Matched");
+                    //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $orderID = 0, $status = "Matched")
+                    $id = $this->writeNeedsMatch($api_host, 2, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, 0, "Matched");
                     break;
                 }
 
@@ -807,8 +822,8 @@ class CustomerNeed
                     $carrierNeedsID = $result['carrier_needs'][$i]['id'];
                     $customerNeedsID = $this->id;
                     $customerEntityID = $this->entityID;
-                    //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $status = "Matched")
-                    $id = $this->writeNeedsMatch($api_host, 3, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, "Matched");
+                    //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $orderID = 0, $status = "Matched")
+                    $id = $this->writeNeedsMatch($api_host, 3, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, 0, "Matched");
                     break;
                 }
 
@@ -819,8 +834,8 @@ class CustomerNeed
                     $carrierNeedsID = $result['carrier_needs'][$i]['id'];
                     $customerNeedsID = $this->id;
                     $customerEntityID = $this->entityID;
-                    //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $status = "Matched")
-                    $id = $this->writeNeedsMatch($api_host, 4, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, "Matched");
+                    //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $orderID = 0, $status = "Matched")
+                    $id = $this->writeNeedsMatch($api_host, 4, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, 0, "Matched");
                     break;
                 }
 
@@ -831,8 +846,8 @@ class CustomerNeed
                     $carrierNeedsID = $result['carrier_needs'][$i]['id'];
                     $customerNeedsID = $this->id;
                     $customerEntityID = $this->entityID;
-                    //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $status = "Matched")
-                    $id = $this->writeNeedsMatch($api_host, 5, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, "Matched");
+                    //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $orderID = 0, $status = "Matched")
+                    $id = $this->writeNeedsMatch($api_host, 5, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, 0, "Matched");
                     break;
                 }
 
@@ -843,8 +858,8 @@ class CustomerNeed
                     $carrierNeedsID = $result['carrier_needs'][$i]['id'];
                     $customerNeedsID = $this->id;
                     $customerEntityID = $this->entityID;
-                    //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $status = "Matched")
-                    $id = $this->writeNeedsMatch($api_host, 6, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, "Matched");
+                    //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $orderID = 0, $status = "Matched")
+                    $id = $this->writeNeedsMatch($api_host, 6, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, 0, "Matched");
                     break;
                 }
 
@@ -855,8 +870,8 @@ class CustomerNeed
                     $carrierNeedsID = $result['carrier_needs'][$i]['id'];
                     $customerNeedsID = $this->id;
                     $customerEntityID = $this->entityID;
-                    //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $status = "Matched")
-                    $id = $this->writeNeedsMatch($api_host, 7, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, "Matched");
+                    //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $orderID = 0, $status = "Matched")
+                    $id = $this->writeNeedsMatch($api_host, 7, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, 0, "Matched");
                     break;
                 }
 
@@ -866,8 +881,8 @@ class CustomerNeed
         // Look at historical data
         $args = array(
             "transform"=>1,
-            "filter[1]"=>"originationState,eq,".$this->originationState,
-            "filter[3]"=>"createdAt,lt,".date("Y-m-d 00:00:00")
+            "filter[0]"=>"originationState,eq,".$this->originationState,
+            "filter[1]"=>"createdAt,lt,".date("Y-m-d 00:00:00")
         );
         $url = API_HOST."/api/order_details?".http_build_query($args);
         $options = array(
@@ -878,7 +893,7 @@ class CustomerNeed
         );
         $context  = stream_context_create($options);
         $result = json_decode(file_get_contents($url,false,$context),true);
-print_r($result);
+
         if (count($result) > 0) {
 
             for ($i = 0; $i < count($result['order_details']); $i++ ) {
@@ -889,12 +904,12 @@ print_r($result);
                     $result['order_details'][$i]['destinationCity'] == $this->destinationCity &&
                     $result['order_details'][$i]['destinationState'] == $this->destinationState) {
                     $historytype8found++;
-                    $carrierEntityID = $result['order_details'][$i]['entityID'];
-                    $carrierNeedsID = $result['order_details'][$i]['carrierID'];
+                    $carrierEntityID = $result['order_details'][$i]['carrierID'];
+                    $orderID = $result['order_details'][$i]['orderID'];
                     $customerNeedsID = $this->id;
                     $customerEntityID = $this->entityID;
-                    //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $status = "Matched")
-                    $id = $this->writeNeedsMatch($api_host, 8, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, "Matched");
+                    //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $orderID = 0, $status = "Matched")
+                    $id = $this->writeNeedsMatch($api_host, 8, $customerEntityID, $carrierEntityID, $customerNeedsID, 0, $orderID, "Matched");
                     break;
                 }
 
@@ -902,12 +917,12 @@ print_r($result);
                 if ($result['order_details'][$i]['originationCity'] == $this->originationCity &&
                     $result['order_details'][$i]['originationState'] == $this->originationState) {
                     $historytype9found++;
-                    $carrierEntityID = $result['order_details'][$i]['entityID'];
-                    $carrierNeedsID = $result['order_details'][$i]['carrierID'];
+                    $carrierEntityID = $result['order_details'][$i]['carrierID'];
+                    $orderID = $result['order_details'][$i]['orderID'];
                     $customerNeedsID = $this->id;
                     $customerEntityID = $this->entityID;
-                    //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $status = "Matched")
-                    $id = $this->writeNeedsMatch($api_host, 9, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, "Matched");
+                    //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $orderID = 0, $status = "Matched")
+                    $id = $this->writeNeedsMatch($api_host, 9, $customerEntityID, $carrierEntityID, $customerNeedsID, 0, $orderID, "Matched");
                     break;
                 }
 
@@ -915,12 +930,12 @@ print_r($result);
                 if ($result['order_details'][$i]['destinationCity'] == $this->destinationCity &&
                     $result['order_details'][$i]['destinationState'] == $this->destinationState) {
                     $historytype10found++;
-                    $carrierEntityID = $result['order_details'][$i]['entityID'];
-                    $carrierNeedsID = $result['order_details'][$i]['carrierID'];
+                    $carrierEntityID = $result['order_details'][$i]['carrierID'];
+                    $orderID = $result['order_details'][$i]['orderID'];
                     $customerNeedsID = $this->id;
                     $customerEntityID = $this->entityID;
-                    //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $status = "Matched")
-                    $id = $this->writeNeedsMatch($api_host, 10, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, "Matched");
+                    //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $orderID = 0, $status = "Matched")
+                    $id = $this->writeNeedsMatch($api_host, 10, $customerEntityID, $carrierEntityID, $customerNeedsID, 0, $orderID, "Matched");
                     break;
                 }
 
@@ -928,36 +943,36 @@ print_r($result);
                 if ($result['order_details'][$i]['originationCity'] == $this->originationCity &&
                     $result['order_details'][$i]['destinationCity'] == $this->destinationCity) {
                     $historytype11found++;
-                    $carrierEntityID = $result['order_details'][$i]['entityID'];
-                    $carrierNeedsID = $result['order_details'][$i]['carrierID'];
+                    $carrierEntityID = $result['order_details'][$i]['carrierID'];
+                    $orderID = $result['order_details'][$i]['orderID'];
                     $customerNeedsID = $this->id;
                     $customerEntityID = $this->entityID;
-                    //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $status = "Matched")
-                    $id = $this->writeNeedsMatch($api_host, 11, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, "Matched");
+                    //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $orderID = 0, $status = "Matched")
+                    $id = $this->writeNeedsMatch($api_host, 11, $customerEntityID, $carrierEntityID, $customerNeedsID, 0, $orderID, "Matched");
                     break;
                 }
 
                 // 12 - Match of Origination City Expired or Completed Orders
                 if ($result['order_details'][$i]['originationCity'] == $this->originationCity) {
                     $historytype12found++;
-                    $carrierEntityID = $result['order_details'][$i]['entityID'];
-                    $carrierNeedsID = $result['order_details'][$i]['carrierID'];
+                    $carrierEntityID = $result['order_details'][$i]['carrierID'];
+                    $orderID = $result['order_details'][$i]['orderID'];
                     $customerNeedsID = $this->id;
                     $customerEntityID = $this->entityID;
-                    //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $status = "Matched")
-                    $id = $this->writeNeedsMatch($api_host, 12, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, "Matched");
+                    //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $orderID = 0, $status = "Matched")
+                    $id = $this->writeNeedsMatch($api_host, 12, $customerEntityID, $carrierEntityID, $customerNeedsID, 0, $orderID, "Matched");
                     break;
                 }
 
                 // 13 - Match of Destination City Expired or Completed Orders
                 if ($result['order_details'][$i]['destinationCity'] == $this->destinationCity) {
                     $historytype13found++;
-                    $carrierEntityID = $result['order_details'][$i]['entityID'];
-                    $carrierNeedsID = $result['order_details'][$i]['carrierID'];
+                    $carrierEntityID = $result['order_details'][$i]['carrierID'];
+                    $orderID = $result['order_details'][$i]['orderID'];
                     $customerNeedsID = $this->id;
                     $customerEntityID = $this->entityID;
-                    //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $status = "Matched")
-                    $id = $this->writeNeedsMatch($api_host, 13, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, "Matched");
+                    //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $orderID = 0, $status = "Matched")
+                    $id = $this->writeNeedsMatch($api_host, 13, $customerEntityID, $carrierEntityID, $customerNeedsID, 0, $orderID, "Matched");
                     break;
                 }
 
@@ -965,36 +980,36 @@ print_r($result);
                 if ($result['order_details'][$i]['originationState'] == $this->originationState &&
                     $result['order_details'][$i]['destinationState'] == $this->destinationState) {
                     $historytype14found++;
-                    $carrierEntityID = $result['order_details'][$i]['entityID'];
-                    $carrierNeedsID = $result['order_details'][$i]['carrierID'];
+                    $carrierEntityID = $result['order_details'][$i]['carrierID'];
+                    $orderID = $result['order_details'][$i]['orderID'];
                     $customerNeedsID = $this->id;
                     $customerEntityID = $this->entityID;
-                    //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $status = "Matched")
-                    $id = $this->writeNeedsMatch($api_host, 14, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, "Matched");
+                    //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $orderID = 0, $status = "Matched")
+                    $id = $this->writeNeedsMatch($api_host, 14, $customerEntityID, $carrierEntityID, $customerNeedsID, 0, $orderID, "Matched");
                     break;
                 }
 
                 // 15 - Match of Origination State Expired or Completed Orders
                 if ($result['order_details'][$i]['originationState'] == $this->originationState) {
                     $historytype15found++;
-                    $carrierEntityID = $result['order_details'][$i]['entityID'];
-                    $carrierNeedsID = $result['order_details'][$i]['carrierID'];
+                    $carrierEntityID = $result['order_details'][$i]['carrierID'];
+                    $orderID = $result['order_details'][$i]['orderID'];
                     $customerNeedsID = $this->id;
                     $customerEntityID = $this->entityID;
-                    //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $status = "Matched")
-                    $id = $this->writeNeedsMatch($api_host, 15, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, "Matched");
+                    //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $orderID = 0, $status = "Matched")
+                    $id = $this->writeNeedsMatch($api_host, 15, $customerEntityID, $carrierEntityID, $customerNeedsID, 0, $orderID, "Matched");
                     break;
                 }
 
                 // 16 - Match of Destination State Expired or Completed Orders
                 if ($result['order_details'][$i]['destinationState'] == $this->destinationState) {
                     $historytype16found++;
-                    $carrierEntityID = $result['order_details'][$i]['entityID'];
-                    $carrierNeedsID = $result['order_details'][$i]['carrierID'];
+                    $carrierEntityID = $result['order_details'][$i]['carrierID'];
+                    $orderID = $result['order_details'][$i]['orderID'];
                     $customerNeedsID = $this->id;
                     $customerEntityID = $this->entityID;
-                    //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $status = "Matched")
-                    $id = $this->writeNeedsMatch($api_host, 16, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, "Matched");
+                    //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $orderID = 0, $status = "Matched")
+                    $id = $this->writeNeedsMatch($api_host, 16, $customerEntityID, $carrierEntityID, $customerNeedsID, 0, $orderID, "Matched");
                     break;
                 }
 

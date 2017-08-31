@@ -39,11 +39,10 @@ if (count($result) > 0) {
           for ($cn=0;$cn<count($result['customer_needs']);$cn++) {
 
                 $id = $result['customer_needs'][$cn]['id'];
-                echo $id . "<br />\n";
-                echo $result['customer_needs'][$cn]['createdAt'] . "<br />\n";
-                echo $result['customer_needs'][$cn]['originationState'] . "<br />\n";
+                //echo $id . "<br />\n";
+                //echo $result['customer_needs'][$cn]['createdAt'] . "<br />\n";
+                //echo $result['customer_needs'][$cn]['originationState'] . "<br />\n";
                 $matchingresult = $customerneed->availabilityMatching(API_HOST,$id);
-                echo $matchingresult . "<br />\n";
 
           }
       } catch (Exception $e) {
@@ -61,7 +60,6 @@ $args = array(
     "satisfy"=>"all"
 );
 $url = API_HOST."/api/needs_match?".http_build_query($args);
-
 $options = array(
     'http' => array(
         'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -76,8 +74,7 @@ if (count($result) > 0) {
           for ($nm=0;$nm<count($result['needs_match']);$nm++) {
 
                 $id = $result['needs_match'][$nm]['id'];
-                //echo "needs_match id: ". $id . "<br />\n";
-                echo $result['needs_match'][$nm]['createdAt'] . "<br />\n";
+                //echo $result['needs_match'][$nm]['createdAt'] . "<br />\n";
                 $emailresult = $customerneed->sendNeedsMatchNotification(API_HOST, $id);
 
           }

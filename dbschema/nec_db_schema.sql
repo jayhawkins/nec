@@ -384,7 +384,7 @@ AUTO_INCREMENT = 1;
 -- ---------------------------------------------------------
 
 -- CREATE TABLE "needs_match_types" --------------------------------
-CREATE TABLE IF NOT EXISTS `needs_match` (
+CREATE TABLE IF NOT EXISTS `needs_match_types` (
 	`id` Int( 11 ) UNSIGNED AUTO_INCREMENT NOT NULL,
 	`description` VarChar( 255 ) NOT NULL,
 	`status` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'Active',
@@ -415,6 +415,7 @@ COLLATE = utf8_general_ci
 ENGINE = InnoDB
 AUTO_INCREMENT = 1;
 -- -------------------------------------------------------------
+ALTER TABLE needs_match ADD COLUMN orderID INT(11) UNSIGNED DEFAULT 0 AFTER carrierNeedsID;
 -- ---------------------------------------------------------
 
 -- CREATE TABLE "object_type_data_points" ------------------
