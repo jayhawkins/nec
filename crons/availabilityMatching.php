@@ -2,13 +2,15 @@
 
 date_default_timezone_set('America/New_York');
 
-require '../vendor/autoload.php';
+require "/var/www/absolute_paths.php";
 
-require '../../nec_config.php';
+require DOCROOT.'vendor/autoload.php';
 
-require '../lib/common.php';
+require ONELEVELUP.'nec_config.php';
 
-require '../models/CustomerNeeds.php';
+require DOCROOT.'lib/common.php';
+
+require DOCROOT.'models/CustomerNeeds.php';
 $customerneed = new CustomerNeed();
 
 $needsMatchedArray = array();
