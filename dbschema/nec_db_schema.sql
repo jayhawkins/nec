@@ -416,6 +416,7 @@ ENGINE = InnoDB
 AUTO_INCREMENT = 1;
 -- -------------------------------------------------------------
 ALTER TABLE needs_match ADD COLUMN orderID INT(11) UNSIGNED DEFAULT 0 AFTER carrierNeedsID;
+ALTER TABLE needs_match ADD COLUMN `notificationSentDate` DateTime NOT NULL AFTER `status`;
 -- ---------------------------------------------------------
 
 -- CREATE TABLE "object_type_data_points" ------------------

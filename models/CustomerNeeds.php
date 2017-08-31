@@ -700,6 +700,7 @@ class CustomerNeed
                         //echo "Notification Sent<br />\n";
                         $matchdata = array(
                               "status"=>"Notification Sent",
+                              "notificationSentDate"=>date('Y-m-d H:i:s')
                         );
                         $matchurl = API_HOST."/api/needs_match/".$id;
                         $matchoptions = array(
