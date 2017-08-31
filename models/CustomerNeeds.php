@@ -543,30 +543,59 @@ class CustomerNeed
 
         try {
 
-              $data = array(
-                "needsMatchTypeID"=>$typeID,
-                "customerEntityID"=>$customerEntityID,
-                "carrierEntityID"=>$carrierEntityID,
-                "customerNeedsID"=>$customerNeedsID,
-                "carrierNeedsID"=>$carrierNeedsID,
-                "orderID"=>$orderID,
-                "status"=>$status,
-                "createdAt" => date('Y-m-d H:i:s'),
-                "updatedAt" => date('Y-m-d H:i:s')
-              );
+                if ($carrierNeedsID > 0) {
+                    $matchargs = array(
+                          "transform"=>1,
+                          "filter[0]"=>"entityID,eq,".$carrierEntityID,
+                          "filter[1]"=>"carrierNeedsID,eq,".$carrierNeedsID
+                    );
+                } else {
+                    $matchargs = array(
+                          "transform"=>1,
+                          "filter[0]"=>"entityID,eq,".$carrierEntityID,
+                          "filter[1]"=>"orderID,eq,".$orderID
+                    );
+                }
 
-              $url = $api_host."/api/needs_match/";
-              $options = array(
-                  'http' => array(
-                      'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
-                      'method'  => 'POST',
-                      'content' => http_build_query($data)
-                  )
-              );
-              $context  = stream_context_create($options);
-              $result = json_decode(file_get_contents($url,false,$context),true);
+                $matchurl = $api_host."/api/needs_match?".http_build_query($matchargs);
+                $matchoptions = array(
+                    'http' => array(
+                        'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                        'method'  => 'GET'
+                    )
+                );
+                $matchcontext  = stream_context_create($matchoptions);
+                $matchresult = json_decode(file_get_contents($matchurl,false,$matchcontext),true);
 
-              return $result;
+                if (count($matchresult) == 0) {
+
+                      $data = array(
+                        "needsMatchTypeID"=>$typeID,
+                        "customerEntityID"=>$customerEntityID,
+                        "carrierEntityID"=>$carrierEntityID,
+                        "customerNeedsID"=>$customerNeedsID,
+                        "carrierNeedsID"=>$carrierNeedsID,
+                        "orderID"=>$orderID,
+                        "status"=>$status,
+                        "createdAt" => date('Y-m-d H:i:s'),
+                        "updatedAt" => date('Y-m-d H:i:s')
+                      );
+
+                      $url = $api_host."/api/needs_match/";
+                      $options = array(
+                          'http' => array(
+                              'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                              'method'  => 'POST',
+                              'content' => http_build_query($data)
+                          )
+                      );
+                      $context  = stream_context_create($options);
+                      $result = json_decode(file_get_contents($url,false,$context),true);
+
+                      return $result;
+                } else {
+                      return "Match Exists";
+                }
 
         } catch (Exception $e) {
               // Something here
