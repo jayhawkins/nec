@@ -86,13 +86,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
           var originationaddress = $("#originationCity").val() + ', ' + $("#originationState").val();
           var destinationaddress = $("#destinationCity").val() + ', ' + $("#destinationState").val();
 
+/*
           if (originationaddress != $("#originToMatch").val() && destinationaddress != $("#destToMatch").val()) {
               alert("The commitment for this Available request must be picked up or dropped off at the listed Origination or Destination. Please select a new Origination or Destination address.");
               //alert($("#originToMatch").val());
               //alert($("#destToMatch").val());
               return false;
           }
-
+*/
                 var result = true;
 
                 var params = {
@@ -326,10 +327,13 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                               $("#destinationState").val('');
                               $("#destinationZip").val('');
                               passValidation = true;
+                              
+                              return passValidation;
 
                 });
 
-            } else {
+            } 
+            else {
 
                 return false;
 
@@ -1094,21 +1098,21 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         
     <br>
     
-         <div id="dataTable-2" class="mt">
+        <div id="dataTable-2" class="mt">
             <h5><span class="fw-semi-bold">Notes</span></h5>
             <table id="customer-needs-note-table" class="table table-striped table-hover">
-                 <thead>
-                 <tr>
-                     <th>View Access</th>
-                     <th>Date</th>
-                     <th>Note</th>
-                 </tr>
-                 </thead>
-                 <tbody>
-                      <!-- loadTableAJAX() is what populates this area -->
-                 </tbody>
-             </table>
-         </div>
+                <thead>
+                    <tr>
+                        <th>View Access</th>
+                        <th>Date</th>
+                        <th>Note</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- loadTableAJAX() is what populates this area -->
+                </tbody>
+            </table>
+        </div>
                 
         <div class="row">            
             <div class="col-sm-4">
@@ -1118,49 +1122,49 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
             
     <br>
     
-         <div id="dataTable-2" class="mt">
+        <div id="dataTable-2" class="mt">
             <h5><span class="fw-semi-bold">Carrier Committed Transport</span></h5>
             <table id="customer-needs-commit-table" class="table table-striped table-hover">
-                 <thead>
-                 <tr>
-                     <th>Carrier Name</th>
-                     <th>ID</th>
-                     <th>Root Customer Needs ID</th>
-                     <th>Entity ID</th>
-                     <th>Qty</th>
-                     <th>Pick Up</th>
-                     <th>Delivery</th>
-                     <th>Transport Mode</th>
-                     <th>Carrier Rate</th>
-                     <th class="hidden-sm-down">Orig. Address1</th>
-                     <th class="hidden-sm-down">Orig. City</th>
-                     <th class="hidden-sm-down">Orig. State</th>
-                     <th class="hidden-sm-down">Orig. Zip</th>
-                     <th class="hidden-sm-down">Orig. Lat.</th>
-                     <th class="hidden-sm-down">Orig. Long.</th>
-                     <th class="hidden-sm-down">Dest. Address1</th>
-                     <th class="hidden-sm-down">Dest. City</th>
-                     <th class="hidden-sm-down">Dest. State</th>
-                     <th class="hidden-sm-down">Dest. Zip</th>
-                     <th class="hidden-sm-down">Dest. Lat.</th>
-                     <th class="hidden-sm-down">Dest. Long.</th>
-                     <th class="hidden-sm-down">Mileage</th>
-                     <th class="hidden-sm-down">Data Points</th>
-                     <th>Status</th>
-                     <th>Commit ID</th>
-                     <th>Commit Status</th>
-                     <th>Transportation Mode</th>
-                     <th>Name</th>
-                     <th>Rate Type</th>
-                     <th>Negotiated Rate</th>
-                     <th class="no-sort pull-right"></th>
-                 </tr>
-                 </thead>
-                 <tbody>
-                      <!-- loadTableAJAX() is what populates this area -->
-                 </tbody>
-             </table>
-         </div>
+                <thead>
+                <tr>
+                    <th>Carrier Name</th>
+                    <th>ID</th>
+                    <th>Root Customer Needs ID</th>
+                    <th>Entity ID</th>
+                    <th>Qty</th>
+                    <th>Pick Up</th>
+                    <th>Delivery</th>
+                    <th>Transport Mode</th>
+                    <th>Carrier Rate</th>
+                    <th class="hidden-sm-down">Orig. Address1</th>
+                    <th class="hidden-sm-down">Orig. City</th>
+                    <th class="hidden-sm-down">Orig. State</th>
+                    <th class="hidden-sm-down">Orig. Zip</th>
+                    <th class="hidden-sm-down">Orig. Lat.</th>
+                    <th class="hidden-sm-down">Orig. Long.</th>
+                    <th class="hidden-sm-down">Dest. Address1</th>
+                    <th class="hidden-sm-down">Dest. City</th>
+                    <th class="hidden-sm-down">Dest. State</th>
+                    <th class="hidden-sm-down">Dest. Zip</th>
+                    <th class="hidden-sm-down">Dest. Lat.</th>
+                    <th class="hidden-sm-down">Dest. Long.</th>
+                    <th class="hidden-sm-down">Mileage</th>
+                    <th class="hidden-sm-down">Data Points</th>
+                    <th>Status</th>
+                    <th>Commit ID</th>
+                    <th>Commit Status</th>
+                    <th>Transportation Mode</th>
+                    <th>Name</th>
+                    <th>Rate Type</th>
+                    <th>Negotiated Rate</th>
+                    <th class="no-sort pull-right"></th>
+                </tr>
+                </thead>
+                <tbody>
+                    <!-- loadTableAJAX() is what populates this area -->
+                </tbody>
+            </table>
+        </div>
                 
         <div class="row">            
             <div class="col-sm-4">
@@ -1200,16 +1204,17 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                 </div>
             </div>
         </div>
-         <div class="row"> 
+    
+        <div class="row"> 
             <div class="col-sm-4">
                 <label for="totalRevenue">Total Revenue</label>
                 <div class="form-group">
                   <input type="text" id="totalRevenue" name="totalRevenue" class="form-control mb-sm" placeholder="Total Revenue" readonly/>
                 </div>
             </div>             
-         </div>
         </div>
-     </div>
+    
+    </div>
     
  </section>
   
