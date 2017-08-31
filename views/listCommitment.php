@@ -66,8 +66,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
     
     var customerNeedsRootIDs = <?php echo json_encode($customer_needs_root)?>;
      
-    var commitCarrierForm = $('#addCarrierCommit').parsley();
-     
     var myApp;
     myApp = myApp || (function () {
         var pleaseWaitDiv = $('<div class="modal hide" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false"><div class="modal-header"><h1>Processing...</h1></div><div class="modal-body"><div class="progress progress-striped active"><div class="bar" style="width: 100%;"></div></div></div></div>');
@@ -174,7 +172,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
                 if (result) {
                     verifyAndPost(function(data) {
-                      alert(data);
+                      //alert(data);
                       $("#load").html("Commit");
                       $("#load").prop("disabled", false);
                     });
@@ -209,8 +207,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
     }
 
       function verifyAndPost() {
-
-          if ( $('#addCarrierCommit').parsley().validate() ) {
 
                 $("#load").html("<i class='fa fa-spinner fa-spin'></i> Committing Now");
                 $("#load").prop("disabled", true);
@@ -333,14 +329,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                               return passValidation;
 
                 });
-
-            } 
-            else {
-
-                return false;
-
-            }
-
       }
 
     function getCustomerNeedRoot(){        
@@ -1277,7 +1265,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
           </button>
         </div>
         <div class="modal-body">
-                <form id="addCarrierCommit" class="register-form mt-lg">
+                <form id="formNeed" class="register-form mt-lg">
                   <input type="hidden" id="id" name="id" value="" />
                   <input type="hidden" id="rootCustomerNeedsID" name="rootCustomerNeedsID" value="" />
                   <input type="hidden" id="originToMatch" name="originToMatch" value="" />
