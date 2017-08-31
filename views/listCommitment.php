@@ -66,7 +66,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
     
     var customerNeedsRootIDs = <?php echo json_encode($customer_needs_root)?>;
      
-     var commitCarrierForm = $('#formNeed').parsley();
+    var commitCarrierForm = $('#addCarrierCommit').parsley();
      
     var myApp;
     myApp = myApp || (function () {
