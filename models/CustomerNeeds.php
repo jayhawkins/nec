@@ -629,11 +629,9 @@ class CustomerNeed
 
             } else if ($result['orderID'] > 0) {
 
-                echo "CarrierID: " . $result['carrierID'] . "<br />\n";
-
                 $contactargs = array(
                       "transform"=>1,
-                      "filter[0]"=>"entityID,eq,".$result['carrierID'],
+                      "filter[0]"=>"entityID,eq,".$result['carrierEntityID'],
                       "filter[1]"=>"contactTypeID,eq,1",
                       "filter[2]"=>"status,eq,Active"
                 );
