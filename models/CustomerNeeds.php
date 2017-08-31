@@ -626,6 +626,8 @@ class CustomerNeed
 
             } else if ($result['orderID'] > 0) {
 
+                echo "CarrierID: " . $result['carrierID'] . "<br />\n";
+
                 $contactargs = array(
                       "transform"=>1,
                       "filter[0]"=>"entityID,eq,".$result['carrierID'],
@@ -692,7 +694,7 @@ class CustomerNeed
             if (count($templateresult) > 0) {
 
                   try {
-                        echo "Sending email notification to: " . print_r($to);
+                        //echo "Sending email notification to: " . print_r($to);
                         $numSent = sendmail($to, $subject, $body, $from);
                         //echo "Notification Sent<br />\n";
                         $matchdata = array(
@@ -778,7 +780,7 @@ class CustomerNeed
 
         if (count($result) > 0) {
 
-            echo "availabilityMatching() - Carrier Needs count: " . count($result['carrier_needs']) . "<br />\n";
+            //echo "availabilityMatching() - Carrier Needs count: " . count($result['carrier_needs']) . "<br />\n";
 
             for ($i = 0; $i < count($result['carrier_needs']); $i++ ) {
 
