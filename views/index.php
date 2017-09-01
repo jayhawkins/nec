@@ -26,15 +26,15 @@ if ($_SESSION['entityid'] > 0) {
     if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
         $cnargs = array(
               "transform"=>"1",
-              "filter[1]"=>"status,eq,Available",
-              "filter[2]"=>"availabilityDate,ge," . date("Y-m-d 00:00:00")
+              "filter[0]"=>"status,eq,Available",
+              "filter[1]"=>"availabilityDate,ge," . date("Y-m-d 00:00:00")
         );
     } elseif ( $eresult['entities'][0]['entityTypeID'] == 2 ) { // Carrier
         $cnargs = array(
               "transform"=>"1",
               "filter[0]"=>"rootCustomerNeedsID,eq,0",
-              "filter[2]"=>"status,eq,Available",
-              "filter[3]"=>"expirationDate,gt," . date("Y-m-d 00:00:00")
+              "filter[1]"=>"status,eq,Available",
+              "filter[2]"=>"expirationDate,gt," . date("Y-m-d 00:00:00")
         );
     }
 
@@ -66,7 +66,7 @@ if ($_SESSION['entityid'] > 0) {
     // Now get counts for Admin Logins
     $cnargs = array(
           "transform"=>"1",
-          "filter[]"=>"entityID,eq," . $_SESSION['entityid'],
+          //"filter[]"=>"entityID,eq," . $_SESSION['entityid'],
           "filter[]"=>"status,eq,Available"
     );
 
@@ -85,7 +85,7 @@ if ($_SESSION['entityid'] > 0) {
 
     $cnargs = array(
           "transform"=>"1",
-          "filter[0]"=>"entityID,eq," . $_SESSION['entityid'],
+          //"filter[0]"=>"entityID,eq," . $_SESSION['entityid'],
           "filter[1]"=>"status,eq,Available",
           "filter[2]"=>"availabilityDate,ge," . date("Y-m-d 00:00:00")
     );
