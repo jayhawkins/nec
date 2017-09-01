@@ -720,6 +720,29 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         
     }
     
+    function loadOrderComments(orderID){
+    
+        var url = '<?php echo API_HOST; ?>/api/orders?columns=comments&filter=id,eq,' + orderID + '&transform=1';
+        
+        $.ajax({
+            url: url,
+            type: "GET",
+            async: false,
+            success: function(data){
+                var comments = "";
+                
+                if(data.orders.length > 0){
+                    comments = data.orders[0].comments;
+                }
+                
+                $("#orderComments").val(comments);
+            },
+            error: function(data){
+                alert("Unable to retrieve order comments.");
+            }
+        });
+    }
+    
     function getOrderIDAndCustomerName(orderID){
         
         var url = '<?php echo API_HOST; ?>';
@@ -1245,7 +1268,33 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                  </table>
             </div>
     
+            <?php 
+
+            if ($_SESSION['entitytype'] != 1){ 
+
+                ?>
+            <br>
             
+            <div class="row">                 
+                <div class="col-sm-12">
+                  <label for="orderComments"><span class="fw-semi-bold">Comments</span></label>
+                  <div class="form-group">
+                      <textarea id="orderComments" rows="4" cols="50" class="form-control mb-sm" maxlength="600"></textarea>
+                  </div>
+                </div>
+            </div>
+            
+            <div class="row">            
+                <div class="col-sm-4">
+                    <button id="editOrderComments" class="btn btn-primary" role="button" onclick="editOrderComment();"><i class="glyphicon glyphicon-edit text"></i> <span class="text">Edit Comments</span></button>
+                </div>
+            </div>
+            <?php 
+
+            } 
+
+            ?>
+    
         </div>
         
      </section>
@@ -1595,6 +1644,30 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         format: "yyyy-mm-dd"
     });
 
+    function editOrderComment(){
+        var orderDetailsTable = $("#order-details-table").DataTable();
+        var json = orderDetailsTable.ajax.json();
+        var data = json.order_details[0];
+        var id = data.orders[0].id;
+        
+        var comments = $("#orderComments").val();
+        
+        var orderComments = {comments: comments};
+        
+        $.ajax({
+           url: '<?php echo API_HOST."/api/orders/"; ?>' + id,
+           type: "PUT",
+           data: JSON.stringify(orderComments),
+           contentType: "application/json",
+           async: false,
+           success: function(){    
+               alert("Comment Saved.");
+           },
+           error: function() {
+               alert("Comment could not save.");
+           }
+        }); 
+    }
 
     var table = $("#orders-table").DataTable();
     
@@ -1865,6 +1938,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         loadOrderDetailsAJAX(orderID);
         loadOrderStatusesAJAX(orderID);
         loadPODListAJAX(orderID);
+        loadOrderComments(orderID);
         
     });
     
