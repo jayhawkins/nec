@@ -546,17 +546,16 @@ class CustomerNeed
                 if ($carrierNeedsID > 0) {
                     $matchargs = array(
                           "transform"=>1,
-                          "filter[0]"=>"entityID,eq,".$carrierEntityID,
-                          "filter[1]"=>"carrierNeedsID,eq,".$carrierNeedsID
+                          "filter[]"=>"entityID,eq,".$carrierEntityID,
+                          "filter[]"=>"carrierNeedsID,eq,".$carrierNeedsID
                     );
                 } else {
                     $matchargs = array(
                           "transform"=>1,
-                          "filter[0]"=>"entityID,eq,".$carrierEntityID,
-                          "filter[1]"=>"orderID,eq,".$orderID
+                          "filter[]"=>"entityID,eq,".$carrierEntityID,
+                          "filter[]"=>"orderID,eq,".$orderID
                     );
                 }
-
                 $matchurl = $api_host."/api/needs_match?".http_build_query($matchargs);
                 $matchoptions = array(
                     'http' => array(
@@ -567,7 +566,7 @@ class CustomerNeed
                 $matchcontext  = stream_context_create($matchoptions);
                 $matchresult = json_decode(file_get_contents($matchurl,false,$matchcontext),true);
 
-                if (count($matchresult) == 0) {
+                if (count($matchresult['needs_match']) == 0) {
 
                       $data = array(
                         "needsMatchTypeID"=>$typeID,
@@ -577,6 +576,7 @@ class CustomerNeed
                         "carrierNeedsID"=>$carrierNeedsID,
                         "orderID"=>$orderID,
                         "status"=>$status,
+                        "notificationSentDate"=>'0000-00-00 00:00:00',
                         "createdAt" => date('Y-m-d H:i:s'),
                         "updatedAt" => date('Y-m-d H:i:s')
                       );
@@ -604,7 +604,7 @@ class CustomerNeed
 
     }
 
-    public function sendNeedsMatchNotification($api_host,$id) { // $id is the needs_match id NOT the customer_needs id
+    public function sendNeedsMatchNotification($api_host,$id, $contact) { // $id is the needs_match id NOT the customer_needs id
 
         $url = $api_host."/api/needs_match/".$id;
         $options = array(
@@ -653,6 +653,11 @@ class CustomerNeed
                     $to = array($contactresult['contacts'][0]['emailAddress'] => $contactresult['contacts'][0]['firstName'] . " " . $contactresult['contacts'][0]['lastName']);
                 }
 
+                $admincontacts = $contact->getContactsByEntity(0); // Get the admin contacts to send email copies to
+                for ($ac=0;$ac<count($admincontacts);$ac++) {
+                    $bcc = array($admincontacts[$ac]['emailAddress'] => $admincontacts[$ac]['firstName'] . " " . $admincontacts[$ac]['lastName']);
+                }
+
             } else if ($result['orderID'] > 0) {
 
                 $contactargs = array(
@@ -673,6 +678,11 @@ class CustomerNeed
                 $contactresult = json_decode(file_get_contents($contacturl,false,$contactcontext),true);
 
                 $to = array($contactresult['contacts'][0]['emailAddress'] => $contactresult['contacts'][0]['firstName'] . " " . $contactresult['contacts'][0]['lastName']);
+
+                $admincontacts = $contact->getContactsByEntity(0); // Get the admin contacts to send email copies to
+                for ($ac=0;$ac<count($admincontacts);$ac++) {
+                    $bcc = array($admincontacts[$ac]['emailAddress'] => $admincontacts[$ac]['firstName'] . " " . $admincontacts[$ac]['lastName']);
+                }
             }
 
             $templateargs = array(
@@ -722,7 +732,7 @@ class CustomerNeed
 
                   try {
                         //echo "Sending email notification to: " . print_r($to);
-                        $numSent = sendmail($to, $subject, $body, $from);
+                        $numSent = sendmail($to, $subject, $body, $from, '', $bcc);
                         //echo "Notification Sent<br />\n";
                         $matchdata = array(
                               "status"=>"Notification Sent",
@@ -806,7 +816,7 @@ class CustomerNeed
         $context  = stream_context_create($options);
         $result = json_decode(file_get_contents($url,false,$context),true);
 
-        if (count($result) > 0) {
+        if (count($result['carrier_needs']) > 0) {
 
             //echo "availabilityMatching() - Carrier Needs count: " . count($result['carrier_needs']) . "<br />\n";
 
@@ -829,6 +839,7 @@ class CustomerNeed
                     $customerEntityID = $this->entityID;
                     //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $orderID = 0, $status = "Matched")
                     $id = $this->writeNeedsMatch($api_host, 1, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, 0, "Matched");
+                    //echo "writeNeedsMatch($api_host, 1, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, 0, \"Matched\")";
                     break;
                 }
 
@@ -842,6 +853,7 @@ class CustomerNeed
                     $customerEntityID = $this->entityID;
                     //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $orderID = 0, $status = "Matched")
                     $id = $this->writeNeedsMatch($api_host, 2, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, 0, "Matched");
+                    //echo "writeNeedsMatch($api_host, 2, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, 0, \"Matched\")";
                     break;
                 }
 
@@ -855,6 +867,7 @@ class CustomerNeed
                     $customerEntityID = $this->entityID;
                     //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $orderID = 0, $status = "Matched")
                     $id = $this->writeNeedsMatch($api_host, 3, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, 0, "Matched");
+                    //echo "writeNeedsMatch($api_host, 3, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, 0, \"Matched\")";
                     break;
                 }
 
@@ -867,6 +880,7 @@ class CustomerNeed
                     $customerEntityID = $this->entityID;
                     //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $orderID = 0, $status = "Matched")
                     $id = $this->writeNeedsMatch($api_host, 4, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, 0, "Matched");
+                    //echo "writeNeedsMatch($api_host, 4, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, 0, \"Matched\")";
                     break;
                 }
 
@@ -879,6 +893,7 @@ class CustomerNeed
                     $customerEntityID = $this->entityID;
                     //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $orderID = 0, $status = "Matched")
                     $id = $this->writeNeedsMatch($api_host, 5, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, 0, "Matched");
+                    //echo "writeNeedsMatch($api_host, 5, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, 0, \"Matched\")";
                     break;
                 }
 
@@ -891,6 +906,7 @@ class CustomerNeed
                     $customerEntityID = $this->entityID;
                     //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $orderID = 0, $status = "Matched")
                     $id = $this->writeNeedsMatch($api_host, 6, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, 0, "Matched");
+                    //echo "writeNeedsMatch($api_host, 6, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, 0, \"Matched\")";
                     break;
                 }
 
@@ -903,6 +919,7 @@ class CustomerNeed
                     $customerEntityID = $this->entityID;
                     //writeNeedsMatch($typeID, $customerEntityID = 0, $carrierEntityID = 0, $customerNeedsID = 0, $carrierNeedsID = 0, $orderID = 0, $status = "Matched")
                     $id = $this->writeNeedsMatch($api_host, 7, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, 0, "Matched");
+                    //echo "writeNeedsMatch($api_host, 7, $customerEntityID, $carrierEntityID, $customerNeedsID, $carrierNeedsID, 0, \"Matched\")";
                     break;
                 }
 
@@ -925,7 +942,7 @@ class CustomerNeed
         $context  = stream_context_create($options);
         $result = json_decode(file_get_contents($url,false,$context),true);
 
-        if (count($result) > 0) {
+        if (count($result['order_details']) > 0) {
 
             //echo "availabilityMatching() - Order Details count: " . count($result['order_details']) . "<br />\n";
 
@@ -1048,7 +1065,7 @@ class CustomerNeed
 
             }
         }
-
+/*
         echo    $type1found . "<br />" .
                 $type2found . "<br />" .
                 $type3found . "<br />" .
@@ -1065,7 +1082,7 @@ class CustomerNeed
                 $historytype14found . "<br />" .
                 $historytype15found . "<br />" .
                 $historytype16found . "<br />";
-
+*/
         return "success";
 
     }
