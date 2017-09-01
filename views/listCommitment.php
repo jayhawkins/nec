@@ -65,7 +65,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
     var allEntities = <?php echo json_encode($allEntities); ?>;
     
     var customerNeedsRootIDs = <?php echo json_encode($customer_needs_root)?>;
-     
+         
     var myApp;
     myApp = myApp || (function () {
         var pleaseWaitDiv = $('<div class="modal hide" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false"><div class="modal-header"><h1>Processing...</h1></div><div class="modal-body"><div class="progress progress-striped active"><div class="bar" style="width: 100%;"></div></div></div></div>');
@@ -365,9 +365,41 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
           return customerNeedsRootIDs;
     }
       
-    function loadTableAJAX() {        
+
+    function getCommitted(){
+
+        var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?columns=id,rootCustomerNeedsID&filter[]=rootCustomerNeedsID,neq,0&filter[]=status,eq,Available&transform=1';
+
+        $.ajax({
+           url: url,
+           type: "GET",
+           contentType: "application/json",
+           success: function(json){
+
+                var customer_needs = json.customer_needs;
+                var customer_needs_commit = new Array();
+
+                customer_needs.forEach(function(customer_need){
+
+                    if(customer_needs_commit.indexOf(customer_need.rootCustomerNeedsID) == -1){
+                        customer_needs_commit.push(customer_need.rootCustomerNeedsID);
+                    }
+                });
+
+                loadTableAJAX(customer_needs_commit.toString());                
+                
+           },
+           error: function() {
+              alert("There Was An Error Saving the Status");
+           }
+        });
+
+    }
         
-        var baseUrl = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate&filter[]=rootCustomerNeedsID,eq,0&filter[]=status,eq,Available';
+        
+    function loadTableAJAX(committed) {
+        
+        var baseUrl = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate&filter[]=id,in,' + committed + '&filter[]=status,eq,Available';
              
         var url = baseUrl + '&order[]=entityID&order[]=rootCustomerNeedsID&order[]=availableDate,desc&transform=1';        
 
@@ -377,6 +409,20 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
             ajax: {
                 url: url,
                 dataSrc: 'customer_needs'
+                /*dataSrc: function ( json ) {
+                    
+                    var customer_needs = json.customer_needs;
+                    var customer_needs_commit = new Array();
+                    
+                    customer_needs.forEach(function(customer_need){
+                        
+                        if(customer_need.customer_needs_commit.length > 0){
+                            customer_needs_commit.push(customer_need);
+                        }
+                    });
+                    //console.log(customer_needs_commit);
+                    return customer_needs_commit;
+                }*/
             },
             columns: [
                 {
@@ -1446,7 +1492,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
  
  <script>
 
-    loadTableAJAX();
+    getCommitted();
     
 
     $('.datepicker').datepicker({
@@ -2346,7 +2392,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
     }
     
-    var table = $("#datatable-table").DataTable();
     $("#customer-needs-commit").css("display", "none");
 
     $('#customer-needs-commit-table tbody').on( 'click', 'button', function () {
@@ -2363,6 +2408,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
     });
 
     $('#datatable-table tbody').on( 'click', 'button', function () {
+    var table = $("#datatable-table").DataTable();
         var data = table.row( $(this).parents('tr') ).data();
 
         var id = data["id"];
@@ -2382,6 +2428,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         
         $("#customer-needs-commit").css("display", "none");
         $("#customer-needs").css("display", "block");
+    var table = $("#datatable-table").DataTable();
         table.ajax.reload();
     }
 
@@ -2450,6 +2497,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
     $('#datatable-table tbody').on('click', 'td.details-control-add', function () {
 
+    var table = $("#datatable-table").DataTable();
         var tr = $(this).closest('tr');
         var row = table.row( tr );
         var td = $(this).closest('td');
@@ -2463,6 +2511,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
     $('#datatable-table tbody').on('click', 'td.details-control-minus', function () {
 
+    var table = $("#datatable-table").DataTable();
         var tr = $(this).closest('tr');
         var row = table.row( tr );
         var td = $(this).closest('td');

@@ -237,13 +237,42 @@ if ($_SESSION['entityid'] > 0) {
             });
 
         }
+        
+    function countCommitments(){
 
-        function countCommitments(){
+        var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?columns=id,rootCustomerNeedsID&filter[]=rootCustomerNeedsID,neq,0&filter[]=status,eq,Available&transform=1';
 
-            var baseUrl = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate&filter[]=rootCustomerNeedsID,eq,0&filter[]=status,eq,Available';
+        $.ajax({
+           url: url,
+           type: "GET",
+           contentType: "application/json",
+           success: function(json){
 
-            var url = baseUrl + '&order[]=entityID&order[]=rootCustomerNeedsID&order[]=availableDate,desc&transform=1';
+                var customer_needs = json.customer_needs;
+                var customer_needs_commit = new Array();
 
+                customer_needs.forEach(function(customer_need){
+
+                    if(customer_needs_commit.indexOf(customer_need.rootCustomerNeedsID) == -1){
+                        customer_needs_commit.push(customer_need.rootCustomerNeedsID);
+                    }
+                });
+
+                countCommitted(customer_needs_commit.toString());                
+                
+           },
+           error: function() {
+              alert("There Was An Error Saving the Status");
+           }
+        });
+
+    }
+
+        function countCommitted(committed){
+
+            var baseUrl = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate&filter[]=id,in,' + committed + '&filter[]=status,eq,Available';
+             
+            var url = baseUrl + '&order[]=entityID&order[]=rootCustomerNeedsID&order[]=availableDate,desc&transform=1';        
 
             $.ajax({
                url: url,
@@ -252,7 +281,10 @@ if ($_SESSION['entityid'] > 0) {
                async: false,
                success: function(json){
 
-                    var commitmentCount = json.customer_needs.length;
+                    var customer_needs = json.customer_needs;
+                    
+                    
+                    var commitmentCount = customer_needs.length;
 
                     $('#commitmentCount').html(commitmentCount);
                },
