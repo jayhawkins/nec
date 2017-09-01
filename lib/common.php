@@ -1,6 +1,6 @@
 <?php
 
-function sendmail($to, $subject, $body, $from, $document='') {
+function sendmail($to, $subject, $body, $from, $document='', $bcc='') {
 
   // Create the Transport
   $transport = Swift_SmtpTransport::newInstance('smtp.gmail.com', 587, 'tls')
@@ -49,6 +49,9 @@ function sendmail($to, $subject, $body, $from, $document='') {
           $message->setTo($name);
         } else {
           $message->setTo(array($address => $name));
+          if (!empty($bcc)) {
+                $message->addBcc($bcc);
+            }
         }
 
         try {

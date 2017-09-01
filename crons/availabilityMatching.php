@@ -13,6 +13,9 @@ require DOCROOT.'lib/common.php';
 require DOCROOT.'models/CustomerNeeds.php';
 $customerneed = new CustomerNeed();
 
+require DOCROOT.'models/Contacts.php';
+$contact = new Contact();
+
 $needsMatchedArray = array();
 
 //$date = new DateTime(date("Y-m-d 00:00:00"));
@@ -77,7 +80,7 @@ if (count($result) > 0) {
 
                 $id = $result['needs_match'][$nm]['id'];
                 //echo "ID being passed to notification function: " . $id . "<br />\n";
-                $emailresult = $customerneed->sendNeedsMatchNotification(API_HOST, $id);
+                $emailresult = $customerneed->sendNeedsMatchNotification(API_HOST, $id, $contact);
 
           }
       } catch (Exception $e) {

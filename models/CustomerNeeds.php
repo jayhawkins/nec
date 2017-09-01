@@ -604,7 +604,7 @@ class CustomerNeed
 
     }
 
-    public function sendNeedsMatchNotification($api_host,$id) { // $id is the needs_match id NOT the customer_needs id
+    public function sendNeedsMatchNotification($api_host,$id, $contact) { // $id is the needs_match id NOT the customer_needs id
 
         $url = $api_host."/api/needs_match/".$id;
         $options = array(
@@ -653,6 +653,11 @@ class CustomerNeed
                     $to = array($contactresult['contacts'][0]['emailAddress'] => $contactresult['contacts'][0]['firstName'] . " " . $contactresult['contacts'][0]['lastName']);
                 }
 
+                $admincontacts = $contact->getContactsByEntity(0); // Get the admin contacts to send email copies to
+                for ($ac=0;$ac<count($admincontacts);$ac++) {
+                    $bcc = array($admincontacts[$ac]['emailAddress'] => $admincontacts[$ac]['firstName'] . " " . $admincontacts[$ac]['lastName']);
+                }
+
             } else if ($result['orderID'] > 0) {
 
                 $contactargs = array(
@@ -673,6 +678,11 @@ class CustomerNeed
                 $contactresult = json_decode(file_get_contents($contacturl,false,$contactcontext),true);
 
                 $to = array($contactresult['contacts'][0]['emailAddress'] => $contactresult['contacts'][0]['firstName'] . " " . $contactresult['contacts'][0]['lastName']);
+
+                $admincontacts = $contact->getContactsByEntity(0); // Get the admin contacts to send email copies to
+                for ($ac=0;$ac<count($admincontacts);$ac++) {
+                    $bcc = array($admincontacts[$ac]['emailAddress'] => $admincontacts[$ac]['firstName'] . " " . $admincontacts[$ac]['lastName']);
+                }
             }
 
             $templateargs = array(
@@ -722,7 +732,7 @@ class CustomerNeed
 
                   try {
                         //echo "Sending email notification to: " . print_r($to);
-                        $numSent = sendmail($to, $subject, $body, $from);
+                        $numSent = sendmail($to, $subject, $body, $from, '', $bcc);
                         //echo "Notification Sent<br />\n";
                         $matchdata = array(
                               "status"=>"Notification Sent",
