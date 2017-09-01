@@ -1066,7 +1066,6 @@ class CustomerNeed
                 $historytype14found . "<br />" .
                 $historytype15found . "<br />" .
                 $historytype16found . "<br />";
-        die();
 
         return "success";
 
