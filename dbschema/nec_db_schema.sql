@@ -637,6 +637,8 @@ AUTO_INCREMENT = 1;
 
 ALTER TABLE `orders` ADD COLUMN `podList` JSON NOT NULL AFTER `needsDataPoints` ;
 
+ALTER TABLE orders ADD COLUMN comments VarChar( 255 ) not null default '' AFTER status;
+
 ALTER TABLE `orders`
 	ADD CONSTRAINT `lnk_entities_orders` FOREIGN KEY ( `customerID` )
 	REFERENCES `entities`( `id` )
