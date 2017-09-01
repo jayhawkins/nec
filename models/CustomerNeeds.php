@@ -1049,7 +1049,7 @@ class CustomerNeed
             }
         }
 
-/*
+
         echo  $type1found . "<br />" .
                 $type2found . "<br />" .
                 $type3found . "<br />" .
@@ -1067,7 +1067,7 @@ class CustomerNeed
                 $historytype15found . "<br />" .
                 $historytype16found . "<br />";
         die();
-*/
+
         return "success";
 
 
