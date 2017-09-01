@@ -68,6 +68,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
       function post() {
 
+        //console.log("Adding Availability.");
+
           var result = true;
 
           var params = {
