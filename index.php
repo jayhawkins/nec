@@ -433,37 +433,8 @@ $app->route('POST /bulkimport', function() {
 	$entityID = Flight::request()->data->entityID;
 	$documentURL = HTTP_HOST."/viewdocument?entityID=".$entityID."&filename=".$fileupload['name'];
 	$documents = Flight::documents();
-    $result = $documents->bulkUploadJAY(API_HOST,HTTP_HOST,FILE_LOCATION,$fileupload,$name,$documentID,$documentURL,$updatedAt,$entityID);
-
-	//echo json_encode($result, 128);
-/*
-    $output = array();
-    //echo "{";
-    foreach ($result as $key => $value) {
-		// $arr[3] will be updated with each value from $arr...
-		//echo "{$key} => {$value} ";
-		//echo "\"{$key}\":\"{$value}\"";
-		$output[key($v)] = current($v);
-	}
-	echo json_encode($output, 128);
-	//echo "}";
-*/
+    $result = $documents->bulkUpload(API_HOST,HTTP_HOST,FILE_LOCATION,$fileupload,$name,$documentID,$documentURL,$updatedAt,$entityID);
 	echo $result;
-/*
-	$output = array();
-	foreach($result as $v) {
-		$output[key($v)] = current($v);
-	}
-	echo json_encode($output, 128);
-*/
-	//print_r($result);
-    /*
-    if ($result) {
-        print_r($result);
-    } else {
-        print_r($result);
-    }
-    */
 });
 /*****************************************************************************/
 // Order Processes
