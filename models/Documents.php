@@ -1,4 +1,5 @@
 <?php
+
 class Documents
 {
 	private $fileupload;
@@ -143,7 +144,7 @@ class Documents
 		return "failed";
 	}
 
-    public function bulkUpload($api_host,$http_host,$file_location,$fileupload,$name,$documentID,$documentURL,$updatedAt,$entityID) {
+    public function bulkUploadORIG($api_host,$http_host,$file_location,$fileupload,$name,$documentID,$documentURL,$updatedAt,$entityID) {
 		$rename_file = null;
 		$filebase = pathinfo($fileupload['name'],PATHINFO_FILENAME);
 		$imageFileType = strtolower(pathinfo($fileupload['name'],PATHINFO_EXTENSION));
@@ -151,14 +152,7 @@ class Documents
 		$target_directory = $file_location . "users/".floor($entityID / 65535)."/".$entityID."/";
 		$target_file = $target_directory.$filename;
 		$uploadOk = 1;
-//  print_r($fileupload);
-//	echo "\n";
-//	echo "filename: " . $filename . "\n";
-//	echo "filebase: " . $filebase . "\n";
-//	echo "target_directory: " . $target_directory . "\n";
-//	echo "entityID: " . $entityID . "\n";
-//	echo "target_file: " . $target_file . "\n";
-//	die();
+
 		// Check file size
 		if ($fileupload["size"] > 20000000) {
 			// File Too Large
@@ -553,7 +547,7 @@ class Documents
 		return "failed";
 	}
 
-	public function bulkUploadJAY($api_host,$http_host,$file_location,$fileupload,$name,$documentID,$documentURL,$updatedAt,$entityID) {
+	public function bulkUpload($api_host,$http_host,$file_location,$fileupload,$name,$documentID,$documentURL,$updatedAt,$entityID) {
 		$rename_file = null;
 		$filebase = pathinfo($fileupload['name'],PATHINFO_FILENAME);
 		$imageFileType = strtolower(pathinfo($fileupload['name'],PATHINFO_EXTENSION));
@@ -582,17 +576,11 @@ class Documents
 			rename($target_file,$rename_file);
 		}
 
-		if ($uploadOk == 1) { //($this->status == 0) && (
-			// Check if $uploadOk is set to 0 by an error
-			if ($uploadOk == 0) {
-				// file was not uploaded
-				return "Upload Failed By Error";
-			} else {
+		if ($uploadOk == 1) {
+
 				// make user file directory
 				try { mkdir($file_location . "users/".floor($entityID / 65535)."/".$entityID."/", 0755, true); } catch(Exception $e) {/*echo 'Message: ' .$e->getMessage();*/}
 				file_put_contents($target_file, file_get_contents($fileupload["tmp_name"]));
-				// Load the documents data to send notification
-				//$this->load($api_host,$id);
 
                 $file = fopen($target_file, 'r');
                 $counter=0;
@@ -602,22 +590,24 @@ class Documents
                 $contacts_iterator=array();
                 $needs_iterator=array();
 
-                while (($line = fgetcsv($file)) !== false) {
-echo $line[0] . "\n";
+                while ( ($line = fgetcsv($file) ) !== false) {
                     //$line is an array of the csv elements
-                    if ($counter==0) {
+                    if ($counter == 0) {
+                        /*
                         foreach ($line as $key => $value) {
                             $pieces = explode(" ", $value);
                             if ($pieces[0]=="Contact") {
                                 $contacts_iterator[$key]=$value;
-                            } else {
-                                if ($pieces[0]=="Trailer") {
-                                    $needs_iterator[$key]=strtolower($value);
-                                }
+                            } else if ($pieces[0]=="Trailer") {
+                                $needs_iterator[$key]=strtolower($value);
                             }
                         }
+                        */
+
                         $counter++; // Increment after we have processed the column header row
+
                     } else {
+
                         $data = array(
                             "address1"=>$line[4],
                             "city"=>$line[3],
@@ -654,6 +644,7 @@ echo $line[0] . "\n";
                             } else {
 
                                 $result = "Origination Geocode Failed";
+                                echo $result;
 
                             }
 
@@ -693,6 +684,7 @@ echo $line[0] . "\n";
                                     } else {
 
                                         $result = "Destination Geocode Failed";
+                                        echo $result;
 
                                     }
 
@@ -718,40 +710,25 @@ echo $line[0] . "\n";
                                             $url = $api_host."/api/carrier_needs";
                                             $type = "POST";
                                         }
- */
 
-                                        $needsDataPoints = "{entityID: " . $entityID . "}";
-                                        $contacts = "{entityID: " . $entityID . "}";
-
-/*
-                                        $contacts= array();
-                                        foreach ($contacts_iterator as $key => $value) {
-                                            $pieces = explode(" ", $value);
-                                            $contactIndex=substr($pieces[1], 1,-1);
-                                            unset($pieces[0]);
-                                            unset($pieces[1]);
-                                            $contactName = implode(" ", $pieces);
-                                            if (strtolower($line[$key])=="yes") {
-                                                $contacts[$contactIndex]=$contactName;
-                                            }
-                                        }
-
-
-                                        $needsDataPoints= array();
-                                        foreach ($needs_iterator as $key => $value) {
-                                            $dataName = explode(" ", $value)[1];
-                                            $pieces = explode("(", $value);
-                                            $dataValues=substr($pieces[1], 0,-1);
-                                            $pieces = explode("/", $dataValues);
-                                            if (in_array(strtolower($line[$key]), $pieces)) {
-                                                $needsDataPoints[$dataName]=$line[$key];
-                                            } else {
-                                                $badCounter++;
-                                                $failureReason[$counter]=$counter.":Invalid need option for option ".$key."-".$value.": ".$line[$key].": possible values are ".implode(",",$pieces);
-                                            }
-                                        }
 */
 
+                                        $needsDataPoints[] = array("length"=>"$line[12]");
+                                        $needsDataPoints[] = array("width"=>"$line[13]");
+                                        $needsDataPoints[] = array("height"=>"$line[14]");
+                                        $needsDataPoints[] = array("carb"=>"$line[15]");
+                                        $needsDataPoints[] = array("decals"=>"$line[16]");
+                                        $needsDataPoints[] = array("door"=>"$line[17]");
+                                        $needsDataPoints[] = array("floor"=>"$line[18]");
+                                        $needsDataPoints[] = array("king_pin"=>"$line[19]");
+                                        $needsDataPoints[] = array("lift_pads"=>"$line[20]");
+                                        $needsDataPoints[] = array("num_axles"=>"$line[21]");
+                                        $needsDataPoints[] = array("railable"=>"$line[22]");
+                                        $needsDataPoints[] = array("side_skirts"=>"$line[23]");
+                                        $needsDataPoints[] = array("suspension"=>"$line[24]");
+                                        $needsDataPoints[] = array("type"=>"$line[25]");
+
+                                        $contacts = json_decode($line[26]);
 
                                         $dttime = date('Y-m-d H:i:s');
                                         if ($type == "PUT") {
@@ -798,7 +775,7 @@ echo $line[0] . "\n";
                                                 "destinationLng"=>$destinationlongitude,
                                                 "needsDataPoints"=>$needsDataPoints,
                                                 "status"=>'Available',
-                                                "contactEmails"=>$contacts,
+                                                "contactEmails"=>[$contacts],
                                                 "availableDate"=>$line[1],
                                                 "expirationDate"=>$line[2],
                                                 "createdAt"=>$dttime,
@@ -818,8 +795,6 @@ echo $line[0] . "\n";
                                         try {
                                             //$result = json_decode(file_get_contents($url,false,$context));
                                             $result = file_get_contents($url,false,$context);
-                                            return "success";
-
                                         } catch (Exception $e) {
                                             return $e;
                                         } // Try
@@ -837,15 +812,16 @@ echo $line[0] . "\n";
                         } // Try
 
                     } // If
+                    $counter++;
 
                 } // While
 
-			} // If
+                fclose($file);
 
 		} else {
-		    return "uploadOk was 0";
+		    return "uploadOk was 0 - File failed uploading.";
         } // If
-		return "Main success";
+		return "success";
 	}
 
 	// function to geocode address, it will return false if unable to geocode address
