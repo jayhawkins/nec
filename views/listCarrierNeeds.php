@@ -64,6 +64,25 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
        };
       })();
 
+      
+        function parseDate(input) {
+          var parts = input.match(/(\d+)/g);
+          // new Date(year, month [, date [, hours[, minutes[, seconds[, ms]]]]])
+          return new Date(parts[0], parts[1]-1, parts[2]); // months are 0-based
+        }
+        
+        function formatDate(date) {
+            var d = date,
+                month = '' + (d.getMonth() + 1),
+                day = '' + d.getDate(),
+                year = d.getFullYear();
+
+            if (month.length < 2) month = '0' + month;
+            if (day.length < 2) day = '0' + day;
+
+            return [year, month, day].join('-');
+        }
+        
       function post() {
           if ( $('#formNeed').parsley().validate() ) {
 
@@ -230,14 +249,29 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                                   needsarray.push(item);
                               }
                               var needsdatapoints = needsarray;
+                              
+                                var availableDateString = $("#availableDate").val();
+                                var expirationDateString = $("#expirationDate").val();
 
+                                var availableDate = new Date(parseDate(availableDateString));
+                                var expirationDate = new Date(); 
+
+                                if (expirationDateString == ""){
+                                    expirationDate.setDate(availableDate.getDate() + 30);
+                                    expirationDateString = formatDate(expirationDate);
+                                }
+                                else{
+                                    expirationDate = new Date(parseDate(expirationDateString));
+                                    expirationDateString = formatDate(expirationDate);
+                                }
+                                
                               if (type == "PUT") {
                                   var date = today;
-                                  var data = {qty: $("#qty").val(), transportationMode: $("#transportationMode").val(), originationAddress1: $("#originationAddress1").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress1: $("#destinationAddress1").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, contactEmails: $contacts, availableDate: $("#availableDate").val(), expirationDate: $("#expirationDate").val(), updatedAt: date};
+                                  var data = {qty: $("#qty").val(), transportationMode: $("#transportationMode").val(), originationAddress1: $("#originationAddress1").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress1: $("#destinationAddress1").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, contactEmails: $contacts, availableDate: $("#availableDate").val(), expirationDate: expirationDateString, updatedAt: date};
                               } else {
                                   var date = today;
                                   var recStatus = 'Available';
-                                  var data = {entityID: $("#entityID").val(), qty: $("#qty").val(), transportationMode: $("#transportationMode").val(), originationAddress1: $("#originationAddress1").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress1: $("#destinationAddress1").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, status: recStatus, contactEmails: $contacts, availableDate: $("#availableDate").val(), expirationDate: $("#expirationDate").val(), createdAt: date, updatedAt: date};
+                                  var data = {entityID: $("#entityID").val(), qty: $("#qty").val(), transportationMode: $("#transportationMode").val(), originationAddress1: $("#originationAddress1").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress1: $("#destinationAddress1").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, status: recStatus, contactEmails: $contacts, availableDate: $("#availableDate").val(), expirationDate: expirationDateString, createdAt: date, updatedAt: date};
                               }
 
                               $.ajax({
@@ -303,9 +337,36 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       }
 
       function loadTableAJAX() {
+                var today = new Date();
+                var dd = today.getDate();
+                var mm = today.getMonth()+1; //January is 0!
+                var yyyy = today.getFullYear();
+                var hours = today.getHours();
+                var min = today.getMinutes();
+                var sec = today.getSeconds();
+
+                if(dd<10) {
+                    dd='0'+dd;
+                }
+
+                if(mm<10) {
+                    mm='0'+mm;
+                }
+
+                if(hours<10) {
+                    hours='0'+hours;
+                }
+
+                if(min<10) {
+                    min='0'+min;
+                }
+
+                today = mm+'/'+dd+'/'+yyyy;
+                today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+
         //myApp.showPleaseWait();
         if (<?php echo $_SESSION['entityid']; ?> > 0) {
-            var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,transportationMode,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&filter[]=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&satisfy=all&order[]=availableDate,desc&transform=1';
+            var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,transportationMode,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&filter[0]=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&filter[1]=expirationDate,ge,' + today + '&satisfy=all&order[]=availableDate,desc&transform=1';
             var example_table = $('#datatable-table').DataTable({
                 retrieve: true,
                 processing: true,
@@ -321,13 +382,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     { data: "transportationMode", visible: false },
                     { data: "availableDate", visible: false },
                     { data: "expirationDate", visible: false },
-                    { data: "originationAddress1", visible: false },
                     { data: "originationCity" },
                     { data: "originationState" },
                     { data: "originationZip", visible: false },
                     { data: "originationLat", visible: false },
                     { data: "originationLng", visible: false },
-                    { data: "destinationAddress1", visible: false },
                     { data: "destinationCity" },
                     { data: "destinationState" },
                     { data: "destinationZip", visible: false },
@@ -355,7 +414,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 ]
               });
         } else {
-            var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,transportationMode,availableDate,expirationDate,originationCity,originationState,originationZip,originationLat,originationLng,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&satisfy=all&order[]=entityID&order[]=createdAt,desc&transform=1';
+            var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,transportationMode,availableDate,expirationDate,originationCity,originationState,originationZip,originationLat,originationLng,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&filter[0]=expirationDate,ge,' + today + '&satisfy=all&order[]=entityID&order[]=createdAt,desc&transform=1';
             var example_table = $('#datatable-table').DataTable({
                 retrieve: true,
                 processing: true,
@@ -371,13 +430,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     { data: "transportationMode", visible: false },
                     { data: "availableDate", visible: false },
                     { data: "expirationDate", visible: false },
-                    { data: "originationAddress1", visible: false },
                     { data: "originationCity" },
                     { data: "originationState" },
                     { data: "originationZip", visible: false },
                     { data: "originationLat", visible: false },
                     { data: "originationLng", visible: false },
-                    { data: "destinationAddress1", visible: false },
                     { data: "destinationCity" },
                     { data: "destinationState" },
                     { data: "destinationZip", visible: false },
@@ -945,13 +1002,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                      <th>Transportation Mode</th>
                      <th>Available Date</th>
                      <th>Expiration Date</th>
-                     <th class="hidden-sm-down">Orig. Address</th>
                      <th class="hidden-sm-down">Orig. City</th>
                      <th class="hidden-sm-down">Orig. State</th>
                      <th class="hidden-sm-down">Orig. Zip</th>
                      <th class="hidden-sm-down">Orig. Lat.</th>
                      <th class="hidden-sm-down">Orig. Long.</th>
-                     <th class="hidden-sm-down">Dest. Address</th>
                      <th class="hidden-sm-down">Dest. City</th>
                      <th class="hidden-sm-down">Dest. State</th>
                      <th class="hidden-sm-down">Dest. Zip</th>
