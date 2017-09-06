@@ -5,10 +5,6 @@ session_start();
 require '../../nec_config.php';
 require '../lib/common.php';
 
-if ($_SESSION['userid'] <= 0 || $_SESSION['userid'] == "") {
-    header("Location: " . HTTP_HOST);
-}
-
 $state = '';
 $states = json_decode(file_get_contents(API_HOST.'/api/states?columns=abbreviation,name&order=name'));
 
@@ -507,7 +503,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
             var date = today;
 
-            url = '<?php echo HTTP_HOST."/bulkimport" ?>';
+            url = '<?php echo HTTP_HOST."/carrierbulkupload" ?>';
             type = "POST";
             var formData = new FormData();
             formData.append('fileupload', $('#updatePolicyFile')[0].files[0]);

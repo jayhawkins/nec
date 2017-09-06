@@ -295,7 +295,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       }
 
       function loadTableAJAX() {
-        myApp.showPleaseWait();
         if (<?php echo $_SESSION['entityid']; ?> > 0) {
             var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=entities&columns=entities.name,id,entityID,qty,rate,rateType,transportationMode,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,contactEmails&filter[0]=status,eq,Available&filter[1]=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&satisfy=all&order[0]=createdAt,desc&transform=1';
             var show = false;
@@ -362,7 +361,170 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
           //See DataTables.net for more information about the reload method
           example_table.ajax.reload();
           $("#entityID").prop('disabled', false);
-          myApp.hidePleaseWait();
+          $("#btnUpload").html("Upload");
+          $("#btnUpload").prop("disabled", false);
+
+      }
+
+      function loadModal() { // load form with selection data for building download file ONLY - do not show modal form
+
+			var li = '';
+			var checked = '';
+			var dpli = '';
+			var dpchecked = '';
+			var emptyMode = '';
+			var loadMode = '';
+			var eitherMode = '';
+			$("#id").val('');
+			$("#qty").val('');
+			$("#availableDate").val('');
+			$("#expirationDate").val('');
+			$("#originationAddress1").val('');
+			$("#originationCity").val('');
+			$("#originationState").val('');
+			$("#originationZip").val('');
+			$("#destinationAddress1").val('');
+			$("#destinationCity").val('');
+			$("#destinationState").val('');
+			$("#destinationZip").val('');
+
+			transMode = '<select id="transportationMode" name="transportationMode" class="form-control chzn-select" required="required">' + '<option value="" selected=selected>*Select Mode...</option>';
+
+			transMode += '<option value="Empty" ' + emptyMode + '>Empty</option>';
+			transMode += '<option value="Load Out" ' + loadMode + '>Load Out</option>';
+			transMode += '<option value="Both (Empty or Load Out)" ' + eitherMode + '>Both (Empty or Load Out)</option>';
+			transMode += '</select>';
+			$("#divTransportationMode").html(transMode);
+
+			for (var i = 0; i < contacts.contacts.records.length; i++) {
+				li += '<li id=\"' + contacts.contacts.records[i][0] + '\" class=\"list-group-item\" ' + checked + '>' + contacts.contacts.records[i][1] + ' ' + contacts.contacts.records[i][2] + '</li>\n';
+			}
+			$("#check-list-box").html(li);
+			for (var i = 0; i < dataPoints.object_type_data_points.length; i++) {
+				dpli += '<li>' + dataPoints.object_type_data_points[i].title +
+				' <select class="form-control mb-sm" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '">\n' +
+				' <option value="" selected=selected>-Select From List-</option>\n';
+				for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
+					dpli += '<option>' + dataPoints.object_type_data_points[i].object_type_data_point_values[v].value + '</option>\n';
+				}
+				dpli += '</select>\n' +
+				'</li>\n';
+			}
+			$("#dp-check-list-box").html(dpli);
+			formatListBox();
+			formatListBoxDP();
+			$("#entityID").prop('disabled', false);
+			$("#exampleModalLabel").html('Add New Availability');
+
+      }
+
+      function uploadFile() {
+
+            $("#btnUpload").html("<i class='fa fa-spinner fa-spin'></i> Uploading Now");
+            $("#btnUpload").prop("disabled", true);
+
+            var data,date;
+            var passValidation = false;
+            var type = "";
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth()+1; //January is 0!
+            var yyyy = today.getFullYear();
+            var hours = today.getHours();
+            var min = today.getMinutes();
+            var sec = today.getSeconds();
+            var url = "";
+            if(dd<10) {
+                dd='0'+dd;
+            }
+            if(mm<10) {
+                mm='0'+mm;
+            }
+            if(hours<10) {
+                hours='0'+hours;
+            }
+            if(min<10) {
+                min='0'+min;
+            }
+            today = mm+'/'+dd+'/'+yyyy;
+            today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+            var date = today;
+
+            url = '<?php echo HTTP_HOST."/customerbulkupload" ?>';
+            type = "POST";
+            var formData = new FormData();
+            formData.append('fileupload', $('#updatePolicyFile')[0].files[0]);
+            formData.append('entityID', $("#entityID").val());
+            $.ajax({
+                url : url,
+                type : 'POST',
+                data : formData,
+                processData: false,  // tell jQuery not to process the data
+                contentType: false,  // tell jQuery not to set contentType
+                success : function(data) {
+                    if (data == "success") {
+                        $(myModal2).modal('hide');
+                        loadTableAJAX();
+                    } else {
+                        alert("Error During Success: " + data);
+                        $("#btnUpload").html("Upload");
+                        $("#btnUpload").prop("disabled", false);
+                    }
+                },
+                error: function(data) {
+                    alert("Error During Error: "+ data);
+                    $("#btnUpload").html("Upload");
+                    $("#btnUpload").prop("disabled", false);
+                }
+            });
+	  }
+
+	  function downloadTemplateClick() {
+
+            loadModal(); // Just load the modal so we can parse through and get the data to build the download file
+            var labels="";
+            var secondRow="";
+            $("#formNeed label").each(function(e){
+                if (e==0) {
+                    labels+=$(this).html();
+                } else {
+                    labels+=","+$(this).html();
+                    if ($(this).html() == "Available Date" || $(this).html() == "Expiration Date") {
+                        labels+=" (YYYY-MM-DD)";
+                    } else if ($(this).html() == "Transportation Mode") {
+                        labels+=" (Empty/Load Out/Both (Empty or Load Out))";
+                    } else if ($(this).html() == "Rate Type") {
+                        labels+=" (Flat Rate or Mileage)";
+                    }
+                    secondRow+=",";
+                }
+            });
+            // Build the needsDataPoints
+            var obj = $("#dp-check-list-box li select");
+            for (var i = 0; i < obj.length; i++) {
+                labels+=",Trailer "+obj[i].id +" "+obj[i].innerText.replace(/\n -Select From List-\n/g, '(').replace(/\n/g, '/').slice(0, -1)+")";
+                secondRow+=",";
+            }
+            // Build the contacts
+            var obj = $("#check-list-box li");
+            if (obj.length > 0) {
+                for (var i = 0; i < 1; i++) { // Only grab the first contact if there is one
+                    //labels+=",Contact ("+obj[i].id+") "+obj[i].innerText;
+                    labels+=",Contact";
+                    //secondRow+=",no";
+                    secondRow+=",{\"" + obj[i].id + "\": \"" + obj[i].innerText + "\"}"
+                }
+                //labels+="\r\n"+secondRow;
+                labels+="\n"+secondRow;
+            }
+            var element = document.createElement('a');
+            element.setAttribute('href', "data:application/octet-stream;charset=utf-8;base64,"+btoa(labels.replace(/\n/g, '\r\n')));
+            element.setAttribute('download', "customer_needs_bulk_import_template.csv");
+            //$("#downloadTemplate").attr("href","data:application/octet-stream;charset=utf-8;base64,"+btoa(labels.replace(/\n/g, '\r\n')));
+            //$("#downloadTemplate").attr("download","carrier_needs_bulk_import_template.csv");
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
 
       }
 
@@ -725,7 +887,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
              Column sorting, live search, pagination. Built with
              <a href="http://www.datatables.net/" target="_blank">jQuery DataTables</a>
          </p -->
-         <button type="button" id="addNeed" class="btn btn-primary pull-xs-right" data-target="#myModal">Add Availability</button>
+         <div class="pull-right text-nowrap">
+            <button type="button" id="addNeed" class="btn btn-primary" data-target="#myModal">Add Availability</button>
+            <button type="button" id="uploadTemplate" class="btn btn-primary" data-target="#myModal2" >Upload Bulk Template</button>
+         </div>
+         <button type="button" id="downloadTemplateButton" class="btn btn-primary">Download Bulk Template</button>
+         <a id="downloadTemplate"></a>
          <br /><br />
          <div id="dataTable" class="mt">
              <table id="datatable-table" class="table table-striped table-hover">
@@ -960,7 +1127,48 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       </div>
     </div>
   </div>
-
+  <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="enableDialogLabel">Upload Bulk Customer Availability</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+                <div class="row">
+                <form>
+                    <input type="hidden" id="entityID" value="<?php echo $_SESSION['entityid']; ?>" />
+                    <input type="hidden" id="replaceID" name="replaceID" value="" />
+                    <input type="hidden" id="docToView" value="" />
+                    <div id="divUploadPolicyFile" class="col-md-7">
+                        <label for="updatePolicyFile"><strong>Select Customer Availability File To Upload</strong></label>
+                        <div class="form-group">
+                            <input type="file" id="updatePolicyFile" name="updatePolicyFile" class="form-control mb-sm" placeholder="Update File" data-filesize="20000000"
+                            data-filetype="text/csv"
+                            onchange="validateFile(this);" />
+                        </div>
+                    </div>
+                    <!--
+                    <div class="col-md-5 pull-right">
+                        <label for="btnView">&nbsp;</label>
+                        <div class="form-group">
+                            <button type="button" class="btn btn-primary" id="btnReplace">Upload/View Policy</button>
+                            <button type="button" class="btn btn-primary" id="btnView">View Policy</button>
+                        </div>
+                    </div>
+                    -->
+                </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btnUpload">Upload</button>
+            </div>
+		</div>
+	</div>
+  </div>
   <!-- Modal -->
   <div class="modal fade" id="myDisableDialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-md" role="document">
@@ -1033,11 +1241,29 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
     var tableContact = $("#datatable-table-contact").DataTable();
     var tableDataPoints = $("#datatable-table-datapoints").DataTable();
 
+    function validateFile(file) {
+		var ext = $(file).val().split(".");
+		ext = ext[ext.length-1].toLowerCase();
+		var arrayExtensions = ["csv"];
+		if (arrayExtensions.lastIndexOf(ext) == -1) {
+			alert("File must be one of the following valid types; csv.");
+			$(file).val("");
+			$(file).focus();
+			return false;
+		} else {
+			return true;
+		}
+	}
+
     $('.datepicker').datepicker({
         autoclose: true,
         todayHighlight: true,
         format: "yyyy-mm-dd"
     });
+
+    $("#uploadTemplate").click(function(){
+		$("#myModal2").modal('show');
+	});
 
     $("#addNeed").click(function(){
       var li = '';
@@ -1232,6 +1458,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         });
     });
 
+
 /* Taken out per FS257
     $("#originationCity").keyup(function(){
         $("#originationCity").css("background","#FFF url(img/loaderIcon.gif) no-repeat 165px");
@@ -1258,6 +1485,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
     		});
   	});
 */
+
 
     function selectOrgCity(val) {
         var params = {id: val};
@@ -1286,6 +1514,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         });
     }
 
+
+
+
+
+
 /* Taken out per FS257
     $("#destinationCity").keyup(function(){
         $("#destinationCity").css("background","#FFF url(img/loaderIcon.gif) no-repeat 165px");
@@ -1312,6 +1545,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
     		});
   	});
 */
+
+
 
     function selectDestCity(val) {
         var params = {id: val};
@@ -1360,5 +1595,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
         return li;
     }
 
+    $("#btnUpload").unbind('click').bind('click',function(){ // Doing it like this because it was double posting document giving me duplicates
+	    uploadFile();
+	    return false;
+	});
+
+	document.getElementById('downloadTemplateButton').addEventListener('click', downloadTemplateClick);
 
  </script>
