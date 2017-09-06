@@ -69,228 +69,232 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       function post() {
 
         //console.log("Adding Availability.");
+        if ( $('#formNeed').parsley().validate() ) {
 
-          var result = true;
+              var result = true;
 
-          var params = {
-                address1: $("#originationAddress1").val(),
-                city: $("#originationCity").val(),
-                state: $("#originationState").val(),
-                zip: $("#originationZip").val(),
-                entityID: $("#entityID").val(),
-                locationType: "Origination"
-          };
-          //alert(JSON.stringify(params));
-          $.ajax({
-             url: '<?php echo HTTP_HOST."/getlocationbycitystatezip" ?>',
-             type: 'POST',
-             data: JSON.stringify(params),
-             contentType: "application/json",
-             async: false,
-             success: function(response){
-                if (response == "success") {
-                    var params = {
-                          address1: $("#destinationAddress1").val(),
-                          city: $("#destinationCity").val(),
-                          state: $("#destinationState").val(),
-                          zip: $("#destinationZip").val(),
-                          entityID: $("#entityID").val(),
-                          locationType: "Destination"
-                    };
-                    //alert(JSON.stringify(params));
-                    $.ajax({
-                       url: '<?php echo HTTP_HOST."/getlocationbycitystatezip" ?>',
-                       type: 'POST',
-                       data: JSON.stringify(params),
-                       contentType: "application/json",
-                       async: false,
-                       success: function(response){
-                          if (response == "success") {
-                          } else {
-                              alert("1: " + response);
+              var params = {
+                    address1: $("#originationAddress1").val(),
+                    city: $("#originationCity").val(),
+                    state: $("#originationState").val(),
+                    zip: $("#originationZip").val(),
+                    entityID: $("#entityID").val(),
+                    locationType: "Origination"
+              };
+              //alert(JSON.stringify(params));
+              $.ajax({
+                 url: '<?php echo HTTP_HOST."/getlocationbycitystatezip" ?>',
+                 type: 'POST',
+                 data: JSON.stringify(params),
+                 contentType: "application/json",
+                 async: false,
+                 success: function(response){
+                    if (response == "success") {
+                        var params = {
+                              address1: $("#destinationAddress1").val(),
+                              city: $("#destinationCity").val(),
+                              state: $("#destinationState").val(),
+                              zip: $("#destinationZip").val(),
+                              entityID: $("#entityID").val(),
+                              locationType: "Destination"
+                        };
+                        //alert(JSON.stringify(params));
+                        $.ajax({
+                           url: '<?php echo HTTP_HOST."/getlocationbycitystatezip" ?>',
+                           type: 'POST',
+                           data: JSON.stringify(params),
+                           contentType: "application/json",
+                           async: false,
+                           success: function(response){
+                              if (response == "success") {
+                              } else {
+                                  alert("1: " + response);
+                                  result = false;
+                                  //alert('Preparation Failed!');
+                              }
+                           },
+                           error: function(response) {
+                              alert("2: " + response);
                               result = false;
-                              //alert('Preparation Failed!');
-                          }
-                       },
-                       error: function(response) {
-                          alert("2: " + response);
-                          result = false;
-                          //alert('Failed Searching for Destination Location! - Notify NEC of this failure.');
-                       }
-                    });
-                } else {
-                    alert("3: " + response);
+                              //alert('Failed Searching for Destination Location! - Notify NEC of this failure.');
+                           }
+                        });
+                    } else {
+                        alert("3: " + response);
+                        result = false;
+                        //alert('Preparation Failed!');
+                    }
+                 },
+                 error: function(response) {
+                    alert("4: " + JSON.stringify(response));
                     result = false;
-                    //alert('Preparation Failed!');
-                }
-             },
-             error: function(response) {
-                alert("4: " + JSON.stringify(response));
-                result = false;
-                //alert('Failed Searching for Origination Location! - Notify NEC of this failure.');
-             }
-          });
+                    //alert('Failed Searching for Origination Location! - Notify NEC of this failure.');
+                 }
+              });
 
-          if (result) { verifyAndPost(); } else { return false; }
+              if (result) {
+                  verifyAndPost();
+              } else {
+                  return false;
+              }
+
+        } else {
+
+              return false;
+
+        }
+
       }
 
 
 
       function verifyAndPost() {
 
-          if ( $('#formNeed').parsley().validate() ) {
+            var passValidation = false;
+            var type = "";
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth()+1; //January is 0!
+            var yyyy = today.getFullYear();
+            var hours = today.getHours();
+            var min = today.getMinutes();
+            var sec = today.getSeconds();
 
-                var passValidation = false;
-                var type = "";
-                var today = new Date();
-                var dd = today.getDate();
-                var mm = today.getMonth()+1; //January is 0!
-                var yyyy = today.getFullYear();
-                var hours = today.getHours();
-                var min = today.getMinutes();
-                var sec = today.getSeconds();
-
-                if(dd<10) {
-                    dd='0'+dd;
-                }
-
-                if(mm<10) {
-                    mm='0'+mm;
-                }
-
-                if(hours<10) {
-                    hours='0'+hours;
-                }
-
-                if(min<10) {
-                    min='0'+min;
-                }
-
-                today = mm+'/'+dd+'/'+yyyy;
-                today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
-
-                var originationaddress = $("#originationAddress1").val() + ', ' + $("#originationCity").val() + ', ' + $("#originationState").val() + ', ' + $("#originationZip").val();
-                var destinationaddress = $("#destinationAddress1").val() + ', ' + $("#destinationCity").val() + ', ' + $("#destinationState").val() + ', ' + $("#destinationZip").val();
-
-                // getMapDirectionFromGoogle is defined in common.js
-                newGetMapDirectionFromGoogle( originationaddress, destinationaddress, function(response) {
-
-                              var originationlat = response.originationlat;
-                              var originationlng = response.originationlng;
-                              var destinationlat = response.destinationlat;
-                              var destinationlng = response.destinationlng;
-                              var distance = response.distance;
-
-                              if ($("#id").val() > '') {
-                                  var url = '<?php echo API_HOST."/api/customer_needs" ?>/' + $("#id").val();
-                                  type = "PUT";
-                              } else {
-                                  var url = '<?php echo API_HOST."/api/customer_needs" ?>';
-                                  type = "POST";
-                              }
-
-                              // Build the contacts
-                              var contactsarray = [];
-                              var obj = $("#check-list-box li.active");
-                              for (var i = 0; i < obj.length; i++) {
-                                  item = {};
-                                  item[obj[i].id] = obj[i].innerText;
-                                  contactsarray.push(item);
-                              }
-                              var $contacts = contactsarray;
-
-                              // Build the needsDataPoints
-                              var needsarray = [];
-                              var obj = $("#dp-check-list-box li select");
-                              for (var i = 0; i < obj.length; i++) {
-                                  item = {};
-                                  item[obj[i].id] = obj[i].value;
-                                  needsarray.push(item);
-                              }
-                              var needsdatapoints = needsarray;
-
-                              if (type == "PUT") {
-                                  var date = today;
-                                  var data = {qty: $("#qty").val(), rate: $("#rate").val(), rateType: $('input[name="rateType"]:checked').val(), transportationMode: $("#transportationMode").val(), originationAddress1: $("#originationAddress1").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress1: $("#destinationAddress1").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, distance: distance, needsDataPoints: needsdatapoints, contactEmails: $contacts, availableDate: $("#availableDate").val(), expirationDate: $("#expirationDate").val(), updatedAt: date};
-                              } else {
-                                  var date = today;
-                                  var recStatus = 'Available';
-                                  var data = {entityID: $("#entityID").val(), qty: $("#qty").val(), rate: $("#rate").val(), rateType: $('input[name="rateType"]:checked').val(), transportationMode: $("#transportationMode").val(), originationAddress1: $("#originationAddress1").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress1: $("#destinationAddress1").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, distance: distance, needsDataPoints: needsdatapoints, status: recStatus, contactEmails: $contacts, availableDate: $("#availableDate").val(), expirationDate: $("#expirationDate").val(), createdAt: date, updatedAt: date};
-                              }
-
-                              $.ajax({
-                                 url: url,
-                                 type: type,
-                                 data: JSON.stringify(data),
-                                 contentType: "application/json",
-                                 async: false,
-                                 success: function(data){
-                                    if (data > 0) {
-                                      if (type == 'POST') {
-                                         var params = {id: data};
-                                         $.ajax({
-                                            url: '<?php echo HTTP_HOST."/customerneedsnotification" ?>',
-                                            type: 'POST',
-                                            data: JSON.stringify(params),
-                                            contentType: "application/json",
-                                            async: false,
-                                            success: function(notification){
-                                                //var updatedata = {rootCustomerNeedsID: data};
-                                                var updatedata = {rootCustomerNeedsID: 0};
-                                                $.ajax({
-                                                    url: '<?php echo API_HOST."/api/customer_needs" ?>/' + data,
-                                                    type: 'PUT',
-                                                    data: JSON.stringify(updatedata),
-                                                    contentType: "application/json",
-                                                    async: false,
-                                                    success: function(updateneeds){
-                                                        alert(notification);
-                                                        countCommitments();
-                                                    },
-                                                    error: function() {
-                                                       alert('Failed Updating Root Customer Needs ID! - Notify NEC of this failure.');
-                                                    }
-                                                });
-                                            },
-                                            error: function() {
-                                               alert('Failed Sending Notifications! - Notify NEC of this failure.');
-                                            }
-                                         });
-                                      }
-
-                                      $("#myModal").modal('hide');
-                                      loadTableAJAX();
-                                      $("#id").val('');
-                                      $("#qty").val('');
-                                      $("#rate").val('');
-                                      $("#availableDate").val('');
-                                      $("#expirationDate").val('');
-                                      $("#originationAddress1").val('');
-                                      $("#originationCity").val('');
-                                      $("#originationState").val('');
-                                      $("#originationZip").val('');
-                                      $("#destinationAddress1").val('');
-                                      $("#destinationCity").val('');
-                                      $("#destinationState").val('');
-                                      $("#destinationZip").val('');
-                                      passValidation = true;
-                                    } else {
-                                      alert("Adding Need Failed! Please Verify Your Data.");
-                                    }
-                                 },
-                                 error: function() {
-                                    alert("There Was An Error Adding Availability!");
-                                 }
-                              });
-
-                              return passValidation;
-              });
-
-            } else {
-
-                return false;
-
+            if(dd<10) {
+                dd='0'+dd;
             }
+
+            if(mm<10) {
+                mm='0'+mm;
+            }
+
+            if(hours<10) {
+                hours='0'+hours;
+            }
+
+            if(min<10) {
+                min='0'+min;
+            }
+
+            today = mm+'/'+dd+'/'+yyyy;
+            today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+
+            var originationaddress = $("#originationAddress1").val() + ', ' + $("#originationCity").val() + ', ' + $("#originationState").val() + ', ' + $("#originationZip").val();
+            var destinationaddress = $("#destinationAddress1").val() + ', ' + $("#destinationCity").val() + ', ' + $("#destinationState").val() + ', ' + $("#destinationZip").val();
+
+            // getMapDirectionFromGoogle is defined in common.js
+            newGetMapDirectionFromGoogle( originationaddress, destinationaddress, function(response) {
+
+                          var originationlat = response.originationlat;
+                          var originationlng = response.originationlng;
+                          var destinationlat = response.destinationlat;
+                          var destinationlng = response.destinationlng;
+                          var distance = response.distance;
+
+                          if ($("#id").val() > '') {
+                              var url = '<?php echo API_HOST."/api/customer_needs" ?>/' + $("#id").val();
+                              type = "PUT";
+                          } else {
+                              var url = '<?php echo API_HOST."/api/customer_needs" ?>';
+                              type = "POST";
+                          }
+
+                          // Build the contacts
+                          var contactsarray = [];
+                          var obj = $("#check-list-box li.active");
+                          for (var i = 0; i < obj.length; i++) {
+                              item = {};
+                              item[obj[i].id] = obj[i].innerText;
+                              contactsarray.push(item);
+                          }
+                          var $contacts = contactsarray;
+
+                          // Build the needsDataPoints
+                          var needsarray = [];
+                          var obj = $("#dp-check-list-box li select");
+                          for (var i = 0; i < obj.length; i++) {
+                              item = {};
+                              item[obj[i].id] = obj[i].value;
+                              needsarray.push(item);
+                          }
+                          var needsdatapoints = needsarray;
+
+                          if (type == "PUT") {
+                              var date = today;
+                              var data = {qty: $("#qty").val(), rate: $("#rate").val(), rateType: $('input[name="rateType"]:checked').val(), transportationMode: $("#transportationMode").val(), originationAddress1: $("#originationAddress1").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress1: $("#destinationAddress1").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, distance: distance, needsDataPoints: needsdatapoints, contactEmails: $contacts, availableDate: $("#availableDate").val(), expirationDate: $("#expirationDate").val(), updatedAt: date};
+                          } else {
+                              var date = today;
+                              var recStatus = 'Available';
+                              var data = {entityID: $("#entityID").val(), qty: $("#qty").val(), rate: $("#rate").val(), rateType: $('input[name="rateType"]:checked').val(), transportationMode: $("#transportationMode").val(), originationAddress1: $("#originationAddress1").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress1: $("#destinationAddress1").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, distance: distance, needsDataPoints: needsdatapoints, status: recStatus, contactEmails: $contacts, availableDate: $("#availableDate").val(), expirationDate: $("#expirationDate").val(), createdAt: date, updatedAt: date};
+                          }
+
+                          $.ajax({
+                             url: url,
+                             type: type,
+                             data: JSON.stringify(data),
+                             contentType: "application/json",
+                             async: false,
+                             success: function(data){
+                                if (data > 0) {
+                                  if (type == 'POST') {
+                                     var params = {id: data};
+                                     $.ajax({
+                                        url: '<?php echo HTTP_HOST."/customerneedsnotification" ?>',
+                                        type: 'POST',
+                                        data: JSON.stringify(params),
+                                        contentType: "application/json",
+                                        async: false,
+                                        success: function(notification){
+                                            //var updatedata = {rootCustomerNeedsID: data};
+                                            var updatedata = {rootCustomerNeedsID: 0};
+                                            $.ajax({
+                                                url: '<?php echo API_HOST."/api/customer_needs" ?>/' + data,
+                                                type: 'PUT',
+                                                data: JSON.stringify(updatedata),
+                                                contentType: "application/json",
+                                                async: false,
+                                                success: function(updateneeds){
+                                                    alert(notification);
+                                                    countCommitments();
+                                                },
+                                                error: function() {
+                                                   alert('Failed Updating Root Customer Needs ID! - Notify NEC of this failure.');
+                                                }
+                                            });
+                                        },
+                                        error: function() {
+                                           alert('Failed Sending Notifications! - Notify NEC of this failure.');
+                                        }
+                                     });
+                                  }
+
+                                  $("#myModal").modal('hide');
+                                  loadTableAJAX();
+                                  $("#id").val('');
+                                  $("#qty").val('');
+                                  $("#rate").val('');
+                                  $("#availableDate").val('');
+                                  $("#expirationDate").val('');
+                                  $("#originationAddress1").val('');
+                                  $("#originationCity").val('');
+                                  $("#originationState").val('');
+                                  $("#originationZip").val('');
+                                  $("#destinationAddress1").val('');
+                                  $("#destinationCity").val('');
+                                  $("#destinationState").val('');
+                                  $("#destinationZip").val('');
+                                  passValidation = true;
+                                } else {
+                                  alert("Adding Need Failed! Please Verify Your Data.");
+                                }
+                             },
+                             error: function() {
+                                alert("There Was An Error Adding Availability!");
+                             }
+                          });
+
+                          return passValidation;
+          });
 
       }
 
@@ -958,7 +962,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                          <label for="availableDate">Available Date</label>
                          <div class="form-group">
                            <div id="sandbox-container" class="input-group date  datepicker">
-                              <input type="text" id="availableDate" name="availableDate" class="form-control" placeholder="Availability Date"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                              <input type="text" id="availableDate" name="availableDate" class="form-control" placeholder="Availability Date" required="required"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
                            </div>
                          </div>
                      </div>
