@@ -425,7 +425,7 @@ $app->route('GET /viewdocument', function() {
 /*****************************************************************************/
 // Bulk Import
 /*****************************************************************************/
-$app->route('POST /bulkimport', function() {
+$app->route('POST /carrierbulkupload', function() {
 	$name = Flight::request()->data->name;
 	$fileupload = Flight::request()->files['fileupload'];
 	$documentID = Flight::request()->data->documentID;
@@ -433,7 +433,19 @@ $app->route('POST /bulkimport', function() {
 	$entityID = Flight::request()->data->entityID;
 	$documentURL = HTTP_HOST."/viewdocument?entityID=".$entityID."&filename=".$fileupload['name'];
 	$documents = Flight::documents();
-    $result = $documents->bulkUpload(API_HOST,HTTP_HOST,FILE_LOCATION,$fileupload,$name,$documentID,$documentURL,$updatedAt,$entityID);
+    $result = $documents->carrierBulkUpload(API_HOST,HTTP_HOST,FILE_LOCATION,$fileupload,$name,$documentID,$documentURL,$updatedAt,$entityID);
+	echo $result;
+});
+
+$app->route('POST /customerbulkupload', function() {
+	$name = Flight::request()->data->name;
+	$fileupload = Flight::request()->files['fileupload'];
+	$documentID = Flight::request()->data->documentID;
+	$updatedAt = Flight::request()->data->updatedAt;
+	$entityID = Flight::request()->data->entityID;
+	$documentURL = HTTP_HOST."/viewdocument?entityID=".$entityID."&filename=".$fileupload['name'];
+	$documents = Flight::documents();
+    $result = $documents->customerBulkUpload(API_HOST,HTTP_HOST,FILE_LOCATION,$fileupload,$name,$documentID,$documentURL,$updatedAt,$entityID);
 	echo $result;
 });
 /*****************************************************************************/

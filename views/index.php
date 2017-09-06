@@ -1,5 +1,9 @@
 <?php
 
+if ($_SESSION['userid'] <= 0 || $_SESSION['userid'] == "") {
+    header("Location: " . HTTP_HOST . "/login");
+}
+
 $member = json_decode(file_get_contents(API_HOST.'/api/users?include=members&filter=id,eq,'.$_SESSION['userid']));
 $firstName = $member->members->records[0][3];
 $lastName = $member->members->records[0][4];
@@ -237,7 +241,7 @@ if ($_SESSION['entityid'] > 0) {
             });
 
         }
-        
+
     function countCommitments(){
 
         var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?columns=id,rootCustomerNeedsID&filter[]=rootCustomerNeedsID,neq,0&filter[]=status,eq,Available&transform=1';
@@ -258,8 +262,8 @@ if ($_SESSION['entityid'] > 0) {
                     }
                 });
 
-                countCommitted(customer_needs_commit.toString());                
-                
+                countCommitted(customer_needs_commit.toString());
+
            },
            error: function() {
               alert("There Was An Error Saving the Status");
@@ -271,8 +275,8 @@ if ($_SESSION['entityid'] > 0) {
         function countCommitted(committed){
 
             var baseUrl = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate&filter[]=id,in,' + committed + '&filter[]=status,eq,Available';
-             
-            var url = baseUrl + '&order[]=entityID&order[]=rootCustomerNeedsID&order[]=availableDate,desc&transform=1';        
+
+            var url = baseUrl + '&order[]=entityID&order[]=rootCustomerNeedsID&order[]=availableDate,desc&transform=1';
 
             $.ajax({
                url: url,
@@ -282,8 +286,8 @@ if ($_SESSION['entityid'] > 0) {
                success: function(json){
 
                     var customer_needs = json.customer_needs;
-                    
-                    
+
+
                     var commitmentCount = customer_needs.length;
 
                     $('#commitmentCount').html(commitmentCount);

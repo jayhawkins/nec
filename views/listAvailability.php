@@ -1857,6 +1857,9 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 if (response.customer_needs.length > 0) {
 
                     for (var i = 0; i < response.customer_needs.length; i++) {
+                        if (response.customer_needs[i].expirationDate == '0000-00-00') {
+                            response.customer_needs[i].expirationDate = '';
+                        }
                         table += '</tr>\n';
                         table += '<td>' + response.customer_needs[i].qty + '</td>';
                         table += '<td>' + response.customer_needs[i].availableDate + '</td>';
