@@ -990,29 +990,31 @@ class Documents
 
 */
 
-                                        $needsDataPoints[] = array("length"=>"$line[12]");
-                                        $needsDataPoints[] = array("width"=>"$line[13]");
-                                        $needsDataPoints[] = array("height"=>"$line[14]");
-                                        $needsDataPoints[] = array("carb"=>"$line[15]");
-                                        $needsDataPoints[] = array("decals"=>"$line[16]");
-                                        $needsDataPoints[] = array("door"=>"$line[17]");
-                                        $needsDataPoints[] = array("floor"=>"$line[18]");
-                                        $needsDataPoints[] = array("king_pin"=>"$line[19]");
-                                        $needsDataPoints[] = array("lift_pads"=>"$line[20]");
-                                        $needsDataPoints[] = array("num_axles"=>"$line[21]");
-                                        $needsDataPoints[] = array("railable"=>"$line[22]");
-                                        $needsDataPoints[] = array("side_skirts"=>"$line[23]");
-                                        $needsDataPoints[] = array("suspension"=>"$line[24]");
-                                        $needsDataPoints[] = array("type"=>"$line[25]");
+                                        $needsDataPoints[] = array("type"=>"$line[14]");
+                                        $needsDataPoints[] = array("length"=>"$line[15]");
+                                        $needsDataPoints[] = array("width"=>"$line[16]");
+                                        $needsDataPoints[] = array("height"=>"$line[17]");
+                                        $needsDataPoints[] = array("carb"=>"$line[18]");
+                                        $needsDataPoints[] = array("decals"=>"$line[19]");
+                                        $needsDataPoints[] = array("door"=>"$line[20]");
+                                        $needsDataPoints[] = array("floor"=>"$line[21]");
+                                        $needsDataPoints[] = array("king_pin"=>"$line[22]");
+                                        $needsDataPoints[] = array("lift_pads"=>"$line[23]");
+                                        $needsDataPoints[] = array("num_axles"=>"$line[24]");
+                                        $needsDataPoints[] = array("railable"=>"$line[25]");
+                                        $needsDataPoints[] = array("side_skirts"=>"$line[26]");
+                                        $needsDataPoints[] = array("suspension"=>"$line[27]");
 
-                                        $contacts = json_decode($line[26]);
+                                        $contacts = json_decode($line[28]);
 
                                         $dttime = date('Y-m-d H:i:s');
                                         if ($type == "PUT") {
                                             $data = array(
                                                 "entityID"=>$entityID,
                                                 "qty" => $line[0],
-                                                "transportationMode" => $line[11],
+                                                "rate" => $line[11],
+                                                "rateType" => $line[12],
+                                                "transportationMode" => $line[13],
                                                 "originationAddress1" => $line[4],
                                                 "originationCity" => $line[3],
                                                 "originationState" => $line[5],
@@ -1027,7 +1029,7 @@ class Documents
                                                 "destinationLng"=>$destinationlongitude,
                                                 "needsDataPoints"=>$needsDataPoints,
                                                 "status"=>'Available',
-                                                "contactEmails"=>$contacts,
+                                                "contactEmails"=>[$contacts],
                                                 "availableDate"=>$line[1],
                                                 "expirationDate"=>$line[2],
                                                 "createdAt"=>$dttime,
@@ -1037,7 +1039,9 @@ class Documents
                                             $data = array(
                                                 "entityID"=>$entityID,
                                                 "qty" => $line[0],
-                                                "transportationMode" => $line[11],
+                                                "rate" => $line[11],
+                                                "rateType" => $line[12],
+                                                "transportationMode" => $line[13],
                                                 "originationAddress1" => $line[4],
                                                 "originationCity" => $line[3],
                                                 "originationState" => $line[5],
