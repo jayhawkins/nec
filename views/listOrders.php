@@ -235,8 +235,22 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                               }
                               var needsdatapoints = needsarray;
 
+                              var pickupInformation = { 
+                                  pickupLocation: $("#pickupLocation").val(), 
+                                  contactPerson: $("#pickupContactPerson").val(),
+                                  phoneNumber: $("#pickupPhoneNumber").val(),
+                                  hoursOfOperation: $("#pickupHoursOfOperation").val()
+                              };
+
+                              var deliveryInformation  = { 
+                                  deliveryLocation: $("#deliveryLocation").val(), 
+                                  contactPerson: $("#deliveryContactPerson").val(),
+                                  phoneNumber: $("#deliveryPhoneNumber").val(),
+                                  hoursOfOperation: $("#deliveryHoursOfOperation").val()
+                              };
+
                             var date = today;
-                            var data = {qty: $("#qty").val(), customerRate: $("#rate").val(), rateType: $('input[name="rateType"]:checked').val(), transportationMode: $("#transportationMode").val(), originationAddress: $("#originationAddress").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress: $("#destinationAddress").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, distance: distance, needsDataPoints: needsdatapoints, updatedAt: date};
+                            var data = {customerRate: $("#rate").val(), rateType: $('input[name="rateType"]:checked').val(), transportationMode: $("#transportationMode").val(), pickupInformation: pickupInformation, originationAddress: $("#originationAddress").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), deliveryInformation: deliveryInformation, destinationAddress: $("#destinationAddress").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, distance: distance, needsDataPoints: needsdatapoints, updatedAt: date};
                               
                               if (podArray.length > 0){
                                   data.podList = podArray;
@@ -455,16 +469,16 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         
         switch(entityType){
             case 0:     // URL for the Admin.
-                url += '/api/order_details?include=orders,entities&columns=id,carrierID,orderID,originationCity,originationState,destinationCity,destinationState,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,orders.customerID,entities.name&filter=orderID,eq,' + orderID + '&transform=1';
+                url += '/api/order_details?include=orders,entities&columns=id,carrierID,orderID,originationCity,originationState,destinationCity,destinationState,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,orders.customerID,orders.pickupInformation,orders.deliveryInformation,entities.name&filter=orderID,eq,' + orderID + '&transform=1';
                 blnShow = true;    
                 blnCarrierRate = true;
                 break;
             case 1:    // URL for Customer.
-                url += '/api/order_details?include=orders,entities&columns=id,carrierID,orderID,originationCity,originationState,destinationCity,destinationState,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,orders.customerID,entities.name&filter=orderID,eq,' + orderID + '&transform=1';
+                url += '/api/order_details?include=orders,entities&columns=id,carrierID,orderID,originationCity,originationState,destinationCity,destinationState,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,orders.customerID,orders.pickupInformation,orders.deliveryInformation,entities.name&filter=orderID,eq,' + orderID + '&transform=1';
                 blnShow = true;
                 break;
             case 2:     // URL for the Carrier. The Customer can only see order details of their route.
-                url += '/api/order_details?include=orders,entities&columns=id,carrierID,orderID,originationCity,originationState,destinationCity,destinationState,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,orders.customerID,entities.name&filter[]=orderID,eq,' + orderID + '&filter[]=carrierID,eq,' + entityid + '&transform=1';
+                url += '/api/order_details?include=orders,entities&columns=id,carrierID,orderID,originationCity,originationState,destinationCity,destinationState,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,orders.customerID,orders.pickupInformation,orders.deliveryInformation,entities.name&filter[]=orderID,eq,' + orderID + '&filter[]=carrierID,eq,' + entityid + '&transform=1';
                 blnCarrierRate = true;
                 break;
         }        
@@ -1474,20 +1488,50 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                <form id="formEditOrder" class="register-form mt-lg">
                  <input type="hidden" id="id" name="id" value="" />
                  <div class="row">
-                     <div class="col-sm-2">
-                         <label for="qty">Trailers Available:</label>
+                     <div class="col-sm-12">
+                         <div style="display: inline-block; font-weight: 400;">Trailers Available:</div>
+                         <div id="qty" class="form-group" style="display: inline-block;">
+                           <!--<input type="text" id="qty" name="qty" class="form-control mb-sm" placeholder="# Available"
+                           required="required" readonly/>-->
+                         </div>
+                     </div>
+                     
+                 </div>
+                 
+                  <?php 
+
+                  if ($_SESSION['entitytype'] != 1){ 
+
+                      ?>
+                 <div class="row">
+                     <div class="col-sm-3">
+                         <label for="pickupLocation">Pickup Location</label>
                          <div class="form-group">
-                           <input type="text" id="qty" name="qty" class="form-control mb-sm" placeholder="# Available"
-                           required="required" readonly/>
+                             <input type="text" id="pickupLocation" name="pickupLocation" class="form-control mb-sm" placeholder="Pickup Location" maxlength="30"/>
                          </div>
                      </div>
                      <div class="col-sm-3">
+                         <label for="pickupContactPerson">Contact Person</label>
+                         <div class="form-group">
+                           <input type="text" id="pickupContactPerson" name="pickupContactPerson" class="form-control mb-sm" placeholder="Contact Person" maxlength="30" />
+                         </div>
                      </div>
                      <div class="col-sm-3">
+                         <label for="pickupPhoneNumber">Phone Number</label>
+                         <div class="form-group">
+                           <input type="text" id="pickupPhoneNumber" name="pickupPhoneNumber" class="form-control mb-sm" placeholder="Phone Number" maxlength="30" />
+                         </div>
                      </div>
-                     <div class="col-sm-4">
-                     </div>
+                     <div class="col-sm-3">
+                         <label for="pickupHoursOfOperation">Hours of Operation</label>
+                         <div class="form-group">
+                           <input type="text" id="pickupHoursOfOperation" name="pickupHoursOfOperation" class="form-control mb-sm" placeholder="Hours of Operation" maxlength="30" />
+                         </div>
+                     </div>                     
                  </div>
+                 <?php
+                  }
+                 ?>
                  <div class="row">
                      <div class="col-sm-4">
                          <label for="originationAddress">Origination Address</label>
@@ -1525,6 +1569,41 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                          </div>
                      </div>
                  </div>
+                 
+                  <?php 
+
+                  if ($_SESSION['entitytype'] != 1){ 
+
+                      ?>
+                 <div class="row">
+                     <div class="col-sm-3">
+                         <label for="deliveryLocation">Delivery Location</label>
+                         <div class="form-group">
+                             <input type="text" id="deliveryLocation" name="deliveryLocation" class="form-control mb-sm" placeholder="Delivery Location" maxlength="30"/>
+                         </div>
+                     </div>
+                     <div class="col-sm-3">
+                         <label for="deliveryContactPerson">Contact Person</label>
+                         <div class="form-group">
+                           <input type="text" id="deliveryContactPerson" name="deliveryContactPerson" class="form-control mb-sm" placeholder="Contact Person" maxlength="30" />
+                         </div>
+                     </div>
+                     <div class="col-sm-3">
+                         <label for="deliveryPhoneNumber">Phone Number</label>
+                         <div class="form-group">
+                           <input type="text" id="deliveryPhoneNumber" name="deliveryPhoneNumber" class="form-control mb-sm" placeholder="Phone Number" maxlength="30" />
+                         </div>
+                     </div>
+                     <div class="col-sm-3">
+                         <label for="deliveryHoursOfOperation">Hours of Operation</label>
+                         <div class="form-group">
+                           <input type="text" id="deliveryHoursOfOperation" name="deliveryHoursOfOperation" class="form-control mb-sm" placeholder="Hours of Operation" maxlength="30" />
+                         </div>
+                     </div>                     
+                 </div>
+                 <?php
+                  }
+                 ?>
                  <div class="row">
                    <div class="col-sm-4">
                        <label for="destinationAddress">Destination Address</label>
@@ -1857,11 +1936,39 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
             var dpchecked = '';
             $("#id").val(data["id"]);
             $("#entityID").val(data["entityID"]);
-            $("#qty").val(data["qty"]);
+            $("#qty").text(data["qty"]);
             $("#rate").val(data["customerRate"].toFixed(2));
 <?php if ($_SESSION['entityid'] > 0) { ?>
             $("#rate").prop("disabled", true);
 <?php } ?>
+    
+    
+            if(data["pickupInformation"] == null){
+                $("#pickupLocation").val('');
+                $("#pickupContactPerson").val('');
+                $("#pickupPhoneNumber").val('');
+                $("#pickupHoursOfOperation").val('');
+            }
+            else{
+                $("#pickupLocation").val(data["pickupInformation"].pickupLocation);
+                $("#pickupContactPerson").val(data["pickupInformation"].contactPerson);
+                $("#pickupPhoneNumber").val(data["pickupInformation"].phoneNumber);
+                $("#pickupHoursOfOperation").val(data["pickupInformation"].hoursOfOperation);
+            }
+            
+            if(data["deliveryInformation"] == null){
+                $("#deliveryLocation").val('');
+                $("#deliveryContactPerson").val('');
+                $("#deliveryPhoneNumber").val('');
+                $("#deliveryHoursOfOperation").val('');
+            }
+            else{
+                $("#deliveryLocation").val(data["deliveryInformation"].deliveryLocation);
+                $("#deliveryContactPerson").val(data["deliveryInformation"].contactPerson);
+                $("#deliveryPhoneNumber").val(data["deliveryInformation"].phoneNumber);
+                $("#deliveryHoursOfOperation").val(data["deliveryInformation"].hoursOfOperation);
+            }
+            
             $("#transportationMode").val(data["transportationMode"]);
             $("#originationAddress").val(data["originationAddress"]);
             $("#originationCity").val(data["originationCity"]);
