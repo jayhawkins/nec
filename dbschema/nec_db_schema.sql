@@ -639,6 +639,9 @@ ALTER TABLE `orders` ADD COLUMN `podList` JSON NOT NULL AFTER `needsDataPoints` 
 
 ALTER TABLE orders ADD COLUMN comments VarChar( 255 ) not null default '' AFTER status;
 
+ALTER TABLE `orders` ADD COLUMN `pickupInformation` JSON NOT NULL AFTER `orderID` ;
+ALTER TABLE `orders` ADD COLUMN `deliveryInformation` JSON NOT NULL AFTER `orderID` ;
+
 ALTER TABLE `orders`
 	ADD CONSTRAINT `lnk_entities_orders` FOREIGN KEY ( `customerID` )
 	REFERENCES `entities`( `id` )
@@ -773,6 +776,103 @@ ENGINE = InnoDB
 AUTO_INCREMENT = 1;
 -- -------------------------------------------------------------
 -- ---------------------------------------------------------
+
+
+-- CREATE TABLE "routes" ------------------------------------
+-- CREATE TABLE "routes" ----------------------------------------
+CREATE TABLE IF NOT EXISTS `routes` 
+( 
+	`id` Int( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT, 
+	`orderDetailID` Int( 11 ) UNSIGNED NOT NULL, 
+	`elapsedMeters` Int( 11 ) NOT NULL, 
+	`elapsedSeconds` Int( 11 ) NOT NULL, 
+	`availableDate` DATE NOT NULL, 
+	`endTime` DATETIME NOT NULL, 
+	`expirationDate` DATETIME NOT NULL, 
+	`isComplete` bool NOT NULL, 
+	`isEnroute` bool NOT NULL, 
+	`startTime` DATETIME NOT NULL, 
+	`status` varchar(100) NOT NULL, 
+	`transportationMode` varchar(100) NOT NULL, 
+	`updatedAt` DATETIME NOT NULL, 
+	`createdAt` DATETIME NOT NULL, 
+	PRIMARY KEY (`id`) 
+); 
+-- -------------------------------------------------------------
+-- ---------------------------------------------------------
+
+
+-- CREATE TABLE "route_coordinates" ------------------------------------
+-- CREATE TABLE "route_coordinates" ----------------------------------------
+CREATE TABLE IF NOT EXISTS `route_coordinates` 
+( 
+	`id` Int( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT, 
+	`routeID` Int( 11 ) UNSIGNED NOT NULL, 
+    `latitude` double NOT NULL, 
+	`longitude` double NOT NULL, 
+    `timeStamp` DATETIME NOT NULL, 
+	`pausedOnThisCoordinate` bool NOT NULL, 
+	PRIMARY KEY (`id`) 
+); 
+-- -------------------------------------------------------------
+-- ---------------------------------------------------------
+
+
+-- CREATE TABLE "route_time_block" ------------------------------------
+-- CREATE TABLE "route_time_block" ----------------------------------------
+CREATE TABLE IF NOT EXISTS `route_time_block` 
+( 
+	`id` Int( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT, 
+	`routeID` Int( 11 ) UNSIGNED NOT NULL, 
+	`startTime` DATETIME NOT NULL, 
+	`endTime` DATETIME NOT NULL, 
+	PRIMARY KEY (`id`) 
+); 
+-- -------------------------------------------------------------
+-- ---------------------------------------------------------
+
+
+-- CREATE TABLE "route_images" ------------------------------------
+-- CREATE TABLE "route_images" ----------------------------------------
+CREATE TABLE IF NOT EXISTS `route_images` 
+( 
+	`id` Int( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT, 
+	`routeID` Int( 11 ) UNSIGNED NOT NULL, 
+	`image` blob NOT NULL, 
+	`imageType` varchar(100) NOT NULL, 
+	`notes` varchar(2000) NOT NULL, 
+	PRIMARY KEY (`id`) 
+); 
+-- -------------------------------------------------------------
+-- ---------------------------------------------------------
+
+
+ALTER TABLE `routes` ADD CONSTRAINT `lnk_order_details_routes` 
+FOREIGN KEY (`orderDetailID`) REFERENCES `order_details`(`id`);
+
+ALTER TABLE `route_coordinates` ADD CONSTRAINT `lnk_routes_route_coordinates` 
+FOREIGN KEY (`routeID`) REFERENCES `routes`(`id`);
+
+ALTER TABLE `route_time_block` ADD CONSTRAINT `lnk_routes_route_time_block` 
+FOREIGN KEY (`routeID`) REFERENCES `routes`(`id`);
+
+ALTER TABLE `route_images` ADD CONSTRAINT `lnk_routes_route_images` 
+FOREIGN KEY (`routeID`) REFERENCES `routes`(`id`);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 -- CREATE INDEX "index_entityID1" --------------------------
 -- CREATE INDEX "index_entityID1" ------------------------------
