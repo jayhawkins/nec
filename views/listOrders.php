@@ -658,7 +658,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
     
     function loadPODListAJAX(orderID){
         
-        var url = '<?php echo API_HOST; ?>/api/orders?columns=podList&filter=id,eq,' + orderID + '&transform=1';
+        var url = '<?php echo API_HOST; ?>/api/orders?columns=id,carrierIDs,podList&filter=id,eq,' + orderID + '&transform=1';
         var blnShow = false;
         
         if(entityType == 0) blnShow = true;
@@ -682,6 +682,15 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                     
                 },
                 columns: [
+                    {   
+                        data: null,
+                        "bSortable": false,
+                        "mRender": function (o) {
+                            var buttons = orderID;
+
+                            return buttons;
+                        },visible: false
+                    },
                     { data: "vinNumber" },
                     { data: "carrier", visible: blnShow },
                     { data: "deliveryDate" },
@@ -711,6 +720,18 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                             else{
                                 buttons += '<button class="btn btn-primary btn-xs view-edit-pod" role="button"><i class="glyphicon glyphicon-eye-open text"></i> <span class="text">View/Edit POD</span></button>';
                             }
+
+                            return buttons;
+                        }
+                    },
+                    {  
+                        data: null,
+                        "bSortable": false,
+                        "mRender": function (o) {
+                            var buttons = '';
+                            
+                            buttons += '<button class="btn btn-primary btn-xs edit-trailer-data" role="button"><i class="glyphicon glyphicon-edit text"></i> <span class="text">Edit Trailer Data</span></button>';
+                            
 
                             return buttons;
                         }
@@ -1268,10 +1289,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                 <table id="pod-list-table" class="table table-striped table-hover">
                     <thead>
                     <tr>
+                        <th></th>
                         <th>Trailer VIN</th>
                         <th>Carrier</th>
                         <th>Delivery Date</th>
                         <th>Notes</th>
+                        <th class="no-sort pull-right"></th>
                         <th class="no-sort pull-right"></th>
                         <th class="no-sort pull-right"></th>
                     </tr>
@@ -1315,7 +1338,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
      
  </div>
     
-<!-- Modal -->
+<!-- Add Order Status Modal -->
   <div class="modal fade" id="addOrderStatus" tabindex="-1" aria-hidden="true" aria-label="exampleModalCommitLabel">
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
@@ -1392,7 +1415,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
     </div>
   </div>
 
-<!-- Modal -->
+<!-- Upload POD Modal -->
   <div class="modal fade" id="uploadPOD" tabindex="-1" aria-hidden="true" aria-label="exampleModalCommitLabel">
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
@@ -1706,6 +1729,84 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           <button id="load" type="button" class="btn btn-primary" onclick="return post();">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Edit Trailer Data Modal -->
+  <div class="modal fade" id="editTrailerData" tabindex="-1" aria-hidden="true" aria-label="exampleModalCommitLabel">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalCommitLabel"><strong>Edit Trailer Data</strong></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+                <form id="formUploadPOD" class="register-form mt-lg">
+                  <input type="hidden" id="orderID" name="orderID" value="" />
+                  <input type="hidden" id="index" name="index" value="" />
+                  <input type="hidden" id="customerID" name="customerID" value="" />
+                  <div class="row">
+                        <div class="col-sm-3">
+                            <label for="trailerVIN">Trailer VIN</label>
+                            <div class="form-group">
+                                <input type="text" id="trailerVIN" name="trailerVIN" class="form-control mb-sm" placeholder="VIN Number" readonly />
+                            </div>
+                        </div>   
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label for="trailerCarrier">Carrier</label>
+                                <input type="text" id="trailerCarrier" name="trailerCarrier" class="form-control mb-sm" placeholder="Carrier" readonly />
+                            </div>
+                        </div> 
+                        <div class="col-sm-3">
+                            <label for="pickupDate">Pick Up Date</label>
+                            <div class="form-group">
+                                 <input type="text" id="pickupDate" name="pickupDate" class="form-control" placeholder="Pickup Date" readonly>
+                            </div>
+                        </div>    
+                        <div class="col-sm-3">
+                            <label for="dropOffDate">Drop Off Date</label>
+                            <div class="form-group">
+                                 <input type="text" id="dropOffDate" name="dropOffDate" class="form-control" placeholder="Drop Off Date" readonly>
+                            </div>
+                        </div>
+                  </div>
+                  <hr/>
+                  <div class="row">
+                        <div class="col-sm-4">
+                            <label for="unitNumber">Unit #</label>
+                            <div class="form-group">
+                                 <input type="text" id="unitNumber" name="unitNumber" class="form-control" placeholder="Unit #" maxlength="30">
+                            </div>
+                        </div>    
+                        <div class="col-sm-4">
+                            <label for="truckProNumber">Truck-Pro #</label>
+                            <div class="form-group">
+                                 <input type="text" id="truckProNumber" name="truckProNumber" class="form-control" placeholder="Truck-Pro #" maxlength="30">
+                            </div>
+                        </div> 
+                        <div class="col-sm-4">
+                            <label for="year">Year</label>
+                            <div class="form-group">
+                                 <input type="text" id="year" name="year" class="form-control" placeholder="Year" maxlength="30">
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                        <label for="trailerNotes">Notes</label>
+                            <div class="form-group">
+                                 <input type="text" id="trailerNotes" name="trailerNotes" class="form-control" placeholder="Notes" maxlength="30">
+                            </div>
+                        </div>
+                  </div>
+                </form>
+        </div>
+        <div class="modal-footer">
+           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+           <button type="button" class="btn btn-primary btn-md" id="btnSaveTrailerData" onclick="saveTrailerData()">Save Trailer Data</button>
         </div>
       </div>
     </div>
@@ -2185,6 +2286,97 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         $('#blnReplacePOD').attr('checked', false); 
         $("#uploadPOD").modal('show');
     } );
+    
+    $('#pod-list-table tbody').on('click', 'button.edit-trailer-data', function () {
+                
+        var orderDetailsTable = $("#order-details-table").DataTable();
+        var orderDetails = orderDetailsTable.ajax.json();
+                
+        var orderID = orderDetails.order_details[0].orderID;
+        var customerID = orderDetails.order_details[0].orders[0].customerID;
+        
+        var podTable = $("#pod-list-table").DataTable();    
+        var data = podTable.row( $(this).parents('tr') ).data();
+        var podList = podTable.ajax.json().orders[0].podList;
+        var carrierIDs = podTable.ajax.json().orders[0].carrierIDs;
+        var index = podList.indexOf(data);
+        var vinNumber = data.vinNumber;
+        
+        var unitNumber = data.unitNumber;
+        var truckProNumber = data.truckProNumber;
+        var trailerYear = data.trailerYear;
+        var trailerNotes = data.trailerNotes;        
+        
+        var entityName = "";
+        
+        for(var i = 0; i < carrierIDs.length; i++){
+                                                 
+            if(i > 0) entityName += ", ";
+
+            allEntities.entities.forEach(function(entity){
+
+                if(carrierIDs[i].carrierID == entity.id){
+
+                    entityName += entity.name;
+                }                            
+            });
+
+        }
+        
+        
+        var url = '<?php echo API_HOST; ?>';
+        url += '/api/order_details?filter=orderID,eq,' + orderID + '&transform=1';
+                
+        $.ajax({
+           url: url,
+           type: "GET",
+           contentType: "application/json",
+           success: function(json){    
+               
+                var order_details = json.order_details;
+                var earliestPickup = order_details[0].pickupDate;
+                var latestDelivery = order_details[0].deliveryDate;
+
+                for(var i = 1; i < order_details.length; i++){
+
+                    var newPickupDate = new Date(order_details[i].pickupDate);
+                    var newDeliveryDate = new Date(order_details[i].deliveryDate);
+
+                    var currentPickupDate = new Date(earliestPickup);
+                    var currentDeliveryDate = new Date(latestDelivery);
+
+                    if (newPickupDate.getTime() < currentPickupDate.getTime()) {
+                        earliestPickup = order_details[i].pickupDate;
+                    }
+                    
+                    if (newDeliveryDate.getTime() > currentDeliveryDate.getTime()) {
+                        latestDelivery = order_details[i].deliveryDate;
+                    }
+                }
+                
+                
+                var pickupDate = earliestPickup;
+                var dropoffDate = latestDelivery;
+                
+                $('#pickupDate').val(pickupDate);
+                $('#dropOffDate').val(dropoffDate);
+           }
+        }); 
+
+        
+        $('#trailerVIN').val(vinNumber);
+        $('#index').val(index);
+        $('#orderID').val(orderID);
+        $('#customerID').val(customerID);
+        $('#trailerCarrier').val(entityName);
+        
+        $('#unitNumber').val(unitNumber);
+        $('#truckProNumber').val(truckProNumber);
+        $('#year').val(trailerYear);
+        $('#trailerNotes').val(trailerNotes);
+         
+        $("#editTrailerData").modal('show');
+    } );
 
     function uploadPOD(){
         
@@ -2317,8 +2509,15 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         var index = $('#index').val();
         var orderID = $('#orderID').val();
         var fileName = $('#fileName').val();
+        
+        var data = podList[index];
+        var unitNumber = data.unitNumber;
+        var truckProNumber = data.truckProNumber;
+        var trailerYear = data.trailerYear;
+        var trailerNotes = data.trailerNotes;   
 
-        var pod = {vinNumber: $('#vinNumber').val(), notes: $('#podNotes').val(), deliveryDate: $('#deliveryDate').val(), fileName: fileName, carrier: carrier};
+        var pod = {vinNumber: $('#vinNumber').val(), notes: $('#podNotes').val(), deliveryDate: $('#deliveryDate').val(), fileName: fileName, carrier: carrier,
+        unitNumber: unitNumber, truckProNumber: truckProNumber, trailerYear: trailerYear, trailerNotes: trailerNotes};
 
         podList.splice(index, 1, pod);
 
@@ -2349,6 +2548,58 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
             },
             error: function(error){
                 alert("Unable to Save POD List to Orders.");
+            }                    
+        });
+
+    }
+
+    function saveTrailerData(){
+    
+        var podTable = $("#pod-list-table").DataTable();    
+        var podList = podTable.ajax.json().orders[0].podList;  
+        var index = $('#index').val();
+        var orderID = $('#orderID').val();
+        
+        var data = podList[index];
+        var vinNumber = data.vinNumber;
+        var podNotes = data.notes;
+        var deliveryDate = data.deliveryDate;
+        var fileName = data.fileName;   
+        var carrier = data.carrier;   
+
+        var pod = {vinNumber: vinNumber, notes: podNotes, deliveryDate: deliveryDate, fileName: fileName, carrier: carrier,
+        unitNumber: $('#unitNumber').val(), truckProNumber: $('#truckProNumber').val(), trailerYear: $('#year').val(), 
+        trailerNotes: $('#trailerNotes').val()};
+
+        podList.splice(index, 1, pod);
+
+        var orderData = {podList: podList};
+
+        $.ajax({
+            url: '<?php echo API_HOST."/api/orders/"; ?>' + orderID,
+            type: 'PUT',
+            data: JSON.stringify(orderData),
+            contentType: "application/json",
+            async: false,
+            success: function(){
+
+                alert("Trailer Data Successfully Saved.");
+                var podListTable = $('#pod-list-table').DataTable();
+                podListTable.ajax.reload();
+
+                // Clear Form
+                $('#orderID').val('');
+                $('#index').val('');
+                $('#customerID').val('');                        
+                $('#unitNumber').val('');
+                $('#truckProNumber').val('');
+                $('#year').val('');
+                $('#trailerNotes').val('');
+                $("#editTrailerData").modal('hide');
+
+            },
+            error: function(error){
+                alert("Unable to Save Trailer Data to Orders.");
             }                    
         });
 
@@ -2393,4 +2644,5 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
             }
         }        
     });
+    
  </script>
