@@ -92,6 +92,15 @@ $app->route('POST /login', function() {
     }
 });
 
+$app->route('POST /mobilelogin', function() {
+    $username = Flight::request()->data['username'];
+    $password = Flight::request()->data['password'];
+    $user = Flight::user();
+    $return = $user->loginapi($username,$password);
+    
+    echo $return;
+});
+
 $app->route('POST /register', function() {
     $password = Flight::request()->data['password'];
     $firstName = Flight::request()->data['firstName'];
