@@ -59,6 +59,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
      //console.log(JSON.stringify(entity.entities.records[0][1]));
 
      var entityid = <?php echo $_SESSION['entityid']; ?>;
+     var admin = false;
+     if (entityid == 0) {
+         admin = true;
+     } else {
+         admin = false;
+     }
 
      var myApp;
       myApp = myApp || (function () {
@@ -463,7 +469,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
       }
 
-      function loadTableAJAXNEW() {
+      function loadTableAJAX() {
 
         var today = new Date();
         var dd = today.getDate();
@@ -1132,7 +1138,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
           </button>
         </div>
         <div class="modal-body">
-                <form id="formNeed" class="register-form mt-lg">
+                <form id="formNeed" name="formNeed" class="register-form mt-lg">
                   <input type="hidden" id="id" name="id" value="" />
                   <input type="hidden" id="rootCustomerNeedsID" name="rootCustomerNeedsID" value="" />
                   <input type="hidden" id="originToMatch" name="originToMatch" value="" />
@@ -1146,6 +1152,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                   <input type="hidden" id="dstate" name=""dstate value="" />
                   <input type="hidden" id="dzip" name="dzip" value="" />
                   <input type="hidden" id="havailableDate" name="havailableDate" value="" />
+                  <div id="divMaxRelayMessage" style="display: none" class="row">
+                      <div class="col-sm-12 center-block">
+                          <strong>Max relays reached. You must select this route in its entirety.</strong>
+                      </div>
+                      <div class="col-sm-12">&nbsp;</div>
+                  </div>
                   <div class="row">
                       <div class="col-sm-2">
                           <label for="qtyDiv"># of Trailers</label>
@@ -1175,7 +1187,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
               <?php } else { ?>
                               <label for="entityID">Carrier</label>
                               <select id="entityID" name="entityID" data-placeholder="Carrier" class="form-control chzn-select" required="required">
-                                <option value="">*Select Carrier...</option>
+                                <option selected=selected value=""> -Select Carrier- </option>
                <?php
                                 foreach($entities->entities->records as $value) {
                                     $selected = ($value[0] == $entity) ? 'selected=selected':'';
@@ -1426,7 +1438,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
     //$( "#originationState" ).select2();
     //$( "#destinationState" ).select2();
 
-    loadTableAJAXNEW();
+    loadTableAJAX();
 
     var table = $("#datatable-table").DataTable();
     var tableContact = $("#datatable-table-contact").DataTable();
@@ -1528,6 +1540,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             $("#entityID").prop('disabled', true);
             $("#myModal").modal('show');
         } else if (this.textContent.indexOf("Commit") > -1) {
+            // Enable just in case was disabled in last commit call
+            $("#originationCity").prop("disabled", false);
+            $("#originationState").prop("disabled", false);
+            $("#destinationCity").prop("disabled", false);
+            $("#destinationState").prop("disabled", false);
+            // Hide the max relay message and show if response shows 2 existing relays
+            $("#divMaxRelayMessage").hide();
             var li = '';
             var checked = '';
             var qtyselect = '<select id="qty" class="form-control mb-sm">\n';
@@ -1615,8 +1634,34 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             transportationmodeselect += '</select>\n';
             $("#transportationModeDiv").html(transportationmodeselect);
 
-            $("#entityID").prop('disabled', true);
-            $("#myModalCommit").modal('show');
+            // Determine if this is the third relay. If so, lock down Origination and Destination so they have to select it. Limit relays to 3.
+            var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,availableDate,expirationDate&filter[]=rootCustomerNeedsID,eq,' + data['id'] + '&order[]=createdAt,desc&transform=1';
+            var params = {id: data['id']};
+            $.ajax({
+               url: url,
+               type: 'GET',
+               //data: JSON.stringify(params),
+               contentType: "application/json",
+               async: false,
+               success: function(response){
+                    if (response.customer_needs.length == 2 && !admin) {
+                        $("#divMaxRelayMessage").show();
+                        $("#originationCity").prop("disabled", true);
+                        $("#originationState").prop("disabled", true);
+                        $("#destinationCity").prop("disabled", true);
+                        $("#destinationState").prop("disabled", true);
+                        //$("#entityID").prop('disabled', true);
+                    }
+
+                    $("#myModalCommit").modal('show');
+               },
+               error: function() {
+                    alert('Error Selecting Relays for ' + id + '!');
+               }
+            });
+
+            //$("#entityID").prop('disabled', true);
+            //$("#myModalCommit").modal('show');
           } else if (this.textContent.indexOf("Cancel") > -1) {
               $("#commitid").val(data["customer_needs_commit"][0].id);
               $("#myCancelDialog").modal('show');
