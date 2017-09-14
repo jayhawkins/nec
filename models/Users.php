@@ -13,7 +13,8 @@ class User
 
               $loginargs = array(
                             "include"=>"members,entities",
-                            "filter"=>"username,eq,".$username
+                            "filter[0]"=>"username,eq,".$username,
+                            "filter[1]"=>"password,eq,".password_hash($password, PASSWORD_BCRYPT)
               );
               $loginurl = API_HOST."/api/users?".http_build_query($loginargs);
               $loginoptions = array(
