@@ -209,7 +209,8 @@ if ($_SESSION['entityid'] > 0) {
 
 
             $.ajax({
-               url: '<?php echo API_HOST."/api/orders" ?>?transform=1',
+               //url: '<?php echo API_HOST."/api/orders" ?>?transform=1',
+               url: url,
                type: "GET",
                contentType: "application/json",
                async: false,
