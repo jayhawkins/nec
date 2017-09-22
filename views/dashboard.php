@@ -884,7 +884,7 @@
 </div>
 
 <!-- common libraries. required for every page-->
-<script src="vendor/jquery/dist/jquery.min.js"></script>
+<!--<script src="vendor/jquery/dist/jquery.min.js"></script>-->
 <script src="vendor/jquery-pjax/jquery.pjax.js"></script>
 <script src="vendor/tether/dist/js/tether.js"></script>
 <script src="vendor/bootstrap/js/dist/util.js"></script>
