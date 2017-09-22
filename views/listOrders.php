@@ -701,7 +701,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                         "mRender": function (o) {
                             var buttons = '';
 
-                            buttons += '<a class="btn btn-primary btn-xs" href="../downloadfiles/POD-Template.pdf" target="_blank"><i class="fa fa-download text"></i> <span class="text">Download POD</span></a>';
+                            //buttons += '<a class="btn btn-primary btn-xs" href="../downloadfiles/POD-Template.pdf" target="_blank"><i class="fa fa-download text"></i> <span class="text">Download POD</span></a>';
+                            
+                            buttons += '<button class="btn btn-primary btn-xs download-pod"><i class="fa fa-download text"></i> <span class="text">Download POD</span></button>';
 
                             return buttons;
                         }
@@ -1816,6 +1818,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
  
  <script>
 
+    $(document).ready(function(){
+        
     loadTableAJAX();
     
     $('.datepicker').datepicker({
@@ -2211,7 +2215,81 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         td.addClass('details-control-add');
 
     } );
+      
+    $('#pod-list-table tbody').off('click', 'td button.download-pod').on('click', 'td button.download-pod', function () {
+        
+        var podTable = $("#pod-list-table").DataTable();    
+        var pod = podTable.row( $(this).parents('tr') ).data();
+        var podList = podTable.ajax.json().orders[0].podList;
+                
+        var orderDetailsTable = $("#order-details-table").DataTable();
+        var orderDetails = orderDetailsTable.ajax.json();
+        var orderID = orderDetails.order_details[0].orderID;
+                
+        var url = '<?php echo API_HOST . '/api/orders/' ?>' + orderID;
+            
+        $.ajax({
+            url: url,
+            type: "GET",
+            contentType: "application/json",
+            async: false,
+            success: function(data){
+                var customerID = data.customerID;  
+                var customerName = "";
+                
+                allEntities.entities.forEach(function(entity){
 
+                    if(customerID == entity.id){
+
+                        customerName = entity.name;
+                    }                            
+                });
+                
+                var size = data.needsDataPoints[3].length + ' x ' + data.needsDataPoints[4].width + ' x ' + data.needsDataPoints[0].height;
+                
+                var podDataJSON = {
+                    podFormType: customerName,
+                    unitNumber: pod.unitNumber, vinNumber: pod.vinNumber, trailerProNumber: pod.truckProNumber, year: pod.trailerYear, 
+                    size: size, type: data.needsDataPoints[5].type, door: data.needsDataPoints[1].door, decals: data.needsDataPoints[13].decals,
+                    originationAddress: data.originationAddress, originationCity: data.originationCity, originationState: data.originationState, originationZipcode: data.originationZip,
+                    destinationAddress: data.destinationAddress, destinationCity: data.destinationCity, destinationState: data.destinationState, destinationZipcode: data.destinationZip,
+                    pickupLocation: data.pickupInformation.pickupLocation, pickupContact: data.pickupInformation.contactPerson, 
+                    pickupPhoneNumber: data.pickupInformation.phoneNumber, pickupHours: data.pickupInformation.hoursOfOperation,
+                    deliveryLocation: data.deliveryInformation.deliveryLocation, deliveryContact: data.deliveryInformation.contactPerson, 
+                    deliveryPhoneNumber: data.deliveryInformation.phoneNumber, deliveryHours: data.deliveryInformation.hoursOfOperation
+                };
+                
+                var podURL = '<?php echo HTTP_HOST . '/pod_form_api'; ?>';
+                           
+                console.log("I'm begin printed.");
+                           
+                $.ajax({
+                    url: podURL,
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(podDataJSON),
+                    success: function(data){
+                        var win=window.open('about:blank');
+                        with(win.document)
+                        {
+                          open();
+                          write(data);
+                          close();
+                        }
+        
+                    },
+                    error: function(data){
+                        console.log("Could not get POD Form.");
+                    }
+                });
+            },
+            error: function(data){
+                console.log("Could not get Order Information.");
+            }
+        });    
+        
+    } );
+    
     $('#pod-list-table tbody').on('click', 'button.upload-pod', function () {
 
         var podTable = $("#pod-list-table").DataTable();    
@@ -2645,4 +2723,5 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         }        
     });
     
+    });
  </script>

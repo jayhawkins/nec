@@ -521,6 +521,60 @@ $app->route('POST /pod_api', function() {
     }
 });
 
+/*****************************************************************************/
+// POD API Process
+/*****************************************************************************/
+$app->route('POST /pod_form_api', function() {
+
+    $podFormType = Flight::request()->data->podFormType;
+    $unitNumber = Flight::request()->data->unitNumber;
+    $vinNumber = Flight::request()->data->vinNumber;
+    $trailerProNumber = Flight::request()->data->trailerProNumber;
+    $year = Flight::request()->data->year;
+    $size = Flight::request()->data->size;
+    $type = Flight::request()->data->type;
+    $door = Flight::request()->data->door;
+    $decals = Flight::request()->data->decals;
+    $pickupLocation = Flight::request()->data->pickupLocation;
+    $originationAddress = Flight::request()->data->originationAddress;
+    $originationCity = Flight::request()->data->originationCity;
+    $originationState = Flight::request()->data->originationState;
+    $originationZipcode = Flight::request()->data->originationZipcode;
+    $pickupContact = Flight::request()->data->pickupContact;
+    $pickupPhoneNumber= Flight::request()->data->pickupPhoneNumber;
+    $pickupHours = Flight::request()->data->pickupHours;    
+    $deliveryLocation = Flight::request()->data->deliveryLocation;
+    $destinationAddress = Flight::request()->data->destinationAddress;
+    $destinationCity = Flight::request()->data->destinationCity;
+    $destinationState = Flight::request()->data->destinationState;
+    $destinationZipcode = Flight::request()->data->destinationZipcode;
+    $deliveryContact = Flight::request()->data->deliveryContact;
+    $deliveryPhoneNumber= Flight::request()->data->deliveryPhoneNumber;
+    $deliveryHours = Flight::request()->data->deliveryHours;
+ 
+    $podForm = Flight::podforms();
+    
+    $podData = array('unitNumber'=>$unitNumber, 'vinNumber'=>$vinNumber, 'trailerProNumber'=>$trailerProNumber,
+        'year'=>$year, 'size'=>$size, 'type'=>$type, 'door'=>$door, 'decals'=>$decals, 
+        'pickupLocation'=>$pickupLocation, 'originationAddress'=>$originationAddress, 'originationCity'=>$originationCity, 
+        'originationState'=>$originationState, 'originationZipcode'=>$originationZipcode, 'pickupContact'=>$pickupContact, 
+        'pickupPhoneNumber'=>$pickupPhoneNumber, 'pickupHours'=>$pickupHours, 
+        'deliveryLocation'=>$deliveryLocation, 'destinationAddress'=>$destinationAddress, 'destinationCity'=>$destinationCity, 
+        'destinationState'=>$destinationState, 'destinationZipcode'=>$destinationZipcode, 'deliveryContact'=>$deliveryContact, 
+        'deliveryPhoneNumber'=>$deliveryPhoneNumber, 'deliveryHours'=>$deliveryHours);
+       
+    $result = '';
+    
+    if($podFormType == 'Hyundai'){
+        $result = $podForm->getHyundaiPODForm($podData);
+    }
+    else{
+        $result = $podForm->getNationwidePODForm($podData);
+    }
+    
+    echo $result;
+});
+
 
 /*****************************************************************************/
 // Quickbooks API Status Page
