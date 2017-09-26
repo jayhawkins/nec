@@ -26,9 +26,10 @@ class User
               $result = json_decode(file_get_contents($loginurl,false,$logincontext));
 
               if (count($result) > 0) {
-                  if ($result->users->records[0][3] == "Active") {
-                      if (password_verify($password, $result->users->records[0][2])) {
+                  if ($result->users->records[0][4] == "Active") {
+                      if (password_verify($password, $result->users->records[0][3])) {
                         $_SESSION['userid'] = $result->users->records[0][0];
+                        $_SESSION['usertypeid'] = $result->users->records[0][1];
                         $_SESSION['memberid'] = $result->members->records[0][0];
                         $_SESSION['entityid'] = $result->entities->records[0][0];
                         $_SESSION['entitytype'] = $result->entities->records[0][1];
@@ -36,6 +37,7 @@ class User
                         return true;
                       } else {
                         unset($_SESSION['userid']);
+                        unset($_SESSION['usertypeid']);
                         unset($_SESSION['memberid']);
                         unset($_SESSION['entityid']);
                         unset($_SESSION['entitytype']);
