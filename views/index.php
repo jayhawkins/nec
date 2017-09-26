@@ -340,7 +340,7 @@ if ($_SESSION['entityid'] > 0) {
             <li class="active">
                 <!-- an example of nested submenu. basic bootstrap collapse component -->
                 <!--a href="#sidebar-dashboard" data-toggle="collapse" data-parent="#sidebar"-->
-                <a href="/">
+                <a href="/dashboard">
                     <span class="icon">
                         <i class="fa fa-desktop"></i>
                     </span>

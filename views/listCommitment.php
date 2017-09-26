@@ -79,6 +79,47 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         };
     })();
 
+    function verifyAddCarrierCommit(){
+        var blnResult = true;   // Assume Good Data
+        
+        var strMessage = "The following fields must be entered:\n";
+        
+       if($('#pickupDate').val() == "") {
+           strMessage += "-Pick-Up Date\n";
+           blnResult = false;
+       }
+       if($('#deliveryDate').val() == "") {
+           strMessage += "-Delivery Date\n";
+           blnResult = false;
+       }
+       if($('#carrierID').val() == "") {
+           strMessage += "-Carrier\n";
+           blnResult = false;
+       }
+       if($('#originationCity').val() == "") {
+           strMessage += "-Origination City\n";
+           blnResult = false;
+       }
+       if($('#originationState').val() == "") {
+           strMessage += "-Origination State\n";
+           blnResult = false;
+       }
+       if($('#destinationCity').val() == "") {
+           strMessage += "-Destination City\n";
+           blnResult = false;
+       }
+       if($('#destinationState').val() == "") {
+           strMessage += "-Destination State\n";
+           blnResult = false;
+       }
+        
+       if(blnResult == false){
+           alert(strMessage);
+       }
+        
+       return blnResult;
+    }
+
       function post() {
 
           //var originationaddress = $("#originationAddress1").val() + ', ' + $("#originationCity").val() + ', ' + $("#originationState").val() + ', ' + $("#originationZip").val();
@@ -94,6 +135,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
               return false;
           }
 */
+            if(verifyAddCarrierCommit() == true){
                 var result = true;
 
                 var params = {
@@ -180,7 +222,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                 } else {
                     return false;
                 }
-
+            }
           
       }
 
@@ -324,6 +366,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                               $("#destinationCity").val('');
                               $("#destinationState").val('');
                               $("#destinationZip").val('');
+                              $("#carrierID").val('');
                               passValidation = true;
                               
                               return passValidation;
