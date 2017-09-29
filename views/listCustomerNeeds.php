@@ -1349,10 +1349,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       $("#destinationCity").val('');
       $("#destinationState").val('');
       $("#destinationZip").val('');
+      
       for (var i = 0; i < contacts.contacts.records.length; i++) {
           li += '<li id=\"' + contacts.contacts.records[i][0] + '\" class=\"list-group-item\" ' + checked + '>' + contacts.contacts.records[i][1] + ' ' + contacts.contacts.records[i][2] + '</li>\n';
       }
+      
       $("#check-list-box").html(li);
+      
       for (var i = 0; i < dataPoints.object_type_data_points.length; i++) {
           dpli += '<li>' + dataPoints.object_type_data_points[i].title +
                   ' <select class="form-control mb-sm" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '">\n' +
@@ -1363,9 +1366,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
           dpli += '</select>' +
                   '</li>\n';
       }
+      
       $("#dp-check-list-box").html(dpli);
+      
       formatListBox();
       formatListBoxDP();
+      
       $("#entityID").prop('disabled', false);
   		$("#myModal").modal('show');
   	});
@@ -1487,7 +1493,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
     });
 
-    $('#entityID').on( 'change', function () {
+    $('#entityID').off('change').on( 'change', function () {
         var params = {id: $("#entityID").val()};
         //alert(JSON.stringify(params));
         $.ajax({
