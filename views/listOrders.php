@@ -86,6 +86,13 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         };
     })();
     
+    function addVINNumber(){
+        var li = '';
+
+        li += '<li class="list-group-item"><input type="text" class="form-control" value=""></li>\n';
+        
+        $("#input-list-box").append(li);
+    }
       function post() {
 
           var result = true;
@@ -2011,13 +2018,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         
     }
 
-    function addVINNumber(){
-        var li = '';
-
-        li += '<li class="list-group-item"><input type="text" class="form-control" value=""></li>\n';
-        
-        $("#input-list-box").append(li);
-    }
 
     $('#order-details-table tbody').on( 'click', 'button', function () {
         
