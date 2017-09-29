@@ -1372,6 +1372,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       $("#destinationState").val('');
       $("#destinationZip").val('');
       
+    getCustomerContactTitle(entityID);
+    
+    if(entityID == 0){
+        $("#entityID").val('');
+    }
       for (var i = 0; i < contacts.contacts.records.length; i++) {
           li += '<li id=\"' + contacts.contacts.records[i][0] + '\" class=\"list-group-item\" ' + checked + '>' + contacts.contacts.records[i][1] + ' ' + contacts.contacts.records[i][2] + '</li>\n';
       }
@@ -1434,6 +1439,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             }
 
             var params = {id: $("#entityID").val()};
+            
+            getCustomerContactTitle($("#entityID").val());
             $.ajax({
                url: '<?php echo HTTP_HOST."/getcontactsbycarrier" ?>',
                type: 'POST',
