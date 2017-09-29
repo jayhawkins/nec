@@ -307,6 +307,21 @@ $app->route('POST /getlocationbycitystatezip', function() {
     }
 });
 
+
+/*****************************************************************************/
+// Contacts Processes
+/*****************************************************************************/
+$app->route('POST /getcontactsbycustomer', function() {
+    $entityid = Flight::request()->data->id;
+    $contact = Flight::contact();
+    $result = json_encode($contact->getContactsByEntity($entityid));
+    if ($result) {
+        echo $result;
+    } else {
+        echo "There was an error retrieving Contacts!";
+    }
+});
+
 /*****************************************************************************/
 // Contacts Processes
 /*****************************************************************************/
