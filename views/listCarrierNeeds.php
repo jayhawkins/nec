@@ -42,6 +42,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
  <script>
 
      var contacts = <?php echo json_encode($contacts); ?>;
+     var entities = <?php echo json_encode($entities); ?>;
+     var entityID = <?php echo $_SESSION['entityid']; ?>;
      //console.log(contacts);
 
      var locations_contacts = <?php echo json_encode($locations_contacts); ?>;
@@ -64,6 +66,24 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
        };
       })();
 
+        function getCarrierContactTitle(entityID){
+            var carrierContactTitle = "";
+            entities.entities.records.forEach(function(value){
+               if(entityID == value[0]){
+                   carrierContactTitle = value[1] + " Needs Contacts";
+                   
+               } 
+            });
+            
+            if(carrierContactTitle == ""){
+                
+                   $("#carrierContactsTitle").html("<strong>Carrier Needs Contacts</strong>");
+            }
+            else{
+                
+                   $("#carrierContactsTitle").html("<strong>" + carrierContactTitle + "</strong>");
+            }
+        }
       
         function parseDate(input) {
           var parts = input.match(/(\d+)/g);
@@ -1181,7 +1201,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                             </div>
                         </div>
                         <div class="col-xs-6">
-                             <h5 class="text-center"><strong>Company Contacts</strong></h5>
+                             <h5 class="text-center" id="carrierContactsTitle"><strong>Company Contacts</strong></h5>
                              <div class="well" style="max-height: 200px;overflow: auto;">
                                  <ul id="check-list-box" class="list-group checked-list-box">
 
@@ -1387,7 +1407,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
     //$( "#destinationState" ).select2();
 
     loadTableAJAX();
-
+    getCarrierContactTitle(entityID);
     var table = $("#datatable-table").DataTable();
     var tableContact = $("#datatable-table-contact").DataTable();
     var tableDataPoints = $("#datatable-table-datapoints").DataTable();
@@ -1599,8 +1619,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
     });
 
-    $('#entityID').on( 'change', function () {
+    $('#entityID').off('change').on( 'change', function () {
         var params = {id: $("#entityID").val()};
+                
+    getCarrierContactTitle($("#entityID").val());
         //alert(JSON.stringify(params));
         $.ajax({
            url: '<?php echo HTTP_HOST."/getcontactsbycarrier" ?>',
