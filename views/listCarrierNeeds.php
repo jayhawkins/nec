@@ -1459,6 +1459,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       $("#destinationZip").val('');
       //alert(JSON.stringify(contacts));
 
+    getCarrierContactTitle(entityID);
+    
+    if(entityID == 0){
+        $("#entityID").val('');
+    }
       transMode = '<select id="transportationMode" name="transportationMode" class="form-control chzn-select" required="required">' +
                              '<option value="" selected=selected>*Select Mode...</option>';
 
@@ -1537,6 +1542,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             $("#divTransportationMode").html(transMode);
 
             var params = {id: $("#entityID").val()};
+            getCarrierContactTitle($("#entityID").val());
             $.ajax({
                url: '<?php echo HTTP_HOST."/getcontactsbycarrier" ?>',
                type: 'POST',
