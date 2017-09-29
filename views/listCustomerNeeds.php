@@ -44,6 +44,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
  <script>
 
      var contacts = <?php echo json_encode($contacts); ?>;
+     var entities = <?php echo json_encode($entities); ?>;
+     var entityID = <?php echo $_SESSION['entityid']; ?>;
      //console.log(contacts);
 
      var locations_contacts = <?php echo json_encode($locations_contacts); ?>;
@@ -66,6 +68,25 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
        };
       })();
       
+
+        function getCustomerContactTitle(entityID){
+            var customerContactTitle = "";
+            entities.entities.records.forEach(function(value){
+               if(entityID == value[0]){
+                   customerContactTitle = value[1] + " Availability Contacts";
+                   
+               } 
+            });
+            
+            if(customerContactTitle == ""){
+                
+                   $("#customerContactTitle").html("<strong>Customer Availability Contacts</strong>");
+            }
+            else{
+                
+                   $("#customerContactTitle").html("<strong>" + customerContactTitle + "</strong>");
+            }
+        }
         function parseDate(input) {
           var parts = input.match(/(\d+)/g);
           // new Date(year, month [, date [, hours[, minutes[, seconds[, ms]]]]])
@@ -1174,7 +1195,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                             </div>
                         </div>
                         <div class="col-xs-6">
-                             <h5 class="text-center"><strong>Contacts For This Availability</strong></h5>
+                             <h5 class="text-center" id="customerContactTitle"><strong>Contacts For This Availability</strong></h5>
                              <div class="well" style="max-height: 200px;overflow: auto;">
                                  <ul id="check-list-box" class="list-group checked-list-box">
 
@@ -1301,6 +1322,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
     //$( "#destinationState" ).select2();
 
     loadTableAJAX();
+    getCustomerContactTitle(entityID);
 
     var table = $("#datatable-table").DataTable();
     var tableContact = $("#datatable-table-contact").DataTable();
@@ -1495,6 +1517,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
     $('#entityID').off('change').on( 'change', function () {
         var params = {id: $("#entityID").val()};
+        
+    getCustomerContactTitle($("#entityID").val());
         //alert(JSON.stringify(params));
         $.ajax({
            url: '<?php echo HTTP_HOST."/getcontactsbycustomer" ?>',
