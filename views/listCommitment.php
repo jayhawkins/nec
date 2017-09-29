@@ -1609,12 +1609,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                 empty = "selected=selected";
             } else if (data['transportationMode'] == "Load Out"){
                 loadout = "selected=selected";
-            } else if (data['transportationMode'] == "Both (Empty or Load Out)"){
+            } else if (data['transportationMode'] == "Either (Empty or Load Out)"){
                 either = "selected=selected";
             }
             transportationmodeselect += '<option value="Empty" '+empty+'>Empty</option>\n';
             transportationmodeselect += '<option value="Load Out" '+loadout+'>Load Out</option>\n';
-            transportationmodeselect += '<option value="Both (Empty or Load Out)" '+either+'>Both (Empty or Load Out)</option>\n';
+            transportationmodeselect += '<option value="Either (Empty or Load Out)" '+either+'>Either (Empty or Load Out)</option>\n';
         }
 
         transportationmodeselect += '</select>\n';

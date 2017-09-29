@@ -478,7 +478,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
 			transMode += '<option value="Empty" ' + emptyMode + '>Empty</option>';
 			transMode += '<option value="Load Out" ' + loadMode + '>Load Out</option>';
-			transMode += '<option value="Both (Empty or Load Out)" ' + eitherMode + '>Both (Empty or Load Out)</option>';
+			transMode += '<option value="Either (Empty or Load Out)" ' + eitherMode + '>Either (Empty or Load Out)</option>';
 			transMode += '</select>';
 			$("#divTransportationMode").html(transMode);
 
@@ -578,7 +578,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     if ($(this).html() == "Available Date" || $(this).html() == "Expiration Date") {
                         labels+=" (YYYY-MM-DD)";
                     } else if ($(this).html() == "Transportation Mode") {
-                        labels+=" (Empty/Load Out/Both (Empty or Load Out))";
+                        labels+=" (Empty/Load Out/Either (Empty or Load Out))";
                     } else if ($(this).html() == "Rate Type") {
                         labels+=" (Flat Rate or Mileage)";
                     }
@@ -1175,7 +1175,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             ?>
                                 <option value="Empty">Empty</option>
                                 <option value="Load Out">Load Out</option>
-                                <option value="Both (Empty or Load Out)">Both (Empty or Load Out)</option>
+                                <option value="Either (Empty or Load Out)">Either (Empty or Load Out)</option>
                            </select>
                          </div>
                      </div>
