@@ -295,7 +295,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                                         $("#load").html("Save Changes");
                                         $("#load").prop("disabled", false);
                                         
-                                        alert(data);
+                                        if(entityid > 0) alert(data);
 
                                         $("#editOrder").modal('hide');
 
