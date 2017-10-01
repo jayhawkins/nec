@@ -42,6 +42,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
  <script>
 
      var contacts = <?php echo json_encode($contacts); ?>;
+     var entities = <?php echo json_encode($entities); ?>;
+     var entityID = <?php echo $_SESSION['entityid']; ?>;
      //console.log(contacts);
 
      var locations_contacts = <?php echo json_encode($locations_contacts); ?>;
@@ -64,6 +66,24 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
        };
       })();
 
+        function getCarrierContactTitle(entityID){
+            var carrierContactTitle = "";
+            entities.entities.records.forEach(function(value){
+               if(entityID == value[0]){
+                   carrierContactTitle = value[1] + " Needs Contacts";
+                   
+               } 
+            });
+            
+            if(carrierContactTitle == ""){
+                
+                   $("#carrierContactsTitle").html("<strong>Carrier Needs Contacts</strong>");
+            }
+            else{
+                
+                   $("#carrierContactsTitle").html("<strong>" + carrierContactTitle + "</strong>");
+            }
+        }
       
         function parseDate(input) {
           var parts = input.match(/(\d+)/g);
@@ -502,7 +522,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
 			transMode += '<option value="Empty" ' + emptyMode + '>Empty</option>';
 			transMode += '<option value="Load Out" ' + loadMode + '>Load Out</option>';
-			transMode += '<option value="Both (Empty or Load Out)" ' + eitherMode + '>Both (Empty or Load Out)</option>';
+			transMode += '<option value="Either (Empty or Load Out)" ' + eitherMode + '>Either (Empty or Load Out)</option>';
 			transMode += '</select>';
 			$("#divTransportationMode").html(transMode);
 
@@ -609,7 +629,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     if ($(this).html() == "Need Date" || $(this).html() == "Expiration Date") {
                         labels+=" (YYYY-MM-DD)";
                     } else if ($(this).html() == "Transportation Mode") {
-                        labels+=" (Empty/Load Out/Both (Empty or Load Out))";
+                        labels+=" (Empty/Load Out/Either (Empty or Load Out))";
                     }
                     secondRow+=",";
                 }
@@ -1181,7 +1201,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                             </div>
                         </div>
                         <div class="col-xs-6">
-                             <h5 class="text-center"><strong>Company Contacts</strong></h5>
+                             <h5 class="text-center" id="carrierContactsTitle"><strong>Company Contacts</strong></h5>
                              <div class="well" style="max-height: 200px;overflow: auto;">
                                  <ul id="check-list-box" class="list-group checked-list-box">
 
@@ -1387,7 +1407,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
     //$( "#destinationState" ).select2();
 
     loadTableAJAX();
-
+    getCarrierContactTitle(entityID);
     var table = $("#datatable-table").DataTable();
     var tableContact = $("#datatable-table-contact").DataTable();
     var tableDataPoints = $("#datatable-table-datapoints").DataTable();
@@ -1439,12 +1459,17 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       $("#destinationZip").val('');
       //alert(JSON.stringify(contacts));
 
+    getCarrierContactTitle(entityID);
+    
+    if(entityID == 0){
+        $("#entityID").val('');
+    }
       transMode = '<select id="transportationMode" name="transportationMode" class="form-control chzn-select" required="required">' +
                              '<option value="" selected=selected>*Select Mode...</option>';
 
       transMode += '<option value="Empty" ' + emptyMode + '>Empty</option>';
       transMode += '<option value="Load Out" ' + loadMode + '>Load Out</option>';
-      transMode += '<option value="Both (Empty or Load Out)" ' + eitherMode + '>Both (Empty or Load Out)</option>';
+      transMode += '<option value="Either (Empty or Load Out)" ' + eitherMode + '>Either (Empty or Load Out)</option>';
       transMode += '</select>';
       $("#divTransportationMode").html(transMode);
 
@@ -1506,17 +1531,18 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 break;
                 case "Load Out": loadMode = 'selected=selected';
                 break;
-                case "Both (Empty or Load Out)": eitherMode = 'selected=selected';
+                case "Either (Empty or Load Out)": eitherMode = 'selected=selected';
                 break;
             }
 
             transMode += '<option value="Empty" ' + emptyMode + '>Empty</option>';
             transMode += '<option value="Load Out" ' + loadMode + '>Load Out</option>';
-            transMode += '<option value="Both (Empty or Load Out)" ' + eitherMode + '>Both (Empty or Load Out)</option>';
+            transMode += '<option value="Either (Empty or Load Out)" ' + eitherMode + '>Either (Empty or Load Out)</option>';
             transMode += '</select>';
             $("#divTransportationMode").html(transMode);
 
             var params = {id: $("#entityID").val()};
+            getCarrierContactTitle($("#entityID").val());
             $.ajax({
                url: '<?php echo HTTP_HOST."/getcontactsbycarrier" ?>',
                type: 'POST',
@@ -1599,8 +1625,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
     });
 
-    $('#entityID').on( 'change', function () {
+    $('#entityID').off('change').on( 'change', function () {
         var params = {id: $("#entityID").val()};
+                
+    getCarrierContactTitle($("#entityID").val());
         //alert(JSON.stringify(params));
         $.ajax({
            url: '<?php echo HTTP_HOST."/getcontactsbycarrier" ?>',

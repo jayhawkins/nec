@@ -44,6 +44,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
  <script>
 
      var contacts = <?php echo json_encode($contacts); ?>;
+     var entities = <?php echo json_encode($entities); ?>;
+     var entityID = <?php echo $_SESSION['entityid']; ?>;
      //console.log(contacts);
 
      var locations_contacts = <?php echo json_encode($locations_contacts); ?>;
@@ -66,6 +68,25 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
        };
       })();
       
+
+        function getCustomerContactTitle(entityID){
+            var customerContactTitle = "";
+            entities.entities.records.forEach(function(value){
+               if(entityID == value[0]){
+                   customerContactTitle = value[1] + " Availability Contacts";
+                   
+               } 
+            });
+            
+            if(customerContactTitle == ""){
+                
+                   $("#customerContactTitle").html("<strong>Customer Availability Contacts</strong>");
+            }
+            else{
+                
+                   $("#customerContactTitle").html("<strong>" + customerContactTitle + "</strong>");
+            }
+        }
         function parseDate(input) {
           var parts = input.match(/(\d+)/g);
           // new Date(year, month [, date [, hours[, minutes[, seconds[, ms]]]]])
@@ -457,7 +478,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
 			transMode += '<option value="Empty" ' + emptyMode + '>Empty</option>';
 			transMode += '<option value="Load Out" ' + loadMode + '>Load Out</option>';
-			transMode += '<option value="Both (Empty or Load Out)" ' + eitherMode + '>Both (Empty or Load Out)</option>';
+			transMode += '<option value="Either (Empty or Load Out)" ' + eitherMode + '>Either (Empty or Load Out)</option>';
 			transMode += '</select>';
 			$("#divTransportationMode").html(transMode);
 
@@ -557,7 +578,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     if ($(this).html() == "Available Date" || $(this).html() == "Expiration Date") {
                         labels+=" (YYYY-MM-DD)";
                     } else if ($(this).html() == "Transportation Mode") {
-                        labels+=" (Empty/Load Out/Both (Empty or Load Out))";
+                        labels+=" (Empty/Load Out/Either (Empty or Load Out))";
                     } else if ($(this).html() == "Rate Type") {
                         labels+=" (Flat Rate or Mileage)";
                     }
@@ -1154,7 +1175,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             ?>
                                 <option value="Empty">Empty</option>
                                 <option value="Load Out">Load Out</option>
-                                <option value="Both (Empty or Load Out)">Both (Empty or Load Out)</option>
+                                <option value="Either (Empty or Load Out)">Either (Empty or Load Out)</option>
                            </select>
                          </div>
                      </div>
@@ -1174,7 +1195,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                             </div>
                         </div>
                         <div class="col-xs-6">
-                             <h5 class="text-center"><strong>Contacts For This Availability</strong></h5>
+                             <h5 class="text-center" id="customerContactTitle"><strong>Contacts For This Availability</strong></h5>
                              <div class="well" style="max-height: 200px;overflow: auto;">
                                  <ul id="check-list-box" class="list-group checked-list-box">
 
@@ -1301,6 +1322,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
     //$( "#destinationState" ).select2();
 
     loadTableAJAX();
+    getCustomerContactTitle(entityID);
 
     var table = $("#datatable-table").DataTable();
     var tableContact = $("#datatable-table-contact").DataTable();
@@ -1349,10 +1371,18 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       $("#destinationCity").val('');
       $("#destinationState").val('');
       $("#destinationZip").val('');
+      
+    getCustomerContactTitle(entityID);
+    
+    if(entityID == 0){
+        $("#entityID").val('');
+    }
       for (var i = 0; i < contacts.contacts.records.length; i++) {
           li += '<li id=\"' + contacts.contacts.records[i][0] + '\" class=\"list-group-item\" ' + checked + '>' + contacts.contacts.records[i][1] + ' ' + contacts.contacts.records[i][2] + '</li>\n';
       }
+      
       $("#check-list-box").html(li);
+      
       for (var i = 0; i < dataPoints.object_type_data_points.length; i++) {
           dpli += '<li>' + dataPoints.object_type_data_points[i].title +
                   ' <select class="form-control mb-sm" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '">\n' +
@@ -1363,9 +1393,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
           dpli += '</select>' +
                   '</li>\n';
       }
+      
       $("#dp-check-list-box").html(dpli);
+      
       formatListBox();
       formatListBoxDP();
+      
       $("#entityID").prop('disabled', false);
   		$("#myModal").modal('show');
   	});
@@ -1406,6 +1439,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             }
 
             var params = {id: $("#entityID").val()};
+            
+            getCustomerContactTitle($("#entityID").val());
             $.ajax({
                url: '<?php echo HTTP_HOST."/getcontactsbycarrier" ?>',
                type: 'POST',
@@ -1487,8 +1522,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
     });
 
-    $('#entityID').on( 'change', function () {
+    $('#entityID').off('change').on( 'change', function () {
         var params = {id: $("#entityID").val()};
+        
+    getCustomerContactTitle($("#entityID").val());
         //alert(JSON.stringify(params));
         $.ajax({
            url: '<?php echo HTTP_HOST."/getcontactsbycustomer" ?>',

@@ -86,6 +86,13 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         };
     })();
     
+    function addVINNumber(){
+        var li = '';
+
+        li += '<li class="list-group-item"><input type="text" class="form-control" value=""></li>\n';
+        
+        $("#input-list-box").append(li);
+    }
       function post() {
 
           var result = true;
@@ -288,7 +295,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                                         $("#load").html("Save Changes");
                                         $("#load").prop("disabled", false);
                                         
-                                        alert(data);
+                                        if(entityid > 0) alert(data);
 
                                         $("#editOrder").modal('hide');
 
@@ -1695,7 +1702,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
             ?>
                                 <option value="Empty">Empty</option>
                                 <option value="Load Out">Load Out</option>
-                                <option value="Both (Empty or Load Out)">Both (Empty or Load Out)</option>
+                                <option value="Either (Empty or Load Out)">Either (Empty or Load Out)</option>
                            </select>
                          </div>
                      </div>
@@ -2011,13 +2018,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         
     }
 
-    function addVINNumber(){
-        var li = '';
-
-        li += '<li class="list-group-item"><input type="text" class="form-control" value=""></li>\n';
-        
-        $("#input-list-box").append(li);
-    }
 
     $('#order-details-table tbody').on( 'click', 'button', function () {
         
