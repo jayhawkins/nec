@@ -409,7 +409,7 @@ if ($_SESSION['entityid'] > 0) {
                      <span class="icon">
                          <i class="fa fa-users"></i>
                      </span>
-                     Availability
+                     My One Way Opportunities
                      <span class="label label-danger">
                          <?php
                             if ( $_SESSION['entitytype'] == 2 ) {
@@ -460,7 +460,7 @@ if ($_SESSION['entityid'] > 0) {
                     <span class="icon">
                         <i class="fa fa-check-square-o"></i>
                     </span>
-                    Orders
+                    My Trailers in Route
                     <span id="orderCount" class="label label-danger">
 
                     </span>
@@ -585,7 +585,7 @@ if ($_SESSION['entityid'] > 0) {
                                 <span class="icon">
                                     <i class="fa fa-users"></i>
                                 </span>
-                                My Availablity
+                                Manage My Availablity
                             </a>
                         </li>
 <?php
@@ -598,7 +598,7 @@ if ($_SESSION['entityid'] > 0) {
                                  <span class="icon">
                                      <i class="fa fa-truck"></i>
                                  </span>
-                                 My Needs
+                                 Manage My Needs
                              </a>
                          </li>
  <?php
