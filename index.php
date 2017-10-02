@@ -286,7 +286,7 @@ $app->route('POST /getlocationbycitystatezip', function() {
     $result = $location->getLocationByAddressCityStateZip($address1,$city,$state,$zip,$entityID); // Use a more specific address
 
     // In lieu of creating the location in the locations table and returning, just return success and let everything keep going
-    return "success";
+    echo "success";
 
 // Turn this off for now. I don't believe we need it anymore since we're not autoloading the dropdowns for Needs or Availability setup
 // We track city/state/zip in each Need or Availability record and geocode those. May no longer need the locations table except for satellite locations for Carrier/Customer
