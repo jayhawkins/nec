@@ -284,6 +284,14 @@ $app->route('POST /getlocationbycitystatezip', function() {
     $location = Flight::location();
     //$result = $location->getLocationByCityStateZip($city,$state,$zip,$entityID);
     $result = $location->getLocationByAddressCityStateZip($address1,$city,$state,$zip,$entityID); // Use a more specific address
+
+    // In lieu of creating the location in the locations table and returning, just return success and let everything keep going
+    return "success";
+
+// Turn this off for now. I don't believe we need it anymore since we're not autoloading the dropdowns for Needs or Availability setup
+// We track city/state/zip in each Need or Availability record and geocode those. May no longer need the locations table except for satellite locations for Carrier/Customer
+// Jay Hawkins - 10/1/2017
+/*
     if ($result == 0) { // Address does not exist as array count returned is 0 - So... Add the location as a new location to the database to be used moving forward
         // Create the address in the locations table
         // url encode the address
@@ -326,6 +334,8 @@ $app->route('POST /getlocationbycitystatezip', function() {
             echo $result;
         }
     }
+*/
+
 });
 
 

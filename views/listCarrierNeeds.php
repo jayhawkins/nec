@@ -71,26 +71,26 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             entities.entities.records.forEach(function(value){
                if(entityID == value[0]){
                    carrierContactTitle = value[1] + " Needs Contacts";
-                   
-               } 
+
+               }
             });
-            
+
             if(carrierContactTitle == ""){
-                
+
                    $("#carrierContactsTitle").html("<strong>Carrier Needs Contacts</strong>");
             }
             else{
-                
+
                    $("#carrierContactsTitle").html("<strong>" + carrierContactTitle + "</strong>");
             }
         }
-      
+
         function parseDate(input) {
           var parts = input.match(/(\d+)/g);
           // new Date(year, month [, date [, hours[, minutes[, seconds[, ms]]]]])
           return new Date(parts[0], parts[1]-1, parts[2]); // months are 0-based
         }
-        
+
         function formatDate(date) {
             var d = date,
                 month = '' + (d.getMonth() + 1),
@@ -102,7 +102,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
             return [year, month, day].join('-');
         }
-        
+
       function post() {
           if ( $('#formNeed').parsley().validate() ) {
 
@@ -269,12 +269,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                                   needsarray.push(item);
                               }
                               var needsdatapoints = needsarray;
-                              
+
                                 var availableDateString = $("#availableDate").val();
                                 var expirationDateString = $("#expirationDate").val();
 
                                 var availableDate = new Date(parseDate(availableDateString));
-                                var expirationDate = new Date(); 
+                                var expirationDate = new Date();
 
                                 if (expirationDateString == ""){
                                     expirationDate.setDate(availableDate.getDate() + 30);
@@ -284,7 +284,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                                     expirationDate = new Date(parseDate(expirationDateString));
                                     expirationDateString = formatDate(expirationDate);
                                 }
-                                
+
                               if (type == "PUT") {
                                   var date = today;
                                   var data = {qty: $("#qty").val(), transportationMode: $("#transportationMode").val(), originationAddress1: $("#originationAddress1").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), destinationAddress1: $("#destinationAddress1").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, needsDataPoints: needsdatapoints, contactEmails: $contacts, availableDate: $("#availableDate").val(), expirationDate: expirationDateString, updatedAt: date};
@@ -1114,8 +1114,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                      <div class="col-sm-4">
                          <label for="originationAddress1">Origination Address</label>
                          <div class="form-group">
-                           <input type="text" id="originationAddress1" name="originationAddress1" class="form-control mb-sm" placeholder="Origin Address"
-                           required="required" />
+                           <input type="text" id="originationAddress1" name="originationAddress1" class="form-control mb-sm" placeholder="Origin Address" />
                          </div>
                      </div>
                      <div class="col-sm-3">
@@ -1135,8 +1134,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                      <div class="col-sm-2">
                          <label for="originationZip">Origination Zip</label>
                          <div class="form-group">
-                           <input type="text" id="originationZip" name="originationZip" class="form-control mb-sm" placeholder="Origin Zip"
-                           required="required" />
+                           <input type="text" id="originationZip" name="originationZip" class="form-control mb-sm" placeholder="Origin Zip" />
                          </div>
                      </div>
                  </div>
@@ -1152,8 +1150,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                    <div class="col-sm-4">
                        <label for="destinationAddress1">Destination Address</label>
                        <div class="form-group">
-                         <input type="text" id="destinationAddress1" name="destinationAddress1" class="form-control mb-sm" placeholder="Destination Address"
-                         required="required" />
+                         <input type="text" id="destinationAddress1" name="destinationAddress1" class="form-control mb-sm" placeholder="Destination Address" />
                        </div>
                    </div>
                    <div class="col-sm-3">
@@ -1173,8 +1170,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                    <div class="col-sm-2">
                        <label for="destinationZip">Destination Zip</label>
                        <div class="form-group">
-                         <input type="text" id="destinationZip" name="destinationZip" class="form-control mb-sm" placeholder="Dest. Zip"
-                         required="required" />
+                         <input type="text" id="destinationZip" name="destinationZip" class="form-control mb-sm" placeholder="Dest. Zip" />
                        </div>
                    </div>
                  </div>
@@ -1460,7 +1456,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       //alert(JSON.stringify(contacts));
 
     getCarrierContactTitle(entityID);
-    
+
     if(entityID == 0){
         $("#entityID").val('');
     }
@@ -1627,7 +1623,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
     $('#entityID').off('change').on( 'change', function () {
         var params = {id: $("#entityID").val()};
-                
+
     getCarrierContactTitle($("#entityID").val());
         //alert(JSON.stringify(params));
         $.ajax({
