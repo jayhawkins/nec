@@ -287,7 +287,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       }
 
       function loadTableAJAX() {
-      
+
         var today = new Date();
         var dd = today.getDate();
         var mm = today.getMonth()+1; //January is 0!
@@ -332,6 +332,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                     dataSrc: 'carrier_needs'
                 },
                 columns: [
+                    {
+                        "className":      'details-control-add',
+                        "orderable":      false,
+                        "data":           null,
+                        "defaultContent": ''
+                    },
                     { data: "entities[0].name", visible: show },
                     { data: "id", visible: false },
                     { data: "entityID", visible: false },
@@ -358,7 +364,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                         "bSortable": false,
                         "mRender": function (o) {
                             var buttons = '<div class="pull-right text-nowrap">';
-                            buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text\"></i> <span class=\"text\">View Details</span></button>';
+                            buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text\"></i> <span class=\"text\">Request Carrier</span></button>';
 /*
                             if (o.status == "Open") {
                                       buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text\"></i> <span class=\"text\">Close</span></button>";
@@ -724,6 +730,23 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
     #destination-list li:hover{background:#ece3d2;cursor: pointer;}
 
+    td.details-control {
+        background: url('../img/details_open.png') no-repeat center center;
+        cursor: pointer;
+    }
+    tr.shown td.details-control {
+        background: url('../img/details_close.png') no-repeat center center;
+    }
+
+    td.details-control-add {
+        background: url('../img/details_open.png') no-repeat center center;
+        cursor: pointer;
+    }
+    td.details-control-minus {
+        background: url('../img/details_close.png') no-repeat center center;
+        cursor: pointer;
+    }
+
  </style>
 
  <ol class="breadcrumb">
@@ -750,6 +773,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
              <table id="datatable-table" class="table table-striped table-hover">
                  <thead>
                  <tr>
+                     <th></th>
                      <th>Company</th>
                      <th>ID</th>
                      <th>Entity ID</th>
@@ -861,6 +885,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                        </div>
                    </div>
                  </div>
+                 <!--
                  <hr />
                  <div class="container" style="margin-top:20px;">
                      <div class="row">
@@ -876,8 +901,9 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                         </div>
                      </div>
                  </div>
-                </form>
-       </div>
+                 -->
+               </form>
+        </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           <button type="button" class="btn btn-primary" onclick="return post();">Request Carrier</button>
@@ -995,7 +1021,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
           dpli += '</select>\n' +
                   '</li>\n';
       }
-      $("#dp-check-list-box").html(dpli);
+      //$("#dp-check-list-box").html(dpli);
       formatListBox();
       formatListBoxDP();
       $("#entityID").prop('disabled', false);
@@ -1007,7 +1033,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
     $('#datatable-table tbody').on( 'click', 'button', function () {
         var data = table.row( $(this).parents('tr') ).data();
 
-        if (this.textContent.indexOf("View Details") > -1) {
+        if (this.textContent.indexOf("Request Carrier") > -1) {
             var li = '';
             var checked = '';
             var dpli = '';
@@ -1087,7 +1113,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
                 dpli += '</li>\n';
             }
-            $("#dp-check-list-box").html(dpli);
+            //$("#dp-check-list-box").html(dpli);
             formatListBox();
             formatListBoxDP();
             $("#entityID").prop('disabled', true);
@@ -1242,6 +1268,68 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
     $("#myModal").on("hidden.bs.modal", function () {
         $("#entityID").prop('disabled', false);
     });
+
+    /* Formatting function for row details - modify as you need */
+    function format ( d ) {
+
+        var table = '<table  class="col-sm-12" cellpadding="5" cellspacing="0" border="0"><tr>';
+
+        // `d` is the original data object for the row
+        var ndp = d.needsDataPoints;
+
+        for (var i = 0; i < dataPoints.object_type_data_points.length; i++) {
+            var selected = '';
+            var value = '';
+
+            $.each(ndp, function(idx, obj) {
+              $.each(obj, function(key, val) {
+                if (dataPoints.object_type_data_points[i].columnName == key) {
+                    value = val; // Get the value from the JSON data in the record to use to set the selected option in the dropdown
+                }
+              })
+            });
+
+            table += '<td>' + dataPoints.object_type_data_points[i].title;
+            for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
+
+                if (dataPoints.object_type_data_points[i].object_type_data_point_values[v].value === value) {
+                    table += ' <br/> <strong>' + dataPoints.object_type_data_points[i].object_type_data_point_values[v].value + '</strong>';
+                }
+            }
+
+            table += '</td>\n';
+        }
+
+        table += '</tr></table>\n';
+        return table;
+
+    }
+
+    $('#datatable-table tbody').on('click', 'td.details-control-add', function () {
+
+        var tr = $(this).closest('tr');
+        var row = table.row( tr );
+        var td = $(this).closest('td');
+
+        // Open this row
+        row.child( format(row.data()) ).show();
+        td.addClass('details-control-minus');
+        td.removeClass('details-control-add');
+
+    } );
+
+    $('#datatable-table tbody').on('click', 'td.details-control-minus', function () {
+
+        var tr = $(this).closest('tr');
+        var row = table.row( tr );
+        var td = $(this).closest('td');
+
+        // This row is already open - close it
+        row.child.hide();
+        td.removeClass('details-control-minus');
+        td.addClass('details-control-add');
+
+    } );
 
 
  </script>

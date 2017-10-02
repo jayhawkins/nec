@@ -776,6 +776,9 @@ ENGINE = InnoDB
 AUTO_INCREMENT = 1;
 -- -------------------------------------------------------------
 ALTER TABLE users ADD COLUMN `userTypeID` Int(11) UNSIGNED NOT NULL DEFAULT 1 AFTER `id`;
+ALTER TABLE users ADD COLUMN `uniqueID` Int(11) UNSIGNED NOT NULL DEFAULT 0 AFTER `password`;
+ALTER TABLE users ADD COLUMN `generatedKey` VarChar(64) AFTER `uniqueID`;
+ALTER TABLE users ADD COLUMN `textNumber` VarChar(24) AFTER `generatedKey`;
 -- ---------------------------------------------------------
 
 -- CREATE TABLE "users" ------------------------------------

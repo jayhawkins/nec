@@ -4,6 +4,19 @@ if ($_SESSION['userid'] <= 0 || $_SESSION['userid'] == "") {
     header("Location: " . HTTP_HOST . "/login");
 }
 
+// Use arrays to determine which user types get access to each section
+$needsMenuAccessList = array(0,1,2,4);
+$availabilityMenuAccessList = array(0,1,2,4);
+$ordersMenuAccessList = array(0,1,2,4,5);
+$invoicingMenuAccessList = array(0,1,2,3);
+$claimsMenuAccessList = array(0,1,2,4);
+$collectionsMenuAccessList = array(0,1,2,4);
+$profilesMenuAccessList = array(0,1);
+$myneedsMenuAccessList = array(0,1,2,3,4);
+$myavailabilityMenuAccessList = array(0,1,2,3,4);
+$mapsMenuAccessList = array(0,1,2);
+$settingsMenuAccessList = array(0,1,2);
+
 $member = json_decode(file_get_contents(API_HOST.'/api/users?include=members&filter=id,eq,'.$_SESSION['userid']));
 $firstName = $member->members->records[0][3];
 $lastName = $member->members->records[0][4];
@@ -360,7 +373,8 @@ if ($_SESSION['entityid'] > 0) {
                 </ul-->
             </li>
 <?php
-    if ($_SESSION['entitytype'] == 1 || $_SESSION['entityid'] == 0) {
+    echo "User Type ID: ".$_SESSION['usertypeid'];
+    if ( ($_SESSION['entitytype'] == 1 || $_SESSION['entityid'] == 0) && in_array($_SESSION['usertypeid'], $needsMenuAccessList) ) {
 ?>
             <li>
                 <a href="#" onclick="ajaxFormCall('listNeeds');">
@@ -382,8 +396,7 @@ if ($_SESSION['entityid'] > 0) {
 <?php
     }
 
-
-    if ($_SESSION['entitytype'] == 2 || $_SESSION['entityid'] == 0) {
+    if ( ($_SESSION['entitytype'] == 2 || $_SESSION['entityid'] == 0 ) && in_array($_SESSION['usertypeid'], $needsMenuAccessList) ) {
  ?>
              <li>
                  <a href="#" onclick="ajaxFormCall('listAvailability');">
@@ -405,9 +418,7 @@ if ($_SESSION['entityid'] > 0) {
  <?php
     }
 
-
     if ($_SESSION['entityid'] == 0) {
-
  ?>
              <li>
                  <a href="#" onclick="ajaxFormCall('listCommitment');">
@@ -421,7 +432,6 @@ if ($_SESSION['entityid'] > 0) {
                  </a>
              </li>
  <?php
-
     }
 
     if ($_SESSION['entityid'] == 0) {
@@ -437,6 +447,7 @@ if ($_SESSION['entityid'] > 0) {
  <?php
     }
 
+    if ( ($_SESSION['entitytype'] == 2 || $_SESSION['entityid'] == 0 ) && in_array($_SESSION['usertypeid'], $ordersMenuAccessList) ) {
  ?>
             <li>
                 <a href="#" onclick="ajaxFormCall('listOrders');">
@@ -449,6 +460,11 @@ if ($_SESSION['entityid'] > 0) {
                     </span>
                 </a>
             </li>
+<?php
+    }
+
+    if ( ($_SESSION['entitytype'] == 2 || $_SESSION['entityid'] == 0 ) && in_array($_SESSION['usertypeid'], $invoicingMenuAccessList) ) {
+ ?>
             <li>
                 <a href="#">
                     <span class="icon">
@@ -457,6 +473,11 @@ if ($_SESSION['entityid'] > 0) {
                     Invoicing
                 </a>
             </li>
+<?php
+    }
+
+    if ( ($_SESSION['entitytype'] == 2 || $_SESSION['entityid'] == 0 ) && in_array($_SESSION['usertypeid'], $claimsMenuAccessList) ) {
+ ?>
             <li>
                 <a href="#">
                     <span class="icon">
@@ -465,6 +486,11 @@ if ($_SESSION['entityid'] > 0) {
                     Damage Claims
                 </a>
             </li>
+<?php
+    }
+
+    if ( ($_SESSION['entitytype'] == 2 || $_SESSION['entityid'] == 0 ) && in_array($_SESSION['usertypeid'], $collectionsMenuAccessList) ) {
+ ?>
             <li>
                 <a href="#">
                     <span class="icon">
@@ -473,10 +499,16 @@ if ($_SESSION['entityid'] > 0) {
                     Collections
                 </a>
             </li>
+<?php
+    }
+?>
         </ul>
         <!-- every .sidebar-nav may have a title -->
         <!--h5 class="sidebar-nav-title">&nbsp; <a class="action-link" href="#"><i class="glyphicon glyphicon-refresh"></i></a></h5-->
         <ul class="sidebar-nav">
+<?php
+    if ( in_array($_SESSION['usertypeid'], $profilesMenuAccessList) ) { // Determine is user type id has access to this menu item
+?>
             <li>
                 <!-- an example of nested submenu. basic bootstrap collapse component -->
                 <a class="collapsed" href="#sidebar-forms" data-toggle="collapse" data-parent="#sidebar">
@@ -537,10 +569,11 @@ if ($_SESSION['entityid'] > 0) {
                     <li><a href="#" onclick="ajaxFormCall('listLinks');">Links</a></li>
                 </ul>
             </li>
+<?php
+    } // End check for profilesMenuAccessList
 
-            <?php
-                if ($_SESSION['entitytype'] == 1 || $_SESSION['entityid'] == 0) {
-            ?>
+    if ( ($_SESSION['entitytype'] == 1 || $_SESSION['entityid'] == 0) && in_array($_SESSION['usertypeid'], $myavailabilityMenuAccessList) ) {
+?>
                         <li>
                             <a href="#" onclick="ajaxFormCall('listCustomerNeeds');">
                                 <span class="icon">
@@ -549,12 +582,11 @@ if ($_SESSION['entityid'] > 0) {
                                 My Availablity
                             </a>
                         </li>
-            <?php
-                }
+<?php
+    }
 
-
-                if ($_SESSION['entitytype'] == 2 || $_SESSION['entityid'] == 0) {
-             ?>
+    if ( ($_SESSION['entitytype'] == 2 || $_SESSION['entityid'] == 0)  && in_array($_SESSION['usertypeid'], $myneedsMenuAccessList) ) {
+ ?>
                          <li>
                              <a href="#" onclick="ajaxFormCall('listCarrierNeeds');">
                                  <span class="icon">
@@ -563,10 +595,11 @@ if ($_SESSION['entityid'] > 0) {
                                  My Needs
                              </a>
                          </li>
-             <?php
-                }
+ <?php
+    }
 
-             ?>
+    if ( ($_SESSION['entityid'] == 0)  && in_array($_SESSION['usertypeid'], $mapsMenuAccessList) ) {
+ ?>
 
 
             <li>
@@ -584,6 +617,11 @@ if ($_SESSION['entityid'] > 0) {
                     <li><a href="maps_vector.html">Vector Maps</a></li>
                 </ul>
             </li>
+<?php
+    }
+
+    if ( ($_SESSION['entityid'] == 0)  && in_array($_SESSION['usertypeid'], $settingsMenuAccessList) ) {
+ ?>
             <li>
                 <a class="collapsed" href="#sidebar-settings" data-toggle="collapse" data-parent="#sidebar">
                     <span class="icon">
@@ -607,6 +645,9 @@ if ($_SESSION['entityid'] > 0) {
                ?>
                 </ul>
             </li>
+<?php
+    }
+?>
         </ul>
     </div>
 </nav>

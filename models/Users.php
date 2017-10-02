@@ -26,7 +26,7 @@ class User
               $result = json_decode(file_get_contents($loginurl,false,$logincontext));
 
               if (count($result) > 0) {
-                  if ($result->users->records[0][4] == "Active") {
+                  if ($result->users->records[0][7] == "Active") {
                       if (password_verify($password, $result->users->records[0][3])) {
                         $_SESSION['userid'] = $result->users->records[0][0];
                         $_SESSION['usertypeid'] = $result->users->records[0][1];
@@ -365,6 +365,82 @@ class User
             exit();
       }
     }
+
+    public function maintenanceapi($type,$user_id,$member_id,$entityID,$firstName,$lastName,$username,$password,$userTypeID,$uniqueID,$textNumber) {
+          try {
+
+                $userdata = array(
+                            "userTypeID" => $userTypeID,
+                            "username" => $username,
+                            "uniqueID" => $uniqueID,
+                            "textNumber" => $textNumber,
+                );
+
+                if ($password > "") {
+                    $userdata["password"] = password_hash($password, PASSWORD_BCRYPT);
+                }
+
+                $userurl = API_HOST.'/api/users';
+
+                if ($type == "PUT") {
+                    $userurl .= "/".$user_id;
+                    $userdata["updatedAt"] = date('Y-m-d H:i:s');
+                } else {
+                    $userdata["createdAt"] = date('Y-m-d H:i:s');
+                    $userdata["updatedAt"] = date('Y-m-d H:i:s');
+                }
+
+                // use key 'http' even if you send the request to https://...
+                $useroptions = array(
+                    'http' => array(
+                        'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                        'method'  => $type,
+                        'content' => http_build_query($userdata)
+                    )
+                );
+                $usercontext = stream_context_create($useroptions);
+                $userresult = file_get_contents($userurl, false, $usercontext);
+
+                $memberdata = array(
+                            "firstName" => $firstName,
+                            "lastName" => $lastName
+                );
+
+                $memberurl = API_HOST.'/api/members';
+
+                if ($type == "PUT") {
+                    $memberurl .= "/".$member_id;
+                    $memberdata["updatedAt"] = date('Y-m-d H:i:s');
+                } else {
+                    $memberdata["createdAt"] = date('Y-m-d H:i:s');
+                    $memberdata["updatedAt"] = date('Y-m-d H:i:s');
+                    $memberdata["userID"] = $userresult;
+                    $memberdata["entityID"] = $entityID;
+                }
+
+                // use key 'http' even if you send the request to https://...
+                $memberoptions = array(
+                    'http' => array(
+                        'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                        'method'  => 'POST',
+                        'content' => http_build_query($memberdata)
+                    )
+                );
+
+                $membercontext = stream_context_create($memberoptions);
+                $memberresult = file_get_contents($memberurl, false, $membercontext);
+
+                echo "success";
+
+          } catch (Exception $e) { // The authorization query failed verification
+                header('HTTP/1.1 404 Not Found');
+                header('Content-Type: text/plain; charset=utf8');
+                echo $e->getMessage();
+                exit();
+          }
+
+    }
+
 }
 
 //$user = new User();
