@@ -372,8 +372,14 @@ if ($_SESSION['entityid'] > 0) {
                     <li><a href="/"><i>(Mashup)</i></a></li>
                 </ul-->
             </li>
+            <li>
+                <span class="icon">
+                    <i></i>
+                </span>
+                <?php echo "<b>".$_SESSION['usertypename']."</b>"; ?>
+            </li>
 <?php
-    echo "User Type ID: ".$_SESSION['usertypeid'];
+
     if ( ($_SESSION['entitytype'] == 1 || $_SESSION['entityid'] == 0) && in_array($_SESSION['usertypeid'], $needsMenuAccessList) ) {
 ?>
             <li>

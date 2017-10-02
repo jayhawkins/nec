@@ -12,7 +12,7 @@ class User
               //$result = json_decode(file_get_contents(API_HOST.'/api/users?include=members,entities&filter=username,eq,' . $username));
 
               $loginargs = array(
-                            "include"=>"members,entities",
+                            "include"=>"members,entities,user_types",
                             "filter[0]"=>"username,eq,".$username
               );
               $loginurl = API_HOST."/api/users?".http_build_query($loginargs);
@@ -33,6 +33,7 @@ class User
                         $_SESSION['memberid'] = $result->members->records[0][0];
                         $_SESSION['entityid'] = $result->entities->records[0][0];
                         $_SESSION['entitytype'] = $result->entities->records[0][1];
+                        $_SESSION['usertypename'] = $result->user_types->records[0][1];
                         unset($_SESSION['invalidPassword']);
                         return true;
                       } else {
@@ -41,6 +42,7 @@ class User
                         unset($_SESSION['memberid']);
                         unset($_SESSION['entityid']);
                         unset($_SESSION['entitytype']);
+                        unset($_SESSION['usertypename']);
                         $_SESSION['invalidPassword'] = 'Password is invalid!';
                         return false;
                       }
