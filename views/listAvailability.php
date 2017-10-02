@@ -974,11 +974,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
  <ol class="breadcrumb">
    <li>ADMIN</li>
-   <li class="active">Customer Trailer Availability</li>
+   <li class="active">My One Way Trailer Opportunities</li>
  </ol>
  <section class="widget">
      <header>
-         <h4><span class="fw-semi-bold">Availabile for Transport</span></h4>
+         <h4><span class="fw-semi-bold">One Way Trailer Opportunities Available to Transport</span></h4>
          <div class="widget-controls">
              <a data-widgster="expand" title="Expand" href="#"><i class="glyphicon glyphicon-chevron-up"></i></a>
              <a data-widgster="collapse" title="Collapse" href="#"><i class="glyphicon glyphicon-chevron-down"></i></a>
