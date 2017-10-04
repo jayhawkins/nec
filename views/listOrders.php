@@ -718,7 +718,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                                 errorCount++;
                                 errorMessage += '-Trailer Pro Number\n';
                             }   
-                            if(podDataJSON.trailerYear == "" || podDataJSON.trailerYear == undefined{
+                            if(podDataJSON.trailerYear == "" || podDataJSON.trailerYear == undefined){
                                 errorCount++;
                                 errorMessage += '-Year\n';
                             }
