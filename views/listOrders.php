@@ -707,32 +707,20 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                         "bSortable": false,
                         "mRender": function (podDataJSON) {
                             var buttons = '';
-                            
-                            var errorCount = 0;
                             var errorMessage = 'The following information must be completed in Trailer Details:\n';
-
-                            for(var prop in podDataJSON){                    
-
-                                switch(prop){
-                                    case "unitNumber":
-                                        if(podDataJSON.unitNumber == ""){
-                                            errorCount++;
-                                            errorMessage += '-Unit Number\n';
-                                        }
-                                    break;
-                                    case "trailerProNumber":   
-                                        if(podDataJSON.trailerProNumber == ""){
-                                            errorCount++;
-                                            errorMessage += '-Trailer Pro Number\n';
-                                        }
-                                    break; 
-                                    case "trailerYear":   
-                                        if(podDataJSON.trailerYear == ""){
-                                            errorCount++;
-                                            errorMessage += '-Year\n';
-                                        }
-                                    break; 
-                                }                
+                            var errorCount = 0;
+                            
+                            if(podDataJSON.unitNumber == "" || podDataJSON.unitNumber == undefined){
+                                errorCount++;
+                                errorMessage += '-Unit Number\n';
+                            }
+                            if(podDataJSON.trailerProNumber == "" || podDataJSON.trailerProNumber == undefined){
+                                errorCount++;
+                                errorMessage += '-Trailer Pro Number\n';
+                            }   
+                            if(podDataJSON.trailerYear == "" || podDataJSON.trailerYear == undefined{
+                                errorCount++;
+                                errorMessage += '-Year\n';
                             }
 
                             //buttons += '<a class="btn btn-primary btn-xs" href="../downloadfiles/POD-Template.pdf" target="_blank"><i class="fa fa-download text"></i> <span class="text">Download POD</span></a>';
