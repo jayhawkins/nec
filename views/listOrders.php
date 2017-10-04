@@ -705,13 +705,29 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                     {
                         data: null,
                         "bSortable": false,
-                        "mRender": function (o) {
+                        "mRender": function (podDataJSON) {
                             var buttons = '';
+                            var errorCount = 0;
+                            
+                            if(podDataJSON.unitNumber == "" || podDataJSON.unitNumber == undefined){
+                                errorCount++;
+                            }
+                            if(podDataJSON.trailerProNumber == "" || podDataJSON.trailerProNumber == undefined){
+                                errorCount++;
+                            }   
+                            if(podDataJSON.trailerYear == "" || podDataJSON.trailerYear == undefined){
+                                errorCount++;
+                            }
 
                             //buttons += '<a class="btn btn-primary btn-xs" href="../downloadfiles/POD-Template.pdf" target="_blank"><i class="fa fa-download text"></i> <span class="text">Download POD</span></a>';
+                            if(errorCount > 0){
+                                buttons = '<button class="btn btn-primary btn-xs trailer-data-missing"><i class="fa fa-download text"></i> <span class="text">Download POD</span></button>';
 
-                            buttons += '<button class="btn btn-primary btn-xs download-pod"><i class="fa fa-download text"></i> <span class="text">Download POD</span></button>';
-
+                            }
+                            else{
+                                buttons = '<button class="btn btn-primary btn-xs download-pod"><i class="fa fa-download text"></i> <span class="text">Download POD</span></button>';
+                            }
+                            
                             return buttons;
                         }
                     },
@@ -1821,7 +1837,27 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
     </div>
   </div>
 
-
+<!-- Missing Trailer Data -->
+<div class="modal fade" id="trailer-data-missing" tabindex="-1" aria-hidden="true" aria-label="exampleModalCommitLabel">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalCommitLabel"><strong>Missing Trailer Data</strong></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            Trailer data is missing. Click "Edit Trailer Data" to complete this process.
+            
+            Thank you.
+        </div>
+        <div class="modal-footer">
+           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
  <script>
 
@@ -2258,10 +2294,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                     deliveryLocation: data.deliveryInformation.deliveryLocation, deliveryContact: data.deliveryInformation.contactPerson,
                     deliveryPhoneNumber: data.deliveryInformation.phoneNumber, deliveryHours: data.deliveryInformation.hoursOfOperation
                 };
-
+                
                 var podURL = '<?php echo HTTP_HOST . '/pod_form_api'; ?>';
-
-                console.log("I'm begin printed.");
 
                 $.ajax({
                     url: podURL,
@@ -2274,7 +2308,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                         document.open();
                         document.write(data);
                         document.close();
-                                
+
                     },
                     error: function(data){
                         console.log("Could not get POD Form.");
@@ -2288,6 +2322,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
     } );
 
+    $('#pod-list-table tbody').on('click', 'button.trailer-data-missing', function () {
+
+        $("#trailer-data-missing").modal('show');
+    } );
     $('#pod-list-table tbody').on('click', 'button.upload-pod', function () {
 
         var podTable = $("#pod-list-table").DataTable();
