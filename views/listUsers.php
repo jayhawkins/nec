@@ -8,9 +8,13 @@ require '../lib/common.php';
 $userTypeID = '';
 //$userTypes = json_decode(file_get_contents(API_HOST.'/api/user_types?columns=id,name&order=id'));
 
-$args = array(
-    "filter"=>"id,gt,0"
-);
+if ($_SESSION['entityid'] == 0) {
+    $args = array();
+} else {
+    $args = array(
+        "filter"=>"id,gt,0"
+    );
+}
 $url = API_HOST."/api/user_types?".http_build_query($args);
 $options = array(
     'http' => array(
