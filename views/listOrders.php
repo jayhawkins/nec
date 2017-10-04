@@ -2269,19 +2269,19 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                     
                     switch(prop){
                         case "unitNumber":
-                            if(podDataJSON[prop] == ""){
+                            if(podDataJSON.unitNumber == ""){
                                 errorCount++;
                                 errorMessage += '-Unit Number\n';
                             }
                         break;
                         case "trailerProNumber":   
-                            if(podDataJSON[prop] == ""){
+                            if(podDataJSON.trailerProNumber == ""){
                                 errorCount++;
                                 errorMessage += '-Trailer Pro Number\n';
                             }
                         break; 
                         case "trailerYear":   
-                            if(podDataJSON[prop] == ""){
+                            if(podDataJSON.trailerYear == ""){
                                 errorCount++;
                                 errorMessage += '-Year\n';
                             }
