@@ -2269,14 +2269,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                     contentType: "application/json",
                     data: JSON.stringify(podDataJSON),
                     success: function(data){
-                        var win=window.open('about:blank');
-                        with(win.document)
-                        {
-                          open();
-                          write(data);
-                          close();
-                        }
-
+                        var win = window.open('about:blank'); 
+                        var document = win.document;
+                        document.open();
+                        document.write(data);
+                        document.clos();
+                                
                     },
                     error: function(data){
                         console.log("Could not get POD Form.");
