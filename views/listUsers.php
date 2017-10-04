@@ -6,7 +6,20 @@ require '../../nec_config.php';
 require '../lib/common.php';
 
 $userTypeID = '';
-$userTypes = json_decode(file_get_contents(API_HOST.'/api/user_types?columns=id,name&order=id'));
+//$userTypes = json_decode(file_get_contents(API_HOST.'/api/user_types?columns=id,name&order=id'));
+
+$args = array(
+    "filter"=>"id,gt,0"
+);
+$url = API_HOST."/api/user_types?".http_build_query($args);
+$options = array(
+    'http' => array(
+        'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+        'method'  => 'GET'
+    )
+);
+$context  = stream_context_create($options);
+$userTypes = json_decode(file_get_contents($url,false,$context),false);
 
 ?>
 
