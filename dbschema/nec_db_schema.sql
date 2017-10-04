@@ -775,88 +775,109 @@ COLLATE = utf8_general_ci
 ENGINE = InnoDB
 AUTO_INCREMENT = 1;
 -- -------------------------------------------------------------
+ALTER TABLE users ADD COLUMN `userTypeID` Int(11) UNSIGNED NOT NULL DEFAULT 1 AFTER `id`;
+ALTER TABLE users ADD COLUMN `uniqueID` Int(11) UNSIGNED NOT NULL DEFAULT 0 AFTER `password`;
+ALTER TABLE users ADD COLUMN `generatedKey` VarChar(64) AFTER `uniqueID`;
+ALTER TABLE users ADD COLUMN `textNumber` VarChar(24) AFTER `generatedKey`;
+-- ---------------------------------------------------------
+
+-- CREATE TABLE "users" ------------------------------------
+-- CREATE TABLE "users" ----------------------------------------
+CREATE TABLE IF NOT EXISTS `user_types` (
+	`id` Int( 11 ) UNSIGNED AUTO_INCREMENT NOT NULL,
+	`name` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	`status` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'Active',
+	`createdAt` DateTime NOT NULL,
+	`updatedAt` DateTime NULL,
+	CONSTRAINT `unique_id` UNIQUE( `id` ),
+	CONSTRAINT `unique_username` UNIQUE( `username` ) )
+CHARACTER SET = utf8
+COLLATE = utf8_general_ci
+ENGINE = InnoDB
+AUTO_INCREMENT = 1;
+-- -------------------------------------------------------------
 -- ---------------------------------------------------------
 
 
 -- CREATE TABLE "routes" ------------------------------------
 -- CREATE TABLE "routes" ----------------------------------------
-CREATE TABLE IF NOT EXISTS `routes` 
-( 
-	`id` Int( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT, 
-	`orderDetailID` Int( 11 ) UNSIGNED NOT NULL, 
-	`elapsedMeters` Int( 11 ) NOT NULL, 
-	`elapsedSeconds` Int( 11 ) NOT NULL, 
-	`availableDate` DATE NOT NULL, 
-	`endTime` DATETIME NOT NULL, 
-	`expirationDate` DATETIME NOT NULL, 
-	`isComplete` bool NOT NULL, 
-	`isEnroute` bool NOT NULL, 
-	`startTime` DATETIME NOT NULL, 
-	`status` varchar(100) NOT NULL, 
-	`transportationMode` varchar(100) NOT NULL, 
-	`updatedAt` DATETIME NOT NULL, 
-	`createdAt` DATETIME NOT NULL, 
-	PRIMARY KEY (`id`) 
-); 
+CREATE TABLE IF NOT EXISTS `routes`
+(
+	`id` Int( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`orderDetailID` Int( 11 ) UNSIGNED NOT NULL,
+	`elapsedMeters` Int( 11 ) NOT NULL,
+	`elapsedSeconds` Int( 11 ) NOT NULL,
+	`availableDate` DATE NOT NULL,
+	`endTime` DATETIME NOT NULL,
+	`expirationDate` DATETIME NOT NULL,
+	`isComplete` bool NOT NULL,
+	`isEnroute` bool NOT NULL,
+	`startTime` DATETIME NOT NULL,
+	`status` varchar(100) NOT NULL,
+	`transportationMode` varchar(100) NOT NULL,
+	`updatedAt` DATETIME NOT NULL,
+	`createdAt` DATETIME NOT NULL,
+	PRIMARY KEY (`id`)
+);
 -- -------------------------------------------------------------
 -- ---------------------------------------------------------
 
 
 -- CREATE TABLE "route_coordinates" ------------------------------------
 -- CREATE TABLE "route_coordinates" ----------------------------------------
-CREATE TABLE IF NOT EXISTS `route_coordinates` 
-( 
-	`id` Int( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT, 
-	`routeID` Int( 11 ) UNSIGNED NOT NULL, 
-    `latitude` double NOT NULL, 
-	`longitude` double NOT NULL, 
-    `timeStamp` DATETIME NOT NULL, 
-	`pausedOnThisCoordinate` bool NOT NULL, 
-	PRIMARY KEY (`id`) 
-); 
+CREATE TABLE IF NOT EXISTS `route_coordinates`
+(
+	`id` Int( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`routeID` Int( 11 ) UNSIGNED NOT NULL,
+    `latitude` double NOT NULL,
+	`longitude` double NOT NULL,
+    `timeStamp` DATETIME NOT NULL,
+	`pausedOnThisCoordinate` bool NOT NULL,
+	PRIMARY KEY (`id`)
+);
 -- -------------------------------------------------------------
 -- ---------------------------------------------------------
 
 
 -- CREATE TABLE "route_time_block" ------------------------------------
 -- CREATE TABLE "route_time_block" ----------------------------------------
-CREATE TABLE IF NOT EXISTS `route_time_block` 
-( 
-	`id` Int( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT, 
-	`routeID` Int( 11 ) UNSIGNED NOT NULL, 
-	`startTime` DATETIME NOT NULL, 
-	`endTime` DATETIME NOT NULL, 
-	PRIMARY KEY (`id`) 
-); 
+CREATE TABLE IF NOT EXISTS `route_time_block`
+(
+	`id` Int( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`routeID` Int( 11 ) UNSIGNED NOT NULL,
+	`startTime` DATETIME NOT NULL,
+	`endTime` DATETIME NOT NULL,
+	PRIMARY KEY (`id`)
+);
 -- -------------------------------------------------------------
 -- ---------------------------------------------------------
 
 
 -- CREATE TABLE "route_images" ------------------------------------
 -- CREATE TABLE "route_images" ----------------------------------------
-CREATE TABLE IF NOT EXISTS `route_images` 
-( 
-	`id` Int( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT, 
-	`routeID` Int( 11 ) UNSIGNED NOT NULL, 
-	`image` blob NOT NULL, 
-	`imageType` varchar(100) NOT NULL, 
-	`notes` varchar(2000) NOT NULL, 
-	PRIMARY KEY (`id`) 
-); 
+CREATE TABLE IF NOT EXISTS `route_images`
+(
+	`id` Int( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`routeID` Int( 11 ) UNSIGNED NOT NULL,
+	`image` blob NOT NULL,
+	`imageType` varchar(100) NOT NULL,
+	`notes` varchar(2000) NOT NULL,
+	PRIMARY KEY (`id`)
+);
 -- -------------------------------------------------------------
 -- ---------------------------------------------------------
 
 
-ALTER TABLE `routes` ADD CONSTRAINT `lnk_order_details_routes` 
+ALTER TABLE `routes` ADD CONSTRAINT `lnk_order_details_routes`
 FOREIGN KEY (`orderDetailID`) REFERENCES `order_details`(`id`);
 
-ALTER TABLE `route_coordinates` ADD CONSTRAINT `lnk_routes_route_coordinates` 
+ALTER TABLE `route_coordinates` ADD CONSTRAINT `lnk_routes_route_coordinates`
 FOREIGN KEY (`routeID`) REFERENCES `routes`(`id`);
 
-ALTER TABLE `route_time_block` ADD CONSTRAINT `lnk_routes_route_time_block` 
+ALTER TABLE `route_time_block` ADD CONSTRAINT `lnk_routes_route_time_block`
 FOREIGN KEY (`routeID`) REFERENCES `routes`(`id`);
 
-ALTER TABLE `route_images` ADD CONSTRAINT `lnk_routes_route_images` 
+ALTER TABLE `route_images` ADD CONSTRAINT `lnk_routes_route_images`
 FOREIGN KEY (`routeID`) REFERENCES `routes`(`id`);
 
 
@@ -1043,6 +1064,12 @@ ALTER TABLE `entities`
 ALTER TABLE `needs_match`
 	ADD CONSTRAINT `lnk_needs_match_types_needs_match` FOREIGN KEY ( `needsMatchTypeID` )
 	REFERENCES `needs_match_types`( `id` )
+	ON DELETE No Action
+	ON UPDATE No Action;
+
+ALTER TABLE `users`
+	ADD CONSTRAINT `lnk_user_types_users` FOREIGN KEY ( `userTypeID` )
+	REFERENCES `user_types`( `id` )
 	ON DELETE No Action
 	ON UPDATE No Action;
 

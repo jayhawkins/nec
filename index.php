@@ -97,7 +97,7 @@ $app->route('POST /mobilelogin', function() {
     $password = Flight::request()->data['password'];
     $user = Flight::user();
     $return = $user->loginapi($username,$password);
-    
+
     echo $return;
 });
 
@@ -207,6 +207,27 @@ $app->route('POST /entities', function() {
     }
 });
 
+$app->route('PUT|POST /usermaintenance', function() {
+    $user_id = Flight::request()->data['user_id'];
+    $member_id = Flight::request()->data['member_id'];
+    $type = Flight::request()->data['type'];
+    $entityID = Flight::request()->data['entityID'];
+    $firstName = Flight::request()->data['firstName'];
+    $lastName = Flight::request()->data['lastName'];
+    $username = Flight::request()->data['username'];
+    $userTypeID = Flight::request()->data['userTypeID'];
+    $password = Flight::request()->data['password'];
+    $uniqueID = Flight::request()->data['uniqueID'];
+    $textNumber = Flight::request()->data['textNumber'];
+    $user = Flight::user();
+    $return = $user->maintenanceapi($type,$user_id,$member_id,$entityID,$firstName,$lastName,$username,$password,$userTypeID,$uniqueID,$textNumber);
+    if ($return == "success") {
+      echo $return;
+    } else {
+      echo $return;
+    }
+});
+
 /*****************************************************************************/
 // Admin routes
 /*****************************************************************************/
@@ -263,6 +284,14 @@ $app->route('POST /getlocationbycitystatezip', function() {
     $location = Flight::location();
     //$result = $location->getLocationByCityStateZip($city,$state,$zip,$entityID);
     $result = $location->getLocationByAddressCityStateZip($address1,$city,$state,$zip,$entityID); // Use a more specific address
+
+    // In lieu of creating the location in the locations table and returning, just return success and let everything keep going
+    echo "success";
+
+// Turn this off for now. I don't believe we need it anymore since we're not autoloading the dropdowns for Needs or Availability setup
+// We track city/state/zip in each Need or Availability record and geocode those. May no longer need the locations table except for satellite locations for Carrier/Customer
+// Jay Hawkins - 10/1/2017
+/*
     if ($result == 0) { // Address does not exist as array count returned is 0 - So... Add the location as a new location to the database to be used moving forward
         // Create the address in the locations table
         // url encode the address
@@ -305,6 +334,8 @@ $app->route('POST /getlocationbycitystatezip', function() {
             echo $result;
         }
     }
+*/
+
 });
 
 
@@ -557,7 +588,7 @@ $app->route('POST /pod_form_api', function() {
     $originationZipcode = Flight::request()->data->originationZipcode;
     $pickupContact = Flight::request()->data->pickupContact;
     $pickupPhoneNumber= Flight::request()->data->pickupPhoneNumber;
-    $pickupHours = Flight::request()->data->pickupHours;    
+    $pickupHours = Flight::request()->data->pickupHours;
     $deliveryLocation = Flight::request()->data->deliveryLocation;
     $destinationAddress = Flight::request()->data->destinationAddress;
     $destinationCity = Flight::request()->data->destinationCity;
@@ -566,27 +597,27 @@ $app->route('POST /pod_form_api', function() {
     $deliveryContact = Flight::request()->data->deliveryContact;
     $deliveryPhoneNumber= Flight::request()->data->deliveryPhoneNumber;
     $deliveryHours = Flight::request()->data->deliveryHours;
- 
+
     $podForm = Flight::podforms();
-    
+
     $podData = array('unitNumber'=>$unitNumber, 'vinNumber'=>$vinNumber, 'trailerProNumber'=>$trailerProNumber,
-        'year'=>$year, 'size'=>$size, 'type'=>$type, 'door'=>$door, 'decals'=>$decals, 
-        'pickupLocation'=>$pickupLocation, 'originationAddress'=>$originationAddress, 'originationCity'=>$originationCity, 
-        'originationState'=>$originationState, 'originationZipcode'=>$originationZipcode, 'pickupContact'=>$pickupContact, 
-        'pickupPhoneNumber'=>$pickupPhoneNumber, 'pickupHours'=>$pickupHours, 
-        'deliveryLocation'=>$deliveryLocation, 'destinationAddress'=>$destinationAddress, 'destinationCity'=>$destinationCity, 
-        'destinationState'=>$destinationState, 'destinationZipcode'=>$destinationZipcode, 'deliveryContact'=>$deliveryContact, 
+        'year'=>$year, 'size'=>$size, 'type'=>$type, 'door'=>$door, 'decals'=>$decals,
+        'pickupLocation'=>$pickupLocation, 'originationAddress'=>$originationAddress, 'originationCity'=>$originationCity,
+        'originationState'=>$originationState, 'originationZipcode'=>$originationZipcode, 'pickupContact'=>$pickupContact,
+        'pickupPhoneNumber'=>$pickupPhoneNumber, 'pickupHours'=>$pickupHours,
+        'deliveryLocation'=>$deliveryLocation, 'destinationAddress'=>$destinationAddress, 'destinationCity'=>$destinationCity,
+        'destinationState'=>$destinationState, 'destinationZipcode'=>$destinationZipcode, 'deliveryContact'=>$deliveryContact,
         'deliveryPhoneNumber'=>$deliveryPhoneNumber, 'deliveryHours'=>$deliveryHours);
-       
+
     $result = '';
-    
+
     if($podFormType == 'Hyundai'){
         $result = $podForm->getHyundaiPODForm($podData);
     }
     else{
         $result = $podForm->getNationwidePODForm($podData);
     }
-    
+
     echo $result;
 });
 
