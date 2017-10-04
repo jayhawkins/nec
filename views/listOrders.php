@@ -707,10 +707,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                         "bSortable": false,
                         "mRender": function (o) {
                             var buttons = '';
-
+                            
                             //buttons += '<a class="btn btn-primary btn-xs" href="../downloadfiles/POD-Template.pdf" target="_blank"><i class="fa fa-download text"></i> <span class="text">Download POD</span></a>';
 
-                            buttons += '<button class="btn btn-primary btn-xs download-pod"><i class="fa fa-download text"></i> <span class="text">Download POD</span></button>';
+                            buttons = '<button class="btn btn-primary btn-xs download-pod"><i class="fa fa-download text"></i> <span class="text">Download POD</span></button>';
 
                             return buttons;
                         }
@@ -2258,28 +2258,60 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                     deliveryLocation: data.deliveryInformation.deliveryLocation, deliveryContact: data.deliveryInformation.contactPerson,
                     deliveryPhoneNumber: data.deliveryInformation.phoneNumber, deliveryHours: data.deliveryInformation.hoursOfOperation
                 };
+                
+                var errorCount = 0;
+                var errorMessage = 'The following information must be completed in Trailer Details:\n';
+                
+                for(var prop in podDataJSON){                    
+                    
+                    switch(prop){
+                        case "unitNumber":
+                            if(podDataJSON[prop] == ""){
+                                errorCount++;
+                                errorMessage += '-Unit Number\n';
+                            }
+                        break;
+                        case "trailerProNumber":   
+                            if(podDataJSON[prop] == ""){
+                                errorCount++;
+                                errorMessage += '-Trailer Pro Number\n';
+                            }
+                        break; 
+                        case "trailerYear":   
+                            if(podDataJSON[prop] == ""){
+                                errorCount++;
+                                errorMessage += '-Year\n';
+                            }
+                        break; 
+                    }                
+                }
+                
 
-                var podURL = '<?php echo HTTP_HOST . '/pod_form_api'; ?>';
+                if(errorCount > 0){
+                    alert(errorMessage);
+                }
+                else{
 
-                console.log("I'm begin printed.");
+                    var podURL = '<?php echo HTTP_HOST . '/pod_form_api'; ?>';
 
-                $.ajax({
-                    url: podURL,
-                    type: "POST",
-                    contentType: "application/json",
-                    data: JSON.stringify(podDataJSON),
-                    success: function(data){
-                        var win = window.open('about:blank'); 
-                        var document = win.document;
-                        document.open();
-                        document.write(data);
-                        document.close();
-                                
-                    },
-                    error: function(data){
-                        console.log("Could not get POD Form.");
-                    }
-                });
+                    $.ajax({
+                        url: podURL,
+                        type: "POST",
+                        contentType: "application/json",
+                        data: JSON.stringify(podDataJSON),
+                        success: function(data){
+                            var win = window.open('about:blank'); 
+                            var document = win.document;
+                            document.open();
+                            document.write(data);
+                            document.close();
+
+                        },
+                        error: function(data){
+                            console.log("Could not get POD Form.");
+                        }
+                    });
+                }
             },
             error: function(data){
                 console.log("Could not get Order Information.");
