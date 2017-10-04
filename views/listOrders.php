@@ -2273,7 +2273,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                         var document = win.document;
                         document.open();
                         document.write(data);
-                        document.clos();
+                        document.close();
                                 
                     },
                     error: function(data){
