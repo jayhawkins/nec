@@ -453,7 +453,7 @@ if ($_SESSION['entityid'] > 0) {
  <?php
     }
 
-    if ( ($_SESSION['entitytype'] == 2 || $_SESSION['entityid'] == 0 ) && in_array($_SESSION['usertypeid'], $ordersMenuAccessList) ) {
+    if ( ($_SESSION['entitytype'] == 1 || $_SESSION['entityid'] == 0 ) && in_array($_SESSION['usertypeid'], $ordersMenuAccessList) ) {
  ?>
             <li>
                 <a href="#" onclick="ajaxFormCall('listOrders');">
