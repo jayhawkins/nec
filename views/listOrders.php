@@ -2264,6 +2264,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                 
                 for(var prop in podDataJSON){                    
                     
+                    
+                    console.log(prop);
+                    
                     switch(prop){
                         case "unitNumber":
                             if(podDataJSON[prop] == ""){
