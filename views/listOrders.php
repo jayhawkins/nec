@@ -725,7 +725,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
                             //buttons += '<a class="btn btn-primary btn-xs" href="../downloadfiles/POD-Template.pdf" target="_blank"><i class="fa fa-download text"></i> <span class="text">Download POD</span></a>';
                             if(errorCount > 0){
-                                buttons = '<button class="btn btn-primary btn-xs" onclick="alert(' + errorMessage + ');"><i class="fa fa-download text"></i> <span class="text">Download POD</span></button>';
+                                buttons = '<button class="btn btn-primary btn-xs" click="alert("' + errorMessage + '");"><i class="fa fa-download text"></i> <span class="text">Download POD</span></button>';
 
                             }
                             else{
