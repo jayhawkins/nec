@@ -368,6 +368,34 @@ class User
       }
     }
 
+    public function checkforuniqueid($uniqueID) {
+      try {
+              $loginargs = array(
+                    "transform"=>1,
+                    "filter[]"=>"uniqueID,eq,".$uniqueID
+              );
+              $loginurl = API_HOST."/api/users?".http_build_query($loginargs);
+              $loginoptions = array(
+                  'http' => array(
+                      'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                      'method'  => 'GET'
+                  )
+              );
+              $logincontext  = stream_context_create($loginoptions);
+              $result = json_decode(file_get_contents($loginurl,false,$logincontext));
+            if ( isset($result->users[0]->uniqueID) ) {
+                echo $result->users[0]->uniqueID;
+            } else {
+                echo "success";
+            }
+      } catch (Exception $e) { // The authorization query failed verification
+            header('HTTP/1.1 404 Not Found');
+            header('Content-Type: text/plain; charset=utf8');
+            echo $e->getMessage();
+            exit();
+      }
+    }
+
     public function maintenanceapi($type,$user_id,$member_id,$entityID,$firstName,$lastName,$username,$password,$userTypeID,$uniqueID,$textNumber) {
           try {
 
