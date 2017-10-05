@@ -33,34 +33,52 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
 
           if ( $('#formUser').parsley().validate() ) {
 
-              var params = {
-                    uniqueID: $("#uniqueID").val()
-              };
-              $.ajax({
-                 url: '<?php echo HTTP_HOST."/checkforuniqueid" ?>',
-                 type: 'POST',
-                 data: JSON.stringify(params),
-                 contentType: "application/json",
-                 async: false,
-                 success: function(response){
-                    if (response == "success") {
-                        result = true;
-                    } else {
-                        alert("UniqueID Already Exists: " + response);
-                        result = false;
-                    }
-                 },
-                 error: function(response) {
-                    alert("UniqueID Verification Failed: " + response);
-                    result = false;
-                 }
-              });
+              if ($("#userTypeID").val() == 5) {
 
-              if (result) {
+                  if ($("#uniqueID").val() > 0) {
+
+                      var params = {
+                            uniqueID: $("#uniqueID").val()
+                      };
+                      $.ajax({
+                         url: '<?php echo HTTP_HOST."/checkforuniqueid" ?>',
+                         type: 'POST',
+                         data: JSON.stringify(params),
+                         contentType: "application/json",
+                         async: false,
+                         success: function(response){
+                            if (response == "success") {
+                                result = true;
+                            } else {
+                                alert("UniqueID Already Exists: " + response);
+                                result = false;
+                            }
+                         },
+                         error: function(response) {
+                            alert("UniqueID Verification Failed: " + response);
+                            result = false;
+                         }
+                      });
+
+                      if (result) {
+                        verifyAndPost();
+                      } else {
+                        return false;
+                      }
+
+                } else {
+
+                   alert('User Type is Driver. You Must Assign a Unique ID.');
+                   return false;
+
+                }
+
+            } else {
+
+                $("#uniqueID").val(''); // They are actually saving a user type other than driver - set uniqueID to blank so as to make sure only drivers have uniqueIDs
                 verifyAndPost();
-              } else {
-                return false;
-              }
+
+            }
 
           } else {
 
@@ -180,7 +198,7 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
                 { data: "users[0].user_types[0].name" },
                 { data: "users[0].username", visible: false },
                 { data: "users[0].uniqueID", visible: false },
-                { data: "users[0].textNumber" },
+                { data: "users[0].textNumber", visible: false },
                 { data: "users[0].status" },
                 {
                     data: null,
@@ -351,15 +369,17 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
                        </div>
                      </div>
                      <div class="col-sm-4">
-                         <label for="uniqueID">Unique ID</label>
-                         <div class="form-group">
-                           <input type="text" id="uniqueID" name="uniqueID" class="form-control" placeholder="Unique ID" />
-                         </div>
-                     </div>
-                     <div class="col-sm-4">
                          <label for="textNumber">Text Number</label>
                          <div class="form-group">
                            <input type="text" id="textNumber" name="textNumber" class="form-control" placeholder="Text Number" required="required" />
+                         </div>
+                     </div>
+                     <div class="col-sm-4">
+                         <div id="divUserTypeID">
+                         <label for="uniqueID">Driver ID</label>
+                         <div class="form-group">
+                           <input type="text" id="uniqueID" name="uniqueID" class="form-control" placeholder="Unique ID" />
+                         </div>
                          </div>
                      </div>
                  </div>
@@ -473,6 +493,7 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
         $("#passwordConfirm").val('');
         $("#uniqueID").val('');
         $("#status").val('');
+        $("#divUserTypeID").hide();
   		$("#myModal").modal('show');
   	});
 
@@ -490,6 +511,11 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
           $("#textNumber").val(data["users"][0]["textNumber"]);
           $("#userTypeID").val(data["users"][0]["user_types"][0]["id"]);
           $("#status").val(data['users'][0]['status']);
+          if ($("#userTypeID").val() == 5) {
+              $("#divUserTypeID").show();
+          } else {
+              $("#divUserTypeID").hide();
+          }
           $("#myModal").modal('show');
         } else {
             $("#id").val(data["id"]);
@@ -506,5 +532,14 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
         }
 
     } );
+
+    $('#userTypeID').on( 'change', function () {
+        if ($("#userTypeID").val() == 5) {
+            $("#divUserTypeID").show();
+        } else {
+            $("#divUserTypeID").hide();
+        }
+
+    });
 
  </script>
