@@ -29,102 +29,135 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
 
  <script>
 
-      function verifyAndPost() {
+      function post() {
 
-        if ( $('#formUser').parsley().validate() ) {
+          if ( $('#formUser').parsley().validate() ) {
 
-                var passValidation = false;
-                var type = "";
-                var today = new Date();
-                var dd = today.getDate();
-                var mm = today.getMonth()+1; //January is 0!
-                var yyyy = today.getFullYear();
-                var hours = today.getHours();
-                var min = today.getMinutes();
-                var sec = today.getSeconds();
+              var params = {
+                    uniqueID: $("#uniqueID").val()
+              };
+              $.ajax({
+                 url: '<?php echo HTTP_HOST."/checkforuniqueid" ?>',
+                 type: 'POST',
+                 data: JSON.stringify(params),
+                 contentType: "application/json",
+                 async: false,
+                 success: function(response){
+                    if (response == "success") {
+                        result = true;
+                    } else {
+                        alert("UniqueID Already Exists: " + response);
+                        result = false;
+                    }
+                 },
+                 error: function(response) {
+                    alert("UniqueID Verification Failed: " + response);
+                    result = false;
+                 }
+              });
 
-                if(dd<10) {
-                    dd='0'+dd;
-                }
-
-                if(mm<10) {
-                    mm='0'+mm;
-                }
-
-                if(hours<10) {
-                    hours='0'+hours;
-                }
-
-                if(min<10) {
-                    min='0'+min;
-                }
-
-                today = mm+'/'+dd+'/'+yyyy;
-                today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
-
-                if ($("#id").val() > '') {
-                    type = "PUT";
-                    status = $("#status").val();
-                } else {
-                    type = "POST";
-                    status = "Inactive";
-                }
-
-                var params = {
-                      user_id: $("#userID").val(),
-                      member_id: $("#id").val(),
-                      type: type,
-                      entityID: $("#entityID").val(),
-                      userTypeID: $("#userTypeID").val(),
-                      firstName: $("#firstName").val(),
-                      lastName: $("#lastName").val(),
-                      username: $("#emailAddress").val(),
-                      password: $("#password").val(),
-                      uniqueID: $("#uniqueID").val(),
-                      textNumber: $("#textNumber").val(),
-                      status: status,
-                      createdAt: today,
-                      updatedAt: today
-                };
-
-                $.ajax({
-                   url: '<?php echo HTTP_HOST."/usermaintenance" ?>',
-                   type: type,
-                   data: JSON.stringify(params),
-                   contentType: "application/json",
-                   async: false,
-                   success: function(data){
-                       if (data == "success") {
-                        $("#myModal").modal('hide');
-                        loadTableAJAX();
-                        $("#id").val('');
-                        $("#userID").val('');
-                        $("#userTypeID").val('');
-                        $("#firstName").val('');
-                        $("#lastName").val('');
-                        $("#emailAddress").val('');
-                        $("#password").val('');
-                        $("#passwordConfirm").val('');
-                        $("#uniqueID").val('');
-                        $("#textNumber").val('');
-                        $("#status").val('');
-                        passValidation = true;
-                      } else {
-                        alert("Adding User Failed!");
-                      }
-                   },
-                   error: function() {
-                      alert("There Was An Error Adding User!");
-                   }
-                });
-
-                return passValidation;
+              if (result) {
+                verifyAndPost();
+              } else {
+                return false;
+              }
 
           } else {
 
-                return false;
+              return false;
 
           }
+
+      }
+
+      function verifyAndPost() {
+
+            var passValidation = false;
+            var type = "";
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth()+1; //January is 0!
+            var yyyy = today.getFullYear();
+            var hours = today.getHours();
+            var min = today.getMinutes();
+            var sec = today.getSeconds();
+
+            if(dd<10) {
+                dd='0'+dd;
+            }
+
+            if(mm<10) {
+                mm='0'+mm;
+            }
+
+            if(hours<10) {
+                hours='0'+hours;
+            }
+
+            if(min<10) {
+                min='0'+min;
+            }
+
+            today = mm+'/'+dd+'/'+yyyy;
+            today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+
+            if ($("#id").val() > '') {
+                type = "PUT";
+                status = $("#status").val();
+            } else {
+                type = "POST";
+                status = "Inactive";
+            }
+
+            var params = {
+                  user_id: $("#userID").val(),
+                  member_id: $("#id").val(),
+                  type: type,
+                  entityID: $("#entityID").val(),
+                  userTypeID: $("#userTypeID").val(),
+                  firstName: $("#firstName").val(),
+                  lastName: $("#lastName").val(),
+                  username: $("#emailAddress").val(),
+                  password: $("#password").val(),
+                  uniqueID: $("#uniqueID").val(),
+                  textNumber: $("#textNumber").val(),
+                  status: status,
+                  createdAt: today,
+                  updatedAt: today
+            };
+
+            $.ajax({
+               url: '<?php echo HTTP_HOST."/usermaintenance" ?>',
+               type: type,
+               data: JSON.stringify(params),
+               contentType: "application/json",
+               async: false,
+               success: function(data){
+                   if (data == "success") {
+                    $("#myModal").modal('hide');
+                    loadTableAJAX();
+                    $("#id").val('');
+                    $("#userID").val('');
+                    $("#userTypeID").val('');
+                    $("#firstName").val('');
+                    $("#lastName").val('');
+                    $("#emailAddress").val('');
+                    $("#password").val('');
+                    $("#passwordConfirm").val('');
+                    $("#uniqueID").val('');
+                    $("#textNumber").val('');
+                    $("#status").val('');
+                    passValidation = true;
+                  } else {
+                    alert("Adding User Failed!");
+                  }
+               },
+               error: function() {
+                  alert("There Was An Error Adding User!");
+               }
+            });
+
+            return passValidation;
 
       }
 
@@ -314,7 +347,7 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
                      <div class="col-sm-4">
                        <label for="title">Username <i>(Use an Email Address)</i></label>
                        <div class="form-group">
-                         <input type="text" id="emailAddress" name="emailAddress" class="form-control mb-sm" placeholder="*Email Address" required="required" />
+                         <input type="text" id="emailAddress" name="emailAddress" class="form-control mb-sm" placeholder="*Email Address" required="required" data-parsley-type="email" />
                        </div>
                      </div>
                      <div class="col-sm-4">
@@ -340,7 +373,8 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
                      <div class="col-sm-4">
                          <label for="uniqueID">Confirm Password</label>
                          <div class="form-group">
-                           <input type="text" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="Confirm Password" />
+                           <input type="text" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="Confirm Password"
+                            data-parsley-equalto="#password" />
                          </div>
                      </div>
                      <div class="col-sm-4">
@@ -351,7 +385,7 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
        </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" onclick="return verifyAndPost();">Save changes</button>
+          <button type="button" class="btn btn-primary" onclick="return post();">Save changes</button>
         </div>
       </div>
     </div>
@@ -465,7 +499,7 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
               $("#myDisableDialog").modal('show');
             } else {
               if (this.textContent.indexOf("Enable") > -1) {
-                $("#enableDialogLabel").html('Enable <strong>' + data['name'] + ' ' + data['lastName'] + '</strong>');
+                $("#enableDialogLabel").html('Enable <strong>' + data['firstName'] + ' ' + data['lastName'] + '</strong>');
                 $("#myEnableDialog").modal('show');
               }
             }

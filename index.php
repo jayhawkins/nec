@@ -92,6 +92,14 @@ $app->route('POST /login', function() {
     }
 });
 
+$app->route('POST /checkforuniqueid', function() {
+    $uniqueID = Flight::request()->data['uniqueID'];
+    $user = Flight::user();
+    $return = $user->checkforuniqueid($uniqueID);
+
+    echo $return;
+});
+
 $app->route('POST /mobilelogin', function() {
     $username = Flight::request()->data['username'];
     $password = Flight::request()->data['password'];
