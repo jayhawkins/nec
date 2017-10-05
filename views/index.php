@@ -568,7 +568,7 @@ if ($_SESSION['entityid'] > 0) {
                     ?>
                     <?php
                         if ($_SESSION['usertypeid'] < 2) {
-                          echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listUsers');\">Users</a></li>";
+                          //echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listUsers');\">Users</a></li>";
                         }
                     ?>
                     <li><a href="#" onclick="ajaxFormCall('listContacts');">Contacts</a></li>
