@@ -402,7 +402,25 @@ if ($_SESSION['entityid'] > 0) {
 <?php
     }
 
-    if ( ($_SESSION['entitytype'] == 2 || $_SESSION['entityid'] == 0 ) && in_array($_SESSION['usertypeid'], $needsMenuAccessList) ) {
+    if ( $_SESSION['entityid'] == 0 ) {
+ ?>
+             <li>
+                 <a href="#" onclick="ajaxFormCall('listAvailability');">
+                     <span class="icon">
+                         <i class="fa fa-users"></i>
+                     </span>
+                     One Way Trailer Opportunities
+                     <span class="label label-danger">
+                         <?php
+                            echo $customerncount;
+                        ?>
+                     </span>
+                 </a>
+             </li>
+<?php
+    }
+
+    if ( ($_SESSION['entitytype'] == 2) && in_array($_SESSION['usertypeid'], $needsMenuAccessList) ) {
  ?>
              <li>
                  <a href="#" onclick="ajaxFormCall('listAvailability');">
@@ -412,11 +430,7 @@ if ($_SESSION['entityid'] > 0) {
                      My One Way Opportunities
                      <span class="label label-danger">
                          <?php
-                            if ( $_SESSION['entitytype'] == 2 ) {
-                                echo $cncount;
-                            } elseif ( $_SESSION['entityid'] == 0 ) {
-                                echo $customerncount;
-                            }
+                            echo $cncount;
                         ?>
                      </span>
                  </a>
@@ -453,7 +467,23 @@ if ($_SESSION['entityid'] > 0) {
  <?php
     }
 
-    if ( ($_SESSION['entitytype'] == 1 || $_SESSION['entityid'] == 0 ) && in_array($_SESSION['usertypeid'], $ordersMenuAccessList) ) {
+    if ( ($_SESSION['entityid'] == 0 ) ) {
+ ?>
+            <li>
+                <a href="#" onclick="ajaxFormCall('listOrders');">
+                    <span class="icon">
+                        <i class="fa fa-check-square-o"></i>
+                    </span>
+                    Orders
+                    <span id="orderCount" class="label label-danger">
+
+                    </span>
+                </a>
+            </li>
+<?php
+    }
+
+    if ( ($_SESSION['entitytype'] == 1) && in_array($_SESSION['usertypeid'], $ordersMenuAccessList) ) {
  ?>
             <li>
                 <a href="#" onclick="ajaxFormCall('listOrders');">
@@ -538,7 +568,7 @@ if ($_SESSION['entityid'] > 0) {
                     ?>
                     <?php
                         if ($_SESSION['usertypeid'] < 2) {
-                          echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listUsers');\">Users</a></li>";
+                          //echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listUsers');\">Users</a></li>";
                         }
                     ?>
                     <li><a href="#" onclick="ajaxFormCall('listContacts');">Contacts</a></li>
@@ -554,10 +584,10 @@ if ($_SESSION['entityid'] > 0) {
 
                     <?php
                         if ($_SESSION['entitytype'] == 2) {
-                          echo "<li><a href=\"#\" onclick=\"ajaxFormCall('ratesProfile');\">Rates</a></li>";
+                          //echo "<li><a href=\"#\" onclick=\"ajaxFormCall('ratesProfile');\">Rates</a></li>";
                         } else if ($_SESSION['entitytype'] == 0) {
                           // Must be NEC Admin So Show it all...
-                          echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listRates');\">Rates</a></li>";
+                          //echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listRates');\">Rates</a></li>";
                         }
                     ?>
 
@@ -578,7 +608,20 @@ if ($_SESSION['entityid'] > 0) {
 <?php
     } // End check for profilesMenuAccessList
 
-    if ( ($_SESSION['entitytype'] == 1 || $_SESSION['entityid'] == 0) && in_array($_SESSION['usertypeid'], $myavailabilityMenuAccessList) ) {
+    if ( ($_SESSION['entityid'] == 0) ) {
+?>
+                        <li>
+                            <a href="#" onclick="ajaxFormCall('listCustomerNeeds');">
+                                <span class="icon">
+                                    <i class="fa fa-users"></i>
+                                </span>
+                                Availablity
+                            </a>
+                        </li>
+<?php
+    } // End check for profilesMenuAccessList
+
+    if ( ($_SESSION['entitytype'] == 1) && in_array($_SESSION['usertypeid'], $myavailabilityMenuAccessList) ) {
 ?>
                         <li>
                             <a href="#" onclick="ajaxFormCall('listCustomerNeeds');">
@@ -591,7 +634,20 @@ if ($_SESSION['entityid'] > 0) {
 <?php
     }
 
-    if ( ($_SESSION['entitytype'] == 2 || $_SESSION['entityid'] == 0)  && in_array($_SESSION['usertypeid'], $myneedsMenuAccessList) ) {
+    if ( ($_SESSION['entityid'] == 0) ) {
+ ?>
+                         <li>
+                             <a href="#" onclick="ajaxFormCall('listCarrierNeeds');">
+                                 <span class="icon">
+                                     <i class="fa fa-truck"></i>
+                                 </span>
+                                 Needs
+                             </a>
+                         </li>
+<?php
+    }
+
+    if ( ($_SESSION['entitytype'] == 2)  && in_array($_SESSION['usertypeid'], $myneedsMenuAccessList) ) {
  ?>
                          <li>
                              <a href="#" onclick="ajaxFormCall('listCarrierNeeds');">
