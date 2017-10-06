@@ -2141,13 +2141,25 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalCommitLabel"><strong>Missing Trailer Data</strong></h5>
+          <h5 class="modal-title" id="exampleModalCommitLabel"><strong>Missing Information</strong></h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-            Trailer data is missing. Click "Edit Trailer Data" to complete this process.
+            There is information missing. <br>
+            Please be sure to enter <i>Unit Number</i> and <i>Year</i> inside the <strong>Edit Trailer Data</strong> Form. <br>
+            Also make sure the following is entered under <strong>Edit</strong>.
+            <ul>
+                <li>Pickup Location</li>
+                <li>Pickup Contact Person</li>
+                <li>Pickup Phone Number</li>
+                <li>Pickup Hours of Operation</li>
+                <li>Delivery Location</li>
+                <li>Delivery Contact Person</li>
+                <li>Delivery Phone Number</li>
+                <li>Delivery Hours of Operation</li>
+            </ul>
             
             Thank you.
         </div>
