@@ -665,7 +665,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
     function loadPODListAJAX(orderID){
 
-        var url = '<?php echo API_HOST; ?>/api/orders?columns=id,carrierIDs,podList&filter=id,eq,' + orderID + '&transform=1';
+        var url = '<?php echo API_HOST; ?>/api/orders?columns=id,carrierIDs,deliveryInformation,pickupInformation,podList&filter=id,eq,' + orderID + '&transform=1';
         var blnShow = false;
 
         if(entityType == 0) blnShow = true;
@@ -681,8 +681,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                     dataSrc: function(json){
 
                         var podList = json.orders[0].podList;
+                        var deliveryInformation = json.orders[0].deliveryInformation;
+                        var pickupInformation = json.orders[0].pickupInformation;
 
-                        if (podList == null) podList = [];
+                        if (podList === null) podList = [];
+                        if (deliveryInformation === null) podList.deliveryInformation = {};
+                        if (pickupInformation === null) podList.pickupInformation = {};
 
                         return podList;
                     }
@@ -708,9 +712,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                         "mRender": function (podDataJSON) {
                             var buttons = '';
                             var errorCount = 0;
-                            
-                            console.log(JSON.stringify(podDataJSON));
-                            
+                                                        
                             if(podDataJSON.unitNumber == "" || podDataJSON.unitNumber == undefined){
                                 errorCount++;
                             }
@@ -719,6 +721,40 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                             }   
                             if(podDataJSON.trailerYear == "" || podDataJSON.trailerYear == undefined){
                                 errorCount++;
+                            }
+                            if(podDataJSON.deliveryInformation == {}){
+                                errorCount++;
+                            }
+                            else{
+                                if(podDataJSON.deliveryInformation.phoneNumber == ""){
+                                    errorCount++;
+                                }
+                                if(podDataJSON.deliveryInformation.contactPerson == ""){
+                                    errorCount++;
+                                }
+                                if(podDataJSON.deliveryInformation.deliveryLocation == ""){
+                                    errorCount++;
+                                }
+                                if(podDataJSON.deliveryInformation.hoursOfOperation == ""){
+                                    errorCount++;
+                                }
+                            }
+                            if(podDataJSON.pickupInformation == {}){
+                                errorCount++;
+                            }
+                            else{
+                                if(podDataJSON.pickupInformation.phoneNumber == ""){
+                                    errorCount++;
+                                }
+                                if(podDataJSON.pickupInformation.contactPerson == ""){
+                                    errorCount++;
+                                }
+                                if(podDataJSON.pickupInformation.pickupLocation == ""){
+                                    errorCount++;
+                                }
+                                if(podDataJSON.pickupInformation.hoursOfOperation == ""){
+                                    errorCount++;
+                                }
                             }
 
                             //buttons += '<a class="btn btn-primary btn-xs" href="../downloadfiles/POD-Template.pdf" target="_blank"><i class="fa fa-download text"></i> <span class="text">Download POD</span></a>';
