@@ -686,11 +686,23 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
 
                         
-                        if (podList == null) podList = [];
-                        if (deliveryInformation == null) podList.deliveryInformation = {};
-                        else podList.deliveryInformation = deliveryInformation;
-                        if (pickupInformation == null) podList.pickupInformation = {};
-                        else podList.pickupInformation = pickupInformation;
+                        if (podList == null){
+                            podList = [];
+                        }
+                        
+                        if (deliveryInformation == null){
+                            podList.deliveryInformation = {};
+                        }
+                        else{
+                            podList.deliveryInformation = deliveryInformation;
+                        }
+                        
+                        if (pickupInformation == null){
+                            podList.pickupInformation = {};
+                        }
+                        else{
+                            podList.pickupInformation = pickupInformation;
+                        }
 
                         return podList;
                     }
@@ -726,7 +738,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                             if(podDataJSON.trailerYear == "" || podDataJSON.trailerYear == undefined){
                                 errorCount++;
                             }
-                            if(podDataJSON.deliveryInformation == {}){
+                            if(podDataJSON.deliveryInformation == {} || podDataJSON.deliveryInformation == undefined){
                                 errorCount++;
                             }
                             else{
@@ -743,7 +755,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                                     errorCount++;
                                 }
                             }
-                            if(podDataJSON.pickupInformation == {} ){
+                            if(podDataJSON.pickupInformation == {} || podDataJSON.pickupInformation == undefined){
                                 errorCount++;
                             }
                             else{
