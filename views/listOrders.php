@@ -1099,6 +1099,241 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
           });
       }
 
+    function editOrderComment(){
+        var orderDetailsTable = $("#order-details-table").DataTable();
+        var json = orderDetailsTable.ajax.json();
+        var data = json.order_details[0];
+        var id = data.orders[0].id;
+
+        var comments = $("#orderComments").val();
+
+        var orderComments = {comments: comments};
+
+        $.ajax({
+           url: '<?php echo API_HOST."/api/orders/"; ?>' + id,
+           type: "PUT",
+           data: JSON.stringify(orderComments),
+           contentType: "application/json",
+           async: false,
+           success: function(){
+               alert("Comment Saved.");
+           },
+           error: function() {
+               alert("Comment could not save.");
+           }
+        });
+    }
+
+    function closeOrderDetails(){
+        var table = $("#orders-table").DataTable();
+        $("#order-details").css("display", "none");
+        $("#orders").css("display", "block");
+        table.ajax.reload();
+    }
+
+    function saveDeliveryStatus(){
+
+
+        $("#saveOrderStatus").html("<i class='fa fa-spinner fa-spin'></i> Saving Order Status");
+        $("#saveOrderStatus").prop("disabled", true);
+
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth()+1; //January is 0!
+        var yyyy = today.getFullYear();
+        var hours = today.getHours();
+        var min = today.getMinutes();
+        var sec = today.getSeconds();
+
+        if(dd<10) {
+            dd='0'+dd;
+        }
+
+        if(mm<10) {
+            mm='0'+mm;
+        }
+
+        if(hours<10) {
+            hours='0'+hours;
+        }
+
+        if(min<10) {
+            min='0'+min;
+        }
+
+        if(sec<10) {
+            sec='0'+sec;
+        }
+
+        today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+
+        var orderHistoryTable = $('#order-history-table').DataTable();
+        var orderDetailTable = $('#order-details-table').DataTable();
+        var orderDetailJSON = orderDetailTable.ajax.json();
+
+        var orderNumber = orderDetailJSON.order_details[0].orders[0].orderID;
+        var customerID = orderDetailJSON.order_details[0].orders[0].customerID;
+
+
+        var id = $("#id").val();
+        var city = $("#city").val();
+        var state = $("#state").val();
+        var status = $("#orderStatus").val();
+        var notes = $("#statusNotes").val();
+        var carrierID = $("#carrierID").val();
+
+        var orderStatus = {orderID: id, carrierID:carrierID, city: city, state: state, status: status, note: notes, createdAt: today, updatedAt: today};
+
+        var emailData = {carrierID: carrierID, customerID: customerID, orderNumber: orderNumber};
+
+        $.ajax({
+           url: '<?php echo API_HOST."/api/order_statuses"; ?>',
+           type: "POST",
+           data: JSON.stringify(orderStatus),
+           contentType: "application/json",
+           async: false,
+           success: function(data){
+
+                $.ajax({
+                    url: '<?php echo HTTP_HOST; ?>' + '/sendorderstatusnotification',
+                    type: "POST",
+                    data: JSON.stringify(emailData),
+                    contentType: "application/json",
+                    async:false,
+                    success: function(data){
+                        alert(data);
+                        $("#id").val('');
+                        $("#city").val('');
+                        $("#state").val('');
+                        $("#orderStatus").val('');
+                        $("#statusNotes").val('');
+                        $("#carrierID").val('');
+
+                        $("#saveOrderStatus").html("Save");
+                        $("#saveOrderStatus").prop("disabled", false);
+                        orderHistoryTable.ajax.reload();
+                        $("#addOrderStatus").modal('hide');
+                    },
+                    error: function(error){
+                        alert("Unable to send notification about status change.");
+                        $("#saveOrderStatus").html("Save");
+                        $("#saveOrderStatus").prop("disabled", false);
+                    }
+                });
+
+           },
+           error: function() {
+              alert("There Was An Error Saving the Status");
+                $("#saveOrderStatus").html("Save");
+                $("#saveOrderStatus").prop("disabled", false);
+           }
+        });
+
+    }
+
+    function addDeliveryStatus() {
+        var orderDetailsTable = $("#order-details-table").DataTable();
+        var json = orderDetailsTable.ajax.json();
+        var data = json.order_details[0];
+
+        //console.log(data);
+
+            var orderStatusSelect = '<select id="orderStatus" name="orderStatus" class="form-control mb-sm" required="required">\n';
+
+            $("#id").val(data.orders[0].id);
+
+            var inTransit = "";
+            var inCarriersYard = "";
+            var atShipper = "";
+            var trailerLoaded = "";
+            var atConsignee = "";
+            var trailerDelivered = "";
+
+            if (data['status'] == "In Transit") {
+                inTransit = "selected=selected";
+            } else if (data['status'] == "In Carrier's Yard"){
+                inCarriersYard = "selected=selected";
+            } else if (data['status'] == "At Shipper To Be Loaded"){
+                atShipper = "selected=selected";
+            } else if (data['status'] == "Trailer Loaded In Route"){
+                trailerLoaded = "selected=selected";
+            } else if (data['status'] == "At Consignee To Be Unloaded"){
+                atConsignee = "selected=selected";
+            } else if (data['status'] == "Trailer Delivered"){
+                trailerDelivered = "selected=selected";
+            }
+
+            orderStatusSelect += '<option value="">Please Select...</option>\n';
+            orderStatusSelect += '<option value="In Carrier\'s Yard" '+inCarriersYard+'>In Carrier\'s Yard</option>\n';
+            orderStatusSelect += '<option value="At Shipper To Be Loaded" '+atShipper+'>At Shipper To Be Loaded</option>\n';
+            orderStatusSelect += '<option value="Trailer Loaded In Route" '+trailerLoaded+'>Trailer Loaded In Route</option>\n';
+            orderStatusSelect += '<option value="At Consignee To Be Unloaded" '+atConsignee+'>At Consignee To Be Unloaded</option>\n';
+            orderStatusSelect += '<option value="Trailer Delivered" '+trailerDelivered+'>Trailer Delivered</option>\n';
+            orderStatusSelect += '<option value="In Transit" '+inTransit+'>In Transit</option>\n';
+
+            orderStatusSelect += '</select>\n';
+            $("#orderStatusDiv").html(orderStatusSelect);
+
+            $("#addOrderStatus").modal('show');
+
+    }
+
+    function saveTrailerData(){
+
+        var podTable = $("#pod-list-table").DataTable();
+        var podList = podTable.ajax.json().orders[0].podList;
+        var index = $('#index').val();
+        var orderID = $('#orderID').val();
+
+        var data = podList[index];
+        var vinNumber = data.vinNumber;
+        var podNotes = data.notes;
+        var deliveryDate = data.deliveryDate;
+        var fileName = data.fileName;
+        var carrier = data.carrier;
+
+        var pod = {vinNumber: vinNumber, notes: podNotes, deliveryDate: deliveryDate, fileName: fileName, carrier: carrier,
+        unitNumber: $('#unitNumber').val(), truckProNumber: $('#truckProNumber').val(), trailerYear: $('#year').val(),
+        trailerNotes: $('#trailerNotes').val()};
+
+        podList.splice(index, 1, pod);
+
+        var orderData = {podList: podList};
+
+        $.ajax({
+            url: '<?php echo API_HOST."/api/orders/"; ?>' + orderID,
+            type: 'PUT',
+            data: JSON.stringify(orderData),
+            contentType: "application/json",
+            async: false,
+            success: function(){
+
+                alert("Trailer Data Successfully Saved.");
+                var podListTable = $('#pod-list-table').DataTable();
+                podListTable.ajax.reload();
+
+                // Clear Form
+                $('#orderID').val('');
+                $('#index').val('');
+                $('#customerID').val('');
+                $('#unitNumber').val('');
+                $('#truckProNumber').val('');
+                $('#year').val('');
+                $('#trailerNotes').val('');
+                $("#editTrailerData").modal('hide');
+
+            },
+            error: function(error){
+                alert("Unable to Save Trailer Data to Orders.");
+            }
+        });
+
+    }
+
+    function viewPOD(){
+	    window.open( '<?php echo HTTP_HOST."/viewdocument" ?>?filename=' + $("#fileName").val() + '&entityID=' + $("#customerID").val(), '_blank');
+    }
+
  </script>
 
  <style>
@@ -1871,188 +2106,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         format: "yyyy-mm-dd"
     });
 
-    function editOrderComment(){
-        var orderDetailsTable = $("#order-details-table").DataTable();
-        var json = orderDetailsTable.ajax.json();
-        var data = json.order_details[0];
-        var id = data.orders[0].id;
-
-        var comments = $("#orderComments").val();
-
-        var orderComments = {comments: comments};
-
-        $.ajax({
-           url: '<?php echo API_HOST."/api/orders/"; ?>' + id,
-           type: "PUT",
-           data: JSON.stringify(orderComments),
-           contentType: "application/json",
-           async: false,
-           success: function(){
-               alert("Comment Saved.");
-           },
-           error: function() {
-               alert("Comment could not save.");
-           }
-        });
-    }
-
     var table = $("#orders-table").DataTable();
 
     $("#order-details").css("display", "none");
-
-    function closeOrderDetails(){
-
-        $("#order-details").css("display", "none");
-        $("#orders").css("display", "block");
-        table.ajax.reload();
-    }
-
-    function saveDeliveryStatus(){
-
-
-        $("#saveOrderStatus").html("<i class='fa fa-spinner fa-spin'></i> Saving Order Status");
-        $("#saveOrderStatus").prop("disabled", true);
-
-        var today = new Date();
-        var dd = today.getDate();
-        var mm = today.getMonth()+1; //January is 0!
-        var yyyy = today.getFullYear();
-        var hours = today.getHours();
-        var min = today.getMinutes();
-        var sec = today.getSeconds();
-
-        if(dd<10) {
-            dd='0'+dd;
-        }
-
-        if(mm<10) {
-            mm='0'+mm;
-        }
-
-        if(hours<10) {
-            hours='0'+hours;
-        }
-
-        if(min<10) {
-            min='0'+min;
-        }
-
-        if(sec<10) {
-            sec='0'+sec;
-        }
-
-        today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
-
-        var orderHistoryTable = $('#order-history-table').DataTable();
-        var orderDetailTable = $('#order-details-table').DataTable();
-        var orderDetailJSON = orderDetailTable.ajax.json();
-
-        var orderNumber = orderDetailJSON.order_details[0].orders[0].orderID;
-        var customerID = orderDetailJSON.order_details[0].orders[0].customerID;
-
-
-        var id = $("#id").val();
-        var city = $("#city").val();
-        var state = $("#state").val();
-        var status = $("#orderStatus").val();
-        var notes = $("#statusNotes").val();
-        var carrierID = $("#carrierID").val();
-
-        var orderStatus = {orderID: id, carrierID:carrierID, city: city, state: state, status: status, note: notes, createdAt: today, updatedAt: today};
-
-        var emailData = {carrierID: carrierID, customerID: customerID, orderNumber: orderNumber};
-
-        $.ajax({
-           url: '<?php echo API_HOST."/api/order_statuses"; ?>',
-           type: "POST",
-           data: JSON.stringify(orderStatus),
-           contentType: "application/json",
-           async: false,
-           success: function(data){
-
-                $.ajax({
-                    url: '<?php echo HTTP_HOST; ?>' + '/sendorderstatusnotification',
-                    type: "POST",
-                    data: JSON.stringify(emailData),
-                    contentType: "application/json",
-                    async:false,
-                    success: function(data){
-                        alert(data);
-                        $("#id").val('');
-                        $("#city").val('');
-                        $("#state").val('');
-                        $("#orderStatus").val('');
-                        $("#statusNotes").val('');
-                        $("#carrierID").val('');
-
-                        $("#saveOrderStatus").html("Save");
-                        $("#saveOrderStatus").prop("disabled", false);
-                        orderHistoryTable.ajax.reload();
-                        $("#addOrderStatus").modal('hide');
-                    },
-                    error: function(error){
-                        alert("Unable to send notification about status change.");
-                        $("#saveOrderStatus").html("Save");
-                        $("#saveOrderStatus").prop("disabled", false);
-                    }
-                });
-
-           },
-           error: function() {
-              alert("There Was An Error Saving the Status");
-                $("#saveOrderStatus").html("Save");
-                $("#saveOrderStatus").prop("disabled", false);
-           }
-        });
-
-    }
-
-    function addDeliveryStatus() {
-        var orderDetailsTable = $("#order-details-table").DataTable();
-        var json = orderDetailsTable.ajax.json();
-        var data = json.order_details[0];
-
-        //console.log(data);
-
-            var orderStatusSelect = '<select id="orderStatus" name="orderStatus" class="form-control mb-sm" required="required">\n';
-
-            $("#id").val(data.orders[0].id);
-
-            var inTransit = "";
-            var inCarriersYard = "";
-            var atShipper = "";
-            var trailerLoaded = "";
-            var atConsignee = "";
-            var trailerDelivered = "";
-
-            if (data['status'] == "In Transit") {
-                inTransit = "selected=selected";
-            } else if (data['status'] == "In Carrier's Yard"){
-                inCarriersYard = "selected=selected";
-            } else if (data['status'] == "At Shipper To Be Loaded"){
-                atShipper = "selected=selected";
-            } else if (data['status'] == "Trailer Loaded In Route"){
-                trailerLoaded = "selected=selected";
-            } else if (data['status'] == "At Consignee To Be Unloaded"){
-                atConsignee = "selected=selected";
-            } else if (data['status'] == "Trailer Delivered"){
-                trailerDelivered = "selected=selected";
-            }
-
-            orderStatusSelect += '<option value="">Please Select...</option>\n';
-            orderStatusSelect += '<option value="In Carrier\'s Yard" '+inCarriersYard+'>In Carrier\'s Yard</option>\n';
-            orderStatusSelect += '<option value="At Shipper To Be Loaded" '+atShipper+'>At Shipper To Be Loaded</option>\n';
-            orderStatusSelect += '<option value="Trailer Loaded In Route" '+trailerLoaded+'>Trailer Loaded In Route</option>\n';
-            orderStatusSelect += '<option value="At Consignee To Be Unloaded" '+atConsignee+'>At Consignee To Be Unloaded</option>\n';
-            orderStatusSelect += '<option value="Trailer Delivered" '+trailerDelivered+'>Trailer Delivered</option>\n';
-            orderStatusSelect += '<option value="In Transit" '+inTransit+'>In Transit</option>\n';
-
-            orderStatusSelect += '</select>\n';
-            $("#orderStatusDiv").html(orderStatusSelect);
-
-            $("#addOrderStatus").modal('show');
-
-    }
 
 
     $('#order-details-table tbody').on( 'click', 'button', function () {
@@ -2665,62 +2721,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
             }
         });
 
-    }
-
-    function saveTrailerData(){
-
-        var podTable = $("#pod-list-table").DataTable();
-        var podList = podTable.ajax.json().orders[0].podList;
-        var index = $('#index').val();
-        var orderID = $('#orderID').val();
-
-        var data = podList[index];
-        var vinNumber = data.vinNumber;
-        var podNotes = data.notes;
-        var deliveryDate = data.deliveryDate;
-        var fileName = data.fileName;
-        var carrier = data.carrier;
-
-        var pod = {vinNumber: vinNumber, notes: podNotes, deliveryDate: deliveryDate, fileName: fileName, carrier: carrier,
-        unitNumber: $('#unitNumber').val(), truckProNumber: $('#truckProNumber').val(), trailerYear: $('#year').val(),
-        trailerNotes: $('#trailerNotes').val()};
-
-        podList.splice(index, 1, pod);
-
-        var orderData = {podList: podList};
-
-        $.ajax({
-            url: '<?php echo API_HOST."/api/orders/"; ?>' + orderID,
-            type: 'PUT',
-            data: JSON.stringify(orderData),
-            contentType: "application/json",
-            async: false,
-            success: function(){
-
-                alert("Trailer Data Successfully Saved.");
-                var podListTable = $('#pod-list-table').DataTable();
-                podListTable.ajax.reload();
-
-                // Clear Form
-                $('#orderID').val('');
-                $('#index').val('');
-                $('#customerID').val('');
-                $('#unitNumber').val('');
-                $('#truckProNumber').val('');
-                $('#year').val('');
-                $('#trailerNotes').val('');
-                $("#editTrailerData").modal('hide');
-
-            },
-            error: function(error){
-                alert("Unable to Save Trailer Data to Orders.");
-            }
-        });
-
-    }
-
-    function viewPOD(){
-	    window.open( '<?php echo HTTP_HOST."/viewdocument" ?>?filename=' + $("#fileName").val() + '&entityID=' + $("#customerID").val(), '_blank');
     }
 
     $('#blnReplacePOD').change(function(){
