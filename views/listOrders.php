@@ -684,20 +684,19 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                         var deliveryInformation = json.orders[0].deliveryInformation;
                         var pickupInformation = json.orders[0].pickupInformation;
 
-
                         
                         if (podList == null){
                             podList = [];
                         }
                         
-                        if (deliveryInformation == null){
+                        if (deliveryInformation == undefined){
                             podList.deliveryInformation = {};
                         }
                         else{
                             podList.deliveryInformation = deliveryInformation;
                         }
                         
-                        if (pickupInformation == null){
+                        if (pickupInformation == undefined){
                             podList.pickupInformation = {};
                         }
                         else{
@@ -728,7 +727,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                         "mRender": function (podDataJSON) {
                             var buttons = '';
                             var errorCount = 0;
-                                                        
+                                                  
+                                                  
+                                                  
                             if(podDataJSON.unitNumber == "" || podDataJSON.unitNumber == undefined){
                                 errorCount++;
                             }
@@ -738,7 +739,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                             if(podDataJSON.trailerYear == "" || podDataJSON.trailerYear == undefined){
                                 errorCount++;
                             }
-                            if(podDataJSON.deliveryInformation == {} || podDataJSON.deliveryInformation == undefined){
+                            /*if(podDataJSON.deliveryInformation == {} || podDataJSON.deliveryInformation == undefined){
                                 errorCount++;
                             }
                             else{
@@ -771,7 +772,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                                 if(podDataJSON.pickupInformation.hoursOfOperation == ""){
                                     errorCount++;
                                 }
-                            }
+                            }*/
 
                             //buttons += '<a class="btn btn-primary btn-xs" href="../downloadfiles/POD-Template.pdf" target="_blank"><i class="fa fa-download text"></i> <span class="text">Download POD</span></a>';
                             if(errorCount > 0){
