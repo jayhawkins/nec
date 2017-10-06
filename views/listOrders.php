@@ -714,7 +714,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                             if(podDataJSON.unitNumber == "" || podDataJSON.unitNumber == undefined){
                                 errorCount++;
                             }
-                            if(podDataJSON.trailerProNumber == "" || podDataJSON.trailerProNumber == undefined){
+                            if(podDataJSON.truckProNumber == "" || podDataJSON.truckProNumber == undefined){
                                 errorCount++;
                             }   
                             if(podDataJSON.trailerYear == "" || podDataJSON.trailerYear == undefined){
