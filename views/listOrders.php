@@ -665,7 +665,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
     function loadPODListAJAX(orderID){
 
-        var url = '<?php echo API_HOST; ?>/api/orders?columns=id,carrierIDs,deliveryInformation,pickupInformation,podList&filter=id,eq,' + orderID + '&transform=1';
+        var url = '<?php echo API_HOST; ?>/api/orders?columns=id,carrierIDs,podList&filter=id,eq,' + orderID + '&transform=1';
         var blnShow = false;
 
         if(entityType == 0) blnShow = true;
@@ -680,17 +680,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                     //dataSrc: 'orders[0].podList',
                     dataSrc: function(json){
 
-                        var order = json.orders[0];
-                        
-                        var podList = order.podList;
-                        var delivery = order.deliveryInformation;
-                        var pickup = order.pickupInformation;
+                        var podList = json.orders[0].podList;
 
-                        if (podList === null) order.podList = [];
-                        if (delivery === null) order.deliveryInformation = {};
-                        if (pickup === null) order.pickupInformation = {};
+                        if (podList == null) podList = [];
 
-                        return order;
+                        return podList;
                     }
 
                 },
@@ -704,10 +698,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                             return buttons;
                         },visible: false
                     },
-                    { data: "podList.vinNumber" },
-                    { data: "podList.carrier", visible: blnShow },
-                    { data: "podList.deliveryDate" },
-                    { data: "podList.notes" },
+                    { data: "vinNumber" },
+                    { data: "carrier", visible: blnShow },
+                    { data: "deliveryDate" },
+                    { data: "notes" },
                     {
                         data: null,
                         "bSortable": false,
@@ -717,13 +711,13 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                             
                             console.log(JSON.stringify(podDataJSON));
                             
-                            if(podDataJSON.unitNumber == "" || podDataJSON.unitNumber == null){
+                            if(podDataJSON.unitNumber == "" || podDataJSON.unitNumber == undefined){
                                 errorCount++;
                             }
-                            if(podDataJSON.truckProNumber == "" || podDataJSON.truckProNumber == null){
+                            if(podDataJSON.truckProNumber == "" || podDataJSON.truckProNumber == undefined){
                                 errorCount++;
                             }   
-                            if(podDataJSON.trailerYear == "" || podDataJSON.trailerYear == null){
+                            if(podDataJSON.trailerYear == "" || podDataJSON.trailerYear == undefined){
                                 errorCount++;
                             }
 
