@@ -684,9 +684,13 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                         var deliveryInformation = json.orders[0].deliveryInformation;
                         var pickupInformation = json.orders[0].pickupInformation;
 
-                        if (podList === null) podList = [];
-                        if (deliveryInformation === null) podList.deliveryInformation = {};
-                        if (pickupInformation === null) podList.pickupInformation = {};
+
+                        
+                        if (podList == null) podList = [];
+                        if (deliveryInformation == null) podList.deliveryInformation = {};
+                        else podList.deliveryInformation = deliveryInformation;
+                        if (pickupInformation == null) podList.pickupInformation = {};
+                        else podList.pickupInformation = pickupInformation;
 
                         return podList;
                     }
@@ -739,7 +743,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                                     errorCount++;
                                 }
                             }
-                            if(podDataJSON.pickupInformation == {}){
+                            if(podDataJSON.pickupInformation == {} ){
                                 errorCount++;
                             }
                             else{
