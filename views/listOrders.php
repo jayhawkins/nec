@@ -680,30 +680,42 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                     //dataSrc: 'orders[0].podList',
                     dataSrc: function(json){
 
+                        var data = [];
+                        
                         var podList = json.orders[0].podList;
                         var deliveryInformation = json.orders[0].deliveryInformation;
                         var pickupInformation = json.orders[0].pickupInformation;
 
+                        console.log("Orders: " + JSON.stringify(json.orders[0]));
                         
                         if (podList == null){
-                            podList = [];
-                        }
-                        
-                        if (deliveryInformation == undefined){
-                            podList.deliveryInformation = {};
+                            data = [];
                         }
                         else{
-                            podList.deliveryInformation = deliveryInformation;
-                        }
-                        
-                        if (pickupInformation == undefined){
-                            podList.pickupInformation = {};
-                        }
-                        else{
-                            podList.pickupInformation = pickupInformation;
-                        }
+                            podList.forEach(function(pod){
+                                
+                                if (deliveryInformation === null){
 
-                        return podList;
+                                    pod.deliveryInformation = {};
+                                }
+                                else{
+                                    pod.deliveryInformation = deliveryInformation;
+                                }
+
+                                if (pickupInformation === null){
+                                    pod.pickupInformation = {};
+                                }
+                                else{
+                                    pod.pickupInformation = pickupInformation;
+                                }
+                                data.push(pod);
+                            });
+                        }
+                        
+
+                        console.log("POD List Passed: " + JSON.stringify(data));
+
+                        return data;
                     }
 
                 },
@@ -730,13 +742,13 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                                                   
                                                   
                                                   
-                            if(podDataJSON.unitNumber == "" || podDataJSON.unitNumber == undefined){
+                            if(podDataJSON.unitNumber == "" || podDataJSON.unitNumber == null){
                                 errorCount++;
                             }  
-                            if(podDataJSON.trailerYear == "" || podDataJSON.trailerYear == undefined){
+                            if(podDataJSON.trailerYear == "" || podDataJSON.trailerYear == null){
                                 errorCount++;
                             }
-                            /*if(podDataJSON.deliveryInformation == {} || podDataJSON.deliveryInformation == undefined){
+                            if(podDataJSON.deliveryInformation == {} || podDataJSON.deliveryInformation == null){
                                 errorCount++;
                             }
                             else{
@@ -753,7 +765,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                                     errorCount++;
                                 }
                             }
-                            if(podDataJSON.pickupInformation == {} || podDataJSON.pickupInformation == undefined){
+                            if(podDataJSON.pickupInformation == {} || podDataJSON.pickupInformation == null){
                                 errorCount++;
                             }
                             else{
@@ -769,7 +781,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                                 if(podDataJSON.pickupInformation.hoursOfOperation == ""){
                                     errorCount++;
                                 }
-                            }*/
+                            }
 
                             //buttons += '<a class="btn btn-primary btn-xs" href="../downloadfiles/POD-Template.pdf" target="_blank"><i class="fa fa-download text"></i> <span class="text">Download POD</span></a>';
                             if(errorCount > 0){
