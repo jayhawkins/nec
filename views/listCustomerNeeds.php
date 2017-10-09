@@ -941,6 +941,31 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                           var destinationlng = response.destinationlng;
                           var distance = response.distance;
 
+                            var minAmount;
+                            var maxAmount;
+                            if (entity.entities[0].towAwayRateType == "Flat Rate") {
+                                minAmount = "$" + (entity.entities[0].towAwayRateMin).toFixed(2);
+                                maxAmount = "$" + (entity.entities[0].towAwayRateMax).toFixed(2);
+                            } else {
+                                minAmount = "$" + (entity.entities[0].towAwayRateMin * distance).toFixed(2);
+                                maxAmount = "$" + (entity.entities[0].towAwayRateMax * distance).toFixed(2);
+                            }
+                            $("#divMinimumTowAwayRate").html(minAmount);
+                            $("#divMaximumTowAwayRate").html(maxAmount);
+                            $("#divTowAwayRateType").html(entity.entities[0].towAwayRateType);
+
+                            if (entity.entities[0].towAwayRateType == "Flat Rate") {
+                                minAmount = "$" + (entity.entities[0].loadOutRateMin).toFixed(2);
+                                maxAmount = "$" + (entity.entities[0].loadOutRateMax).toFixed(2);
+                            } else {
+                                minAmount = "$" + (entity.entities[0].loadOutRateMin * distance).toFixed(2);
+                                maxAmount = "$" + (entity.entities[0].loadOutRateMax * distance).toFixed(2);
+                            }
+                            $("#divMinimumLoadOutRate").html(minAmount);
+                            $("#divMaximumLoadOutRate").html(maxAmount);
+                            $("#divLoadOutRateType").html(entity.entities[0].loadOutRateType);
+
+/* Old code
                           var minAmount = "$" + (entity.entities[0].towAwayRateMin * distance).toFixed(2);
                           var maxAmount = "$" + (entity.entities[0].towAwayRateMax * distance).toFixed(2);
                           $("#divMinimumTowAwayRate").html(minAmount);
@@ -952,6 +977,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                           $("#divMinimumLoadOutRate").html(minAmount);
                           $("#divMaximumLoadOutRate").html(maxAmount);
                           $("#divLoadOutRateType").html(entity.entities[0].loadOutRateType);
+*/
 
                           //console.log(entity.entities[0].loadOutRateMax);
                           //console.log(entity.entities[0].loadOutRateMin);
@@ -1517,15 +1543,26 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 $('input[name="rateType"][value="Mileage"]').prop('checked', true);
             }
 
-
-            var minAmount = "$" + (entity.entities[0].towAwayRateMin * data['distance']).toFixed(2);
-            var maxAmount = "$" + (entity.entities[0].towAwayRateMax * data['distance']).toFixed(2);
+            var minAmount;
+            var maxAmount;
+            if (entity.entities[0].towAwayRateType == "Flat Rate") {
+                minAmount = "$" + (entity.entities[0].towAwayRateMin).toFixed(2);
+                maxAmount = "$" + (entity.entities[0].towAwayRateMax).toFixed(2);
+            } else {
+                minAmount = "$" + (entity.entities[0].towAwayRateMin * data['distance']).toFixed(2);
+                maxAmount = "$" + (entity.entities[0].towAwayRateMax * data['distance']).toFixed(2);
+            }
             $("#divMinimumTowAwayRate").html(minAmount);
             $("#divMaximumTowAwayRate").html(maxAmount);
             $("#divTowAwayRateType").html(entity.entities[0].towAwayRateType);
 
-            minAmount = "$" + (entity.entities[0].loadOutRateMin * data['distance']).toFixed(2);
-            maxAmount = "$" + (entity.entities[0].loadOutRateMax * data['distance']).toFixed(2);
+            if (entity.entities[0].towAwayRateType == "Flat Rate") {
+                minAmount = "$" + (entity.entities[0].loadOutRateMin).toFixed(2);
+                maxAmount = "$" + (entity.entities[0].loadOutRateMax).toFixed(2);
+            } else {
+                minAmount = "$" + (entity.entities[0].loadOutRateMin * data['distance']).toFixed(2);
+                maxAmount = "$" + (entity.entities[0].loadOutRateMax * data['distance']).toFixed(2);
+            }
             $("#divMinimumLoadOutRate").html(minAmount);
             $("#divMaximumLoadOutRate").html(maxAmount);
             $("#divLoadOutRateType").html(entity.entities[0].loadOutRateType);
