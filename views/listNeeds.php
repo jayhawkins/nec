@@ -364,7 +364,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                         "bSortable": false,
                         "mRender": function (o) {
                             var buttons = '<div class="pull-right text-nowrap">';
-                            buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text\"></i> <span class=\"text\">Request Carrier</span></button>';
+                            //buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text\"></i> <span class=\"text\">Request Carrier</span></button>';
 /*
                             if (o.status == "Open") {
                                       buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text\"></i> <span class=\"text\">Close</span></button>";
