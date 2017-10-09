@@ -47,7 +47,7 @@ try {
             );
             $context  = stream_context_create($options);
             $result = json_decode(file_get_contents($url,false,$context),true);
-            echo $result;
+            //echo( $result );
         } catch(OAuthException $e) {
             echo "Got auth exception";
             echo '<pre>';
@@ -56,13 +56,13 @@ try {
         }
 
 
+		// step 2: send user to intuit to authorize
 
-		// step 2: send user to intuit to authorize 
-		
-                echo 'Not Authorized';
-                //exit();
-                header('Location: '. OAUTH_AUTHORISE_URL .'?oauth_token='.$request_token['oauth_token']);
+        //echo 'Not Authorized';
+        //echo OAUTH_AUTHORISE_URL .'?oauth_token='.$request_token['oauth_token'];
+        //exit();
 
+        header('Location: '. OAUTH_AUTHORISE_URL .'?oauth_token='.$request_token['oauth_token']);
 
 	}
 

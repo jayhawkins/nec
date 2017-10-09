@@ -69,7 +69,7 @@ $contacts = file_get_contents(API_HOST.'/api/contacts?columns=id,firstName,lastN
 
                 if (type == "PUT") {
                     var date = today;
-                    var data = {contactID: $("#contactID").val(), entityRating: $("#entityRating").val(), rateType: $("input[name='rateType']:checked").val(), negotiatedRate: $("#negotiatedRate").val(), updatedAt: date};
+                    var data = {contactID: $("#contactID").val(), entityRating: $("#entityRating").val(), rateType: $("input[name='rateType']:checked").val(), negotiatedRate: $("#negotiatedRate").val(), towAwayRateMin: $("#towAwayRateMin").val(), towAwayRateMax: $("#towAwayRateMax").val(), towAwayRateType: $("input[name='towAwayRateType']:checked").val(), loadOutRateMin: $("#loadOutRateMin").val(), loadOutRateMax: $("#loadOutRateMax").val(), loadOutRateType: $("input[name='loadOutRateType']:checked").val(), updatedAt: date};
                 } else {
                     // Should never do this at this point
                     //var date = today;
@@ -93,6 +93,12 @@ $contacts = file_get_contents(API_HOST.'/api/contacts?columns=id,firstName,lastN
                         $("#entityRating").val('');
                         $("#rateType").val('');
                         $("#negotiatedRate").val('');
+                        $("#towAwayRateMin").val('');
+                        $("#towAwayRateMax").val('');
+                        $("#towAwayRateType").val('');
+                        $("#loadOutRateMin").val('');
+                        $("#loadOutRateMax").val('');
+                        $("#loadOutRateType").val('');
                         passValidation = true;
                       } else {
                         alert("Updating Business Information Failed!");
@@ -115,7 +121,7 @@ $contacts = file_get_contents(API_HOST.'/api/contacts?columns=id,firstName,lastN
 
       function loadTableAJAX() {
         myApp.showPleaseWait();
-        var url = '<?php echo API_HOST; ?>' + '/api/entities?include=entity_types&columns=id,entityTypeID,entity_types.name,name,entityRating,status,rateType,negotiatedRate&order=name&transform=1';
+        var url = '<?php echo API_HOST; ?>' + '/api/entities?columns=id,entityTypeID,name,entityRating,contactID,status,rateType,negotiatedRate,towAwayRateMin,towAwayRateMax,towAwayRateType,loadOutRateMin,loadOutRateMax,loadOutRateType&filter[]=id,gt,0&order=name&transform=1';
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
             processing: true,
@@ -126,21 +132,27 @@ $contacts = file_get_contents(API_HOST.'/api/contacts?columns=id,firstName,lastN
             columns: [
                 { data: "id", visible: false },
                 { data: "entityTypeID", visible: false },
-                { data: "entity_types[0].name" },
                 { data: "name" },
-                { data: "entityRating" },
-                { data: "rateType" },
+                { data: "entityRating", visible: false },
+                { data: "contactID", visible: false },
+                { data: "rateType", visible: false },
                 { data: "negotiatedRate", render: $.fn.dataTable.render.number(',', '.', 2, '$') },
+                { data: "towAwayRateMin", render: $.fn.dataTable.render.number(',', '.', 2, '$')},
+                { data: "towAwayRateMax", render: $.fn.dataTable.render.number(',', '.', 2, '$')},
+                { data: "towAwayRateType", visible: false},
+                { data: "loadOutRateMin", render: $.fn.dataTable.render.number(',', '.', 2, '$') },
+                { data: "loadOutRateMax", render: $.fn.dataTable.render.number(',', '.', 2, '$') },
+                { data: "loadOutRateType", visible: false},
                 {
                     data: null,
                     "bSortable": false,
                     "mRender": function (o) {
-                        var buttons = '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text-info\"></i> <span class=\"text-info\">Edit</span></button>';
+                        var buttons = '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text\"></i> <span class=\"text\">Edit</span></button>';
 /*
                         if (o.status == "Active") {
-                                  buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text-info\"></i> <span class=\"text-info\">Disable</span></button>";
+                                  buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text\"></i> <span class=\"text\">Disable</span></button>";
                         } else {
-                                  buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text-info\"></i> <span class=\"text-info\">Enable</span></button>";
+                                  buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text\"></i> <span class=\"text\">Enable</span></button>";
                         }
 */
                         return buttons;
@@ -203,6 +215,14 @@ $contacts = file_get_contents(API_HOST.'/api/contacts?columns=id,firstName,lastN
 
  </script>
 
+ <style>
+
+    .text-nowrap {
+        white-space: nowrap;
+    }
+
+</style>
+
  <ol class="breadcrumb">
    <li>ADMIN</li>
    <li class="active">Business Maintenance</li>
@@ -228,12 +248,18 @@ $contacts = file_get_contents(API_HOST.'/api/contacts?columns=id,firstName,lastN
                  <thead>
                  <tr>
                      <th>ID</th>
-                     <th>Entity Type</th>
-                     <th class="hidden-sm-down">Type</th>
-                     <th class="hidden-sm-down">Name</th>
-                     <th class="hidden-sm-down">Rating</th>
-                     <th class="hidden-sm-down">Rate Type</th>
-                     <th class="hidden-sm-down">Negotiated Rate</th>
+                     <th>Type ID</th>
+                     <th class="hidden-sm-down text-nowrap">Business</th>
+                     <th class="no-sort hidden-sm-down">Rating</th>
+                     <th class="no-sort hidden-sm-down">Contact</th>
+                     <th class="no-sort hidden-sm-down">Rate Type</th>
+                     <th class="no-sort hidden-sm-down">Negotiated Rate</th>
+                     <th class="no-sort hidden-sm-down">Tow Away Min</th>
+                     <th class="no-sort hidden-sm-down">Tow Away Max</th>
+                     <th class="no-sort hidden-sm-down">Tow Away Rate Type</th>
+                     <th class="no-sort hidden-sm-down">Load Out Min</th>
+                     <th class="no-sort hidden-sm-down">Load Out Rate Max</th>
+                     <th class="no-sort hidden-sm-down">Load Out Rate Type</th>
                      <th class="no-sort pull-right">&nbsp;</th>
                  </tr>
                  </thead>
@@ -265,7 +291,7 @@ $contacts = file_get_contents(API_HOST.'/api/contacts?columns=id,firstName,lastN
                    </div>
                </div>
                <div class="col-sm-4">
-                   <label for="state">NEC Rep</label>
+                   <label for="state">NEC Rep Contact</label>
                    <div class="form-group" id="contact-list-box">
 
                    </div>
@@ -285,7 +311,7 @@ $contacts = file_get_contents(API_HOST.'/api/contacts?columns=id,firstName,lastN
                    </div>
                </div>
                <div class="col-sm-4">
-                   <label for="negotiatedRate">Rate Type</label>
+                   <label for="negotiatedRate">NEC Negotiated Rate Type</label>
                    <div class="form-group" style="align: middle">
                      <input type="radio" id="rateType" name="rateType" value="Flat Rate"> Flat Rate
                      &nbsp;&nbsp;
@@ -293,6 +319,50 @@ $contacts = file_get_contents(API_HOST.'/api/contacts?columns=id,firstName,lastN
                    </div>
                </div>
                <div class="col-sm-4">
+               </div>
+           </div>
+           <div class="row">
+               <div class="col-sm-4">
+                   <label for="negotiatedRate">Tow Away Rate Min</label>
+                   <div class="form-group">
+                     <input type="text" id="towAwayRateMin" name="towAwayRateMin" class="form-control mb-sm" placeholder="Tow Away Rate Min" />
+                   </div>
+               </div>
+               <div class="col-sm-4">
+                   <label for="negotiatedRate">Tow Away Rate Max</label>
+                   <div class="form-group">
+                     <input type="text" id="towAwayRateMax" name="towAwayRateMax" class="form-control mb-sm" placeholder="Tow Away Rate Max" />
+                   </div>
+               </div>
+               <div class="col-sm-4">
+                   <label for="negotiatedRate">Tow Away Rate Type</label>
+                   <div class="form-group" style="align: middle">
+                     <input type="radio" id="towAwayRateType" name="towAwayRateType" value="Flat Rate"> Flat Rate
+                     &nbsp;&nbsp;
+                     <input type="radio" id="towAwayRateType" name="towAwayRateType" value="Mileage"> Mileage
+                   </div>
+               </div>
+           </div>
+           <div class="row">
+               <div class="col-sm-4">
+                   <label for="negotiatedRate">Load Out Rate Min</label>
+                   <div class="form-group">
+                     <input type="text" id="loadOutRateMin" name="loadOutRateMin" class="form-control mb-sm" placeholder="Load Out Rate Min" />
+                   </div>
+               </div>
+                <div class="col-sm-4">
+                   <label for="negotiatedRate">Load Out Rate Max</label>
+                   <div class="form-group">
+                     <input type="text" id="loadOutRateMax" name="loadOutRateMax" class="form-control mb-sm" placeholder="Load Out Rate Max" />
+                   </div>
+               </div>
+               <div class="col-sm-4">
+                   <label for="negotiatedRate">Load Out Rate Type</label>
+                   <div class="form-group" style="align: middle">
+                     <input type="radio" id="loadOutRateType" name="loadOutRateType" value="Flat Rate"> Flat Rate
+                     &nbsp;&nbsp;
+                     <input type="radio" id="loadOutRateType" name="loadOutRateType" value="Mileage"> Mileage
+                   </div>
                </div>
            </div>
            <div class="modal-footer">
@@ -394,10 +464,16 @@ $contacts = file_get_contents(API_HOST.'/api/contacts?columns=id,firstName,lastN
           $('input[id="rateType"]').attr('checked', false);
           $('input:radio[name="rateType"]').val([data["rateType"]]);
           $("#negotiatedRate").val(data["negotiatedRate"]);
+          $('input:radio[name="towAwayRateType"]').val([data["towAwayRateType"]]);
+          $("#towAwayRateMin").val(data["towAwayRateMin"]);
+          $("#towAwayRateMax").val(data["towAwayRateMax"]);
+          $('input:radio[name="loadOutRateType"]').val([data["loadOutRateType"]]);
+          $("#loadOutRateMin").val(data["loadOutRateMin"]);
+          $("#loadOutRateMax").val(data["loadOutRateMax"]);
           contactdropdown += '<select id="contactID" name="contactID" data-placeholder="NEC Rep" class="form-control chzn-select" data-ui-jq="select2" required="required">';
           for (var i = 0; i < contacts.contacts.length; i++) {
               selected = (contacts.contacts[i].id == data["contactID"]) ? 'selected=selected':'';
-              contactdropdown += '<option value="'+ contacts.contacts[i].id + '">' + contacts.contacts[i].firstName + ' ' + contacts.contacts[i].lastName + '</option>\n';
+              contactdropdown += '<option value="'+ contacts.contacts[i].id + '"' + selected + '>' + contacts.contacts[i].firstName + ' ' + contacts.contacts[i].lastName + '</option>\n';
           }
           contactdropdown += '</select>\n';
           $("#contact-list-box").html(contactdropdown);
