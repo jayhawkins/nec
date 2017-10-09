@@ -11,6 +11,9 @@ $states = json_decode(file_get_contents(API_HOST.'/api/states?columns=abbreviati
 $entities = '';
 $entities = json_decode(file_get_contents(API_HOST.'/api/entities?columns=id,name&order=name&filter[]=id,gt,0&filter[]=entityTypeID,eq,1'));
 
+$entity = '';
+$entity = json_decode(file_get_contents(API_HOST.'/api/entities?filter[]=id,eq,' . $_SESSION['entityid'] . '&transform=1'));
+
 
 $locationTypeID = '';
 $locationTypes = json_decode(file_get_contents(API_HOST."/api/location_types?columns=id,name,status&filter[]=entityID,eq," . $_SESSION['entityid'] . "&filter[]=id,gt,0&satisfy=all&order=name"));
@@ -45,6 +48,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
      var contacts = <?php echo json_encode($contacts); ?>;
      var entities = <?php echo json_encode($entities); ?>;
+     var entity = <?php echo json_encode($entity); ?>;
      var entityID = <?php echo $_SESSION['entityid']; ?>;
      //console.log(contacts);
 
@@ -67,23 +71,23 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
        };
       })();
-      
+
 
         function getCustomerContactTitle(entityID){
             var customerContactTitle = "";
             entities.entities.records.forEach(function(value){
                if(entityID == value[0]){
                    customerContactTitle = value[1] + " Availability Contacts";
-                   
-               } 
+
+               }
             });
-            
+
             if(customerContactTitle == ""){
-                
+
                    $("#customerContactTitle").html("<strong>Customer Availability Contacts</strong>");
             }
             else{
-                
+
                    $("#customerContactTitle").html("<strong>" + customerContactTitle + "</strong>");
             }
         }
@@ -92,7 +96,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
           // new Date(year, month [, date [, hours[, minutes[, seconds[, ms]]]]])
           return new Date(parts[0], parts[1]-1, parts[2]); // months are 0-based
         }
-        
+
         function formatDate(date) {
             var d = date,
                 month = '' + (d.getMonth() + 1),
@@ -104,7 +108,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
             return [year, month, day].join('-');
         }
-        
+
       function post() {
 
         //console.log("Adding Availability.");
@@ -262,7 +266,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                         var expirationDateString = $("#expirationDate").val();
 
                         var availableDate = new Date(parseDate(availableDateString));
-                        var expirationDate = new Date(); 
+                        var expirationDate = new Date();
 
                         if (expirationDateString == ""){
                             expirationDate.setDate(availableDate.getDate() + 30);
@@ -380,7 +384,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
             today = mm+'/'+dd+'/'+yyyy;
             today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
 
-      
+
         if (<?php echo $_SESSION['entityid']; ?> > 0) {
             var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=entities&columns=entities.name,id,entityID,qty,rate,rateType,transportationMode,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,contactEmails&filter[0]=status,eq,Available&filter[1]=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&filter[2]=expirationDate,ge,' + today + '&satisfy=all&order[0]=createdAt,desc&transform=1';
             var show = false;
@@ -919,6 +923,49 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
           });
       }
 
+      function getAdditionalRateCharges() {
+
+          var proceed = false;
+
+          if ($("#originationCity").val().length >= 3) {
+            if ($("#destinationCity").val().length >= 3) {
+
+                  var originationaddress = $("#originationAddress1").val() + ', ' + $("#originationCity").val() + ', ' + $("#originationState").val() + ', ' + $("#originationZip").val();
+                  var destinationaddress = $("#destinationAddress1").val() + ', ' + $("#destinationCity").val() + ', ' + $("#destinationState").val() + ', ' + $("#destinationZip").val();
+
+                  // getMapDirectionFromGoogle is defined in common.js
+                  newGetMapDirectionFromGoogle( originationaddress, destinationaddress, function(response) {
+                          var originationlat = response.originationlat;
+                          var originationlng = response.originationlng;
+                          var destinationlat = response.destinationlat;
+                          var destinationlng = response.destinationlng;
+                          var distance = response.distance;
+
+                          var minAmount = "$" + (entity.entities[0].towAwayRateMin * distance).toFixed(2);
+                          var maxAmount = "$" + (entity.entities[0].towAwayRateMax * distance).toFixed(2);
+                          $("#divMinimumTowAwayRate").html(minAmount);
+                          $("#divMaximumTowAwayRate").html(maxAmount);
+                          $("#divTowAwayRateType").html(entity.entities[0].towAwayRateType);
+
+                          minAmount = "$" + (entity.entities[0].loadOutRateMin * distance).toFixed(2);
+                          maxAmount = "$" + (entity.entities[0].loadOutRateMax * distance).toFixed(2);
+                          $("#divMinimumLoadOutRate").html(minAmount);
+                          $("#divMaximumLoadOutRate").html(maxAmount);
+                          $("#divLoadOutRateType").html(entity.entities[0].loadOutRateType);
+
+                          //console.log(entity.entities[0].loadOutRateMax);
+                          //console.log(entity.entities[0].loadOutRateMin);
+
+                          $("#divPossibleCharges").show();
+
+
+                  });
+
+            }
+          }
+
+      }
+
  </script>
 
  <style>
@@ -1150,15 +1197,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                  <hr />
                  <div class="row">
                      <div class="col-sm-3">
-                        <label for="rate">Rate</label>
+                        <label for="rate">My Payment Rate</label>
                         <div class="form-group">
                            <input type="text" id="rate" name="rate" class="form-control mb-sm"
                               placeholder="Rate $" data-parsley-type="number" />
                         </div>
-
-
                      </div>
-                     <div class="col-sm-3">
+                     <div class="col-sm-4">
                          <label for="rateType">Rate Type</label>
                          <div class="form-group">
                            <div class="d-inline-block"><input type="radio" id="rateType" name="rateType" value="Flat Rate" /> Flat Rate
@@ -1179,8 +1224,40 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                            </select>
                          </div>
                      </div>
-                     <div class="col-sm-3">
+                     <div class="col-sm-2">
                          &nbsp;
+                     </div>
+                 </div>
+                 <div class="row bg-info" id="divPossibleCharges">
+                     <div class="col-sm-4">
+                        <label for="rate"><b>Possible Tow Away/Load Out Charges</b></label>
+                        <div class="form-group">
+                           <b>Tow Away:</b>
+                        </div>
+                        <div class="form-group">
+                           <b>Load Out:</b>
+                        </div>
+                     </div>
+                     <div class="col-sm-3">
+                        <label for="rate">Minimum Rate</label>
+                        <div class="form-group" id="divMinimumTowAwayRate">
+                        </div>
+                        <div class="form-group" id="divMinimumLoadOutRate">
+                        </div>
+                     </div>
+                     <div class="col-sm-3">
+                        <label for="rate">Maximum Rate</label>
+                        <div class="form-group" id="divMaximumTowAwayRate">
+                        </div>
+                        <div class="form-group" id="divMaximumLoadOutRate">
+                        </div>
+                     </div>
+                     <div class="col-sm-2">
+                        <label for="rate">Rate Type</label>
+                        <div class="form-group" id="divTowAwayRateType">
+                        </div>
+                        <div class="form-group" id="divLoadOutRateType">
+                        </div>
                      </div>
                  </div>
                  <hr />
@@ -1371,18 +1448,20 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       $("#destinationCity").val('');
       $("#destinationState").val('');
       $("#destinationZip").val('');
-      
+
+      $("#divPossibleCharges").hide();
+
     getCustomerContactTitle(entityID);
-    
+
     if(entityID == 0){
         $("#entityID").val('');
     }
       for (var i = 0; i < contacts.contacts.records.length; i++) {
           li += '<li id=\"' + contacts.contacts.records[i][0] + '\" class=\"list-group-item\" ' + checked + '>' + contacts.contacts.records[i][1] + ' ' + contacts.contacts.records[i][2] + '</li>\n';
       }
-      
+
       $("#check-list-box").html(li);
-      
+
       for (var i = 0; i < dataPoints.object_type_data_points.length; i++) {
           dpli += '<li>' + dataPoints.object_type_data_points[i].title +
                   ' <select class="form-control mb-sm" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '">\n' +
@@ -1393,12 +1472,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
           dpli += '</select>' +
                   '</li>\n';
       }
-      
+
       $("#dp-check-list-box").html(dpli);
-      
+
       formatListBox();
       formatListBoxDP();
-      
+
       $("#entityID").prop('disabled', false);
   		$("#myModal").modal('show');
   	});
@@ -1438,8 +1517,23 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                 $('input[name="rateType"][value="Mileage"]').prop('checked', true);
             }
 
+
+            var minAmount = "$" + (entity.entities[0].towAwayRateMin * data['distance']).toFixed(2);
+            var maxAmount = "$" + (entity.entities[0].towAwayRateMax * data['distance']).toFixed(2);
+            $("#divMinimumTowAwayRate").html(minAmount);
+            $("#divMaximumTowAwayRate").html(maxAmount);
+            $("#divTowAwayRateType").html(entity.entities[0].towAwayRateType);
+
+            minAmount = "$" + (entity.entities[0].loadOutRateMin * data['distance']).toFixed(2);
+            maxAmount = "$" + (entity.entities[0].loadOutRateMax * data['distance']).toFixed(2);
+            $("#divMinimumLoadOutRate").html(minAmount);
+            $("#divMaximumLoadOutRate").html(maxAmount);
+            $("#divLoadOutRateType").html(entity.entities[0].loadOutRateType);
+            $("#divPossibleCharges").show();
+
+
             var params = {id: $("#entityID").val()};
-            
+
             getCustomerContactTitle($("#entityID").val());
             $.ajax({
                url: '<?php echo HTTP_HOST."/getcontactsbycarrier" ?>',
@@ -1524,7 +1618,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
     $('#entityID').off('change').on( 'change', function () {
         var params = {id: $("#entityID").val()};
-        
+
     getCustomerContactTitle($("#entityID").val());
         //alert(JSON.stringify(params));
         $.ajax({
@@ -1701,6 +1795,9 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 	    uploadFile();
 	    return false;
 	});
+
+	document.getElementById("originationState").addEventListener("change", getAdditionalRateCharges, false);
+	document.getElementById("destinationState").addEventListener("change", getAdditionalRateCharges, false);
 
 	document.getElementById('downloadTemplateButton').addEventListener('click', downloadTemplateClick);
 

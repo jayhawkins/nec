@@ -233,9 +233,12 @@ ALTER TABLE entities ADD COLUMN updatedAt DateTime NOT NULL AFTER createdAt;
 ALTER TABLE entities ADD COLUMN contactID int(11) unsigned DEFAULT 0 AFTER assignedMemberID ;
 ALTER TABLE entities ADD COLUMN rateType varchar(64) AFTER contactID ;
 ALTER TABLE entities ADD COLUMN negotiatedRate float(7,2) unsigned DEFAULT 0.00 AFTER rateType ;
-ALTER TABLE entities ADD COLUMN towAwayRate Float(6,2) DEFAULT '0.00' AFTER negotiatedRate;
-ALTER TABLE entities ADD COLUMN loadOutRate Float(7,2) DEFAULT '0.00' AFTER towAwayRate;
-ALTER TABLE entities ADD COLUMN loadOutRateType VARCHAR(64) DEFAULT 'Flat Rate' AFTER loadOutRate;
+ALTER TABLE entities ADD COLUMN towAwayRateMin Float(7,2) DEFAULT '0.00' AFTER negotiatedRate;
+ALTER TABLE entities ADD COLUMN towAwayRateMax Float(7,2) DEFAULT '0.00' AFTER towAwayRateMin;
+ALTER TABLE entities ADD COLUMN towAwayRateType VARCHAR(64) DEFAULT 'Flat Rate' AFTER towAwayRateMax;
+ALTER TABLE entities ADD COLUMN loadOutRateMin Float(7,2) DEFAULT '0.00' AFTER towAwayRateType;
+ALTER TABLE entities ADD COLUMN loadOutRateMax Float(7,2) DEFAULT '0.00' AFTER loadOutRateMin;
+ALTER TABLE entities ADD COLUMN loadOutRateType VARCHAR(64) DEFAULT 'Flat Rate' AFTER loadOutRateMax;
 -- ---------------------------------------------------------
 
 
