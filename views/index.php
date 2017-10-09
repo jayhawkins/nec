@@ -456,14 +456,7 @@ if ($_SESSION['entityid'] > 0) {
 
     if ($_SESSION['entityid'] == 0) {
  ?>
-             <li>
-                 <a href="#" onclick="ajaxFormCall('qbstatus');">
-                     <span class="icon">
-                         <i class="fa fa-cloud-upload"></i>
-                     </span>
-                     QuickBooks
-                 </a>
-             </li>
+            
  <?php
     }
 
