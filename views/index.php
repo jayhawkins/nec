@@ -144,6 +144,27 @@ if ($_SESSION['entityid'] > 0) {
     $cnresult = file_get_contents($cnurl,false,$cncontext);
     $cnresult2 = json_decode($cnresult,true);
     $customerncount = count($cnresult2['customer_needs']);
+    
+    
+    // Get locations for plotting on map
+    $locargs = array(
+          "transform"=>"1",
+          "filter[1]"=>"status,eq,Active"
+    );
+
+    $locoptions = array(
+        'http' => array(
+            'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+            'method'  => 'GET'
+        )
+    );
+
+    $locurl = API_HOST."/api/locations?".http_build_query($locargs);
+    $loccontext  = stream_context_create($locoptions);
+    $locresult = file_get_contents($locurl,false,$loccontext);
+    $locresult2 = json_decode($locresult,true);
+    $loccount = count($locresult2['locations']);
+
 }
 
 ?>
