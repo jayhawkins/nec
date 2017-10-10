@@ -38,8 +38,8 @@ $econtext  = stream_context_create($eoptions);
 $eresult = json_decode(file_get_contents($eurl,false,$econtext), true);
 
 $cncount = 0;
-$locresult;
-$loccount;
+$locresult = 0;
+$loccount = 0;
 
 if ($_SESSION['entityid'] > 0) {
     if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
