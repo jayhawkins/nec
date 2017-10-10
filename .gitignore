@@ -3,3 +3,11 @@ html_files
 .gitignore
 
 /nbproject/private/
+
+# Eclipse IDE and editor specific files #
+#################################
+/nbproject
+.idea
+/.project
+/.buildpath
+/.settings/
