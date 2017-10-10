@@ -69,6 +69,7 @@ if ($_SESSION['entityid'] > 0) {
             'method'  => 'GET'
         )
     );
+
     $cncontext  = stream_context_create($cnoptions);
     $cnresult = file_get_contents($cnurl,false,$cncontext);
     $cnresult2 = json_decode($cnresult,true);
@@ -77,6 +78,27 @@ if ($_SESSION['entityid'] > 0) {
     } elseif ( $eresult['entities'][0]['entityTypeID'] == 2 ) { // Carrier
         $cncount = count($cnresult2['customer_needs']);
     }
+
+    // Get locations for plotting on map
+    $locargs = array(
+          "transform"=>"1",
+          "filter[0]"=>"entityID,eq," . $_SESSION['entityid'],
+          "filter[1]"=>"status,eq,Active"
+    );
+
+    $locoptions = array(
+        'http' => array(
+            'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+            'method'  => 'GET'
+        )
+    );
+
+    $locurl = API_HOST."/api/locations?".http_build_query($locargs);
+    $loccontext  = stream_context_create($locoptions);
+    $locresult = file_get_contents($locurl,false,$loccontext);
+    $locresult2 = json_decode($locresult,true);
+    $loccount = count($locresult2['locations']);
+
 
 } else {
 
@@ -456,7 +478,7 @@ if ($_SESSION['entityid'] > 0) {
 
     if ($_SESSION['entityid'] == 0) {
  ?>
-            
+
  <?php
     }
 
@@ -1355,6 +1377,7 @@ $(function() {
 
    // Assign JS var to PHP customer needs JSON list
    var cnresult = <?php echo $cnresult; ?>;
+   var locresult = <?php echo $locresult; ?>;
    var entityTypeID = <?php echo $eresult['entities'][0]['entityTypeID']; ?>;
 
    if ( entityTypeID == 1 ) { // Customer
@@ -1368,12 +1391,12 @@ $(function() {
    // We need a setTimeout (~200ms) in order to allow the UI to be refreshed for the message to be shown
    setTimeout(function(){
             var data = cnresult;
+            var locations = locresult;
 
+           // Parse each elements
            // This variable will hold all the plots of our map
            var plots = {};
            var plotsColors = chroma.scale("Blues");
-
-           // Parse each elements
            $.each(data, function (index, value) {
 /*
               plots:{
@@ -1426,6 +1449,76 @@ $(function() {
                } else {
                    console.warn("Ignored element " + id + " without GPS position");
                }
+           });
+
+           // Parse location elements
+           // This variable will hold all the plots of our map - ALREADY INIT ABOVE
+           //var plots = {};
+
+           var plotsColors = chroma.scale("Yellows");
+           //console.log(locations);
+           $.each(locations, function (index, values) {
+               //console.log(values);
+               $.each(values, function (index, value) {
+                      //console.log(value);
+/*
+                      plots:{
+                             'ny' : {
+                                 latitude: 40.717079,
+                                 longitude: -74.00116,
+                                 tooltip: {content : "New York"}
+                             },
+                             'on' : {
+                                 latitude: 33.145235,
+                                 longitude: -83.811834,
+                                 size: 18,
+                                 tooltip: {content : "Oconee National Forest"}
+                             }
+                       }
+*/
+                       // Check if we have the GPS position of the element
+                       if (value.latitude) {
+                           if (value.locationTypeID == 1) {
+                                var fontsize = 14;
+                           } else {
+                                var fontsize = 9;
+                           }
+                           // Will hold the plot information
+                           var plot = {};
+                           // Assign position
+                           plot.latitude = parseFloat(value.latitude);
+                           plot.longitude = parseFloat(value.longitude);
+                           plot.size = fontsize;
+                           plot.type = "circle";
+                           // Assign some information inside the tooltip
+                           plot.tooltip = {
+                               content: "<span style='font-weight:bold;'>" +
+                                           value.city + ', ' + value.state +
+                                        "</span>"
+                           };
+
+                           plot.text = {
+                                //content: value.qty,
+                                position: "inner",
+                                attrs: {
+                                    "font-size": 16,
+                                    "font-weight": "bold",
+                                    "fill": "#fff"
+                                }
+                           };
+
+                           // Assign the background color randomize from a scale
+                           //plot.attrs = {
+                           //    fill: plotsColors(Math.random())
+                           //};
+
+                           // Set plot element to array
+                           plots["'" + value.id+'-'+value.city + "'"] = plot;
+                       } else {
+                           console.warn("Ignored element " + value.id + " without GPS position");
+                       }
+
+               });
            });
 
            // Create map
