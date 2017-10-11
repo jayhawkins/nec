@@ -625,7 +625,7 @@ if ($_SESSION['entityid'] > 0) {
                           //echo "<li><a href=\"#\" onclick=\"ajaxFormCall('ratesProfile');\">Rates</a></li>";
                         } else if ($_SESSION['entitytype'] == 0) {
                           // Must be NEC Admin So Show it all...
-                          echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listRates');\">Rates</a></li>";
+                          //echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listRates');\">Rates</a></li>";
                         }
                     ?>
 
