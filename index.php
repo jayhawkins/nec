@@ -100,6 +100,14 @@ $app->route('POST /checkforuniqueid', function() {
     echo $return;
 });
 
+$app->route('POST /checkforusername', function() {
+    $username = Flight::request()->data['username'];
+    $user = Flight::user();
+    $return = $user->checkforusername($username);
+
+    echo $return;
+});
+
 $app->route('POST /mobilelogin', function() {
     $username = Flight::request()->data['username'];
     $password = Flight::request()->data['password'];
@@ -216,7 +224,7 @@ $app->route('POST /entities', function() {
 });
 
 $app->route('PUT|POST /usermaintenance', function() {
-    $user_id = Flight::request()->data['user_id'];
+    $userID = Flight::request()->data['userID'];
     $member_id = Flight::request()->data['member_id'];
     $type = Flight::request()->data['type'];
     $entityID = Flight::request()->data['entityID'];
@@ -228,7 +236,7 @@ $app->route('PUT|POST /usermaintenance', function() {
     $uniqueID = Flight::request()->data['uniqueID'];
     $textNumber = Flight::request()->data['textNumber'];
     $user = Flight::user();
-    $return = $user->maintenanceapi($type,$user_id,$member_id,$entityID,$firstName,$lastName,$username,$password,$userTypeID,$uniqueID,$textNumber);
+    $return = $user->maintenanceapi($type,$userID,$member_id,$entityID,$firstName,$lastName,$username,$password,$userTypeID,$uniqueID,$textNumber);
     if ($return == "success") {
       echo $return;
     } else {

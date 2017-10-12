@@ -279,7 +279,7 @@ class User
                         $code = 0;
                         $numSent = 0;
                         $to = array($email => $firstName . " " . $lastName);
-                        $from = array('jaycarl.hawkins@gmail.com' => 'Jay Hawkins');
+                        $from = array("operations@nationwide-equipment.com" => "Nationwide Operations Control Manager");
                         //$templateresult = json_decode(file_get_contents(API_HOST.'/api/email_templates?filter=title,eq,Authorize Account'));
 
                         $templateargs = array("filter"=>"title,eq,Authorize Account");
@@ -396,7 +396,35 @@ class User
       }
     }
 
-    public function maintenanceapi($type,$user_id,$member_id,$entityID,$firstName,$lastName,$username,$password,$userTypeID,$uniqueID,$textNumber) {
+    public function checkforusername($username) {
+      try {
+              $usernameargs = array(
+                    "transform"=>1,
+                    "filter[]"=>"username,eq,".$username
+              );
+              $usernameurl = API_HOST."/api/users?".http_build_query($usernameargs);
+              $usernameoptions = array(
+                  'http' => array(
+                      'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                      'method'  => 'GET'
+                  )
+              );
+              $usernamecontext  = stream_context_create($usernameoptions);
+              $result = json_decode(file_get_contents($usernameurl,false,$usernamecontext));
+            if ( isset($result->users[0]->username) ) {
+                echo $result->users[0]->username;
+            } else {
+                echo "success";
+            }
+      } catch (Exception $e) { // The authorization query failed verification
+            header('HTTP/1.1 404 Not Found');
+            header('Content-Type: text/plain; charset=utf8');
+            echo $e->getMessage();
+            exit();
+      }
+    }
+
+    public function maintenanceapi($type,$userID,$member_id,$entityID,$firstName,$lastName,$username,$password,$userTypeID,$uniqueID,$textNumber) {
           try {
 
                 $userdata = array(
@@ -404,6 +432,7 @@ class User
                             "username" => $username,
                             "uniqueID" => $uniqueID,
                             "textNumber" => $textNumber,
+                            "status" => 'Active'
                 );
 
                 if ($password > "") {
@@ -413,7 +442,7 @@ class User
                 $userurl = API_HOST.'/api/users';
 
                 if ($type == "PUT") {
-                    $userurl .= "/".$user_id;
+                    $userurl .= "/".$userID;
                     $userdata["updatedAt"] = date('Y-m-d H:i:s');
                 } else {
                     $userdata["createdAt"] = date('Y-m-d H:i:s');
@@ -459,6 +488,37 @@ class User
 
                 $membercontext = stream_context_create($memberoptions);
                 $memberresult = file_get_contents($memberurl, false, $membercontext);
+
+                if ($userTypeID == 5 && $type == "POST") { // This is a driver being created - ONLY SEND EMAIL NOTIFICATOIN IF THIS IS A POST (CREATE)
+                    // Send email to driver
+                    $numSent = 0;
+                    $to = array($username => $firstName . " " . $lastName);
+                    $from = array("operations@nationwide-equipment.com" => "Nationwide Operations Control Manager");
+                    //$templateresult = json_decode(file_get_contents(API_HOST.'/api/email_templates?filter=title,eq,Authorize Account'));
+
+                    $templateargs = array("filter"=>"title,eq,Driver Setup Notification");
+                    $templateurl = API_HOST."/api/email_templates?".http_build_query($templateargs);
+                    $templateoptions = array(
+                        'http' => array(
+                            'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                            'method'  => 'GET'
+                        )
+                    );
+                    $templatecontext  = stream_context_create($templateoptions);
+                    $templateresult = json_decode(file_get_contents($templateurl,false,$templatecontext));
+                    $subject = $templateresult->email_templates->records[0][6];
+                    $body = "Hello " . $firstName . ",<br /><br />\n";
+                    $body .= $templateresult->email_templates->records[0][2];
+                    $body .= "<p>Your login credentials are:<br /><br />Username: " . $userresult . "<br />Password: " . $password . "</p>\n";
+                    $body .= "<p>Please go to the following link and download the NEC Mobile App to access your orders:<br /><br />\n";
+                    if (count($templateresult) > 0) {
+                      try {
+                        $numSent = sendmail($to, $subject, $body, $from);
+                      } catch (Exception $mailex) {
+                        echo $mailex;
+                      }
+                    }
+                }
 
                 echo "success";
 
