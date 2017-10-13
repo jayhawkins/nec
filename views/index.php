@@ -450,7 +450,7 @@ if ($_SESSION['entityid'] > 0) {
     if ( $_SESSION['entityid'] == 0 ) {
  ?>
              <li>
-                 <a href="#" onclick="ajaxFormCall('listAvailability');">
+                 <a href="#" style="line-height: 20px; padding-bottom: 15px;" onclick="ajaxFormCall('listAvailability');">
                      <span class="icon">
                          <i class="fa fa-users"></i>
                      </span>
@@ -468,7 +468,7 @@ if ($_SESSION['entityid'] > 0) {
     if ( ($_SESSION['entitytype'] == 2) && in_array($_SESSION['usertypeid'], $needsMenuAccessList) ) {
  ?>
              <li>
-                 <a href="#" onclick="ajaxFormCall('listAvailability');">
+                 <a href="#" style="line-height: 20px; padding-bottom: 15px;" onclick="ajaxFormCall('listAvailability');">
                      <span class="icon">
                          <i class="fa fa-users"></i>
                      </span>
@@ -565,6 +565,8 @@ if ($_SESSION['entityid'] > 0) {
 
     if ( ($_SESSION['entitytype'] == 2 || $_SESSION['entityid'] == 0 ) && in_array($_SESSION['usertypeid'], $collectionsMenuAccessList) ) {
  ?>
+            <!--
+             # Menu is being hidden
             <li>
                 <a href="#">
                     <span class="icon">
@@ -573,6 +575,8 @@ if ($_SESSION['entityid'] > 0) {
                     Collections
                 </a>
             </li>
+            
+             -->
 <?php
     }
 ?>
