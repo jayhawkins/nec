@@ -33,8 +33,8 @@ class CarrierNeed
       $args = array(
             "transform"=>"1"
       );
-
-      $url = $api_host."/api/carrier_needs/".$id."?".http_build_query($args);
+      
+      $url = $api_host . "/" . API_ROOT . "/carrier_needs/".$id."?".http_build_query($args);
       $options = array(
           'http' => array(
               'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -88,7 +88,7 @@ class CarrierNeed
                   "transform"=>1,
                   "filter"=>"id,eq,".$key
             );
-            $contacturl = API_HOST."/api/contacts?".http_build_query($contactargs);
+            $contacturl = API_HOST_URL . "/contacts?".http_build_query($contactargs);
             $contactoptions = array(
                 'http' => array(
                     'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -126,7 +126,7 @@ class CarrierNeed
                 "filter[0]"=>$entityFilter,
                 "filter[1]"=>"contactTypeID,eq,1"
             );
-            $entitycontacturl = API_HOST."/api/contacts?".http_build_query($entitycontactargs);
+            $entitycontacturl = API_HOST_URL . "/contacts?".http_build_query($entitycontactargs);
             $entitycontactoptions = array(
                 'http' => array(
                     'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -140,7 +140,7 @@ class CarrierNeed
                 "transform"=>1,
                 "filter"=>"title,eq,Carrier Need Notification"
             );
-            $templateurl = API_HOST."/api/email_templates?".http_build_query($templateargs);
+            $templateurl = API_HOST_URL . "/email_templates?".http_build_query($templateargs);
             $templateoptions = array(
                 'http' => array(
                     'header'  => "Content-type: application/x-www-form-urlencoded\r\n",

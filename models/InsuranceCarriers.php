@@ -71,7 +71,7 @@ class InsuranceCarrier
       $args = array(
             "transform"=>"1"
       );
-      $url = $api_host."/api/documents/".$id."?".http_build_query($args);
+      $url = $api_host . "/" . API_ROOT . "/documents/".$id."?".http_build_query($args);
       $options = array(
           'http' => array(
               'header'  => "Content-type: application/x-www-form-urlencoded\r\n",

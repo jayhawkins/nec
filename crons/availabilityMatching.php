@@ -29,7 +29,7 @@ $args = array(
     "filter[0]"=>"availableDate,gt," . $date,
     "filter[1]"=>"status,eq,Available"
 );
-$url = API_HOST."/api/customer_needs?".http_build_query($args);
+$url = API_HOST_URL . "/customer_needs?".http_build_query($args);
 $options = array(
     'http' => array(
         'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -64,7 +64,7 @@ $args = array(
     "filter[2]"=>"status,eq,Matched",
     "satisfy"=>"all"
 );
-$url = API_HOST."/api/needs_match?".http_build_query($args);
+$url = API_HOST_URL . "/needs_match?".http_build_query($args);
 $options = array(
     'http' => array(
         'header'  => "Content-type: application/x-www-form-urlencoded\r\n",

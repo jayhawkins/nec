@@ -8,6 +8,12 @@ Flight::set('flight.views.path', 'views');
 
 require '../nec_config.php';
 
+// Development Debugging
+if(ENVIRONMENT == 'development') {
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+}
+
 Flight::register('db', 'PDO', array('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS ), function($db){
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 });
@@ -15,6 +21,11 @@ $db = Flight::db();
 
 require 'lib/common.php';
 require "lib/googleApiClass.php";
+require 'lib/fpdf/fpdf.php';
+require "lib/fpdi/src/autoload.php";
+
+require 'models/datasource/DataSource.php';
+require 'models/Model.php';
 require 'models/Users.php';
 require 'models/Entities.php';
 require 'models/Members.php';
@@ -27,8 +38,8 @@ require 'models/CustomerNeedsCommit.php';
 require 'models/Documents.php';
 require 'models/InsuranceCarriers.php';
 require 'models/Orders.php';
-require 'models/PODForms.php';
 
+Flight::register( 'datasource', 'DataSource' );
 Flight::register( 'user', 'User' );
 Flight::register( 'entity', 'Entity' );
 Flight::register( 'member', 'Member' );

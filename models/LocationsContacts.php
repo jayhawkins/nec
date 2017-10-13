@@ -16,7 +16,7 @@ class LocationContact
 
     public function put($locationid,$address1,$address2,$city,$state,$zip) {
         try {
-              $locationurl = API_HOST.'/api/locations/'.$locationid;
+              $locationurl = API_HOST_URL . '/locations/'.$locationid;
               $locationdata = array(
                           "address1" => $address1,
                           "address2" => $address2,

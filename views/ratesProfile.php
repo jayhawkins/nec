@@ -10,7 +10,7 @@ try {
       $entityargs = array(
           "transform"=>1
       );
-      $entityurl = API_HOST."/api/entities/".$_SESSION['entityid']."?".http_build_query($entityargs);
+      $entityurl = API_HOST_URL . "/entities/".$_SESSION['entityid']."?".http_build_query($entityargs);
       $entityoptions = array(
           'http' => array(
               'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -80,10 +80,10 @@ function verifyAndPost() {
           today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
 
           if ($("#id").val() > '') {
-              var url = '<?php echo API_HOST."/api/entities" ?>/' + $("#id").val();
+              var url = '<?php echo API_HOST_URL . "/entities" ?>/' + $("#id").val();
               type = "PUT";
           } else {
-              var url = '<?php echo API_HOST."/api/entities" ?>';
+              var url = '<?php echo API_HOST_URL . "/entities" ?>';
               type = "POST";
           }
 

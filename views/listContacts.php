@@ -6,7 +6,7 @@ require '../../nec_config.php';
 require '../lib/common.php';
 
 $contactTypeID = '';
-$contactTypes = json_decode(file_get_contents(API_HOST.'/api/contact_types?columns=id,name&order=id'));
+$contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?columns=id,name&order=id'));
 
  ?>
 
@@ -60,10 +60,10 @@ $contactTypes = json_decode(file_get_contents(API_HOST.'/api/contact_types?colum
                 today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
 
                 if ($("#id").val() > '') {
-                    var url = '<?php echo API_HOST."/api/contacts" ?>/' + $("#id").val();
+                    var url = '<?php echo API_HOST_URL . "/contacts" ?>/' + $("#id").val();
                     type = "PUT";
                 } else {
-                    var url = '<?php echo API_HOST."/api/contacts" ?>';
+                    var url = '<?php echo API_HOST_URL . "/contacts" ?>';
                     type = "POST";
                 }
 
@@ -117,7 +117,7 @@ $contactTypes = json_decode(file_get_contents(API_HOST.'/api/contact_types?colum
 
       function loadTableAJAX() {
         myApp.showPleaseWait();
-        var url = '<?php echo API_HOST; ?>' + '/api/contacts?include=contact_types&columns=contacts.id,contacts.firstName,contacts.lastName,contact_types.id,contact_types.name,contacts.title,contacts.emailAddress,contacts.primaryPhone,contacts.secondaryPhone,contacts.fax,contacts.contactRating,contacts.status&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order=contactTypeID&transform=1';
+        var url = '<?php echo API_HOST_URL; ?>' + '/contacts?include=contact_types&columns=contacts.id,contacts.firstName,contacts.lastName,contact_types.id,contact_types.name,contacts.title,contacts.emailAddress,contacts.primaryPhone,contacts.secondaryPhone,contacts.fax,contacts.contactRating,contacts.status&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order=contactTypeID&transform=1';
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
             processing: true,
@@ -180,7 +180,7 @@ $contactTypes = json_decode(file_get_contents(API_HOST.'/api/contact_types?colum
           }
 
           var data = {status: newStatus};
-          var url = '<?php echo API_HOST."/api/contacts" ?>/' + $("#id").val();
+          var url = '<?php echo API_HOST_URL . "/contacts" ?>/' + $("#id").val();
           var type = "PUT";
 
           $.ajax({

@@ -8,14 +8,14 @@ class User
 
     public function loginapi($username,$password) {
         try {
-              //$result = json_decode(file_get_contents(API_HOST.'/api/users?filter=username,eq,' . $username));
-              //$result = json_decode(file_get_contents(API_HOST.'/api/users?include=members,entities&filter=username,eq,' . $username));
+            //$result = json_decode(file_get_contents(API_HOST_URL . '/users?filter=username,eq,' . $username));
+            //$result = json_decode(file_get_contents(API_HOST_URL . '/users?include=members,entities&filter=username,eq,' . $username));
 
               $loginargs = array(
                             "include"=>"members,entities,user_types",
                             "filter[0]"=>"username,eq,".$username
               );
-              $loginurl = API_HOST."/api/users?".http_build_query($loginargs);
+              $loginurl = API_HOST_URL . "/users?".http_build_query($loginargs);
               $loginoptions = array(
                   'http' => array(
                       'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -115,7 +115,7 @@ class User
                   );
             }
 
-            $entityurl = API_HOST.'/api/entities';
+            $entityurl = API_HOST_URL . '/entities';
             $entitydata = array(
                         "name" => $entityName,
                         "entityTypeID" => $entityTypeID,
@@ -138,7 +138,7 @@ class User
             $entityresult = file_get_contents($entityurl, false, $entitycontext);
             //echo $entityresult."<br/>\n";
             // Now create the entity location
-            $locationurl = API_HOST.'/api/locations';
+            $locationurl = API_HOST_URL . '/locations';
             $locationdata = array(
                         "entityID" => $entityresult, // this will contain the new entities id
                         "locationTypeID" => 1,
@@ -170,7 +170,7 @@ class User
             if ($entityresult > 0) {
                 $entity_id = $entityresult;
                 $_SESSION['entityid'] = $entity_id;
-                $userurl = API_HOST.'/api/users';
+                $userurl = API_HOST_URL . '/users';
                 $userdata = array("username" => $email,
                           "password" => password_hash($password, PASSWORD_BCRYPT),
                           "status" => "Inactive",
@@ -191,7 +191,7 @@ class User
                     $user_id = $userresult;
                     $_SESSION['userid'] = $user_id;
                     unset($_SESSION['invalidPassword']);
-                    $memberurl = API_HOST.'/api/members';
+                    $memberurl = API_HOST_URL . '/members';
                     $memberdata = array(
                                 "firstName" => $firstName,
                                 "lastName" => $lastName,
@@ -211,7 +211,7 @@ class User
                     $membercontext  = stream_context_create($memberoptions);
                     $memberresult = file_get_contents($memberurl, false, $membercontext);
                     // Insert contacts data
-                    $contacturl = API_HOST.'/api/contacts';
+                    $contacturl = API_HOST_URL . '/contacts';
                     $contactdata = array(
                                 "entityID" => $entity_id,
                                 "contactTypeID" => 1,
@@ -244,7 +244,7 @@ class User
                         "filter"=>"entityID,eq,0"
                     );
 
-                    $adminurl = API_HOST."/api/contacts?".http_build_query($admimargs);
+                    $adminurl = API_HOST_URL . "/contacts?".http_build_query($admimargs);
                     $adminoptions = array(
                       'http' => array(
                           'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -259,7 +259,7 @@ class User
 */
 
                     // Update entity contact id with newly created contact
-                    $entityupdateurl = API_HOST.'/api/entities/' . $entity_id;
+                    $entityupdateurl = API_HOST_URL . '/entities/' . $entity_id;
                     $entityupdatedata = array("contactID" => $contactresult);
                     //print_r($entityupdatedata)."<br/>\n";
                     $entityupdateoptions = array(
@@ -280,10 +280,10 @@ class User
                         $numSent = 0;
                         $to = array($email => $firstName . " " . $lastName);
                         $from = array('jaycarl.hawkins@gmail.com' => 'Jay Hawkins');
-                        //$templateresult = json_decode(file_get_contents(API_HOST.'/api/email_templates?filter=title,eq,Authorize Account'));
+                        //$templateresult = json_decode(file_get_contents(API_HOST_URL . '/email_templates?filter=title,eq,Authorize Account'));
 
                         $templateargs = array("filter"=>"title,eq,Authorize Account");
-                        $templateurl = API_HOST."/api/email_templates?".http_build_query($templateargs);
+                        $templateurl = API_HOST_URL . "/email_templates?".http_build_query($templateargs);
                         $templateoptions = array(
                             'http' => array(
                                 'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -305,7 +305,7 @@ class User
                         }
                         // Now that you have a member, update the memberID in the entity record
                         if ($member_id > 0) {
-                            $updateentityurl = API_HOST.'/api/entities/'.$entity_id;
+                            $updateentityurl = API_HOST_URL . '/entities/'.$entity_id;
                             $updateentitydata = array(
                                         "assignedMemberID" => $member_id
                             );
@@ -341,7 +341,7 @@ class User
 
     public function verifyaccount($id,$code) {
       try {
-            $userurl = API_HOST.'/api/users/'.$id;
+            $userurl = API_HOST_URL . '/users/'.$id;
             $userdata = array("status" => "Active",
                       "updatedAt" => date('Y-m-d H:i:s')
             );
@@ -374,7 +374,7 @@ class User
                     "transform"=>1,
                     "filter[]"=>"uniqueID,eq,".$uniqueID
               );
-              $loginurl = API_HOST."/api/users?".http_build_query($loginargs);
+              $loginurl = API_HOST_URL . "/users?".http_build_query($loginargs);
               $loginoptions = array(
                   'http' => array(
                       'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -410,7 +410,7 @@ class User
                     $userdata["password"] = password_hash($password, PASSWORD_BCRYPT);
                 }
 
-                $userurl = API_HOST.'/api/users';
+                $userurl = API_HOST_URL . '/users';
 
                 if ($type == "PUT") {
                     $userurl .= "/".$user_id;
@@ -436,7 +436,7 @@ class User
                             "lastName" => $lastName
                 );
 
-                $memberurl = API_HOST.'/api/members';
+                $memberurl = API_HOST_URL . '/members';
 
                 if ($type == "PUT") {
                     $memberurl .= "/".$member_id;
