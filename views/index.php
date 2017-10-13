@@ -567,6 +567,7 @@ if ($_SESSION['entityid'] > 0) {
  ?>
             <!--
              # Menu is being hidden
+             
             <li>
                 <a href="#">
                     <span class="icon">
