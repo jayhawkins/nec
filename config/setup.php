@@ -28,6 +28,7 @@ require 'models/Documents.php';
 require 'models/InsuranceCarriers.php';
 require 'models/Orders.php';
 require 'models/PODForms.php';
+require 'models/MessageCenter.php';
 
 Flight::register( 'user', 'User' );
 Flight::register( 'entity', 'Entity' );
@@ -42,3 +43,4 @@ Flight::register( 'documents', 'Documents' );
 Flight::register( 'insurancecarrier', 'InsuranceCarrier' );
 Flight::register( 'order', 'Order' );
 Flight::register( 'podforms', 'PODForms' );
+Flight::register( 'messagecenter', 'MessageCenter' );
