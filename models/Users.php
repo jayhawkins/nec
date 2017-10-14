@@ -490,6 +490,7 @@ class User
                 $memberresult = file_get_contents($memberurl, false, $membercontext);
 
                 if ($userTypeID == 5 && $type == "POST") { // This is a driver being created - ONLY SEND EMAIL NOTIFICATOIN IF THIS IS A POST (CREATE)
+/*
                     // Send email to driver
                     $numSent = 0;
                     $to = array($username => $firstName . " " . $lastName);
@@ -518,6 +519,11 @@ class User
                         echo $mailex;
                       }
                     }
+*/
+                    // Send a text to the new driver
+                    $messagecenter = Flight::messagecenter();
+                    $msg = "Your NEC Driver account has been setup. Your login credentials are: Username: " . $userresult . " Your Password: " . $password;
+                    $messagecenter->sendSMS($textNumber, $msg);
                 }
 
                 echo "success";

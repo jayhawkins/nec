@@ -12,6 +12,20 @@ class ComposerStaticInit30ff1d21984138037905e04596cddc55
         '2c102faa651ef8ea5874edb585946bce' => __DIR__ . '/..' . '/swiftmailer/swiftmailer/lib/swift_required.php',
     );
 
+    public static $prefixLengthsPsr4 = array (
+        'T' => 
+        array (
+            'Twilio\\' => 7,
+        ),
+    );
+
+    public static $prefixDirsPsr4 = array (
+        'Twilio\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/twilio/sdk/Twilio',
+        ),
+    );
+
     public static $prefixesPsr0 = array (
         'F' => 
         array (
@@ -25,6 +39,8 @@ class ComposerStaticInit30ff1d21984138037905e04596cddc55
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
+            $loader->prefixLengthsPsr4 = ComposerStaticInit30ff1d21984138037905e04596cddc55::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit30ff1d21984138037905e04596cddc55::$prefixDirsPsr4;
             $loader->prefixesPsr0 = ComposerStaticInit30ff1d21984138037905e04596cddc55::$prefixesPsr0;
 
         }, null, ClassLoader::class);
