@@ -35,7 +35,7 @@ require_once "Twilio/Http/CurlClient.php"; // Twilio  Class
 class MessageCenter {
 
     // Message Center Constructor
-    function MessageCenter($content_type = '') {
+    function __construct($content_type = '') {
         //
     }
 

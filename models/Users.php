@@ -279,13 +279,8 @@ class User
                         $code = 0;
                         $numSent = 0;
                         $to = array($email => $firstName . " " . $lastName);
-<<<<<<< HEAD
                         $from = array("operations@nationwide-equipment.com" => "Nationwide Operations Control Manager");
-                        //$templateresult = json_decode(file_get_contents(API_HOST.'/api/email_templates?filter=title,eq,Authorize Account'));
-=======
-                        $from = array('jaycarl.hawkins@gmail.com' => 'Jay Hawkins');
                         //$templateresult = json_decode(file_get_contents(API_HOST_URL . '/email_templates?filter=title,eq,Authorize Account'));
->>>>>>> FS#368---Convert-POD-to-PDF-
 
                         $templateargs = array("filter"=>"title,eq,Authorize Account");
                         $templateurl = API_HOST_URL . "/email_templates?".http_build_query($templateargs);
