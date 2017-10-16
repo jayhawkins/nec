@@ -33,52 +33,51 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
 
           if ( $('#formUser').parsley().validate() ) {
 
-              if ($("#userTypeID").val() == 5) {
+                  if ($("#emailAddress").val() > '') {
 
-                  if ($("#uniqueID").val() > 0) {
+                        if ($("#id").val() == '') { // Only check if this is an add
 
-                      var params = {
-                            uniqueID: $("#uniqueID").val()
-                      };
-                      $.ajax({
-                         url: '<?php echo HTTP_HOST."/checkforuniqueid" ?>',
-                         type: 'POST',
-                         data: JSON.stringify(params),
-                         contentType: "application/json",
-                         async: false,
-                         success: function(response){
-                            if (response == "success") {
-                                result = true;
-                            } else {
-                                alert("UniqueID Already Exists: " + response);
-                                result = false;
-                            }
-                         },
-                         error: function(response) {
-                            alert("UniqueID Verification Failed: " + response);
-                            result = false;
-                         }
-                      });
+                              var params = {
+                                    username: $("#emailAddress").val()
+                              };
+                              $.ajax({
+                                 url: '<?php echo HTTP_HOST."/checkforusername" ?>',
+                                 type: 'POST',
+                                 data: JSON.stringify(params),
+                                 contentType: "application/json",
+                                 async: false,
+                                 success: function(response){
+                                    if (response == "success") {
+                                        result = true;
+                                    } else {
+                                        alert("Username Already Exists: " + response);
+                                        result = false;
+                                    }
+                                 },
+                                 error: function(response) {
+                                    alert("Username Verification Failed: " + response);
+                                    result = false;
+                                 }
+                              });
 
-                      if (result) {
-                        verifyAndPost();
-                      } else {
-                        return false;
-                      }
+                              if (result) {
+                                verifyAndPost();
+                              } else {
+                                return false;
+                              }
+
+                        } else {
+
+                            verifyAndPost(); // If updating go ahead and post
+
+                        }
 
                 } else {
 
-                   alert('User Type is Driver. You Must Assign a Unique ID.');
+                   alert('You Must Assign a Username.');
                    return false;
 
                 }
-
-            } else {
-
-                $("#uniqueID").val(''); // They are actually saving a user type other than driver - set uniqueID to blank so as to make sure only drivers have uniqueIDs
-                verifyAndPost();
-
-            }
 
           } else {
 
@@ -128,7 +127,7 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
             }
 
             var params = {
-                  user_id: $("#userID").val(),
+                  userID: $("#userID").val(),
                   member_id: $("#id").val(),
                   type: type,
                   entityID: $("#entityID").val(),
@@ -511,11 +510,14 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
           $("#textNumber").val(data["users"][0]["textNumber"]);
           $("#userTypeID").val(data["users"][0]["user_types"][0]["id"]);
           $("#status").val(data['users'][0]['status']);
+/*
           if ($("#userTypeID").val() == 5) {
               $("#divUserTypeID").show();
           } else {
               $("#divUserTypeID").hide();
           }
+*/
+          $("#divUserTypeID").hide();
           $("#myModal").modal('show');
         } else {
             $("#id").val(data["id"]);
@@ -533,6 +535,7 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
 
     } );
 
+/*
     $('#userTypeID').on( 'change', function () {
         if ($("#userTypeID").val() == 5) {
             $("#divUserTypeID").show();
@@ -541,5 +544,6 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
         }
 
     });
+*/
 
  </script>

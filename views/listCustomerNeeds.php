@@ -14,7 +14,6 @@ $entities = json_decode(file_get_contents(API_HOST.'/api/entities?columns=id,nam
 $entity = '';
 $entity = json_decode(file_get_contents(API_HOST.'/api/entities?filter[]=id,eq,' . $_SESSION['entityid'] . '&transform=1'));
 
-
 $locationTypeID = '';
 $locationTypes = json_decode(file_get_contents(API_HOST."/api/location_types?columns=id,name,status&filter[]=entityID,eq," . $_SESSION['entityid'] . "&filter[]=id,gt,0&satisfy=all&order=name"));
 
@@ -1462,8 +1461,25 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
       var dpchecked = '';
       $("#id").val('');
       $("#qty").val('');
-      $("#rate").val('0.00');
-      $("#rate").prop("disabled", false);
+
+<?php if ($entity->entities[0]->negotiatedRate > 0) { ?>
+            $("#rate").val(entity.entities[0].negotiatedRate.toFixed(2));
+            $("#rate").prop("disabled", true);
+<?php } else { ?>
+            $("#rate").val('0.00');
+            $("#rate").prop("disabled", false);
+<?php } ?>
+
+<?php if ($entity->entities[0]->rateType == "Flat Rate") { ?>
+            $('input[name="rateType"][value="Flat Rate"]').prop('checked', true);
+            $('input[name="rateType"][value="Flat Rate"]').prop('disabled', true);
+            $('input[name="rateType"][value="Mileage"]').prop('disabled', true);
+<?php } else if ($entity->entities[0]->rateType == "Mileage") { ?>
+            $('input[name="rateType"][value="Mileage"]').prop('checked', true);
+            $('input[name="rateType"][value="Mileage"]').prop('disabled', true);
+            $('input[name="rateType"][value="Flat Rate"]').prop('disabled', true);
+<?php } ?>
+
       $("#availableDate").val('');
       $("#expirationDate").val('');
       $("#originationAddress1").val('');

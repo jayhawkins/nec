@@ -144,8 +144,8 @@ if ($_SESSION['entityid'] > 0) {
     $cnresult = file_get_contents($cnurl,false,$cncontext);
     $cnresult2 = json_decode($cnresult,true);
     $customerncount = count($cnresult2['customer_needs']);
-    
-    
+
+
     // Get locations for plotting on map
     $locargs = array(
           "transform"=>"1",
@@ -606,7 +606,7 @@ if ($_SESSION['entityid'] > 0) {
                     ?>
                     <?php
                         if ($_SESSION['usertypeid'] < 2) {
-                          //echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listUsers');\">Users</a></li>";
+                          echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listUsers');\">Users</a></li>";
                         }
                     ?>
                     <li><a href="#" onclick="ajaxFormCall('listContacts');">Contacts</a></li>
