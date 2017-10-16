@@ -77,7 +77,7 @@ class CustomerNeed
                 "createdAt" => date('Y-m-d H:i:s'),
                 "updatedAt" => date('Y-m-d H:i:s')
               );
-              $url = $api_host."/api/customer_needs/";
+              $url = $api_host . "/" . API_ROOT . "/customer_needs/";
               $options = array(
                   'http' => array(
                       'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -116,7 +116,7 @@ class CustomerNeed
                             "updatedAt" => date('Y-m-d H:i:s')
                         );
 
-                        $url = $api_host."/api/customer_needs_commit/";
+                        $url = $api_host . "/" . API_ROOT . "/customer_needs_commit/";
                         $options = array(
                               'http' => array(
                                   'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -181,7 +181,7 @@ class CustomerNeed
                             "updatedAt" => date('Y-m-d H:i:s')
                         );
 
-                        $url = $api_host."/api/customer_needs/";
+                        $url = $api_host . "/" . API_ROOT . "/customer_needs/";
                         $options = array(
                               'http' => array(
                                   'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -234,7 +234,7 @@ class CustomerNeed
                             "updatedAt" => date('Y-m-d H:i:s')
                         );
 
-                        $url = $api_host."/api/customer_needs/";
+                        $url = $api_host . "/" . API_ROOT . "/customer_needs/";
                         $options = array(
                             'http' => array(
                                 'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -281,7 +281,7 @@ class CustomerNeed
                             "updatedAt" => date('Y-m-d H:i:s')
                         );
 
-                        $url = $api_host."/api/customer_needs/";
+                        $url = $api_host . "/" . API_ROOT . "/customer_needs/";
                         $options = array(
                             'http' => array(
                                 'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -314,7 +314,7 @@ class CustomerNeed
             "transform"=>"1"
       );
 
-      $url = $api_host."/api/customer_needs/".$id."?".http_build_query($args);
+      $url = $api_host . "/" . API_ROOT . "/customer_needs/".$id."?".http_build_query($args);
       $options = array(
           'http' => array(
               'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -376,7 +376,7 @@ class CustomerNeed
                   "transform"=>1,
                   "filter"=>"id,eq,".$key
             );
-            $contacturl = API_HOST."/api/contacts?".http_build_query($contactargs);
+            $contacturl = API_HOST_URL . "/contacts?".http_build_query($contactargs);
             $contactoptions = array(
                 'http' => array(
                     'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -414,7 +414,7 @@ class CustomerNeed
                 "filter[0]"=>$entityFilter,
                 "filter[1]"=>"contactTypeID,eq,1"
             );
-            $entitycontacturl = API_HOST."/api/contacts?".http_build_query($entitycontactargs);
+            $entitycontacturl = API_HOST_URL . "/contacts?".http_build_query($entitycontactargs);
             $entitycontactoptions = array(
                 'http' => array(
                     'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -428,7 +428,7 @@ class CustomerNeed
                 "transform"=>1,
                 "filter"=>"title,eq,Customer Availability Notification"
             );
-            $templateurl = API_HOST."/api/email_templates?".http_build_query($templateargs);
+            $templateurl = API_HOST_URL . "/email_templates?".http_build_query($templateargs);
             $templateoptions = array(
                 'http' => array(
                     'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -478,7 +478,7 @@ class CustomerNeed
                 "transform"=>1,
                 "filter"=>"title,eq,Carrier Commit Notification"
             );
-            $templateurl = API_HOST."/api/email_templates?".http_build_query($templateargs);
+            $templateurl = API_HOST_URL . "/email_templates?".http_build_query($templateargs);
             $templateoptions = array(
                 'http' => array(
                     'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -504,7 +504,7 @@ class CustomerNeed
                               "transform"=>1,
                               "filter"=>"id,eq,".$key
                         );
-                        $contacturl = API_HOST."/api/contacts?".http_build_query($contactargs);
+                        $contacturl = API_HOST_URL . "/contacts?".http_build_query($contactargs);
                         $contactoptions = array(
                             'http' => array(
                                 'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -556,7 +556,7 @@ class CustomerNeed
                           "filter[]"=>"orderID,eq,".$orderID
                     );
                 }
-                $matchurl = $api_host."/api/needs_match?".http_build_query($matchargs);
+                $matchurl = $api_host . "/" . API_ROOT . "/needs_match?".http_build_query($matchargs);
                 $matchoptions = array(
                     'http' => array(
                         'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -581,7 +581,7 @@ class CustomerNeed
                         "updatedAt" => date('Y-m-d H:i:s')
                       );
 
-                      $url = $api_host."/api/needs_match/";
+                      $url = $api_host . "/" . API_ROOT . "/needs_match/";
                       $options = array(
                           'http' => array(
                               'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -606,7 +606,7 @@ class CustomerNeed
 
     public function sendNeedsMatchNotification($api_host,$id, $contact) { // $id is the needs_match id NOT the customer_needs id
 
-        $url = $api_host."/api/needs_match/".$id;
+        $url = $api_host . "/" . API_ROOT . "/needs_match/".$id;
         $options = array(
             'http' => array(
                 'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -623,7 +623,7 @@ class CustomerNeed
                     "transform"=>1,
                     "filter"=>"id,eq,".$result['carrierNeedsID']
                 );
-                $carrierurl = $api_host."/api/carrier_needs?".http_build_query($carrierargs);
+                $carrierurl = $api_host . "/" . API_ROOT . "/carrier_needs?".http_build_query($carrierargs);
                 $carrieroptions = array(
                     'http' => array(
                         'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -640,7 +640,7 @@ class CustomerNeed
                           "filter"=>"id,eq,".$key
                     );
 
-                    $contacturl = $api_host."/api/contacts?".http_build_query($contactargs);
+                    $contacturl = $api_host . "/" . API_ROOT . "/contacts?".http_build_query($contactargs);
                     $contactoptions = array(
                         'http' => array(
                             'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -667,7 +667,7 @@ class CustomerNeed
                       "filter[2]"=>"status,eq,Active"
                 );
 
-                $contacturl = $api_host."/api/contacts?".http_build_query($contactargs);
+                $contacturl = $api_host . "/" . API_ROOT . "/contacts?".http_build_query($contactargs);
                 $contactoptions = array(
                     'http' => array(
                         'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -689,7 +689,7 @@ class CustomerNeed
                 "transform"=>1,
                 "filter[]"=>"title,eq,Carrier Match Notification"
             );
-            $templateurl = $api_host."/api/email_templates?".http_build_query($templateargs);
+            $templateurl = $api_host . "/" . API_ROOT . "/email_templates?".http_build_query($templateargs);
             $templateoptions = array(
                 'http' => array(
                     'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -712,7 +712,7 @@ class CustomerNeed
                   "filter[2]"=>"status,eq,Active"
             );
 
-            $fromcontacturl = $api_host."/api/contacts?".http_build_query($fromcontactargs);
+            $fromcontacturl = $api_host . "/" . API_ROOT . "/contacts?".http_build_query($fromcontactargs);
             $fromcontactoptions = array(
                 'http' => array(
                     'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -738,7 +738,7 @@ class CustomerNeed
                               "status"=>"Notification Sent",
                               "notificationSentDate"=>date('Y-m-d H:i:s')
                         );
-                        $matchurl = API_HOST."/api/needs_match/".$id;
+                        $matchurl = API_HOST_URL . "/needs_match/".$id;
                         $matchoptions = array(
                             'http' => array(
                                 'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -805,7 +805,7 @@ class CustomerNeed
             "filter[1]"=>"status,eq,Available",
             "filter[2]"=>"availableDate,ge,".date("Y-m-d 00:00:00")
         );
-        $url = API_HOST."/api/carrier_needs?".http_build_query($args);
+        $url = API_HOST_URL . "/carrier_needs?".http_build_query($args);
         //echo $url . "<br />\n";
         $options = array(
             'http' => array(
@@ -932,7 +932,7 @@ class CustomerNeed
             "filter[0]"=>"originationState,eq,".$this->originationState,
             "filter[1]"=>"createdAt,lt,".date("Y-m-d 00:00:00")
         );
-        $url = API_HOST."/api/order_details?".http_build_query($args);
+        $url = API_HOST_URL . "/order_details?".http_build_query($args);
         $options = array(
             'http' => array(
                 'header'  => "Content-type: application/x-www-form-urlencoded\r\n",

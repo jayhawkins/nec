@@ -1,22 +1,13 @@
 <?php
 
-class Documents
+class Documents extends Model
 {
-	private $fileupload;
-	private $name;
-	private $documentID;
-	private $documentURL;
-	private $createdAt;
-	private $updatedAt;
-	private $entityID;
-    public function __construct() {
-
-    }
-
+    protected $_name = "documents";
+    
     public function post($api_host,$id) {
 
     }
-
+    
     public function viewdocument($entityID,$file_location,$filename) {
 		$dir = $file_location . "users/".floor($entityID / 65535)."/".$entityID;
 		$file = $dir . "/" . $filename;
@@ -116,11 +107,12 @@ class Documents
 					"name"=>$name,
 					"documentID"=>$filename,
 					"documentURL"=>$documentURL,
+				    //"content"=> Flight::db()->($fileupload["tmp_name"]);
 					"entityID"=>$entityID,
 					"createdAt" => date('Y-m-d H:i:s'), //$updatedAt
 					"updatedAt" => date('Y-m-d H:i:s')
 				);
-				$url = $api_host."/api/documents/";
+				$url = $api_host . "/" . API_ROOT. "/documents/";
 				$options = array(
 					'http' => array(
 						'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -285,18 +277,18 @@ class Documents
 												if (!isset($failureReason[$counter])) {
 													/*
 													if ($("#id").val() > '') {
-														var url = '<?php echo API_HOST."/api/carrier_needs" ?>/' + $("#id").val();
+														var url = '<?php echo API_HOST_URL . "/carrier_needs" ?>/' + $("#id").val();
 														type = "PUT";
 													} else {
-														var url = '<?php echo API_HOST."/api/carrier_needs" ?>';
+														var url = '<?php echo API_HOST_URL . "/carrier_needs" ?>';
 														type = "POST";
 													}
 													*/
 													if ((isset($line[0])) && ($line[0] != '')) {
-														$url = $api_host."/api/carrier_needs/" . $line[0];
+													    $url = $api_host  . "/" . API_ROOT. "/carrier_needs/" . $line[0];
 														$type = "PUT";
 													} else {
-														$url = $api_host."/api/carrier_needs";
+													    $url = $api_host . "/" . API_ROOT. "/carrier_needs";
 														$type = "POST";
 													}
 													/*
@@ -700,14 +692,14 @@ class Documents
                                         $destinationlongitude = $olongi;
                                         $destinationformatted_address = $oformatted_address;
 
-                                        $url = $api_host."/api/carrier_needs";
+                                        $url = $api_host . "/" . API_ROOT. "/carrier_needs";
                                         $type = "POST";
 /*
                                         if ((isset($line[0])) && ($line[0] != '')) {
-                                            $url = $api_host."/api/carrier_needs/" . $line[0];
+                                            $url = $api_host . "/" . API_ROOT. "/carrier_needs/" . $line[0];
                                             $type = "PUT";
                                         } else {
-                                            $url = $api_host."/api/carrier_needs";
+                                            $url = $api_host . "/" . API_ROOT. "/carrier_needs";
                                             $type = "POST";
                                         }
 
@@ -977,14 +969,14 @@ class Documents
                                         $destinationlongitude = $olongi;
                                         $destinationformatted_address = $oformatted_address;
 
-                                        $url = $api_host."/api/carrier_needs";
+                                        $url = $api_host  . "/" . API_ROOT. "/carrier_needs";
                                         $type = "POST";
 /*
                                         if ((isset($line[0])) && ($line[0] != '')) {
-                                            $url = $api_host."/api/carrier_needs/" . $line[0];
+                                            $url = $api_host  . "/" . API_ROOT. "/api/carrier_needs/" . $line[0];
                                             $type = "PUT";
                                         } else {
-                                            $url = $api_host."/api/carrier_needs";
+                                            $url = $api_host  . "/" . API_ROOT. "/api/carrier_needs";
                                             $type = "POST";
                                         }
 
@@ -1158,7 +1150,7 @@ class Documents
       $args = array(
             "transform"=>"1"
       );
-      $url = $api_host."/api/documents/".$id."?".http_build_query($args);
+      $url = $api_host . "/" . API_ROOT. "/documents/".$id."?".http_build_query($args);
       $options = array(
           'http' => array(
               'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -1185,7 +1177,4 @@ class Documents
         }
     }
 
-    public function delete() {
-
-    }
 }

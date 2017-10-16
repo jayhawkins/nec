@@ -6,36 +6,36 @@ require '../../nec_config.php';
 require '../lib/common.php';
 
 $state = '';
-$states = json_decode(file_get_contents(API_HOST.'/api/states?columns=abbreviation,name&order=name'));
+$states = json_decode(file_get_contents(API_HOST_URL . '/states?columns=abbreviation,name&order=name'));
 
 $entity = '';
-$entity = json_decode(file_get_contents(API_HOST.'/api/entities?columns=rateType,negotiatedRate&filter[]=id,eq,' . $_SESSION['entityid']));
+$entity = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=rateType,negotiatedRate&filter[]=id,eq,' . $_SESSION['entityid']));
 
 $entities = '';
-$entities = json_decode(file_get_contents(API_HOST.'/api/entities?columns=id,name&order=name&filter[]=id,gt,0&filter[]=entityTypeID,eq,2'));
+$entities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=id,name&order=name&filter[]=id,gt,0&filter[]=entityTypeID,eq,2'));
 
 $allEntities = '';
-$allEntities = json_decode(file_get_contents(API_HOST.'/api/entities?columns=id,name&order=name&filter[]=id,gt,0&transform=1'));
+$allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=id,name&order=name&filter[]=id,gt,0&transform=1'));
 
 
 $locationTypeID = '';
-$locationTypes = json_decode(file_get_contents(API_HOST."/api/location_types?columns=id,name,status&filter[]=entityID,eq," . $_SESSION['entityid'] . "&filter[]=id,gt,0&satisfy=all&order=name"));
+$locationTypes = json_decode(file_get_contents(API_HOST_URL . "/location_types?columns=id,name,status&filter[]=entityID,eq," . $_SESSION['entityid'] . "&filter[]=id,gt,0&satisfy=all&order=name"));
 
 $contacts = '';
-$contacts = json_decode(file_get_contents(API_HOST."/api/contacts?columns=id,firstName,lastName&order=lastName&filter=entityID,eq," . $_SESSION['entityid'] ));
+$contacts = json_decode(file_get_contents(API_HOST_URL . "/contacts?columns=id,firstName,lastName&order=lastName&filter=entityID,eq," . $_SESSION['entityid'] ));
 
 $locations_contacts = '';
-$locations_contacts = json_decode(file_get_contents(API_HOST."/api/locations_contacts?columns=location_id,contact_id&filter=entityID,eq," . $_SESSION['entityid'] ));
+$locations_contacts = json_decode(file_get_contents(API_HOST_URL . "/locations_contacts?columns=location_id,contact_id&filter=entityID,eq," . $_SESSION['entityid'] ));
 
 $loccon = array();
 for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
     $loccon[$locations_contacts->locations_contacts->records[$lc][0]] = $locations_contacts->locations_contacts->records[$lc][1];
 }
 
-$dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_points?include=object_type_data_point_values&transform=1&columns=id,columnName,title,status,object_type_data_point_values.value&filter[]=entityID,in,(0," . $_SESSION['entityid'] . ")&filter[]=status,eq,Active" ));
+$dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_points?include=object_type_data_point_values&transform=1&columns=id,columnName,title,status,object_type_data_point_values.value&filter[]=entityID,in,(0," . $_SESSION['entityid'] . ")&filter[]=status,eq,Active" ));
 
 $customer_needs_root = '';
-$customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_needs?columns=rootCustomerNeedsID&filter=rootCustomerNeedsID,neq,0&transform=1"));
+$customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_needs?columns=rootCustomerNeedsID&filter=rootCustomerNeedsID,neq,0&transform=1"));
 
 
  ?>
@@ -231,7 +231,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         var billingAddress = {};
     
         $.ajax({
-            url: '<?php echo API_HOST."/api/locations" ?>?columns=address1,city,state,zip&transform=1&filter[]=locationTypeID,eq,1&filter[]=status,eq,Active&filter[]=entityID,eq,' + entityID,
+            url: '<?php echo API_HOST_URL . "/locations" ?>?columns=address1,city,state,zip&transform=1&filter[]=locationTypeID,eq,1&filter[]=status,eq,Active&filter[]=entityID,eq,' + entityID,
             type: 'GET',
             contentType: "application/json",
             async: false,
@@ -378,10 +378,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                 
         var customerNeedsRootIDs = new Array();
         
-        var url = '<?php echo API_HOST ?>' + '/api/customer_needs?columns=rootCustomerNeedsID&transform=1';
+        var url = '<?php echo API_HOST_URL ?>' + '/customer_needs?columns=rootCustomerNeedsID&transform=1';
         var type = "GET";
         $.ajax({
-            url: '<?php echo API_HOST ?>' + '/api/customer_needs?columns=rootCustomerNeedsID&transform=1',
+            url: '<?php echo API_HOST_URL ?>' + '/customer_needs?columns=rootCustomerNeedsID&transform=1',
             type: "GET",
             contentType: "application/json",
             success: function(data){
@@ -411,7 +411,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
     function getCommitted(){
 
-        var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?columns=id,rootCustomerNeedsID&filter[]=rootCustomerNeedsID,neq,0&filter[]=status,eq,Available&transform=1';
+        var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?columns=id,rootCustomerNeedsID&filter[]=rootCustomerNeedsID,neq,0&filter[]=status,eq,Available&transform=1';
 
         $.ajax({
            url: url,
@@ -442,7 +442,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         
     function loadTableAJAX(committed) {
         
-        var baseUrl = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate&filter[]=id,in,' + committed + '&filter[]=status,eq,Available';
+        var baseUrl = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate&filter[]=id,in,' + committed + '&filter[]=status,eq,Available';
              
         var url = baseUrl + '&order[]=entityID&order[]=rootCustomerNeedsID&order[]=availableDate,desc&transform=1';        
 
@@ -571,7 +571,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
     function loadCustomerNeedsCommitAJAX (id){
                  
-        var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,availableDate,expirationDate,transportationMode,rate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.entityID,customer_needs_commit.status,customer_needs_commit.pickupDate,customer_needs_commit.deliveryDate,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate&filter=rootCustomerNeedsID,eq,' + id + '&satisfy=all&order[]=entityID&order[]=rootCustomerNeedsID&order[]=availableDate,desc&transform=1';
+        var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,availableDate,expirationDate,transportationMode,rate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.entityID,customer_needs_commit.status,customer_needs_commit.pickupDate,customer_needs_commit.deliveryDate,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate&filter=rootCustomerNeedsID,eq,' + id + '&satisfy=all&order[]=entityID&order[]=rootCustomerNeedsID&order[]=availableDate,desc&transform=1';
         
         if ( ! $.fn.DataTable.isDataTable( '#customer-needs-commit-table' ) ) {
             
@@ -732,7 +732,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
     function loadSelectedCustomer(id){
         
-        var baseUrl = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate';
+        var baseUrl = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate';
                   
         baseUrl = baseUrl + "&filter[]=id,eq," + id;
                 
@@ -855,7 +855,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         
         if (entityType == 0) blnShow = true; 
     
-        var url = '<?php echo API_HOST; ?>' + '/api/customer_needs_notes?columns=id,customerNeedsID,note,permission,createdAt&filter[]=customerNeedsID,eq,' + id + '&filter[]=permission,cs,' + entityType + '&transform=1';
+        var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs_notes?columns=id,customerNeedsID,note,permission,createdAt&filter[]=customerNeedsID,eq,' + id + '&filter[]=permission,cs,' + entityType + '&transform=1';
         
         if ( ! $.fn.DataTable.isDataTable( '#customer-needs-note-table' ) ) {
             
@@ -960,7 +960,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         today = mm+'/'+dd+'/'+yyyy;
         today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
 
-        var url = '<?php echo API_HOST."/api/customer_needs_commit" ?>/' + commitID;
+        var url = '<?php echo API_HOST_URL . "/customer_needs_commit" ?>/' + commitID;
         type = "PUT";
         var date = today;
         var data = {rate: carrierRate, status: "Close", updatedAt: date};
@@ -1640,7 +1640,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
     function closeCustomerCommitLegs(customerNeedID){
         
         $.ajax({
-            url: '<?php echo API_HOST ?>' + '/api/customer_needs?columns=id&filter=rootCustomerNeedsID,eq,' + customerNeedID + '&transform=1',
+            url: '<?php echo API_HOST_URL ?>' + '/customer_needs?columns=id&filter=rootCustomerNeedsID,eq,' + customerNeedID + '&transform=1',
             type: "GET",
             contentType: "application/json",
             async: false,
@@ -1649,7 +1649,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                 data.customer_needs.forEach(function(customerNeedID){
                     
                     $.ajax({
-                        url: '<?php echo API_HOST ?>' + '/api/customer_needs/' + customerNeedID,
+                        url: '<?php echo API_HOST_URL ?>' + '/customer_needs/' + customerNeedID,
                         type: "PUT",
                         data: JSON.stringify({status: "Closed"}),
                         contentType: "application/json",
@@ -1672,11 +1672,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
     function createNewAvailability(customerNeedID, differenceQty, today){
         
         $.ajax({
-            url: '<?php echo API_HOST ?>' + '/api/customer_needs/' + customerNeedID + '?transform=1',
+            url: '<?php echo API_HOST_URL ?>' + '/customer_needs/' + customerNeedID + '?transform=1',
             type: "GET",
             contentType: "application/json",
             success: function(data){
-                var url = '<?php echo API_HOST."/api/customer_needs" ?>';
+                var url = '<?php echo API_HOST_URL . "/customer_needs" ?>';
                 var type = "POST";
                            
                 var newCustomerNeed = {entityID: data.entityID, originationAddress1: data.originationAddress1, originationCity: data.originationCity, originationState: data.originationState, originationZip: data.originationZip,
@@ -1704,7 +1704,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                                   //var updatedata = {rootCustomerNeedsID: data};
                                   var updatedata = {rootCustomerNeedsID: 0};
                                   $.ajax({
-                                      url: '<?php echo API_HOST."/api/customer_needs" ?>/' + data,
+                                      url: '<?php echo API_HOST_URL . "/customer_needs" ?>/' + data,
                                       type: 'PUT',
                                       data: JSON.stringify(updatedata),
                                       contentType: "application/json",
@@ -1791,7 +1791,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
             today = mm+'/'+dd+'/'+yyyy;
             today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
 
-            var url = '<?php echo API_HOST; ?>' + '/api/customer_needs_notes'
+            var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs_notes'
             var data = {customerNeedsID: $("#customerNeedsID").val(), note: $("#commitmentNote").val(), permission: $("#viewAccess").val(), createdAt: today, updatedAt:today};
             
             $.ajax({
@@ -1952,7 +1952,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                         orderQty = selectedCustomerNeed.qty;
                     }
                     
-                    var url = '<?php echo API_HOST ?>' + '/api/orders/';
+                    var url = '<?php echo API_HOST_URL ?>' + '/orders/';
                     var orderData = {customerID: $("#entityID").val(), carrierIDs: carrierIDs, documentID: documentID, orderID: orderID,
                             originationAddress: selectedCustomerNeed.originationAddress1, originationCity: selectedCustomerNeed.originationCity,
                             originationState: selectedCustomerNeed.originationState, originationZip: selectedCustomerNeed.originationZip,
@@ -2066,7 +2066,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                             if (differenceQty != 0) createNewAvailability(selectedCustomerNeed.id, differenceQty, today);
                             
                             $.ajax({
-                                url: '<?php echo API_HOST ?>' + '/api/customer_needs/' + selectedCustomerNeed.id,
+                                url: '<?php echo API_HOST_URL ?>' + '/customer_needs/' + selectedCustomerNeed.id,
                                 type: "PUT",
                                 data: JSON.stringify({status: "Closed"}),
                                 contentType: "application/json",
@@ -2188,7 +2188,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                         orderQty = selectedCustomerNeed.qty;
                     }
                     
-                    var url = '<?php echo API_HOST ?>' + '/api/orders/';
+                    var url = '<?php echo API_HOST_URL ?>' + '/orders/';
                     var orderData = {customerID: $("#entityID").val(), carrierIDs: carrierIDs, documentID: documentID, orderID: orderID,
                             originationAddress: selectedCustomerNeed.originationAddress1, originationCity: selectedCustomerNeed.originationCity,
                             originationState: selectedCustomerNeed.originationState, originationZip: selectedCustomerNeed.originationZip,
@@ -2314,7 +2314,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                             closeCustomerCommitLegs(selectedCustomerNeed.id);
                             
                             $.ajax({
-                                url: '<?php echo API_HOST ?>' + '/api/customer_needs/' + selectedCustomerNeed.id,
+                                url: '<?php echo API_HOST_URL ?>' + '/customer_needs/' + selectedCustomerNeed.id,
                                 type: "PUT",
                                 data: JSON.stringify({status: "Closed"}),
                                 contentType: "application/json",
@@ -2381,7 +2381,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         
         
         var table = $("#customer-needs-commit-table").DataTable();
-        var url = '<?php echo API_HOST ?>' + '/api/order_details/';
+        var url = '<?php echo API_HOST_URL ?>' + '/order_details/';
         var json = table.ajax.json();        
         
         var customer_needs = json.customer_needs;
@@ -2478,7 +2478,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
     $('#customerRate').keyup(function () {
         
         $.ajax({
-            url: '<?php echo API_HOST ?>' + '/api/customer_needs/' + $("#customerNeedsID").val(),
+            url: '<?php echo API_HOST_URL ?>' + '/customer_needs/' + $("#customerNeedsID").val(),
             type: "PUT",
             data: JSON.stringify({rate: $("#customerRate").val()}),
             contentType: "application/json",

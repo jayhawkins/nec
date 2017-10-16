@@ -16,7 +16,7 @@ class Contact
 
     public function put($contactid,$firstName,$lastName,$title,$phone,$fax,$email) {
         try {
-              $contacturl = API_HOST.'/api/contacts/'.$contactid;
+            $contacturl = API_HOST_URL . '/contacts/'.$contactid;
               $contactdata = array(
                           "firstName" => $firstName,
                           "lastName" => $lastName,
@@ -54,7 +54,7 @@ class Contact
               "filter"=>"entityID,eq,".$id
         );
 
-        $url = API_HOST."/api/contacts?".http_build_query($args);
+        $url = API_HOST_URL . "/contacts?".http_build_query($args);
         $options = array(
             'http' => array(
                 'header'  => "Content-type: application/x-www-form-urlencoded\r\n",

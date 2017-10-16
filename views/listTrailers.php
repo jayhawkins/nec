@@ -6,7 +6,7 @@ require '../../nec_config.php';
 require '../lib/common.php';
 
 $typeID = '';
-$objectTypes = json_decode(file_get_contents(API_HOST."/api/object_types?order=name"));
+$objectTypes = json_decode(file_get_contents(API_HOST_URL . "/object_types?order=name"));
 
  ?>
 
@@ -59,10 +59,10 @@ $objectTypes = json_decode(file_get_contents(API_HOST."/api/object_types?order=n
                 today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
 
                 if ($("#id").val() > '') {
-                    var url = '<?php echo API_HOST."/api/objects" ?>/' + $("#id").val();
+                    var url = '<?php echo API_HOST_URL . "/objects" ?>/' + $("#id").val();
                     type = "PUT";
                 } else {
-                    var url = '<?php echo API_HOST."/api/objects" ?>';
+                    var url = '<?php echo API_HOST_URL . "/objects" ?>';
                     type = "POST";
                 }
 
@@ -110,7 +110,7 @@ $objectTypes = json_decode(file_get_contents(API_HOST."/api/object_types?order=n
 
       function loadTableAJAX() {
         myApp.showPleaseWait();
-        var url = '<?php echo API_HOST; ?>' + '/api/objects?columns=id,objectTypeID,name,data,status&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order=name&transform=1';
+        var url = '<?php echo API_HOST_URL; ?>' + '/objects?columns=id,objectTypeID,name,data,status&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order=name&transform=1';
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
             processing: true,
@@ -167,7 +167,7 @@ $objectTypes = json_decode(file_get_contents(API_HOST."/api/object_types?order=n
           }
 
           var data = {status: newStatus};
-          var url = '<?php echo API_HOST."/api/objects" ?>/' + $("#id").val();
+          var url = '<?php echo API_HOST_URL . "/objects" ?>/' + $("#id").val();
           var type = "PUT";
 
           $.ajax({

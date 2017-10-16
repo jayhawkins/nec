@@ -17,7 +17,7 @@ $myavailabilityMenuAccessList = array(0,1,2,3,4);
 $mapsMenuAccessList = array(0,1,2);
 $settingsMenuAccessList = array(0,1,2);
 
-$member = json_decode(file_get_contents(API_HOST.'/api/users?include=members&filter=id,eq,'.$_SESSION['userid']));
+$member = json_decode(file_get_contents(API_HOST_URL . '/users?include=members&filter=id,eq,'.$_SESSION['userid']));
 $firstName = $member->members->records[0][3];
 $lastName = $member->members->records[0][4];
 
@@ -27,7 +27,7 @@ $eargs = array(
       "filter[]"=> "id,eq,".$_SESSION['entityid']
 );
 
-$eurl = API_HOST."/api/entities?".http_build_query($eargs);
+$eurl = API_HOST_URL . "/entities?".http_build_query($eargs);
 $eoptions = array(
     'http' => array(
         'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -59,10 +59,10 @@ if ($_SESSION['entityid'] > 0) {
 
     if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
         $entityname = $eresult['entities'][0]['name'] . " - (Customer)";
-        $cnurl = API_HOST."/api/carrier_needs?".http_build_query($cnargs);
+        $cnurl = API_HOST_URL . "/carrier_needs?".http_build_query($cnargs);
     } elseif ( $eresult['entities'][0]['entityTypeID'] == 2 ) { // Carrier
         $entityname = $eresult['entities'][0]['name'] . " - (Carrier)";
-        $cnurl = API_HOST."/api/customer_needs?".http_build_query($cnargs);
+        $cnurl = API_HOST_URL . "/customer_needs?".http_build_query($cnargs);
     }
 
     $cnoptions = array(
@@ -95,7 +95,7 @@ if ($_SESSION['entityid'] > 0) {
         )
     );
 
-    $locurl = API_HOST."/api/locations?".http_build_query($locargs);
+    $locurl = API_HOST_URL . "/locations?".http_build_query($locargs);
     $loccontext  = stream_context_create($locoptions);
     $locresult = file_get_contents($locurl,false,$loccontext);
     $locresult2 = json_decode($locresult,true);
@@ -113,7 +113,7 @@ if ($_SESSION['entityid'] > 0) {
     );
 
     $entityname = $eresult['entities'][0]['name'] . " - (Admin)";
-    $cnurl = API_HOST."/api/carrier_needs?".http_build_query($cnargs);
+    $cnurl = API_HOST_URL . "/carrier_needs?".http_build_query($cnargs);
     $cnoptions = array(
         'http' => array(
             'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -133,7 +133,7 @@ if ($_SESSION['entityid'] > 0) {
     );
 
     $entityname = $eresult['entities'][0]['name'] . " - (Admin)";
-    $cnurl = API_HOST."/api/customer_needs?".http_build_query($cnargs);
+    $cnurl = API_HOST_URL . "/customer_needs?".http_build_query($cnargs);
     $cnoptions = array(
         'http' => array(
             'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -159,7 +159,7 @@ if ($_SESSION['entityid'] > 0) {
         )
     );
 
-    $locurl = API_HOST."/api/locations?".http_build_query($locargs);
+    $locurl = API_HOST_URL . "/locations?".http_build_query($locargs);
     $loccontext  = stream_context_create($locoptions);
     $locresult = file_get_contents($locurl,false,$loccontext);
     $locresult2 = json_decode($locresult,true);
@@ -251,23 +251,23 @@ if ($_SESSION['entityid'] > 0) {
         var entityid = <?php echo $_SESSION['entityid']; ?>;
         var entityType = <?php echo $_SESSION['entitytype'];  ?>;
 
-            var url = '<?php echo API_HOST; ?>';
+            var url = '<?php echo API_HOST_URL; ?>';
             var orderCount = 0;
             switch(entityType){
                 case 0:     // URL for the Admin. The admin can see ALL Orders.
-                    url += '/api/orders?include=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,distance,needsDataPoints,status,qty,rateType,transportationMode,enitities.id,entities.name,documents.id,documents.documentURL&satisfy=all&transform=1';
+                    url += '/orders?include=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,distance,needsDataPoints,status,qty,rateType,transportationMode,enitities.id,entities.name,documents.id,documents.documentURL&satisfy=all&transform=1';
                     break;
                 case 1:    // URL for Customer. The Customer can only see their orders.
-                    url += '/api/orders?include=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,distance,needsDataPoints,status,qty,rateType,transportationMode,enitities.id,entities.name,documents.id,documents.documentURL&filter=customerID,eq,' + entityid + '&satisfy=all&transform=1';
+                    url += '/orders?include=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,distance,needsDataPoints,status,qty,rateType,transportationMode,enitities.id,entities.name,documents.id,documents.documentURL&filter=customerID,eq,' + entityid + '&satisfy=all&transform=1';
                     break;
                 case 2:     // URL for the Carrier. Same as the admin but will be filtered below.
-                    url += '/api/orders?include=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,distance,needsDataPoints,status,qty,rateType,transportationMode,enitities.id,entities.name,documents.id,documents.documentURL&satisfy=all&transform=1';
+                    url += '/orders?include=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,distance,needsDataPoints,status,qty,rateType,transportationMode,enitities.id,entities.name,documents.id,documents.documentURL&satisfy=all&transform=1';
                     break;
             }
 
 
             $.ajax({
-               //url: '<?php echo API_HOST."/api/orders" ?>?transform=1',
+               //url: '<?php echo API_HOST_URL . "/orders" ?>?transform=1',
                url: url,
                type: "GET",
                contentType: "application/json",
@@ -304,7 +304,7 @@ if ($_SESSION['entityid'] > 0) {
 
     function countCommitments(){
 
-        var url = '<?php echo API_HOST; ?>' + '/api/customer_needs?columns=id,rootCustomerNeedsID&filter[]=rootCustomerNeedsID,neq,0&filter[]=status,eq,Available&transform=1';
+        var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?columns=id,rootCustomerNeedsID&filter[]=rootCustomerNeedsID,neq,0&filter[]=status,eq,Available&transform=1';
 
         $.ajax({
            url: url,
@@ -334,7 +334,7 @@ if ($_SESSION['entityid'] > 0) {
 
         function countCommitted(committed){
 
-            var baseUrl = '<?php echo API_HOST; ?>' + '/api/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate&filter[]=id,in,' + committed + '&filter[]=status,eq,Available';
+            var baseUrl = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate&filter[]=id,in,' + committed + '&filter[]=status,eq,Available';
 
             var url = baseUrl + '&order[]=entityID&order[]=rootCustomerNeedsID&order[]=availableDate,desc&transform=1';
 
@@ -450,7 +450,7 @@ if ($_SESSION['entityid'] > 0) {
     if ( $_SESSION['entityid'] == 0 ) {
  ?>
              <li>
-                 <a href="#" onclick="ajaxFormCall('listAvailability');">
+                 <a href="#" style="line-height: 20px; padding-bottom: 15px;" onclick="ajaxFormCall('listAvailability');">
                      <span class="icon">
                          <i class="fa fa-users"></i>
                      </span>
@@ -468,7 +468,7 @@ if ($_SESSION['entityid'] > 0) {
     if ( ($_SESSION['entitytype'] == 2) && in_array($_SESSION['usertypeid'], $needsMenuAccessList) ) {
  ?>
              <li>
-                 <a href="#" onclick="ajaxFormCall('listAvailability');">
+                 <a href="#" style="line-height: 20px; padding-bottom: 15px;" onclick="ajaxFormCall('listAvailability');">
                      <span class="icon">
                          <i class="fa fa-users"></i>
                      </span>
@@ -565,6 +565,9 @@ if ($_SESSION['entityid'] > 0) {
 
     if ( ($_SESSION['entitytype'] == 2 || $_SESSION['entityid'] == 0 ) && in_array($_SESSION['usertypeid'], $collectionsMenuAccessList) ) {
  ?>
+            <!--
+             # Menu is being hidden
+             
             <li>
                 <a href="#">
                     <span class="icon">
@@ -573,6 +576,8 @@ if ($_SESSION['entityid'] > 0) {
                     Collections
                 </a>
             </li>
+            
+             -->
 <?php
     }
 ?>
@@ -1369,12 +1374,16 @@ if ($_SESSION['entityid'] > 0) {
 <script src="vendor/datatables/media/js/jquery.dataTables.js"></script>
 <script src="vendor/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
 
-
-
+<?php if(ENVIRONMENT == 'development') { ?>
+<script type="text/javascript" src="vendor/datatables/media/js/dataTables-b-1_2_4.min.js"></script>
+<script type="text/javascript" src="vendor/bootstrap3-typeahead/js/bootstrap3-typeahead-4_0_2.min.js"></script>
+<script type="text/javascript" src="vendor/chroma/js/chroma-1_1_1.min.js"></script>
+<script type="text/javascript" src="vendor/googlemaps/js/googlemaps.js"></script>
+<?php } else { ?>
 <script type="text/javascript" src="https://cdn.datatables.net/v/dt/b-1.2.4/datatables.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/1.1.1/chroma.min.js" charset="utf-8"></script>
-
+<?php } ?>
 
 <!-- Can't use or the settings gear dropdown won't work -->
 <!--script src="vendor/bootstrap/dist/js/bootstrap.min.js"></script-->

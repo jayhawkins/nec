@@ -6,7 +6,7 @@ require '../../nec_config.php';
 require '../lib/common.php';
 
 $userTypeID = '';
-//$userTypes = json_decode(file_get_contents(API_HOST.'/api/user_types?columns=id,name&order=id'));
+//$userTypes = json_decode(file_get_contents(API_HOST_URL . '/user_types?columns=id,name&order=id'));
 
 if ($_SESSION['entityid'] == 0) {
     $args = array();
@@ -15,7 +15,7 @@ if ($_SESSION['entityid'] == 0) {
         "filter"=>"id,gt,0"
     );
 }
-$url = API_HOST."/api/user_types?".http_build_query($args);
+$url = API_HOST_URL . "/user_types?".http_build_query($args);
 $options = array(
     'http' => array(
         'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -179,7 +179,7 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
       }
 
       function loadTableAJAX() {
-        var url = '<?php echo API_HOST; ?>' + '/api/members?include=users,user_types&columns=members.id,members.entityID,members.userID,members.firstName,members.lastName,user_types.id,user_types.name,users.username,users.uniqueID,users.textNumber,users.status&filter[]=members.entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order[]=lastName&order[]=firstName&transform=1';
+        var url = '<?php echo API_HOST_URL; ?>' + '/members?include=users,user_types&columns=members.id,members.entityID,members.userID,members.firstName,members.lastName,user_types.id,user_types.name,users.username,users.uniqueID,users.textNumber,users.status&filter[]=members.entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order[]=lastName&order[]=firstName&transform=1';
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
             processing: true,
@@ -240,7 +240,7 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
           }
 
           var data = {status: newStatus};
-          var url = '<?php echo API_HOST."/api/users" ?>/' + $("#userID").val();
+          var url = '<?php echo API_HOST_URL . "/users" ?>/' + $("#userID").val();
           var type = "PUT";
 
           $.ajax({

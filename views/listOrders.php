@@ -6,39 +6,39 @@ require '../../nec_config.php';
 require '../lib/common.php';
 
 $state = '';
-$states = json_decode(file_get_contents(API_HOST.'/api/states?columns=abbreviation,name&order=name'));
+$states = json_decode(file_get_contents(API_HOST_URL . '/states?columns=abbreviation,name&order=name'));
 
 $entity = '';
-$entity = json_decode(file_get_contents(API_HOST.'/api/entities?columns=rateType,negotiatedRate&filter[]=id,eq,' . $_SESSION['entityid']));
+$entity = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=rateType,negotiatedRate&filter[]=id,eq,' . $_SESSION['entityid']));
 
 $entities = '';
-$entities = json_decode(file_get_contents(API_HOST.'/api/entities?columns=id,name&order=name&filter[]=id,gt,0&filter[]=entityTypeID,eq,2'));
+$entities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=id,name&order=name&filter[]=id,gt,0&filter[]=entityTypeID,eq,2'));
 
 $carrierEntities = '';
-$carrierEntities = json_decode(file_get_contents(API_HOST.'/api/entities?columns=id,name&order=name&filter[]=id,gt,0&filter[]=entityTypeID,eq,2&transform=1'));
+$carrierEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=id,name&order=name&filter[]=id,gt,0&filter[]=entityTypeID,eq,2&transform=1'));
 
 $allEntities = '';
-$allEntities = json_decode(file_get_contents(API_HOST.'/api/entities?columns=id,name&order=name&filter[]=id,gt,0&transform=1'));
+$allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=id,name&order=name&filter[]=id,gt,0&transform=1'));
 
 
 $locationTypeID = '';
-$locationTypes = json_decode(file_get_contents(API_HOST."/api/location_types?columns=id,name,status&filter[]=entityID,eq," . $_SESSION['entityid'] . "&filter[]=id,gt,0&satisfy=all&order=name"));
+$locationTypes = json_decode(file_get_contents(API_HOST_URL . "/location_types?columns=id,name,status&filter[]=entityID,eq," . $_SESSION['entityid'] . "&filter[]=id,gt,0&satisfy=all&order=name"));
 
 $contacts = '';
-$contacts = json_decode(file_get_contents(API_HOST."/api/contacts?columns=id,firstName,lastName&order=lastName&filter=entityID,eq," . $_SESSION['entityid'] ));
+$contacts = json_decode(file_get_contents(API_HOST_URL . "/contacts?columns=id,firstName,lastName&order=lastName&filter=entityID,eq," . $_SESSION['entityid'] ));
 
 $locations_contacts = '';
-$locations_contacts = json_decode(file_get_contents(API_HOST."/api/locations_contacts?columns=location_id,contact_id&filter=entityID,eq," . $_SESSION['entityid'] ));
+$locations_contacts = json_decode(file_get_contents(API_HOST_URL . "/locations_contacts?columns=location_id,contact_id&filter=entityID,eq," . $_SESSION['entityid'] ));
 
 $loccon = array();
 for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
     $loccon[$locations_contacts->locations_contacts->records[$lc][0]] = $locations_contacts->locations_contacts->records[$lc][1];
 }
 
-$dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_points?include=object_type_data_point_values&transform=1&columns=id,columnName,title,status,object_type_data_point_values.value&filter[]=entityID,in,(0," . $_SESSION['entityid'] . ")&filter[]=status,eq,Active" ));
+$dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_points?include=object_type_data_point_values&transform=1&columns=id,columnName,title,status,object_type_data_point_values.value&filter[]=entityID,in,(0," . $_SESSION['entityid'] . ")&filter[]=status,eq,Active" ));
 
 $customer_needs_root = '';
-$customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_needs?columns=rootCustomerNeedsID&transform=1"));
+$customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_needs?columns=rootCustomerNeedsID&transform=1"));
 
 
  ?>
@@ -215,7 +215,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                               var destinationlng = response.destinationlng;
                               var distance = response.distance;
 
-                                var url = '<?php echo API_HOST."/api/orders/"; ?>' + $("#id").val();
+                                var url = '<?php echo API_HOST_URL . "/orders/"; ?>' + $("#id").val();
                                 type = "PUT";
 
 
@@ -343,19 +343,19 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
     function loadTableAJAX() {
 
-        var url = '<?php echo API_HOST; ?>';
+        var url = '<?php echo API_HOST_URL; ?>';
         var blnShow = false;
 
         switch(entityType){
             case 0:     // URL for the Admin. The admin can see ALL Orders.
-                url += '/api/orders?include=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,distance,needsDataPoints,status,qty,rateType,transportationMode,enitities.id,entities.name,documents.id,documents.documentURL&satisfy=all&transform=1';
+                url += '/orders?include=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,distance,needsDataPoints,status,qty,rateType,transportationMode,enitities.id,entities.name,documents.id,documents.documentURL&satisfy=all&transform=1';
                 blnShow = true;
                 break;
             case 1:    // URL for Customer. The Customer can only see their orders.
-                url += '/api/orders?include=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,distance,needsDataPoints,status,qty,rateType,transportationMode,enitities.id,entities.name,documents.id,documents.documentURL&filter=customerID,eq,' + entityid + '&satisfy=all&transform=1';
+                url += '/orders?include=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,distance,needsDataPoints,status,qty,rateType,transportationMode,enitities.id,entities.name,documents.id,documents.documentURL&filter=customerID,eq,' + entityid + '&satisfy=all&transform=1';
                 break;
             case 2:     // URL for the Carrier. Same as the admin but will be filtered below.
-                url += '/api/orders?include=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,distance,needsDataPoints,status,qty,rateType,transportationMode,enitities.id,entities.name,documents.id,documents.documentURL&satisfy=all&transform=1';
+                url += '/orders?include=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,distance,needsDataPoints,status,qty,rateType,transportationMode,enitities.id,entities.name,documents.id,documents.documentURL&satisfy=all&transform=1';
                 break;
         }
 
@@ -470,22 +470,22 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
     function loadOrderDetailsAJAX(orderID){
 
-        var url = '<?php echo API_HOST; ?>';
+        var url = '<?php echo API_HOST_URL; ?>';
         var blnShow = false;
         var blnCarrierRate = false;
 
         switch(entityType){
             case 0:     // URL for the Admin.
-                url += '/api/order_details?include=orders,entities&columns=id,carrierID,orderID,originationCity,originationState,destinationCity,destinationState,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,orders.customerID,orders.pickupInformation,orders.deliveryInformation,entities.name&filter=orderID,eq,' + orderID + '&transform=1';
+                url += '/order_details?include=orders,entities&columns=id,carrierID,orderID,originationCity,originationState,destinationCity,destinationState,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,orders.customerID,orders.pickupInformation,orders.deliveryInformation,entities.name&filter=orderID,eq,' + orderID + '&transform=1';
                 blnShow = true;
                 blnCarrierRate = true;
                 break;
             case 1:    // URL for Customer.
-                url += '/api/order_details?include=orders,entities&columns=id,carrierID,orderID,originationCity,originationState,destinationCity,destinationState,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,orders.customerID,orders.pickupInformation,orders.deliveryInformation,entities.name&filter=orderID,eq,' + orderID + '&transform=1';
+                url += '/order_details?include=orders,entities&columns=id,carrierID,orderID,originationCity,originationState,destinationCity,destinationState,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,orders.customerID,orders.pickupInformation,orders.deliveryInformation,entities.name&filter=orderID,eq,' + orderID + '&transform=1';
                 blnShow = true;
                 break;
             case 2:     // URL for the Carrier. The Customer can only see order details of their route.
-                url += '/api/order_details?include=orders,entities&columns=id,carrierID,orderID,originationCity,originationState,destinationCity,destinationState,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,orders.customerID,orders.pickupInformation,orders.deliveryInformation,entities.name&filter[]=orderID,eq,' + orderID + '&filter[]=carrierID,eq,' + entityid + '&transform=1';
+                url += '/order_details?include=orders,entities&columns=id,carrierID,orderID,originationCity,originationState,destinationCity,destinationState,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,orders.customerID,orders.pickupInformation,orders.deliveryInformation,entities.name&filter[]=orderID,eq,' + orderID + '&filter[]=carrierID,eq,' + entityid + '&transform=1';
                 blnCarrierRate = true;
                 break;
         }
@@ -625,7 +625,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
     function loadOrderStatusesAJAX(orderID){
 
-        var url = '<?php echo API_HOST; ?>/api/order_statuses?include=entities&columns=id,orderID,carrierID,city,state,status,note,createdAt,entities.id,entities.name&filter=orderID,eq,' + orderID + '&transform=1';
+        var url = '<?php echo API_HOST_URL; ?>/order_statuses?include=entities&columns=id,orderID,carrierID,city,state,status,note,createdAt,entities.id,entities.name&filter=orderID,eq,' + orderID + '&transform=1';
         var blnShow = false;
 
         if(entityType != 1) blnShow = true;
@@ -665,7 +665,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
     function loadPODListAJAX(orderID){
 
-        var url = '<?php echo API_HOST; ?>/api/orders?columns=id,carrierIDs,deliveryInformation,pickupInformation,podList&filter=id,eq,' + orderID + '&transform=1';
+        var url = '<?php echo API_HOST_URL; ?>/orders?columns=id,carrierIDs,deliveryInformation,pickupInformation,podList&filter=id,eq,' + orderID + '&transform=1';
         var blnShow = false;
 
         if(entityType == 0) blnShow = true;
@@ -739,8 +739,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                         "mRender": function (podDataJSON) {
                             var buttons = '';
                             var errorCount = 0;
-                                                  
-                                                  
                                                   
                             if(podDataJSON.unitNumber == "" || podDataJSON.unitNumber == null){
                                 errorCount++;
@@ -846,7 +844,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
     function loadOrderComments(orderID){
 
-        var url = '<?php echo API_HOST; ?>/api/orders?columns=comments&filter=id,eq,' + orderID + '&transform=1';
+        var url = '<?php echo API_HOST_URL; ?>/orders?columns=comments&filter=id,eq,' + orderID + '&transform=1';
 
         $.ajax({
             url: url,
@@ -869,8 +867,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
     function getOrderIDAndCustomerName(orderID){
 
-        var url = '<?php echo API_HOST; ?>';
-        url += '/api/orders?columns=id,customerID,orderID&filter=id,eq,' + orderID + '&transform=1';
+        var url = '<?php echo API_HOST_URL; ?>';
+        url += '/orders?columns=id,customerID,orderID&filter=id,eq,' + orderID + '&transform=1';
 
           $.ajax({
              url: url,
@@ -883,8 +881,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                   $("#orderNumber").html(orderID);
 
 
-                var url = '<?php echo API_HOST; ?>';
-                url += '/api/entities?columns=id,name&filter=id,eq,' + customerID + '&transform=1';
+                var url = '<?php echo API_HOST_URL; ?>';
+                url += '/entities?columns=id,name&filter=id,eq,' + customerID + '&transform=1';
 
                 $.ajax({
                    url: url,
@@ -1128,7 +1126,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
       function getLocationContacts() {
 
-          var url = '<?php echo API_HOST."/api/locations_contacts?columns=location_id,contact_id&filter=entityID,eq," . $_SESSION['entityid']; ?>';
+          var url = '<?php echo API_HOST_URL . "/locations_contacts?columns=location_id,contact_id&filter=entityID,eq," . $_SESSION['entityid']; ?>';
           var type = "GET";
 
           $.ajax({
@@ -1146,7 +1144,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
       function getLocations(city) {
 
-          var url = '<?php echo API_HOST."/api/locations?columns=id,city,state,zip&filter[]=entityID,eq," . $_SESSION['entityid']; ?>';
+          var url = '<?php echo API_HOST_URL . "/locations?columns=id,city,state,zip&filter[]=entityID,eq," . $_SESSION['entityid']; ?>';
           url += "&filter[]=city,sw," + city;
           var type = "GET";
 
@@ -1174,7 +1172,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         var orderComments = {comments: comments};
 
         $.ajax({
-           url: '<?php echo API_HOST."/api/orders/"; ?>' + id,
+           url: '<?php echo API_HOST_URL . "/orders/"; ?>' + id,
            type: "PUT",
            data: JSON.stringify(orderComments),
            contentType: "application/json",
@@ -1251,7 +1249,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         var emailData = {carrierID: carrierID, customerID: customerID, orderNumber: orderNumber};
 
         $.ajax({
-           url: '<?php echo API_HOST."/api/order_statuses"; ?>',
+           url: '<?php echo API_HOST_URL . "/order_statuses"; ?>',
            type: "POST",
            data: JSON.stringify(orderStatus),
            contentType: "application/json",
@@ -1365,7 +1363,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         var orderData = {podList: podList};
 
         $.ajax({
-            url: '<?php echo API_HOST."/api/orders/"; ?>' + orderID,
+            url: '<?php echo API_HOST_URL . "/orders/"; ?>' + orderID,
             type: 'PUT',
             data: JSON.stringify(orderData),
             contentType: "application/json",
@@ -1854,25 +1852,25 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                      <div class="col-sm-3">
                          <label for="pickupLocation">Pickup Location</label>
                          <div class="form-group">
-                             <input type="text" id="pickupLocation" name="pickupLocation" class="form-control mb-sm" placeholder="Pickup Location" maxlength="30"/>
+                             <input type="text" id="pickupLocation" name="pickupLocation" class="form-control mb-sm" placeholder="Pickup Location" maxlength="20"/>
                          </div>
                      </div>
                      <div class="col-sm-3">
                          <label for="pickupContactPerson">Contact Person</label>
                          <div class="form-group">
-                           <input type="text" id="pickupContactPerson" name="pickupContactPerson" class="form-control mb-sm" placeholder="Contact Person" maxlength="30" />
+                           <input type="text" id="pickupContactPerson" name="pickupContactPerson" class="form-control mb-sm" placeholder="Contact Person" maxlength="20" />
                          </div>
                      </div>
                      <div class="col-sm-3">
                          <label for="pickupPhoneNumber">Phone Number</label>
                          <div class="form-group">
-                           <input type="text" id="pickupPhoneNumber" name="pickupPhoneNumber" class="form-control mb-sm" placeholder="Phone Number" maxlength="30" />
+                           <input type="text" id="pickupPhoneNumber" name="pickupPhoneNumber" class="form-control mb-sm" placeholder="Phone Number" maxlength="20" />
                          </div>
                      </div>
                      <div class="col-sm-3">
                          <label for="pickupHoursOfOperation">Hours of Operation</label>
                          <div class="form-group">
-                           <input type="text" id="pickupHoursOfOperation" name="pickupHoursOfOperation" class="form-control mb-sm" placeholder="Hours of Operation" maxlength="30" />
+                           <input type="text" id="pickupHoursOfOperation" name="pickupHoursOfOperation" class="form-control mb-sm" placeholder="Hours of Operation" maxlength="20" />
                          </div>
                      </div>
                  </div>
@@ -1883,15 +1881,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                      <div class="col-sm-4">
                          <label for="originationAddress">Origination Address</label>
                          <div class="form-group">
-                           <input type="text" id="originationAddress" name="originationAddress" class="form-control mb-sm" placeholder="Origin Address" />
+                           <input type="text" id="originationAddress" name="originationAddress" class="form-control mb-sm" placeholder="Origin Address" maxlength="20" />
                          </div>
                      </div>
                      <div class="col-sm-3">
                          <label for="originationCity">Origination City</label>
                          <div class="form-group">
                            <input type="hidden" id="originationLocationID" name="originationLocationID" />
-                           <input type="text" id="originationCity" name="originationCity" class="form-control mb-sm" placeholder="Origin City"
-                           required="required" />
+                           <input type="text" id="originationCity" name="originationCity" class="form-control mb-sm" placeholder="Origin City" required="required"  maxlength="20" />
                          </div>
                          <div id="suggesstion-box" class="frmSearch"></div>
                      </div>
@@ -1912,7 +1909,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                      <div class="col-sm-2">
                          <label for="originationZip">Origination Zip</label>
                          <div class="form-group">
-                           <input type="text" id="originationZip" name="originationZip" class="form-control mb-sm" placeholder="Origin Zip" />
+                           <input type="text" id="originationZip" name="originationZip" class="form-control mb-sm" placeholder="Origin Zip" maxlength="12" />
                          </div>
                      </div>
                  </div>
@@ -1926,25 +1923,25 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                      <div class="col-sm-3">
                          <label for="deliveryLocation">Delivery Location</label>
                          <div class="form-group">
-                             <input type="text" id="deliveryLocation" name="deliveryLocation" class="form-control mb-sm" placeholder="Delivery Location" maxlength="30"/>
+                             <input type="text" id="deliveryLocation" name="deliveryLocation" class="form-control mb-sm" placeholder="Delivery Location" maxlength="20"/>
                          </div>
                      </div>
                      <div class="col-sm-3">
                          <label for="deliveryContactPerson">Contact Person</label>
                          <div class="form-group">
-                           <input type="text" id="deliveryContactPerson" name="deliveryContactPerson" class="form-control mb-sm" placeholder="Contact Person" maxlength="30" />
+                           <input type="text" id="deliveryContactPerson" name="deliveryContactPerson" class="form-control mb-sm" placeholder="Contact Person" maxlength="20" />
                          </div>
                      </div>
                      <div class="col-sm-3">
                          <label for="deliveryPhoneNumber">Phone Number</label>
                          <div class="form-group">
-                           <input type="text" id="deliveryPhoneNumber" name="deliveryPhoneNumber" class="form-control mb-sm" placeholder="Phone Number" maxlength="30" />
+                           <input type="text" id="deliveryPhoneNumber" name="deliveryPhoneNumber" class="form-control mb-sm" placeholder="Phone Number" maxlength="20" />
                          </div>
                      </div>
                      <div class="col-sm-3">
                          <label for="deliveryHoursOfOperation">Hours of Operation</label>
                          <div class="form-group">
-                           <input type="text" id="deliveryHoursOfOperation" name="deliveryHoursOfOperation" class="form-control mb-sm" placeholder="Hours of Operation" maxlength="30" />
+                           <input type="text" id="deliveryHoursOfOperation" name="deliveryHoursOfOperation" class="form-control mb-sm" placeholder="Hours of Operation" maxlength="20" />
                          </div>
                      </div>
                  </div>
@@ -1955,14 +1952,13 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                    <div class="col-sm-4">
                        <label for="destinationAddress">Destination Address</label>
                        <div class="form-group">
-                         <input type="text" id="destinationAddress" name="destinationAddress" class="form-control mb-sm" placeholder="Destination Address" />
+                         <input type="text" id="destinationAddress" name="destinationAddress" class="form-control mb-sm" placeholder="Destination Address" maxlength="20" />
                        </div>
                    </div>
                    <div class="col-sm-3">
                        <label for="DestinationCity">Destination City</label>
                        <div class="form-group">
-                         <input type="text" id="destinationCity" name="destinationCity" class="form-control mb-sm" placeholder="Dest. City"
-                         required="required" />
+                         <input type="text" id="destinationCity" name="destinationCity" class="form-control mb-sm" placeholder="Dest. City" required="required" maxlength="20" />
                        </div>
                    </div>
                    <div class="col-sm-3">
@@ -1982,7 +1978,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                    <div class="col-sm-2">
                        <label for="destinationZip">Destination Zip</label>
                        <div class="form-group">
-                         <input type="text" id="destinationZip" name="destinationZip" class="form-control mb-sm" placeholder="Dest. Zip" />
+                         <input type="text" id="destinationZip" name="destinationZip" class="form-control mb-sm" placeholder="Dest. Zip" maxlength="12" />
                        </div>
                    </div>
                  </div>
@@ -2104,25 +2100,25 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                         <div class="col-sm-4">
                             <label for="unitNumber">Unit #</label>
                             <div class="form-group">
-                                 <input type="text" id="unitNumber" name="unitNumber" class="form-control" placeholder="Unit #" maxlength="30">
+                                 <input type="text" id="unitNumber" name="unitNumber" class="form-control" placeholder="Unit #" maxlength="20">
                             </div>
                         </div>
                         <div class="col-sm-4">
                             <label for="truckProNumber">Truck-Pro #</label>
                             <div class="form-group">
-                                 <input type="text" id="truckProNumber" name="truckProNumber" class="form-control" placeholder="Truck-Pro #" maxlength="30">
+                                 <input type="text" id="truckProNumber" name="truckProNumber" class="form-control" placeholder="Truck-Pro #" maxlength="20">
                             </div>
                         </div>
                         <div class="col-sm-4">
                             <label for="year">Year</label>
                             <div class="form-group">
-                                 <input type="text" id="year" name="year" class="form-control" placeholder="Year" maxlength="30">
+                                 <input type="text" id="year" name="year" class="form-control" placeholder="Year" maxlength="20">
                             </div>
                         </div>
                         <div class="col-sm-4">
                         <label for="trailerNotes">Notes</label>
                             <div class="form-group">
-                                 <input type="text" id="trailerNotes" name="trailerNotes" class="form-control" placeholder="Notes" maxlength="30">
+                                 <input type="text" id="trailerNotes" name="trailerNotes" class="form-control" placeholder="Notes" maxlength="20">
                             </div>
                         </div>
                   </div>
@@ -2196,7 +2192,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
         $("#id").val(orderID);
 
-        var url = '<?php echo API_HOST . '/api/orders/' ?>' + orderID;
+        var url = '<?php echo API_HOST_URL . '/orders/' ?>' + orderID;
 
         $.ajax({
             url: url,
@@ -2386,6 +2382,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
 
     $('#pod-list-table tbody').off('click', 'td button.download-pod').on('click', 'td button.download-pod', function () {
 
+		var ele = $(this);    	
         var podTable = $("#pod-list-table").DataTable();
         var pod = podTable.row( $(this).parents('tr') ).data();
         var podList = podTable.ajax.json().orders[0].podList;
@@ -2394,7 +2391,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         var orderDetails = orderDetailsTable.ajax.json();
         var orderID = orderDetails.order_details[0].orderID;
 
-        var url = '<?php echo API_HOST . '/api/orders/' ?>' + orderID;
+        var url = '<?php echo API_HOST_URL . '/orders/' ?>' + orderID;
 
         $.ajax({
             url: url,
@@ -2433,13 +2430,15 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                     url: podURL,
                     type: "POST",
                     contentType: "application/json",
+                    responseType: "arraybuffer",
                     data: JSON.stringify(podDataJSON),
                     success: function(data){
-                        var win = window.open('about:blank'); 
-                        var document = win.document;
-                        document.open();
-                        document.write(data);
-                        document.close();
+
+                    		var iframe = $('#download-pdf-container');
+                    		if (iframe.length == 0) {
+                         	iframe = $('<iframe id="download=pdf-container" style="visibility:hidden;"></iframe>').appendTo('body');
+                    		}	  
+						iframe.attr('src', '<?php echo HTTP_HOST; ?>/download-pdf/' + data);
 
                     },
                     error: function(data){
@@ -2570,8 +2569,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         }
 
 
-        var url = '<?php echo API_HOST; ?>';
-        url += '/api/order_details?filter=orderID,eq,' + orderID + '&transform=1';
+        var url = '<?php echo API_HOST_URL; ?>';
+        url += '/order_details?filter=orderID,eq,' + orderID + '&transform=1';
 
         $.ajax({
            url: url,
@@ -2699,7 +2698,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
                     var orderData = {podList: podList};
 
                     $.ajax({
-                        url: '<?php echo API_HOST."/api/orders/"; ?>' + orderID,
+                        url: '<?php echo API_HOST_URL . "/orders/"; ?>' + orderID,
                         type: 'PUT',
                         data: JSON.stringify(orderData),
                         contentType: "application/json",
@@ -2770,7 +2769,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST."/api/customer_nee
         var orderData = {podList: podList};
 
         $.ajax({
-            url: '<?php echo API_HOST."/api/orders/"; ?>' + orderID,
+            url: '<?php echo API_HOST_URL . "/orders/"; ?>' + orderID,
             type: 'PUT',
             data: JSON.stringify(orderData),
             contentType: "application/json",

@@ -6,31 +6,31 @@ require '../../nec_config.php';
 require '../lib/common.php';
 
 $state = '';
-$states = json_decode(file_get_contents(API_HOST.'/api/states?columns=abbreviation,name&order=name'));
+$states = json_decode(file_get_contents(API_HOST_URL . '/states?columns=abbreviation,name&order=name'));
 
 $entities = '';
-$entities = json_decode(file_get_contents(API_HOST.'/api/entities?columns=id,name&order=name&filter[]=id,gt,0&filter[]=entityTypeID,eq,2'));
+$entities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=id,name&order=name&filter[]=id,gt,0&filter[]=entityTypeID,eq,2'));
 
 
 $locationTypeID = '';
-$locationTypes = json_decode(file_get_contents(API_HOST."/api/location_types?columns=id,name,status&filter[]=entityID,eq," . $_SESSION['entityid'] . "&filter[]=id,gt,0&satisfy=all&order=name"));
+$locationTypes = json_decode(file_get_contents(API_HOST_URL . "/location_types?columns=id,name,status&filter[]=entityID,eq," . $_SESSION['entityid'] . "&filter[]=id,gt,0&satisfy=all&order=name"));
 
 $contacts = '';
-$contacts = json_decode(file_get_contents(API_HOST."/api/contacts?columns=id,firstName,lastName&order=lastName&filter=entityID,eq," . $_SESSION['entityid'] ));
+$contacts = json_decode(file_get_contents(API_HOST_URL . "/contacts?columns=id,firstName,lastName&order=lastName&filter=entityID,eq," . $_SESSION['entityid'] ));
 
 $locations_contacts = '';
-$locations_contacts = json_decode(file_get_contents(API_HOST."/api/locations_contacts?columns=location_id,contact_id&filter=entityID,eq," . $_SESSION['entityid'] ));
+$locations_contacts = json_decode(file_get_contents(API_HOST_URL . "/locations_contacts?columns=location_id,contact_id&filter=entityID,eq," . $_SESSION['entityid'] ));
 
 $loccon = array();
 for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
     $loccon[$locations_contacts->locations_contacts->records[$lc][0]] = $locations_contacts->locations_contacts->records[$lc][1];
 }
 
-$dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_points?include=object_type_data_point_values&transform=1&columns=id,columnName,title,status,object_type_data_point_values.value&filter[]=entityID,in,(0," . $_SESSION['entityid'] . ")&filter[]=status,eq,Active&order=sort_order" ));
+$dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_points?include=object_type_data_point_values&transform=1&columns=id,columnName,title,status,object_type_data_point_values.value&filter[]=entityID,in,(0," . $_SESSION['entityid'] . ")&filter[]=status,eq,Active&order=sort_order" ));
 
 
 // No longer needed. We don't load via PHP anymore. All handled in JS function.
-//$getlocations = json_decode(file_get_contents(API_HOST.'/api/locations?include=location_types&columns=locations.name,location_types.name,locations.address1,locations.address2,locations.city,locations.state,locations.zip,locations.status&filter=entityID,eq,' . $_SESSION['entityid'] . '&order=locationTypeID'),true);
+//$getlocations = json_decode(file_get_contents(API_HOST_URL . '/locations?include=location_types&columns=locations.name,location_types.name,locations.address1,locations.address2,locations.city,locations.state,locations.zip,locations.status&filter=entityID,eq,' . $_SESSION['entityid'] . '&order=locationTypeID'),true);
 //$locations = php_crud_api_transform($getlocations);
 
  ?>
@@ -190,10 +190,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
                               var destinationlng = destinationresults[0].geometry.location.lng();
 
                               if ($("#id").val() > '') {
-                                  var url = '<?php echo API_HOST."/api/carrier_needs" ?>/' + $("#id").val();
+                                  var url = '<?php echo API_HOST_URL . "/carrier_needs" ?>/' + $("#id").val();
                                   type = "PUT";
                               } else {
-                                  var url = '<?php echo API_HOST."/api/carrier_needs" ?>';
+                                  var url = '<?php echo API_HOST_URL . "/carrier_needs" ?>';
                                   type = "POST";
                               }
 
@@ -317,10 +317,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
             //myApp.showPleaseWait();
             if (<?php echo $_SESSION['entityid']; ?> > 0) {
-                var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&filter[]=expirationDate,ge,' + today + '&filter[]=status,eq,Available&order[]=availableDate,desc&transform=1';
+                var url = '<?php echo API_HOST_URL; ?>' + '/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&filter[]=expirationDate,ge,' + today + '&filter[]=status,eq,Available&order[]=availableDate,desc&transform=1';
                 var show = false;
             } else {
-                var url = '<?php echo API_HOST; ?>' + '/api/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&filter[]=expirationDate,ge,' + today + '&filter[]=status,eq,Available&satisfy=all&order[]=entityID&order[]=availableDate,desc&transform=1';
+                var url = '<?php echo API_HOST_URL; ?>' + '/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&filter[]=expirationDate,ge,' + today + '&filter[]=status,eq,Available&satisfy=all&order[]=entityID&order[]=availableDate,desc&transform=1';
                 var show = true;
             }
 
@@ -406,7 +406,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
           }
 
           var data = {status: newStatus};
-          var url = '<?php echo API_HOST."/api/carrier_needs" ?>/' + $("#id").val();
+          var url = '<?php echo API_HOST_URL . "/carrier_needs" ?>/' + $("#id").val();
           var type = "PUT";
 
           $.ajax({
@@ -661,7 +661,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
       function getLocationContacts() {
 
-          var url = '<?php echo API_HOST."/api/locations_contacts?columns=location_id,contact_id&filter=entityID,eq," . $_SESSION['entityid'] ?>';
+          var url = '<?php echo API_HOST_URL . "/locations_contacts?columns=location_id,contact_id&filter=entityID,eq," . $_SESSION['entityid'] ?>';
           var type = "GET";
 
           $.ajax({
@@ -679,7 +679,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
 
       function getLocations(city) {
 
-          var url = '<?php echo API_HOST."/api/locations?columns=id,city,state,zip&filter[]=entityID,eq," . $_SESSION['entityid'] ?>';
+          var url = '<?php echo API_HOST_URL . "/locations?columns=id,city,state,zip&filter[]=entityID,eq," . $_SESSION['entityid'] ?>';
           url += "&filter[]=city,sw," + city;
           var type = "GET";
 
@@ -1174,7 +1174,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
     $("#originationCity").keyup(function(){
         $("#originationCity").css("background","#FFF url(img/loaderIcon.gif) no-repeat 165px");
 
-        var url = '<?php echo API_HOST; ?>/api/locations?transform=1&columns=id,name,city&filter[]=entityID,eq,' + $("#entityID").val() + '&filter[]=city,sw,' + $(this).val();
+        var url = '<?php echo API_HOST_URL; ?>/locations?transform=1&columns=id,name,city&filter[]=entityID,eq,' + $("#entityID").val() + '&filter[]=city,sw,' + $(this).val();
 
     		$.ajax({
         		type: "GET",
@@ -1221,7 +1221,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST."/api/object_type_data_poin
     $("#destinationCity").keyup(function(){
         $("#destinationCity").css("background","#FFF url(img/loaderIcon.gif) no-repeat 165px");
 
-        var url = '<?php echo API_HOST; ?>/api/locations?transform=1&columns=id,name,city&filter[]=entityID,eq,' + $("#entityID").val() + '&filter[]=city,sw,' + $(this).val();
+        var url = '<?php echo API_HOST_URL; ?>/locations?transform=1&columns=id,name,city&filter[]=entityID,eq,' + $("#entityID").val() + '&filter[]=city,sw,' + $(this).val();
 
     		$.ajax({
         		type: "GET",

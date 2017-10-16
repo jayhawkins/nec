@@ -5,10 +5,10 @@ session_start();
 require '../../nec_config.php';
 require '../lib/common.php';
 
-$states = json_decode(file_get_contents(API_HOST.'/api/states?columns=abbreviation,name&order=name'));
+$states = json_decode(file_get_contents(API_HOST_URL . '/states?columns=abbreviation,name&order=name'));
 
 try {
-      $result = json_decode(file_get_contents(API_HOST.'/api/entities?include=members,users,locations,contacts&filter=id,eq,'.$_SESSION['entityid']),true);
+    $result = json_decode(file_get_contents(API_HOST_URL . '/entities?include=members,users,locations,contacts&filter=id,eq,'.$_SESSION['entityid']),true);
       $result = php_crud_api_transform($result);
       //$result = json_encode($result);
       //print_r($result);

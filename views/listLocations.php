@@ -6,16 +6,16 @@ require '../../nec_config.php';
 require '../lib/common.php';
 
 $state = '';
-$states = json_decode(file_get_contents(API_HOST.'/api/states?columns=abbreviation,name&order=name'));
+$states = json_decode(file_get_contents(API_HOST_URL . '/states?columns=abbreviation,name&order=name'));
 
 $locationTypeID = '';
-$locationTypes = json_decode(file_get_contents(API_HOST."/api/location_types?columns=id,name,status&filter[]=entityID,eq," . $_SESSION['entityid'] . "&filter[]=id,gt,0&satisfy=all&order=name"));
+$locationTypes = json_decode(file_get_contents(API_HOST_URL . "/location_types?columns=id,name,status&filter[]=entityID,eq," . $_SESSION['entityid'] . "&filter[]=id,gt,0&satisfy=all&order=name"));
 
 $contacts = '';
-$contacts = json_decode(file_get_contents(API_HOST."/api/contacts?columns=id,firstName,lastName&order=lastName&filter=entityID,eq," . $_SESSION['entityid'] ));
+$contacts = json_decode(file_get_contents(API_HOST_URL . "/contacts?columns=id,firstName,lastName&order=lastName&filter=entityID,eq," . $_SESSION['entityid'] ));
 
 $locations_contacts = '';
-$locations_contacts = json_decode(file_get_contents(API_HOST."/api/locations_contacts?columns=location_id,contact_id&filter=entityID,eq," . $_SESSION['entityid'] ));
+$locations_contacts = json_decode(file_get_contents(API_HOST_URL . "/locations_contacts?columns=location_id,contact_id&filter=entityID,eq," . $_SESSION['entityid'] ));
 
 $loccon = array();
 for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
@@ -23,7 +23,7 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
 }
 
 // No longer needed. We don't load via PHP anymore. All handled in JS function.
-//$getlocations = json_decode(file_get_contents(API_HOST.'/api/locations?include=location_types&columns=locations.name,location_types.name,locations.address1,locations.address2,locations.city,locations.state,locations.zip,locations.status&filter=entityID,eq,' . $_SESSION['entityid'] . '&order=locationTypeID'),true);
+//$getlocations = json_decode(file_get_contents(API_HOST_URL . '/locations?include=location_types&columns=locations.name,location_types.name,locations.address1,locations.address2,locations.city,locations.state,locations.zip,locations.status&filter=entityID,eq,' . $_SESSION['entityid'] . '&order=locationTypeID'),true);
 //$locations = php_crud_api_transform($getlocations);
 
  ?>
@@ -95,12 +95,12 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
                       var lat = results[0].geometry.location.lat();
                       var lng = results[0].geometry.location.lng();
 
-                      //var url = '<?php echo API_HOST."/api/locations" ?>';
+                      //var url = '<?php echo API_HOST_URL . "/locations" ?>';
                       if ($("#id").val() > '') {
-                          var url = '<?php echo API_HOST."/api/locations" ?>/' + $("#id").val();
+                          var url = '<?php echo API_HOST_URL . "/locations" ?>/' + $("#id").val();
                           type = "PUT";
                       } else {
-                          var url = '<?php echo API_HOST."/api/locations" ?>';
+                          var url = '<?php echo API_HOST_URL . "/locations" ?>';
                           type = "POST";
                       }
 
@@ -157,8 +157,8 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
 
       function loadTableAJAX() {
         myApp.showPleaseWait();
-        //var url = '<?php echo API_HOST; ?>' + '/api/locations?include=location_types&columns=locations.id,locations.name,location_types.id,location_types.name,locations.address1,locations.address2,locations.city,locations.state,locations.zip,locations.status&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order=locationTypeID&transform=1';
-        var url = '<?php echo API_HOST; ?>' + '/api/locations?include=location_types&columns=locations.id,locations.name,location_types.id,location_types.name,locations.address1,locations.address2,locations.city,locations.state,locations.zip,locations.status&filter[]=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&filter[]=locationTypeID,ne,1&satisfy=all&order=locationTypeID&transform=1';
+        //var url = '<?php echo API_HOST_URL; ?>' + '/locations?include=location_types&columns=locations.id,locations.name,location_types.id,location_types.name,locations.address1,locations.address2,locations.city,locations.state,locations.zip,locations.status&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order=locationTypeID&transform=1';
+        var url = '<?php echo API_HOST_URL; ?>' + '/locations?include=location_types&columns=locations.id,locations.name,location_types.id,location_types.name,locations.address1,locations.address2,locations.city,locations.state,locations.zip,locations.status&filter[]=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&filter[]=locationTypeID,ne,1&satisfy=all&order=locationTypeID&transform=1';
 
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
@@ -221,7 +221,7 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
           }
 
           var data = {status: newStatus};
-          var url = '<?php echo API_HOST."/api/locations" ?>/' + $("#id").val();
+          var url = '<?php echo API_HOST_URL . "/locations" ?>/' + $("#id").val();
           var type = "PUT";
 
           $.ajax({
@@ -305,7 +305,7 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
                             if (data == "success") {
 
                                  var data = contactdata;
-                                 var url = '<?php echo API_HOST."/api/locations_contacts" ?>';
+                                 var url = '<?php echo API_HOST_URL . "/locations_contacts" ?>';
                                  var type = "POST";
 
                                  $.ajax({
@@ -391,7 +391,7 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
 
       function getLocationContacts() {
 
-          var url = '<?php echo API_HOST."/api/locations_contacts?columns=location_id,contact_id&filter=entityID,eq," . $_SESSION['entityid'] ?>';
+          var url = '<?php echo API_HOST_URL . "/locations_contacts?columns=location_id,contact_id&filter=entityID,eq," . $_SESSION['entityid'] ?>';
           var type = "GET";
 
           $.ajax({
@@ -431,7 +431,7 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
                     if (data == "success") {
 
                          var data = contactdata;
-                         var url = '<?php echo API_HOST."/api/locations_contacts" ?>';
+                         var url = '<?php echo API_HOST_URL . "/locations_contacts" ?>';
                          var type = "POST";
 
                          $.ajax({

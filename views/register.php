@@ -24,7 +24,7 @@
          function loadStates() {
             $.ajax({
                type: "GET",
-               url: "<?php echo API_HOST.'/api/states?columns=abbreviation,name&order=name&transform=1' ?>",
+               url: "<?php echo API_HOST_URL . '/states?columns=abbreviation,name&order=name&transform=1' ?>",
                cache: false,
                success: function(data){
                   var listitems = '';
@@ -43,7 +43,7 @@
 
          function verifyInput() {
              var passValidation = false;
-             var url = '<?php echo API_HOST."/api/users?filter=username,eq,' + $('#email').val() + '&transform=1" ?>';
+             var url = '<?php echo API_HOST_URL . "/users?filter=username,eq,' + $('#email').val() + '&transform=1" ?>';
              $.ajax({
                 type: "GET",
                 url: url,
