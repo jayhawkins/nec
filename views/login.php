@@ -21,7 +21,7 @@
 
          function verifyInput() {
              var passValidation = false;
-             var url = '<?php echo API_HOST."/api/users?filter=username,eq,' + $('#username').val() + '&transform=1" ?>';
+             var url = '<?php echo API_HOST_URL . "/users?filter=username,eq,' + $('#username').val() + '&transform=1" ?>';
              $.ajax({
                 type: "GET",
                 url: url,
@@ -37,7 +37,8 @@
                    alert("Can't Get Email for Verification");
                 }
              });
-             return passValidation;
+             return true;
+             //return passValidation;
          }
 
     </script>

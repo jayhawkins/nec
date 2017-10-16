@@ -36,7 +36,7 @@ class CustomerNeedCommit
             "transform"=>"1"
       );
 
-      $url = $api_host."/api/customer_needs_commit/".$id."?".http_build_query($args);
+      $url = $api_host . "/" . API_ROOT . "/customer_needs_commit/".$id."?".http_build_query($args);
       $options = array(
           'http' => array(
               'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -93,7 +93,7 @@ class CustomerNeedCommit
                   "transform"=>1,
                   "filter"=>"id,eq,".$key
             );
-            $contacturl = API_HOST."/api/contacts?".http_build_query($contactargs);
+            $contacturl = API_HOST_URL . "/contacts?".http_build_query($contactargs);
             $contactoptions = array(
                 'http' => array(
                     'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -128,7 +128,7 @@ class CustomerNeedCommit
             $entityargs = array(
                 "transform"=>1
             );
-            $entityurl = API_HOST."/api/entities/".$this->entityID."?".http_build_query($entityargs);
+            $entityurl = API_HOST_URL . "/entities/".$this->entityID."?".http_build_query($entityargs);
             $entityoptions = array(
                 'http' => array(
                     'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -141,7 +141,7 @@ class CustomerNeedCommit
             $contactargs = array(
                 "transform"=>1
             );
-            $contacturl = API_HOST."/api/contacts/".$entityresult['contactID']."?".http_build_query($contactargs);
+            $contacturl = API_HOST_URL . "/contacts/".$entityresult['contactID']."?".http_build_query($contactargs);
             $contactoptions = array(
                 'http' => array(
                     'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -155,7 +155,7 @@ class CustomerNeedCommit
                 "transform"=>1,
                 "filter"=>"title,eq,Carrier Commit Notification"
             );
-            $templateurl = API_HOST."/api/email_templates?".http_build_query($templateargs);
+            $templateurl = API_HOST_URL . "/email_templates?".http_build_query($templateargs);
             $templateoptions = array(
                 'http' => array(
                     'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -203,7 +203,7 @@ class CustomerNeedCommit
             $entityargs = array(
                 "transform"=>1
             );
-            $entityurl = API_HOST."/api/entities/".$this->entityID."?".http_build_query($entityargs);
+            $entityurl = API_HOST_URL . "/entities/".$this->entityID."?".http_build_query($entityargs);
             $entityoptions = array(
                 'http' => array(
                     'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -218,10 +218,10 @@ class CustomerNeedCommit
             );
             
             if($entityresult['contactID'] == 0 ){
-                $contacturl = API_HOST."/api/contacts/".$entityresult['assignedMemberID']."?".http_build_query($contactargs);            
+                $contacturl = API_HOST_URL . "/contacts/".$entityresult['assignedMemberID']."?".http_build_query($contactargs);            
             }
             else{
-                $contacturl = API_HOST."/api/contacts/".$entityresult['contactID']."?".http_build_query($contactargs);
+                $contacturl = API_HOST_URL . "/contacts/".$entityresult['contactID']."?".http_build_query($contactargs);
             }
             
             $contactoptions = array(
@@ -237,7 +237,7 @@ class CustomerNeedCommit
                 "transform"=>1,
                 "filter"=>"title,eq,Carrier Commit Notification"
             );
-            $templateurl = API_HOST."/api/email_templates?".http_build_query($templateargs);
+            $templateurl = API_HOST_URL . "/email_templates?".http_build_query($templateargs);
             $templateoptions = array(
                 'http' => array(
                     'header'  => "Content-type: application/x-www-form-urlencoded\r\n",

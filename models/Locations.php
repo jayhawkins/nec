@@ -8,7 +8,7 @@ class Location
 
     public function post($entityID="0",$locationTypeID="1",$name="",$address1="",$address2="",$city="",$state="",$zip="",$latitude="0.00",$longitude="0.00") {
         // Now create the entity location
-        $locationurl = API_HOST.'/api/locations';
+        $locationurl = API_HOST_URL . '/locations';
         $locationdata = array(
                     "entityID" => $entityID, // this will contain the new entities id
                     "locationTypeID" => $locationTypeID,
@@ -49,7 +49,7 @@ class Location
 
     public function get($locationid) {
           try {
-                $locationurl = API_HOST.'/api/locations/'.$locationid;
+              $locationurl = API_HOST_URL . '/locations/'.$locationid;
                 $locationdata = array();
                 // use key 'http' even if you send the request to https://...
                 $locationoptions = array(
@@ -71,7 +71,7 @@ class Location
 
     public function getLocationByCityState($city,$state,$entityID) {
           try {
-                //$locationurl = API_HOST.'/api/locations?transform=1&filter[]=entityID,eq,'.$entityID.'&filter[]=city,eq,'.$city.'&filter[]=state,eq,'.$state.'&filter[]=status,eq,Active';
+              //$locationurl = API_HOST_URL . '/locations?transform=1&filter[]=entityID,eq,'.$entityID.'&filter[]=city,eq,'.$city.'&filter[]=state,eq,'.$state.'&filter[]=status,eq,Active';
                 $locationargs = array(
                       "transform"=>1,
                       "filter[0]"=>"entityID,eq,".$entityID,
@@ -86,7 +86,7 @@ class Location
                         'method'  => 'GET'
                     )
                 );
-                $locationurl = API_HOST.'/api/locations?'.http_build_query($locationargs);
+                $locationurl = API_HOST_URL . '/locations?'.http_build_query($locationargs);
                 $locationcontext  = stream_context_create($locationoptions);
                 $locationresult = json_decode(file_get_contents($locationurl, false, $locationcontext));
                 if (count($locationresult->locations) > 0) {
@@ -103,7 +103,7 @@ class Location
 
     public function getLocationByCityStateZip($city,$state,$zip,$entityID) {
           try {
-                //$locationurl = API_HOST.'/api/locations?transform=1&filter[]=entityID,eq,'.$entityID.'&filter[]=city,eq,'.$city.'&filter[]=state,eq,'.$state.'&filter[]=zip,eq,'.$zip.'&filter[]=status,eq,Active';
+              //$locationurl = API_HOST_URL . '/locations?transform=1&filter[]=entityID,eq,'.$entityID.'&filter[]=city,eq,'.$city.'&filter[]=state,eq,'.$state.'&filter[]=zip,eq,'.$zip.'&filter[]=status,eq,Active';
                 $locationargs = array(
                       "transform"=>1,
                       "filter[0]"=>"entityID,eq,".$entityID,
@@ -119,7 +119,7 @@ class Location
                         'method'  => 'GET'
                     )
                 );
-                $locationurl = API_HOST.'/api/locations?'.http_build_query($locationargs);
+                $locationurl = API_HOST_URL . '/locations?'.http_build_query($locationargs);
                 $locationcontext  = stream_context_create($locationoptions);
                 $locationresult = json_decode(file_get_contents($locationurl, false, $locationcontext));
                 if (count($locationresult->locations) > 0) {
@@ -136,7 +136,7 @@ class Location
 
     public function getLocationByAddressCityStateZip($address1,$city,$state,$zip,$entityID) {
           try {
-                //$locationurl = API_HOST.'/api/locations?transform=1&filter[]=entityID,eq,'.$entityID.'&filter[]=city,eq,'.$city.'&filter[]=state,eq,'.$state.'&filter[]=zip,eq,'.$zip.'&filter[]=status,eq,Active';
+                //$locationurl = API_HOST_URL . '/locations?transform=1&filter[]=entityID,eq,'.$entityID.'&filter[]=city,eq,'.$city.'&filter[]=state,eq,'.$state.'&filter[]=zip,eq,'.$zip.'&filter[]=status,eq,Active';
                 $locationargs = array(
                       "transform"=>1,
                       "filter[0]"=>"entityID,eq,".$entityID,
@@ -154,7 +154,7 @@ class Location
                     )
                 );
                 //return var_dump($locationargs);
-                $locationurl = API_HOST.'/api/locations?'.http_build_query($locationargs);
+                $locationurl = API_HOST_URL . '/locations?'.http_build_query($locationargs);
                 $locationcontext  = stream_context_create($locationoptions);
                 $locationresult = json_decode(file_get_contents($locationurl, false, $locationcontext));
                 if (count($locationresult->locations) > 0) {
@@ -171,7 +171,7 @@ class Location
 
     public function put($locationid,$address1,$address2,$city,$state,$zip,$latitude="0.00",$longitude="0.00") {
         try {
-              $locationurl = API_HOST.'/api/locations/'.$locationid;
+              $locationurl = API_HOST_URL . '/locations/'.$locationid;
               $locationdata = array(
                           "address1" => $address1,
                           "address2" => $address2,

@@ -178,8 +178,7 @@ CREATE TABLE IF NOT EXISTS `documents` (
 	`id` Int( 11 ) UNSIGNED AUTO_INCREMENT NOT NULL,
 	`name` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
 	`documentID` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-	`documentURL` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-	`createdAt` DateTime NOT NULL,
+	`documentURL` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,	`createdAt` DateTime NOT NULL,
 	`updatedAt` DateTime NOT NULL,
 	`entityID` Int( 11 ) UNSIGNED NOT NULL,
 	CONSTRAINT `unique_id` UNIQUE( `id` ) )
@@ -223,7 +222,7 @@ CREATE TABLE IF NOT EXISTS `entities` (
 	`entityRating` TinyInt( 2 ) UNSIGNED NOT NULL DEFAULT '0',
 	`assignedMemberID` Int( 11 ) UNSIGNED NOT NULL,
 	CONSTRAINT `unique_id` UNIQUE( `id` ) )
-CHARACTER SET = utf8
+CHARACTER SET = outfit
 COLLATE = utf8_general_ci
 ENGINE = InnoDB
 AUTO_INCREMENT = 1;

@@ -22924,7 +22924,8 @@ a {
     position: relative;
     border-top: 1px solid #2d2d2d;
     padding-left: 50px;
-    line-height: 35px; }
+    line-height: 20px;
+    padding-bottom: 15px; }
     .sidebar-nav > li > a:hover {
       background-color: #111; }
     @media (min-width: 992px) and (min-height: 670px), (max-width: 767px) {

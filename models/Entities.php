@@ -16,7 +16,7 @@ class Entity
 
     public function put($entityName) {
         try {
-              $entityurl = API_HOST.'/api/entities/'.$_SESSION['entityid'];
+            $entityurl = API_HOST_URL . '/entities/'.$_SESSION['entityid'];
               $entitydata = array(
                           "name" => $entityName,
                           "updatedAt" => date('Y-m-d H:i:s')

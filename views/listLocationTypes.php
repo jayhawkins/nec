@@ -56,10 +56,10 @@ require '../lib/common.php';
                 today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
 
                 if ($("#id").val() > '') {
-                    var url = '<?php echo API_HOST."/api/location_types" ?>/' + $("#id").val();
+                    var url = '<?php echo API_HOST_URL . "/location_types" ?>/' + $("#id").val();
                     type = "PUT";
                 } else {
-                    var url = '<?php echo API_HOST."/api/location_types" ?>';
+                    var url = '<?php echo API_HOST_URL . "/location_types" ?>';
                     type = "POST";
                 }
 
@@ -105,7 +105,7 @@ require '../lib/common.php';
 
       function loadTableAJAX() {
         myApp.showPleaseWait();
-        var url = '<?php echo API_HOST; ?>' + '/api/location_types?columns=id,name,status&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order=name&transform=1';
+        var url = '<?php echo API_HOST_URL; ?>' + '/location_types?columns=id,name,status&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order=name&transform=1';
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
             processing: true,
@@ -160,7 +160,7 @@ require '../lib/common.php';
           }
 
           var data = {status: newStatus};
-          var url = '<?php echo API_HOST."/api/location_types" ?>/' + $("#id").val();
+          var url = '<?php echo API_HOST_URL . "/location_types" ?>/' + $("#id").val();
           var type = "PUT";
 
           $.ajax({

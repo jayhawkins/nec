@@ -6,7 +6,7 @@ require '../../nec_config.php';
 require '../lib/common.php';
 
 $objectTypeID = '';
-$objectTypes = json_decode(file_get_contents(API_HOST."/api/object_types?columns=id,name"));
+$objectTypes = json_decode(file_get_contents(API_HOST_URL . "/object_types?columns=id,name"));
 
 
  ?>
@@ -60,10 +60,10 @@ $objectTypes = json_decode(file_get_contents(API_HOST."/api/object_types?columns
                 today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
 
                 if ($("#id").val() > '') {
-                    var url = '<?php echo API_HOST."/api/object_type_data_points" ?>/' + $("#id").val();
+                    var url = '<?php echo API_HOST_URL . "/object_type_data_points" ?>/' + $("#id").val();
                     type = "PUT";
                 } else {
-                    var url = '<?php echo API_HOST."/api/object_type_data_points" ?>';
+                    var url = '<?php echo API_HOST_URL . "/object_type_data_points" ?>';
                     type = "POST";
                 }
 
@@ -118,7 +118,7 @@ $objectTypes = json_decode(file_get_contents(API_HOST."/api/object_types?columns
 
       function loadTableAJAX() {
         myApp.showPleaseWait();
-        var url = '<?php echo API_HOST; ?>' + '/api/object_type_data_points?include=object_types&columns=id,entityID,objectTypeID,object_types.name,columnName,title,status&filter=entityID,in,(0, ' + <?php echo $_SESSION['entityid']; ?> + ')&order[]=entityID&order[]=title&transform=1';
+        var url = '<?php echo API_HOST_URL; ?>' + '/object_type_data_points?include=object_types&columns=id,entityID,objectTypeID,object_types.name,columnName,title,status&filter=entityID,in,(0, ' + <?php echo $_SESSION['entityid']; ?> + ')&order[]=entityID&order[]=title&transform=1';
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
             processing: true,
@@ -186,7 +186,7 @@ $objectTypes = json_decode(file_get_contents(API_HOST."/api/object_types?columns
           }
 
           var data = {status: newStatus};
-          var url = '<?php echo API_HOST."/api/object_type_data_points" ?>/' + $("#id").val();
+          var url = '<?php echo API_HOST_URL . "/object_type_data_points" ?>/' + $("#id").val();
           var type = "PUT";
 
           $.ajax({

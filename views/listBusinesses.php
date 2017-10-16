@@ -5,7 +5,7 @@ session_start();
 require '../../nec_config.php';
 require '../lib/common.php';
 
-$contacts = file_get_contents(API_HOST.'/api/contacts?columns=id,firstName,lastName,title&filter=entityID,eq,0&order=lastName&transform=1');
+$contacts = file_get_contents(API_HOST_URL . '/contacts?columns=id,firstName,lastName,title&filter=entityID,eq,0&order=lastName&transform=1');
 
  ?>
 
@@ -60,10 +60,10 @@ $contacts = file_get_contents(API_HOST.'/api/contacts?columns=id,firstName,lastN
                 today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
 
                 if ($("#id").val() > '') {
-                    var url = '<?php echo API_HOST."/api/entities" ?>/' + $("#id").val();
+                    var url = '<?php echo API_HOST_URL . "/entities" ?>/' + $("#id").val();
                     type = "PUT";
                 } else {
-                    var url = '<?php echo API_HOST."/api/entities" ?>';
+                    var url = '<?php echo API_HOST_URL . "/entities" ?>';
                     type = "POST";
                 }
 
@@ -121,7 +121,7 @@ $contacts = file_get_contents(API_HOST.'/api/contacts?columns=id,firstName,lastN
 
       function loadTableAJAX() {
         myApp.showPleaseWait();
-        var url = '<?php echo API_HOST; ?>' + '/api/entities?columns=id,entityTypeID,name,entityRating,contactID,status,rateType,negotiatedRate,towAwayRateMin,towAwayRateMax,towAwayRateType,loadOutRateMin,loadOutRateMax,loadOutRateType&filter[]=id,gt,0&order=name&transform=1';
+        var url = '<?php echo API_HOST_URL; ?>' + '/entities?columns=id,entityTypeID,name,entityRating,contactID,status,rateType,negotiatedRate,towAwayRateMin,towAwayRateMax,towAwayRateType,loadOutRateMin,loadOutRateMax,loadOutRateType&filter[]=id,gt,0&order=name&transform=1';
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
             processing: true,
@@ -185,7 +185,7 @@ $contacts = file_get_contents(API_HOST.'/api/contacts?columns=id,firstName,lastN
           }
 
           var data = {status: newStatus};
-          var url = '<?php echo API_HOST."/api/entities" ?>/' + $("#id").val();
+          var url = '<?php echo API_HOST_URL . "/entities" ?>/' + $("#id").val();
           var type = "PUT";
 
           $.ajax({

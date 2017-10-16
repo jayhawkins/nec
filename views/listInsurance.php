@@ -62,7 +62,7 @@
 			var date = today;
 			// file upload
 			if ($("#id").val() > '') {
-				url = '<?php echo API_HOST."/api/insurance_carriers" ?>/' + $("#id").val();
+				url = '<?php echo API_HOST_URL . "/insurance_carriers" ?>/' + $("#id").val();
 				type = "PUT";
 				date = today;
 				data = {id: $("#id").val(), entityID: $("#entityID").val(), name: $("#name").val(), contactName: $("#contactName").val(), contactEmail: $("#contactEmail").val(), contactPhone: $("#contactPhone").val(), policyNumber: $("#policyNumber").val(), policyExpirationDate: $("#policyExpirationDate").val(), updatedAt: date};
@@ -110,7 +110,7 @@
 					contentType: false,  // tell jQuery not to set contentType
 					success : function(data) {
 						// update listInsurance
-						url = '<?php echo API_HOST."/api/insurance_carriers" ?>';
+						url = '<?php echo API_HOST_URL . "/insurance_carriers" ?>';
 						type = "POST";
 						var files = $('#fileupload').prop("files");
 						var fileNames = $.map(files, function(val) { return val.name; }).join(',');
@@ -195,7 +195,7 @@
             contentType: false,  // tell jQuery not to set contentType
             success : function(data) {
                 // update listInsurance
-                url = '<?php echo API_HOST."/api/insurance_carriers/" ?>' + $("#replaceID").val();
+                url = '<?php echo API_HOST_URL . "/insurance_carriers/" ?>' + $("#replaceID").val();
                 type = "PUT";
                 var files = $('#updatePolicyFile').prop("files");
                 var fileNames = $.map(files, function(val) { return val.name; }).join(',');
@@ -229,7 +229,7 @@
 	}
 
 	function loadTableAJAX() {
-		var url = '<?php echo API_HOST; ?>' + '/api/insurance_carriers?columns=id,name,link,contactName,contactEmail,contactPhone,policyNumber,policyExpirationDate,fileupload,status&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order=name&transform=1';
+		var url = '<?php echo API_HOST_URL; ?>' + '/insurance_carriers?columns=id,name,link,contactName,contactEmail,contactPhone,policyNumber,policyExpirationDate,fileupload,status&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order=name&transform=1';
 		var example_table = $('#datatable-table').DataTable({
 			retrieve: true,
 			processing: true,
@@ -293,7 +293,7 @@
 			var newStatus = 'Active';
 		}
 		var data = {status: newStatus};
-		var url = '<?php echo API_HOST."/api/insurance_carriers" ?>/' + $("#id").val();
+		var url = '<?php echo API_HOST_URL . "/insurance_carriers" ?>/' + $("#id").val();
 		var type = "PUT";
 		$.ajax({
 			url: url,

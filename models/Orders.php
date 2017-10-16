@@ -28,7 +28,7 @@ class Order
             $customerargs = array(
                 "transform"=>1
             );
-            $customerurl = API_HOST."/api/entities/".$customerID."?".http_build_query($customerargs);
+            $customerurl = API_HOST_URL . "/entities/".$customerID."?".http_build_query($customerargs);
             $customeroptions = array(
                 'http' => array(
                     'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -42,7 +42,7 @@ class Order
             $entityargs = array(
                 "transform"=>1
             );
-            $entityurl = API_HOST."/api/entities/0?".http_build_query($entityargs);
+            $entityurl = API_HOST_URL . "/entities/0?".http_build_query($entityargs);
             $entityoptions = array(
                 'http' => array(
                     'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -56,7 +56,7 @@ class Order
             $contactargs = array(
                 "transform"=>1
             );
-            $contacturl = API_HOST."/api/contacts/".$customerresult['assignedMemberID']."?".http_build_query($contactargs);
+            $contacturl = API_HOST_URL . "/contacts/".$customerresult['assignedMemberID']."?".http_build_query($contactargs);
             $contactoptions = array(
                 'http' => array(
                     'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -70,7 +70,7 @@ class Order
             $adminargs = array(
                 "transform"=>1
             );
-            $adminurl = API_HOST."/api/contacts/".$entityresult['assignedMemberID']."?".http_build_query($adminargs);
+            $adminurl = API_HOST_URL . "/contacts/".$entityresult['assignedMemberID']."?".http_build_query($adminargs);
             $adminoptions = array(
                 'http' => array(
                     'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -226,7 +226,7 @@ class Order
             $entityargs = array(
                 "transform"=>1
             );
-            $entityurl = API_HOST."/api/entities/" . $entityID . "?".http_build_query($entityargs);
+            $entityurl = API_HOST_URL . "/entities/" . $entityID . "?".http_build_query($entityargs);
             $entityoptions = array(
                 'http' => array(
                     'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -240,7 +240,7 @@ class Order
             $contactargs = array(
                 "transform"=>1
             );
-            $contacturl = API_HOST."/api/contacts/".$entityresult['assignedMemberID']."?".http_build_query($contactargs);
+            $contacturl = API_HOST_URL . "/contacts/".$entityresult['assignedMemberID']."?".http_build_query($contactargs);
             $contactoptions = array(
                 'http' => array(
                     'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
