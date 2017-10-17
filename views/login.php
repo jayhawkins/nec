@@ -74,7 +74,7 @@
  ?>
                             <div class="clearfix">
                                 <div class="btn-toolbar pull-xs-right">
-                                    <a class="btn btn-secondary btn-sm" href="register">Create an Account</a>
+                                    <a class="btn btn-secondary btn-sm" href="forgot">Forgot Password</a>
                                     <input type="submit" name="login" class="btn btn-inverse btn-sm" value="Login" />
                                 </div>
                             </div>
