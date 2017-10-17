@@ -183,7 +183,11 @@ if ($_SESSION['entityid'] > 0) {
         <link href="css/application-ie9-part2.css" rel="stylesheet">
     <![endif]-->
 
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/b-1.2.4/datatables.min.css"/>
+<?php if(ENVIRONMENT == 'development') { ?>
+	<link rel="stylesheet" type="text/css" href="vendor/datatables/media/css/dataTables-r-2_2_0.min.css"/>
+<?php } else { ?>
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.16/b-1.4.2/r-2.2.0/datatables.min.css"/>
+<?php } ?>
 
     <link rel="shortcut icon" href="img/favicon.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -1375,12 +1379,12 @@ if ($_SESSION['entityid'] > 0) {
 <script src="vendor/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
 
 <?php if(ENVIRONMENT == 'development') { ?>
-<script type="text/javascript" src="vendor/datatables/media/js/dataTables-b-1_2_4.min.js"></script>
+<script type="text/javascript" src="vendor/datatables/media/js/dataTables-r-2_2_0.min.js"></script>
 <script type="text/javascript" src="vendor/bootstrap3-typeahead/js/bootstrap3-typeahead-4_0_2.min.js"></script>
 <script type="text/javascript" src="vendor/chroma/js/chroma-1_1_1.min.js"></script>
 <script type="text/javascript" src="vendor/googlemaps/js/googlemaps.js"></script>
 <?php } else { ?>
-<script type="text/javascript" src="https://cdn.datatables.net/v/dt/b-1.2.4/datatables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.16/b-1.4.2/r-2.2.0/datatables.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/1.1.1/chroma.min.js" charset="utf-8"></script>
 <?php } ?>
