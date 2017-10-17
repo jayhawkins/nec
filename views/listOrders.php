@@ -1772,11 +1772,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                      <div class="row" style="padding:15px;background-color:#f3f3f3;">
                         <div class="col-xs-6">
                          	<div class="row"><label for="customer_pickupPhoneNumber">Phone Number</label></div>
-                         	<div class="row"><span id="customer_pickupPhoneNumber">Phone Number</span></div>	
+                         	<div class="row"><span id="customer_pickupPhoneNumber"></span></div>	
                          </div>
                          <div class="col-xs-6">
                          	<div class="row"><label for="customer_deliveryPhoneNumber">Phone Number</label></div>
-                         	<div class="row"><span id="customer_deliveryPhoneNumber">Phone Number</span></div>	
+                         	<div class="row"><span id="customer_deliveryPhoneNumber"></span></div>	
                          </div>
                      </div> 
                      <div class="row" style="padding:15px;background-color:#f3f3f3;">
@@ -1892,9 +1892,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         <th>Carrier</th>
                         <th>Delivery Date</th>
                         <th>Notes</th>
-                        <th width="10%" class="no-sort pull-right">&nbsp;</th>
-                        <th width="10%" class="no-sort pull-right">&nbsp;</th>
-                        <th width="10%" class="no-sort pull-right">&nbsp;</th>
+                        <th class="no-sort pull-right">&nbsp;</th>
+                        <th class="no-sort pull-right">&nbsp;</th>
+                        <th class="no-sort pull-right">&nbsp;</th>
                     </tr>
                     </thead>
                     <tbody>
