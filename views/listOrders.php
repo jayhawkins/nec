@@ -904,6 +904,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         		break;
         case 1:
 
+			$('#editOrderDetails').click(function(){
+	            $("#editOrder").modal('show');
+			});
+     	    
+			$('#closeOrderDetails').click(function(){
+				closeOrderDetails();
+			});
+        	
             url += '/orders?filter=id,eq,' + orderID + '&transform=1';
 
             $.ajax({
@@ -913,97 +921,106 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 success: function(data){
                      var customerID = data.orders[0].customerID;
                      var orderID = data.orders[0].orderID;
-
+                     
                      $("#orderNumber").html(orderID);
 
-
              		var customer_podlist_table;
+             		
+					if (data.orders[0].pickupInformation !== null) {
+	             		$('#customer_pickupContactPerson').text(data.orders[0].pickupInformation.contactPerson);
+	             		$('#customer_pickupLocation').text(data.orders[0].pickupInformation.pickupLocation);
+	             		$('#customer_pickupPhoneNumber').text(data.orders[0].pickupInformation.phoneNumber);
+	             		$('#customer_pickupHoursOfOperation').text(data.orders[0].pickupInformation.hoursOfOperation);
+					} else {
+	             		$('#customer_pickupContactPerson').text('');
+	             		$('#customer_pickupLocation').text('');
+	             		$('#customer_pickupPhoneNumber').text('');
+	             		$('#customer_pickupHoursOfOperation').text('');
+					}
 
-             		$('#customer_pickupContactPerson').text(data.orders[0].pickupInformation.contactPerson);
-             		$('#customer_deliveryContactPerson').text(data.orders[0].deliveryInformation.contactPerson);
+					if (data.orders[0].deliveryInformation !== null) {
+	             		$('#customer_deliveryContactPerson').text(data.orders[0].deliveryInformation.contactPerson);
+	             		$('#customer_deliveryLocation').text(data.orders[0].deliveryInformation.deliveryLocation);
+	             		$('#customer_deliveryLocation').text(data.orders[0].deliveryInformation.deliveryLocation);
+	             		$('#customer_deliveryPhoneNumber').text(data.orders[0].deliveryInformation.phoneNumber);
+	             		$('#customer_deliveryHoursOfOperation').text(data.orders[0].deliveryInformation.hoursOfOperation);
+					} else {
+	             		$('#customer_deliveryContactPerson').text('');
+	             		$('#customer_deliveryLocation').text('');
+	             		$('#customer_deliveryLocation').text('');
+	             		$('#customer_deliveryPhoneNumber').text('');
+	             		$('#customer_deliveryHoursOfOperation').text('');
+					}
 
-             		$('#customer_pickupLocation').text(data.orders[0].pickupInformation.pickupLocation);
-             		$('#customer_deliveryLocation').text(data.orders[0].deliveryInformation.deliveryLocation);
+					if (data.orders[0].originationAddress !== "" && data.orders[0].originationAddress !== null) {
+						$('#customer_originationAddress').css({'display':'block'}).text(data.orders[0].originationAddress);
+					} else {
+						$('#customer_originationAddress').css({'display':'inline'}).text('');
+					}
 
-             		$('#customer_pickupLocation').text(data.orders[0].pickupInformation.pickupLocation);
-             		$('#customer_deliveryLocation').text(data.orders[0].deliveryInformation.deliveryLocation);
-
-             		$('#customer_pickupPhoneNumber').text(data.orders[0].pickupInformation.phoneNumber);
-             		$('#customer_deliveryPhoneNumber').text(data.orders[0].deliveryInformation.phoneNumber);
-
-             		$('#customer_pickupHoursOfOperation').text(data.orders[0].pickupInformation.hoursOfOperation);
-             		$('#customer_deliveryHoursOfOperation').text(data.orders[0].deliveryInformation.hoursOfOperation);
-
-             		if (data.orders[0].originationAddress !== "") {
-             			$('#customer_originationAddress').css({'display':'block'}).text(data.orders[0].originationAddress);
-             		}
-
-             		if (data.orders[0].destinationAddress !== "") {
+             		if (data.orders[0].destinationAddress !== "" && data.orders[0].destinationAddress !== null) {
              			$('#customer_destinationAddress').css({'display':'block'}).text(data.orders[0].destinationAddress);
+             		} else {
+             			$('#customer_destinationAddress').css({'display':'inline'}).text('');
              		}	
 
              		var hasorigincity = false;
-             		if (data.orders[0].originationCity !== "") {
+             		if (data.orders[0].originationCity !== "" && data.orders[0].originationCity !== null) {
              			hasorigincity = true;
              			$('#customer_originationCity').text(data.orders[0].originationCity);
+             		} else {
+             			$('#customer_originationCity').text('');
              		}
 
              		var hasdestcity = false;
-             		if (data.orders[0].destinationCity !== "") {
+             		if (data.orders[0].destinationCity !== "" && data.orders[0].destinationCity !== null) {
              			hasdestcity = true;
              			$('#customer_destinationCity').text(data.orders[0].destinationCity);
+             		} else {
+             			$('#customer_destinationCity').text('');
              		}	
 
-             		if (data.orders[0].originationState !== "") {
+             		if (data.orders[0].originationState !== "" && data.orders[0].originationState !== null) {
              			$('#customer_originationState').text((hasorigincity) ? ", " +  data.orders[0].originationState : data.orders[0].originationState);
+             		} else {
+             			$('#customer_originationState').text('');
              		}
 
-             		if (data.orders[0].destinationState !== "") {
+             		if (data.orders[0].destinationState !== "" && data.orders[0].destinationState !== null) {
              			$('#customer_destinationState').text((hasdestcity) ? ", " +  data.orders[0].destinationState : data.orders[0].destinationState);
              		}
 
-             		if (data.orders[0].originationZip !== "") {
+             		if (data.orders[0].originationZip !== "" && data.orders[0].originationZip !== null) {
              			$('#customer_originationZip').text(data.orders[0].originationZip);
+             		} else {
+             			$('#customer_originationZip').text('');
              		}
 
-             		if (data.orders[0].destinationZip !== "") {
+             		if (data.orders[0].destinationZip !== "" && data.orders[0].destinationZip !== null) {
              			$('#customer_destinationZip').text(data.orders[0].destinationZip);
+             		} else {
+             			$('#customer_destinationZip').text('');
              		}
 
-             	    if (!$.fn.DataTable.isDataTable('#customer-pod-list-table')) {
+					if ($.fn.DataTable.isDataTable('#customer-pod-list-table')) {
+						$('#customer-pod-list-table').DataTable().destroy();
+					}
 
-             	        var customer_podlist_table = $('#customer-pod-list-table').DataTable({
-             	        	    retrieve: true,
+					if (data.orders[0].podList !== null) {
+						customer_podlist_table = $('#customer-pod-list-table').DataTable({
+            	        	    		retrieve: true,
              	            processing: true,
              	            responsive: true,
              	            data: data.orders[0].podList,
              	            columns: [
-             	                {
-             	                    data: null,
-             	                    "bSortable": false,
-             	                    "mRender": function (o) {
-             	                        var buttons = orderID;
-             	                        return buttons;
-             	                    },visible: false
-             	                },
              	                { data: "vinNumber" },
              	                { data: "deliveryDate" },
              	                { data: "notes" },
              	            ]
-             	          });
-
-             	        customer_podlist_table.clear();
-             	        customer_podlist_table.rows.add(data.orders[0].podList);
-             	        customer_podlist_table.draw();
-             	        
-             	    } else {
-
-             	    		var 	customer_podlist_table = $('#customer-pod-list-table').DataTable();
-             	    		customer_podlist_table.clear();
-             	    		customer_podlist_table.rows.add(data.orders[0].podList);
-             	    		customer_podlist_table.draw();
-             	        
-             	    }
+                   		});
+					} else {
+						customer_podlist_table = $('#customer-pod-list-table').DataTable();
+					}
                      
                    var url = '<?php echo API_HOST_URL; ?>';
                    url += '/entities?columns=id,name&filter=id,eq,' + customerID + '&transform=1';
@@ -1729,7 +1746,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                              <h5 class="text-center"><strong>Destination Address</strong></h5>
                          </div>
                      </div>
-                     <div class="row" style="padding:15px;background-color: #f3f3f3;">
+                     <div class="row" style="padding:15px 15px 5px 15px;background-color: #f3f3f3;">
                          <div class="col-xs-6">
                          	<div class="row"><label for="customer_pickupContactPerson">Contact</label></div>
                          	<div class="row"><span id="customer_pickupContactPerson"></span></div>	
@@ -1739,7 +1756,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                          	<div class="row"><span id="customer_deliveryContactPerson"></span></div>	
                          </div>
                      </div>
-                     <div class="row" style="padding:15px;background-color:#f3f3f3;">
+                     <div class="row" style="padding:5px 15px;background-color:#f3f3f3;">
                         <div class="col-xs-6">
                          	<div class="row"><label for="customer_pickupLocation">Lot Name (Yard)</label></div>
                          	<div class="row"><span id="customer_pickupLocation"></span></div>	
@@ -1749,7 +1766,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                          	<div class="row"><span id="customer_deliveryLocation"></span></div>	
                          </div>
                       </div>
-                     <div class="row" style="padding:15px;background-color:#f3f3f3;">
+                     <div class="row" style="padding:5px 15px;background-color:#f3f3f3;">
                         <div class="col-xs-6">
                          	<div class="row"><label for="customer_originationAddress">Address</label></div>
                          	<div class="row">
@@ -1769,7 +1786,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                          	</div>	
                          </div>
                      </div>
-                     <div class="row" style="padding:15px;background-color:#f3f3f3;">
+                     <div class="row" style="padding:5px 15px;background-color:#f3f3f3;">
                         <div class="col-xs-6">
                          	<div class="row"><label for="customer_pickupPhoneNumber">Phone Number</label></div>
                          	<div class="row"><span id="customer_pickupPhoneNumber"></span></div>	
@@ -1779,7 +1796,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                          	<div class="row"><span id="customer_deliveryPhoneNumber"></span></div>	
                          </div>
                      </div> 
-                     <div class="row" style="padding:15px;background-color:#f3f3f3;">
+                     <div class="row" style="padding:5px 15px 15px 15px;background-color:#f3f3f3;">
                         <div class="col-xs-6">
                          	<div class="row"><label for="customer_pickupHoursOfOperation">Hours of Operation</label></div>
                          	<div class="row"><span id="customer_pickupHoursOfOperation"></span></div>	
@@ -1792,13 +1809,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                  </div>                 
                  
             <div id="dataTable-3" class="mt">
-                <h5><span class="fw-semi-bold">POD List</span></h5>
+                <h5><span class="fw-semi-bold">VIN List</span></h5>
                 <table id="customer-pod-list-table" class="table table-striped table-hover" width="100%">
                     <thead>
                     <tr>
-                        <th></th>
                         <th>VIN Number</th>
-                        <th>Delivery</th>
+                        <th>Date</th>
                         <!-- <th>Delivery Status</th>  -->
                         <th>Comments</th>
                     </tr>
@@ -1809,7 +1825,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                  </table>
             </div>
                 
-
+          <div class="modal-footer">
+          	<button id="closeOrderDetails" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          	<button id="editOrderDetails" type="button" class="btn btn-primary"><i class="glyphicon glyphicon-edit text"></i> <span class="text">Edit</span></button>
+        	  </div>
         </div>
 			<?php 
                           
