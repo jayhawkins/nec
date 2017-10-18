@@ -37,8 +37,8 @@
                    alert("Can't Get Email for Verification");
                 }
              });
-             return true;
-             //return passValidation;
+             //return true;
+             return passValidation;
          }
 
     </script>
