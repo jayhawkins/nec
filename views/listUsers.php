@@ -515,6 +515,9 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
         $("#passwordConfirm").val('');
         $("#uniqueID").val('');
         $("#status").val('');
+        $("#textNumber").val('');
+        $("#textNumber").removeAttr('required');
+        $("#userTypeID").val('');
         $("#divUserTypeID").hide();
   		$("#myModal").modal('show');
   	});
@@ -535,9 +538,9 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
           $("#status").val(data['users'][0]['status']);
 
           if ($("#userTypeID").val() == 5) {
-              $("#textNumber").prop('required', 'required');
+              $("#textNumber").attr('required', 'required');
           } else {
-              $("#textNumber").removeProp('required');
+              $("#textNumber").removeAttr('required');
           }
 
           $("#divUserTypeID").hide();
@@ -561,9 +564,9 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
 
     $('#userTypeID').on( 'change', function () {
         if ($("#userTypeID").val() == 5) {
-            $("#textNumber").prop('required', 'required');
+            $("#textNumber").attr('required', 'required');
         } else {
-            $("#textNumber").removeProp('required');
+            $("#textNumber").removeAttr('required');
         }
     });
 

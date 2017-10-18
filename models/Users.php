@@ -571,7 +571,7 @@ class User
                     $subject = $templateresult->email_templates->records[0][6];
                     $body = "Hello " . $firstName . ",<br /><br />\n";
                     $body .= $templateresult->email_templates->records[0][2];
-                    $body .= "<p>Your login credentials are:<br /><br />Username: " . $userresult . "<br />Password: " . $password . "</p>\n";
+                    $body .= "<p>Your login credentials are:<br /><br />Username: " . $username . "<br />Password: " . $password . "</p>\n";
                     if (count($templateresult) > 0) {
                       try {
                         $numSent = sendmail($to, $subject, $body, $from);
