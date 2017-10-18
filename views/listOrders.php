@@ -1046,9 +1046,17 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
              			$('#destinationZip').val('');
              		}
 
+             		if (data.orders[0].transportationMode !== "" && data.orders[0].transportationMode !== null) {
+	                		$("#transportationMode").val(data.orders[0].transportationMode);
+             		} else {
+                			$("#transportationMode").val('');
+             		}
+             		
                     if (data.orders[0].rateType == "Flat Rate") {
                         $('#editOrder input[name="rateType"][value="Flat Rate"]').prop('checked', true);
+                        $('#editOrder input[name="rateType"][value="Mileage"]').prop('checked', false);
                     } else {
+                        $('#editOrder input[name="rateType"][value="Flat Rate"]').prop('checked', false);
                         $('#editOrder input[name="rateType"][value="Mileage"]').prop('checked', true);
                     }             		
              		
