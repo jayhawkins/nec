@@ -671,7 +671,7 @@ if ($_SESSION['entityid'] > 0) {
     if ( ($_SESSION['entitytype'] == 1) && in_array($_SESSION['usertypeid'], $myavailabilityMenuAccessList) ) {
 ?>
                         <li>
-                            <a href="#" onclick="ajaxFormCall('listCustomerNeeds');">
+                            <a style="line-height:20px;padding-bottom:15px;" href="#" onclick="ajaxFormCall('listCustomerNeeds');">
                                 <span class="icon">
                                     <i class="fa fa-users"></i>
                                 </span>
