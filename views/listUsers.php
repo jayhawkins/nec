@@ -393,7 +393,7 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
                      <div class="col-sm-4">
                          <label for="textNumber">Text Number</label>
                          <div class="form-group">
-                           <input type="text" id="textNumber" name="textNumber" class="form-control" placeholder="Text Number" required="required" />
+                           <input type="text" id="textNumber" name="textNumber" class="form-control" placeholder="Text Number" />
                          </div>
                      </div>
                      <div class="col-sm-4">
@@ -533,13 +533,13 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
           $("#textNumber").val(data["users"][0]["textNumber"]);
           $("#userTypeID").val(data["users"][0]["user_types"][0]["id"]);
           $("#status").val(data['users'][0]['status']);
-/*
+
           if ($("#userTypeID").val() == 5) {
-              $("#divUserTypeID").show();
+              $("#textNumber").prop('required', 'required');
           } else {
-              $("#divUserTypeID").hide();
+              $("#textNumber").removeProp('required');
           }
-*/
+
           $("#divUserTypeID").hide();
           $("#myModal").modal('show');
         } else {
@@ -558,15 +558,13 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
 
     } );
 
-/*
+
     $('#userTypeID').on( 'change', function () {
         if ($("#userTypeID").val() == 5) {
-            $("#divUserTypeID").show();
+            $("#textNumber").prop('required', 'required');
         } else {
-            $("#divUserTypeID").hide();
+            $("#textNumber").removeProp('required');
         }
-
     });
-*/
 
  </script>
