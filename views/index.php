@@ -169,7 +169,7 @@ if ($_SESSION['entityid'] > 0) {
 
 ?>
 
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html>
 <head>
     <title>Nationwide Equipment Control - Dashboard</title>
