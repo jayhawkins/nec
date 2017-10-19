@@ -92,6 +92,9 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
 
       function verifyAndPost() {
 
+            $("#loadSave").html("<i class='fa fa-spinner fa-spin'></i> Saving Now");
+            $("#loadSave").prop("disabled", true);
+
             var passValidation = false;
             var type = "";
             var today = new Date();
@@ -170,10 +173,14 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
                     passValidation = true;
                   } else {
                     alert("Adding User Failed!");
+                    $("#loadSave").html("Save");
+                    $("#loadSave").prop("disabled", false);
                   }
                },
                error: function() {
                   alert("There Was An Error Adding User!");
+                  $("#loadSave").html("Save");
+                  $("#loadSave").prop("disabled", false);
                }
             });
 
@@ -226,6 +233,8 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
           //To Reload The Ajax
           //See DataTables.net for more information about the reload method
           example_table.ajax.reload();
+          $("#loadSave").html("Save");
+          $("#loadSave").prop("disabled", false);
       }
 
       function recordEnableDisable(status) {
@@ -382,52 +391,53 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
                            <input type="text" id="lastName" name="lastName" class="form-control mb-sm" placeholder="*Last Name" required="required" />
                          </div>
                      </div>
-                 </div>
-                 <div class="row">
                      <div class="col-sm-4">
                        <label for="title">Username <i>(Use an Email Address)</i></label>
                        <div class="form-group">
                          <input type="text" id="emailAddress" name="emailAddress" class="form-control mb-sm" placeholder="*Email Address" required="required" data-parsley-type="email" />
                        </div>
                      </div>
-                     <div class="col-sm-4">
-                         <label for="textNumber">Text Number</label>
-                         <div class="form-group">
-                           <input type="text" id="textNumber" name="textNumber" class="form-control" placeholder="Text Number" />
-                         </div>
-                     </div>
-                     <div class="col-sm-4">
-                         <div id="divUserTypeID">
-                         <label for="uniqueID">Driver ID</label>
-                         <div class="form-group">
-                           <input type="text" id="uniqueID" name="uniqueID" class="form-control" placeholder="Unique ID" />
-                         </div>
-                         </div>
-                     </div>
                  </div>
                  <div class="row">
-                     <div class="col-sm-4">
-                         <label for="password">Password</label>
-                         <div class="form-group">
-                           <input type="text" id="password" name="password" class="form-control" placeholder="*Password" />
+                     <div id="divUserTypeID">
+                         <div class="col-sm-4">
+                             <label for="uniqueID">Driver ID</label>
+                             <div class="form-group">
+                               <input type="text" id="uniqueID" name="uniqueID" class="form-control" placeholder="Unique ID" />
+                             </div>
                          </div>
-                     </div>
-                     <div class="col-sm-4">
-                         <label for="uniqueID">Confirm Password</label>
-                         <div class="form-group">
-                           <input type="text" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="Confirm Password"
-                            data-parsley-equalto="#password" />
+                         <div class="col-sm-8">
                          </div>
-                     </div>
-                     <div class="col-sm-4">
-                         &nbsp;
+                    </div>
+                 </div>
+                 <div class="row">
+                     <div id="divPassword">
+                         <div class="col-sm-4">
+                             <label for="password">Password</label>
+                             <div class="form-group">
+                               <input type="text" id="password" name="password" class="form-control" placeholder="*Password" />
+                             </div>
+                         </div>
+                         <div class="col-sm-4">
+                             <label for="uniqueID">Confirm Password</label>
+                             <div class="form-group">
+                               <input type="text" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="Confirm Password"
+                                data-parsley-equalto="#password" />
+                             </div>
+                         </div>
+                         <div class="col-sm-4">
+                             <label for="textNumber">Text Number</label>
+                             <div class="form-group">
+                               <input type="text" id="textNumber" name="textNumber" class="form-control" placeholder="Text Number" />
+                             </div>
+                         </div>
                      </div>
                   </div>
                 </form>
        </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" onclick="return post();">Save changes</button>
+          <button type="button" class="btn btn-primary" onclick="return post();" id="loadSave">Save</button>
         </div>
       </div>
     </div>
@@ -519,6 +529,7 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
         $("#textNumber").removeAttr('required');
         $("#userTypeID").val('');
         $("#divUserTypeID").hide();
+        $("#divPassword").hide();
   		$("#myModal").modal('show');
   	});
 
@@ -539,8 +550,10 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
 
           if ($("#userTypeID").val() == 5) {
               $("#textNumber").attr('required', 'required');
+              $("#divPassword").show();
           } else {
               $("#textNumber").removeAttr('required');
+              $("#divPassword").hide();
           }
 
           $("#divUserTypeID").hide();
@@ -565,8 +578,10 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
     $('#userTypeID').on( 'change', function () {
         if ($("#userTypeID").val() == 5) {
             $("#textNumber").attr('required', 'required');
+            $("#divPassword").show();
         } else {
             $("#textNumber").removeAttr('required');
+            $("#divPassword").hide();
         }
     });
 

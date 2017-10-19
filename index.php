@@ -136,6 +136,29 @@ $app->route('POST /resetpassword', function() {
     }
 });
 
+$app->route('GET /setpassword/@username', function($username) {
+    $user = Flight::user();
+    $return = $user->getUserValidateById($username);
+    if ($return == "success") {
+        Flight::render('setpassword', array("username"=>$username));
+    } else {
+        Flight::render('invalidrequest');
+    }
+});
+
+$app->route('POST /setpasswordvalidate', function() {
+    $username = Flight::request()->data['username'];
+    $password = Flight::request()->data['password'];
+    $user = Flight::user();
+    $return = $user->setpasswordvalidateapi($username,$password);
+    if ($return) {
+      Flight::redirect('login');
+    } else {
+      $invalidPassword = (isset($_SESSION['invalidPassword'])) ? $_SESSION['invalidPassword']:''; // Just use the invalidPassword session var since it's just an error
+      Flight::render('setpassword', array('invalidPassword'=> $invalidPassword));
+    }
+});
+
 $app->route('POST /checkforuniqueid', function() {
     $uniqueID = Flight::request()->data['uniqueID'];
     $user = Flight::user();

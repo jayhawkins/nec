@@ -583,6 +583,22 @@ AUTO_INCREMENT = 1;
 -- ---------------------------------------------------------
 
 
+-- CREATE TABLE "sessions" -----------------------------
+-- CREATE TABLE "sessions" ---------------------------------
+CREATE TABLE `sessions` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `member_id` int(11) DEFAULT NULL,
+  `session_id` varchar(45) DEFAULT NULL,
+  `session_ip` varchar(45) DEFAULT NULL,
+  `create_datetime` datetime DEFAULT NULL,
+  `edit_datetime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `active` varchar(1) NOT NULL DEFAULT 'Y',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+-- -------------------------------------------------------------
+-- ---------------------------------------------------------
+
+
 -- CREATE TABLE "states" -----------------------------------
 -- CREATE TABLE "states" ---------------------------------------
 CREATE TABLE IF NOT EXISTS `states` (

@@ -478,6 +478,61 @@ class User
         }
     }
 
+    public function getUserValidateById($id) {
+      try {
+              $loginargs = array(
+                    "transform"=>1,
+                    "filter[0]"=>"id,eq,".$id,
+                    "filter[1]"=>"status,eq,Active",
+                    "filter[2]"=>"password,eq,"
+              );
+              $loginurl = API_HOST_URL . "/users?".http_build_query($loginargs);
+              $loginoptions = array(
+                  'http' => array(
+                      'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                      'method'  => 'GET'
+                  )
+              );
+              $logincontext  = stream_context_create($loginoptions);
+              $result = json_decode(file_get_contents($loginurl,false,$logincontext));
+            if ( isset($result->users[0]->id) && $result->users[0]->id > 0 ) {
+                return "success";
+            } else {
+                return "Failed";
+            }
+      } catch (Exception $e) { // The authorization query failed verification
+            header('HTTP/1.1 404 Not Found');
+            header('Content-Type: text/plain; charset=utf8');
+            echo $e->getMessage();
+            exit();
+      }
+    }
+
+    public function setpasswordvalidateapi($username,$password) {
+        try {
+            $userurl = API_HOST_URL . '/users/'.$username;
+            $userdata = array("password" => password_hash($password, PASSWORD_BCRYPT),
+                      "updatedAt" => date('Y-m-d H:i:s')
+            );
+            // use key 'http' even if you send the request to https://...
+            $useroptions = array(
+                'http' => array(
+                    'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                    'method'  => 'PUT',
+                    'content' => http_build_query($userdata)
+                )
+            );
+            $usercontext  = stream_context_create($useroptions);
+            $userresult = file_get_contents($userurl, false, $usercontext);
+            return true;
+        } catch (Exception $e) { // The authorization query failed verification
+            header('HTTP/1.1 404 Not Found');
+            header('Content-Type: text/plain; charset=utf8');
+            echo $e->getMessage();
+            exit();
+        }
+    }
+
     public function maintenanceapi($type,$userID,$member_id,$entityID,$firstName,$lastName,$username,$password,$userTypeID,$uniqueID,$textNumber) {
           try {
 
@@ -558,7 +613,7 @@ class User
                     $from = array("operations@nationwide-equipment.com" => "Nationwide Operations Control Manager");
                     //$templateresult = json_decode(file_get_contents(API_HOST.'/api/email_templates?filter=title,eq,Authorize Account'));
 
-                    $templateargs = array("filter"=>"title,eq,Driver Setup Notification");
+                    $templateargs = array("filter"=>"title,eq,User Setup Notification");
                     $templateurl = API_HOST."/api/email_templates?".http_build_query($templateargs);
                     $templateoptions = array(
                         'http' => array(
@@ -571,7 +626,8 @@ class User
                     $subject = $templateresult->email_templates->records[0][6];
                     $body = "Hello " . $firstName . ",<br /><br />\n";
                     $body .= $templateresult->email_templates->records[0][2];
-                    $body .= "<p>Your login credentials are:<br /><br />Username: " . $username . "<br />Password: " . $password . "</p>\n";
+                    $body .= "<p>Your Username is: " . $username . "</p>\n";
+                    $body .= "<p><a href=".HTTP_HOST."/setpassword/".$userresult.">Click HERE</a> to create a password and activate your account</p>\n";
                     if (count($templateresult) > 0) {
                       try {
                         $numSent = sendmail($to, $subject, $body, $from);
