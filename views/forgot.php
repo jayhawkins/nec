@@ -2,12 +2,12 @@
 <html>
 <head>
     <title>NEC - Forgot Password</title>
-    <link href="css/application.min.css" rel="stylesheet">
+    <link href="<?php echo HTTP_HOST; ?>/css/application.min.css" rel="stylesheet">
     <!-- as of IE9 cannot parse css files with more that 4K classes separating in two files -->
     <!--[if IE 9]>
         <link href="css/application-ie9-part2.css" rel="stylesheet">
     <![endif]-->
-    <link rel="shortcut icon" href="img/favicon.png">
+    <link rel="shortcut icon" href="<?php echo HTTP_HOST; ?>/img/favicon.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -60,7 +60,7 @@
         <div class="row">
             <div class="col-xl-4 col-md-6 col-xs-10 col-xl-offset-4 col-md-offset-3 col-xs-offset-1">
                 <h5 class="widget-login-logo animated fadeInUp">
-                    <img src="img/nec_logo.png" />
+                    <img src="<?php echo HTTP_HOST; ?>/img/nec_logo.png" />
                 </h5>
                 <section class="widget widget-login animated fadeInUp">
                     <header>
@@ -110,24 +110,24 @@
 </div>
 
 <!-- common libraries. required for every page-->
-<script src="vendor/jquery/dist/jquery.min.js"></script>
-<script src="vendor/jquery-pjax/jquery.pjax.js"></script>
-<script src="vendor/tether/dist/js/tether.js"></script>
-<script src="vendor/bootstrap/js/dist/util.js"></script>
-<script src="vendor/bootstrap/js/dist/collapse.js"></script>
-<script src="vendor/bootstrap/js/dist/dropdown.js"></script>
-<script src="vendor/bootstrap/js/dist/button.js"></script>
-<script src="vendor/bootstrap/js/dist/tooltip.js"></script>
-<script src="vendor/bootstrap/js/dist/alert.js"></script>
-<script src="vendor/slimScroll/jquery.slimscroll.min.js"></script>
-<script src="vendor/widgster/widgster.js"></script>
+<script src="<?php echo HTTP_HOST; ?>/vendor/jquery/dist/jquery.min.js"></script>
+<script src="<?php echo HTTP_HOST; ?>/vendor/jquery-pjax/jquery.pjax.js"></script>
+<script src="<?php echo HTTP_HOST; ?>/vendor/tether/dist/js/tether.js"></script>
+<script src="<?php echo HTTP_HOST; ?>/vendor/bootstrap/js/dist/util.js"></script>
+<script src="<?php echo HTTP_HOST; ?>/vendor/bootstrap/js/dist/collapse.js"></script>
+<script src="<?php echo HTTP_HOST; ?>/vendor/bootstrap/js/dist/dropdown.js"></script>
+<script src="<?php echo HTTP_HOST; ?>/vendor/bootstrap/js/dist/button.js"></script>
+<script src="<?php echo HTTP_HOST; ?>/vendor/bootstrap/js/dist/tooltip.js"></script>
+<script src="<?php echo HTTP_HOST; ?>/vendor/bootstrap/js/dist/alert.js"></script>
+<script src="<?php echo HTTP_HOST; ?>/vendor/slimScroll/jquery.slimscroll.min.js"></script>
+<script src="<?php echo HTTP_HOST; ?>/vendor/widgster/widgster.js"></script>
 
 <!-- common app js -->
-<script src="js/settings.js"></script>
-<script src="js/app.js"></script>
+<script src="<?php echo HTTP_HOST; ?>/js/settings.js"></script>
+<script src="<?php echo HTTP_HOST; ?>/js/app.js"></script>
 
 <!-- page specific libs -->
-<script src="vendor/parsleyjs/dist/parsley.min.js"></script>
+<script src="<?php echo HTTP_HOST; ?>/vendor/parsleyjs/dist/parsley.min.js"></script>
 <!-- page specific js -->
 </body>
 </html>
