@@ -24,8 +24,6 @@ require "lib/googleApiClass.php";
 require 'lib/fpdf/fpdf.php';
 require "lib/fpdi/src/autoload.php";
 
-require 'models/datasource/DataSource.php';
-require 'models/Model.php';
 require 'models/Users.php';
 require 'models/Entities.php';
 require 'models/Members.php';
@@ -39,7 +37,6 @@ require 'models/Documents.php';
 require 'models/InsuranceCarriers.php';
 require 'models/Orders.php';
 
-Flight::register( 'datasource', 'DataSource' );
 Flight::register( 'user', 'User' );
 Flight::register( 'entity', 'Entity' );
 Flight::register( 'member', 'Member' );
@@ -52,4 +49,3 @@ Flight::register( 'customerneedcommit', 'CustomerNeedCommit' );
 Flight::register( 'documents', 'Documents' );
 Flight::register( 'insurancecarrier', 'InsuranceCarrier' );
 Flight::register( 'order', 'Order' );
-Flight::register( 'podforms', 'PODForms' );

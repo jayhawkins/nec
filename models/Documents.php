@@ -1,8 +1,10 @@
 <?php
 
+require 'Model.php';
+
 class Documents extends Model
 {
-    protected $_name = "documents";
+    public $table = "documents";
     
     public function post($api_host,$id) {
 
