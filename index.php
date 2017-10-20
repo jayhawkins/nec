@@ -102,7 +102,8 @@ $app->route('POST /forgot', function() {
     $user = Flight::user();
     $return = $user->forgotpasswordapi($username);
     if ($return) {
-      Flight::redirect('login');
+      Flight::render('checkyouremail');
+      //Flight::redirect('login');
     } else {
       $invalidUsername = (isset($_SESSION['invalidUsername'])) ? $_SESSION['invalidUsername']:''; // Just use the invalidPassword session var since it's just an error
       Flight::render('forgot', array('invalidUsername'=> $invalidUsername));

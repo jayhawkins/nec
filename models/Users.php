@@ -602,7 +602,7 @@ class User
 
                     // Send a text to the new driver
                     $messagecenter = Flight::messagecenter();
-                    $msg = "Your NEC Driver account has been setup. Your login credentials are: Username: " . $userresult . " Your Password: " . $password;
+                    $msg = "Your NEC Driver account has been setup. Your login credentials are: User Login ID: " . $userresult . " Your Password: " . $password;
                     $messagecenter->sendSMS($textNumber, $msg);
 
                 } else {
