@@ -137,7 +137,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 */
             if(verifyAddCarrierCommit() == true){
                 var result = true;
-
+                
                 var params = {
                       address1: $("#originationAddress1").val(),
                       city: $("#originationCity").val(),
@@ -157,6 +157,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                    success: function(response){
                       //alert("Origination " + response);
                       if (response == "success") {
+  						                          
                           var params = {
                                 address1: $("#destinationAddress1").val(),
                                 city: $("#destinationCity").val(),
@@ -173,6 +174,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                              contentType: "application/json",
                              async: false,
                              success: function(response){
+                                 
                                 //alert("Destination " + response);
                                 if (response == "success") {
                                 } else {
@@ -510,9 +512,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     data: null,
                     "bSortable": false,
                     "render": function(o) {
+                        
                       var newStatus = o.status;
-                      if (o.customer_needs_commit.length > 0) {
-                          var showAmount = o.customer_needs_commit[0].rate.toString().split(".");
+                      if (o.length > 0) {
+                          var showAmount = o.rate.toString().split(".");
+					                           
                           showAmount[0] = showAmount[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                           if (showAmount.length > 1) {
                               if (showAmount[1].length < 2) {
@@ -522,7 +526,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                           } else {
                               showAmount = "$" + showAmount[0] + ".00";
                           }
-                          if (o.customer_needs_commit[0].status == "Cancelled") {
+                          if (o.status == "Cancelled") {
                               newStatus = "<strong>Cancelled</strong>";
                           } else {
                               newStatus = "<strong>Committed</strong>";
@@ -588,7 +592,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     
                     customer_needs.forEach(function(customer_need){
                         
-                        if(customer_need.customer_needs_commit.length > 0){
+                        if(customer_need.length > 0){
                             customer_needs_commit.push(customer_need);
                         }
                     });
@@ -602,8 +606,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     data: null,
                     "bSortable": true,
                     "mRender": function (o) {
+                        
                         var entityName = '';
-                        var entityID = o.customer_needs_commit[0].entityID;
+                        var entityID = o.entityID;
                         
                         allEntities.entities.forEach(function(entity){
                             
@@ -627,10 +632,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     data: null,
                     "bSortable": false,
                     "mRender": function (o) {
+                        
                         var input = '';
-                        var status = o.customer_needs_commit[0].status;
-                        var carrierRate = o.customer_needs_commit[0].rate.toFixed(2);
-                        var commitID = o.customer_needs_commit[0].id;
+                        var status = o.status;
+                        var carrierRate = o.rate.toFixed(2);
+                        var commitID = o.id;
                         
                         if(status == "Available"){
                             input += "<input id=\"carrierRate-" + commitID + "\" type=\"text\" name=\"carrierRate\" class=\"form-control mb-sm\" placeholder=\"Carrier Rate\" value=\"" + carrierRate + "\"/>";
@@ -660,9 +666,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     data: null,
                     "bSortable": false,
                     "render": function(o) {
+                        
                       var newStatus = o.status;
-                      if (o.customer_needs_commit.length > 0) {
-                          var showAmount = o.customer_needs_commit[0].rate.toString().split(".");
+                      if (o.length > 0) {
+                          var showAmount = o.rate.toString().split(".");
                           showAmount[0] = showAmount[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                           if (showAmount.length > 1) {
                               if (showAmount[1].length < 2) {
@@ -672,7 +679,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                           } else {
                               showAmount = "$" + showAmount[0] + ".00";
                           }
-                          if (o.customer_needs_commit[0].status == "Cancelled") {
+                          if (o.status == "Cancelled") {
                               newStatus = "<strong>Cancelled</strong>";
                           } else {
                               newStatus = "<strong>Committed</strong>";
@@ -693,8 +700,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     data: null,
                     "bSortable": false,
                     "mRender": function (o) {
+                    	                        
                         var buttons = '';
-                        var status = o.customer_needs_commit[0].status;                        
+                        var status = o.status;                        
                         
                         if(status == "Available"){
                             buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"fa fa-check text-info\"></i> <span class=\"text-info\">Accept Commit</span></button>';
@@ -791,9 +799,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     data: null,
                     "bSortable": false,
                     "render": function(o) {
+                        
                       var newStatus = o.status;
-                      if (o.customer_needs_commit.length > 0) {
-                          var showAmount = o.customer_needs_commit[0].rate.toString().split(".");
+                      if (o.length > 0) {
+                          var showAmount = o.rate.toString().split(".");
                           showAmount[0] = showAmount[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                           if (showAmount.length > 1) {
                               if (showAmount[1].length < 2) {
@@ -803,7 +812,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                           } else {
                               showAmount = "$" + showAmount[0] + ".00";
                           }
-                          if (o.customer_needs_commit[0].status == "Cancelled") {
+                          if (o.status == "Cancelled") {
                               newStatus = "<strong>Cancelled</strong>";
                           } else {
                               newStatus = "<strong>Committed</strong>";
@@ -921,8 +930,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
             customer_needs.forEach(function(customer_need){
 
-                if(customer_need.customer_needs_commit.length > 0 && customer_need.customer_needs_commit[0].status !== "Available"){
-                    carrierTotal += customer_need.customer_needs_commit[0].rate;
+                if(customer_need.length > 0 && customer_need.status !== "Available"){
+                    carrierTotal += customer_need.rate;
                 }
             });
             
@@ -1132,7 +1141,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
          
         <div class="mt">
             <h5><span class="fw-semi-bold">Selected Customer Transport</span></h5>
-            <table id="selected-customer-need" class="table table-striped table-hover">
+            <table id="selected-customer-need" class="table table-striped table-hover" width="100%">
                  <thead>
                  <tr>
                      <th></th>
@@ -1919,8 +1928,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         var carrierQty = 0;
         customer_needs.forEach(function(customer_need){
 
-            if(customer_need.customer_needs_commit.length > 0 && customer_need.customer_needs_commit[0].status == "Close"){
-                var carrier = {carrierID: customer_need.customer_needs_commit[0].entityID};
+            if(customer_need.length > 0 && customer_need.status == "Close"){
+                var carrier = {carrierID: customer_need.entityID};
                 
                 if (carrierIDs.indexOf(carrier) === -1) carrierIDs.push(carrier);  
                 
@@ -1964,8 +1973,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             status: "Open", transportationMode: selectedCustomerNeed.transportationMode, qty: orderQty,
                             rateType: selectedCustomerNeed.rateType, customerRate: $('#customerRate').val(), carrierTotalRate: $('#carrierTotalRate').val(),
                             totalRevenue: $('#totalRevenue').val(), createdAt: today, updatedAt: today};
-                                                
-                       var customerName = selectedCustomerNeed.entities[0].name;
+
+                        var customerName = "";
+                        allEntities.entities.forEach(function(entity){
+                            if(selectedCustomerNeed.entityID == entity.id){
+                            		customerName = entity.name;
+                            }                            
+                        });                        
+                      
                        var originationCity = selectedCustomerNeed.originationCity;
                        var originationState = selectedCustomerNeed.originationState;
                        var destinationCity = selectedCustomerNeed.destinationCity;
@@ -2003,11 +2018,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                         customer_needs_commit.forEach(function(customer_need){
 
-                            if(customer_need.customer_needs_commit.length > 0 && 
-                                    customer_need.customer_needs_commit[0].status == "Close"){
+                            if(customer_need.length > 0 && 
+                                    customer_need.status == "Close"){
                                 
                                 var entityName = "";
-                                var entityID = customer_need.customer_needs_commit[0].entityID;
+                                var entityID = customer_need.entityID;
                                 
                                 
                                 allEntities.entities.forEach(function(entity){
@@ -2022,7 +2037,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 
                                 var carrier_detail = {
                                     carrierName: entityName,                // This is the carrier's Name
-                                    carrierRate: customer_need.customer_needs_commit[0].rate,    // This is that carrier's rate.
+                                    carrierRate: customer_need.rate,    // This is that carrier's rate.
                                     billingAddress: carrierBillingAddress.address1,
                                     billingCity: carrierBillingAddress.city,
                                     billingState: carrierBillingAddress.state,
@@ -2155,8 +2170,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         var carrierQty = 0;
         customer_needs.forEach(function(customer_need){
 
-            if(customer_need.customer_needs_commit.length > 0 && customer_need.customer_needs_commit[0].status == "Close"){
-                var carrier = {carrierID: customer_need.customer_needs_commit[0].entityID};
+            if(customer_need.length > 0 && customer_need.status == "Close"){
+                var carrier = {carrierID: customer_need.entityID};
                 
                 if (carrierIDs.indexOf(carrier) === -1) carrierIDs.push(carrier);  
                 
@@ -2204,7 +2219,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                        // Yaw, here is the information you requested.
                        
                        // This is the Selected Customer Transport Table at the top of Committed Transport
-                       //console.log(selectedCustomerNeed);
                        
                        var customerName = selectedCustomerNeed.entities[0].name;
                        var originationCity = selectedCustomerNeed.originationCity;
@@ -2229,11 +2243,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                         customer_needs_commit.forEach(function(customer_need){
 
-                            if(customer_need.customer_needs_commit.length > 0 && 
-                                    customer_need.customer_needs_commit[0].status == "Close"){
+                            if(customer_need.length > 0 && 
+                                    customer_need.status == "Close"){
                                 
                                 var entityName = "";
-                                var entityID = customer_need.customer_needs_commit[0].entityID;
+                                var entityID = customer_need.entityID;
                                 
                                 
                                 allEntities.entities.forEach(function(entity){
@@ -2248,7 +2262,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 
                                 var carrier_detail = {
                                     carrierName: entityName,                // This is the carrier's Name
-                                    carrierRate: customer_need.customer_needs_commit[0].rate,    // This is that carrier's rate.
+                                    carrierRate: customer_need.rate,    // This is that carrier's rate.
                                     billingAddress: carrierBillingAddress.address1,
                                     billingCity: carrierBillingAddress.city,
                                     billingState: carrierBillingAddress.state,
@@ -2276,10 +2290,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                        var customerBillingCity = customerBillingAddress.city;
                        var customerBillingState = customerBillingAddress.state;
                        var customerBillingZip = customerBillingAddress.zip;
-                       
-                       
-                       
-                       
                        
                        var notes = 'From ' + originationCity + ',' + originationState + ' to ' + destinationCity + ',' + destinationState;
                         
@@ -2386,14 +2396,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         
         var customer_needs = json.customer_needs;
         var order_detail_list = new Array();
-
+        
         customer_needs.forEach(function(customer_need){
 
-            if(customer_need.customer_needs_commit.length > 0 && 
-                    customer_need.customer_needs_commit[0].status == "Close"){
+            if(customer_need.length > 0 && 
+                    customer_need.status == "Close"){
                 
                 var order_detail = {
-                    carrierID: customer_need.customer_needs_commit[0].entityID,
+                    carrierID: customer_need.entityID,
                     orderID: orderID,
                     originationCity: customer_need.originationCity,
                     originationState: customer_need.originationState,
@@ -2407,9 +2417,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     status: "Open",
                     transportationMode: customer_need.transportationMode,
                     qty: customer_need.qty,
-                    carrierRate: customer_need.customer_needs_commit[0].rate,
-                    pickupDate: customer_need.customer_needs_commit[0].pickupDate,
-                    deliveryDate: customer_need.customer_needs_commit[0].deliveryDate,
+                    carrierRate: customer_need.rate,
+                    pickupDate: customer_need.pickupDate,
+                    deliveryDate: customer_need.deliveryDate,
                     createdAt: today,
                     updatedAt: today
                 };                
@@ -2417,22 +2427,26 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 order_detail_list.push(order_detail);
             }
         });
+
+		if (order_detail_list.length > 0) {
+
+	        $.ajax({
+	            url: url,
+	            type: "POST",
+	            data: JSON.stringify(order_detail_list),
+	            contentType: "application/json",
+	            async: false,
+	            success: function(){
+	                alert("Customer Availability Successfully Completed.");
+	            },
+	            error: function(){
+	                alert("Error with adding Order Details.");
+	            }
+
+	        });
+			
+		}
         
-        $.ajax({
-            url: url,
-            type: "POST",
-            data: JSON.stringify(order_detail_list),
-            contentType: "application/json",
-            async: false,
-            success: function(){
-                alert("Customer Availability Successfully Completed.");
-            },
-            error: function(){
-                alert("Error with adding Order Details.");
-            }
-
-        });
-
     }
     
     $("#customer-needs-commit").css("display", "none");
@@ -2443,6 +2457,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         var data = commitTable.row( $(this).parents('tr') ).data();
 
         var rootCustomerNeedsID = data["rootCustomerNeedsID"];
+
+		console.log(data.customer_needs_commit[0]);	
+        
         var commitID = data.customer_needs_commit[0].id; 
         //var entityID = data.customer_needs_commit[0].entityID; 
         var carrierRate = $("#carrierRate-" + commitID).val();

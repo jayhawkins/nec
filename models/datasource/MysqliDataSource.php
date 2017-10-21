@@ -1,43 +1,65 @@
-<?php 
+<?php
 
-class DataSource
+/**
+ *
+ *
+ * @author euecheruo
+ *
+ */
+class MysqlDataSource extends DataSource
 {
     
-    public $config = array();
-
-    protected $_default = array();
-    
+    /**
+     * 
+     * @param array $config
+     */
     public function __construct(array $config = array()) {
-        $this->setConfig($config);
+        parent::__construct($config);
     }
     
+    /**
+     * 
+     * {@inheritDoc}
+     * @see DataSource::create()
+     */
     public function create(Model $model, array $data = array(), array $options = array()) {
         return false;
     }
     
+    /**
+     * 
+     * {@inheritDoc}
+     * @see DataSource::read()
+     */
     public function read(Model $model, array $query = array(), array $options = array()) {
         return false;
     }
     
+    /**
+     * 
+     * {@inheritDoc}
+     * @see DataSource::update()
+     */
     public function update(Model $model, array $data = array(), array $options = array()) {
         return false;
     }
     
+    /**
+     * 
+     * {@inheritDoc}
+     * @see DataSource::delete()
+     */
     public function delete(Model $model, array $data = array(), array $options = array()) {
         return false;
     }
     
+    /**
+     * 
+     * {@inheritDoc}
+     * @see DataSource::describe()
+     */
     public function describe(Model $model) {
         return false;
-    }
-    
-    /**
-     * Setup configuration for datasource
-     * 
-     * @param array $config
-     */
-    public function setConfig($config = array()) {
-        $this->config = array_merge($this->_default, $this->config, $config);
     }
     
 }
