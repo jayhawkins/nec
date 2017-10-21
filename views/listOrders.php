@@ -134,33 +134,28 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                        success: function(response){
                           if (response == "success") {
                           } else {
-                              alert("1: " + response);
                               result = false;
-                              //alert('Preparation Failed!');
+                              alert('Preparation Failed!');
                           }
                        },
                        error: function(response) {
-                          alert("2: " + response);
                           result = false;
-                          //alert('Failed Searching for Destination Location! - Notify NEC of this failure.');
+                          alert('Failed Searching for Destination Location! - Notify NEC of this failure.');
                        }
                     });
                 } else {
-                    alert("3: " + response);
                     result = false;
-                    //alert('Preparation Failed!');
+                    alert('Preparation Failed!');
                 }
              },
              error: function(response) {
-                alert("4: " + JSON.stringify(response));
                 result = false;
-                //alert('Failed Searching for Origination Location! - Notify NEC of this failure.');
+                alert('Failed Searching for Origination Location! - Notify NEC of this failure.');
              }
           });
 
           if (result) {
             verifyAndPost(function(data) {
-                alert(data);
                 $("#load").html("Save Changes");
                 $("#load").prop("disabled", false);
             });
