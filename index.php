@@ -72,6 +72,10 @@ $app->route('GET /register', function() {
   Flight::render('register');
 });
 
+$app->route('GET /forgot', function() {
+  Flight::render('forgot');
+});
+
 $app->route('GET /logout', function() {
   unset($_SESSION['userid']);
   Flight::redirect('/login');
@@ -94,10 +98,81 @@ $app->route('POST /login', function() {
     }
 });
 
+$app->route('POST /forgot', function() {
+    $username = Flight::request()->data['username'];
+    $user = Flight::user();
+    $return = $user->forgotpasswordapi($username);
+    if ($return) {
+      Flight::render('checkyouremail');
+      //Flight::redirect('login');
+    } else {
+      $invalidUsername = (isset($_SESSION['invalidUsername'])) ? $_SESSION['invalidUsername']:''; // Just use the invalidPassword session var since it's just an error
+      Flight::render('forgot', array('invalidUsername'=> $invalidUsername));
+    }
+});
+
+$app->route('GET /resetpassword/@id/@code', function($id, $code) {
+    $user = Flight::user();
+    $password = $user->getPasswordById($id);
+    $password = str_replace("/", "-", $password);
+    $password = str_replace("?", "-", $password);
+    if ($password == $code) {
+        Flight::render('resetpassword', array('id'=>$id));
+    } else {
+        $invalidUsername = (isset($_SESSION['invalidUsername'])) ? $_SESSION['invalidUsername']:''; // Just use the invalidPassword session var since it's just an error
+        Flight::render('forgot', array('invalidUsername'=> $invalidUsername));
+    }
+
+});
+
+$app->route('POST /resetpassword', function() {
+    $username = Flight::request()->data['username'];
+    $password = Flight::request()->data['password'];
+    $user = Flight::user();
+    $return = $user->resetpasswordapi($username,$password);
+    if ($return) {
+      Flight::redirect('login');
+    } else {
+      $invalidUsername = (isset($_SESSION['invalidUsername'])) ? $_SESSION['invalidUsername']:''; // Just use the invalidPassword session var since it's just an error
+      Flight::render('resetpassword', array('invalidUsername'=> $invalidUsername));
+    }
+});
+
+$app->route('GET /setpassword/@username', function($username) {
+    $user = Flight::user();
+    $return = $user->getUserValidateById($username);
+    if ($return == "success") {
+        Flight::render('setpassword', array("username"=>$username));
+    } else {
+        Flight::render('invalidrequest');
+    }
+});
+
+$app->route('POST /setpasswordvalidate', function() {
+    $username = Flight::request()->data['username'];
+    $password = Flight::request()->data['password'];
+    $user = Flight::user();
+    $return = $user->setpasswordvalidateapi($username,$password);
+    if ($return) {
+      Flight::redirect('login');
+    } else {
+      $invalidPassword = (isset($_SESSION['invalidPassword'])) ? $_SESSION['invalidPassword']:''; // Just use the invalidPassword session var since it's just an error
+      Flight::render('setpassword', array('invalidPassword'=> $invalidPassword));
+    }
+});
+
 $app->route('POST /checkforuniqueid', function() {
     $uniqueID = Flight::request()->data['uniqueID'];
     $user = Flight::user();
     $return = $user->checkforuniqueid($uniqueID);
+
+    echo $return;
+});
+
+$app->route('POST /checkforusername', function() {
+    $username = Flight::request()->data['username'];
+    $user = Flight::user();
+    $return = $user->checkforusername($username);
 
     echo $return;
 });
@@ -218,7 +293,7 @@ $app->route('POST /entities', function() {
 });
 
 $app->route('PUT|POST /usermaintenance', function() {
-    $user_id = Flight::request()->data['user_id'];
+    $userID = Flight::request()->data['userID'];
     $member_id = Flight::request()->data['member_id'];
     $type = Flight::request()->data['type'];
     $entityID = Flight::request()->data['entityID'];
@@ -230,7 +305,7 @@ $app->route('PUT|POST /usermaintenance', function() {
     $uniqueID = Flight::request()->data['uniqueID'];
     $textNumber = Flight::request()->data['textNumber'];
     $user = Flight::user();
-    $return = $user->maintenanceapi($type,$user_id,$member_id,$entityID,$firstName,$lastName,$username,$password,$userTypeID,$uniqueID,$textNumber);
+    $return = $user->maintenanceapi($type,$userID,$member_id,$entityID,$firstName,$lastName,$username,$password,$userTypeID,$uniqueID,$textNumber);
     if ($return == "success") {
       echo $return;
     } else {
@@ -581,7 +656,7 @@ $app->route('POST /pod_api', function() {
 // POD API Process
 /*****************************************************************************/
 $app->route('POST /pod_form_api', function() {
-        
+
     $podFormType = Flight::request()->data->podFormType;
     $unitNumber = Flight::request()->data->unitNumber;
     $vinNumber = Flight::request()->data->vinNumber;
@@ -607,50 +682,50 @@ $app->route('POST /pod_form_api', function() {
     $deliveryContact = Flight::request()->data->deliveryContact;
     $deliveryPhoneNumber= Flight::request()->data->deliveryPhoneNumber;
     $deliveryHours = Flight::request()->data->deliveryHours;
-    
+
     // initiate FPDI
     $pdf = new FPDI();
     $fileName = "";
-    
+
     if($podFormType == 'Hyundai') {
-        
+
         try {
-            
+
             $fileName = "downloadfiles/hyundai-release-form-report.pdf";
-            
+
             $pageCount = $pdf->setSourceFile($fileName);
             for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
                 $templateId = $pdf->importPage($pageNo);
                 $dimSize = $pdf->getTemplateSize($templateId);
-                
+
                 if ($dimSize['width'] > $dimSize['height']) {
                     $pdf->AddPage('L', array($dimSize['width'], $dimSize['height']));
                 } else {
                     $pdf->AddPage('P', array($dimSize['width'], $dimSize['height']));
                 }
-                
+
                 $pdf->useTemplate($templateId);
-                
+
                 // Date:
                 $pdf->SetFont('Helvetica', '', 9);
                 $pdf->SetXY(35, 53.5);
                 $pdf->Write(0, date('m/d/Y'));
-                
+
                 // Unit #:
                 $pdf->SetFont('Helvetica', '', 9);
                 $pdf->SetXY(104, 63.5);
                 $pdf->Write(0, $unitNumber);
-                
+
                 // Type:
                 $pdf->SetFont('Helvetica', '', 9);
                 $pdf->SetXY(104, 73.5);
                 $pdf->Write(0, $type);
-                
+
                 // Vin #:
                 $pdf->SetFont('Helvetica', 'B', 11);
                 $pdf->SetXY(146, 63);
                 $pdf->Write(0, $vinNumber);
-                
+
                 // Size:
                 $pdf->SetFont('Helvetica', '', 9);
                 $pdf->SetXY(148, 73.5);
@@ -660,247 +735,247 @@ $app->route('POST /pod_form_api', function() {
                 $pdf->SetFont('Helvetica', '', 9);
                 $pdf->SetXY(35, 86);
                 $pdf->Write(0, $pickupLocation);
-                
+
                 // pickupContact:
                 $pdf->SetFont('Helvetica', '', 9);
                 $pdf->SetXY(35, 92);
                 $pdf->Write(0, $pickupContact);
-                
+
                 // Street Address:
                 $pdf->SetFont('Helvetica', '', 9);
                 $pdf->SetXY(35, 96);
                 $pdf->Write(0, $originationAddress);
-                
+
                 // City, State Abbr, Zipcode:
                 $pdf->SetFont('Helvetica', '', 9);
                 $pdf->SetXY(35, 100);
                 $pdf->Write(0, $originationCity . ', ' .  $originationState . ' ' . $originationZipcode);
-                
+
                 // pickupPhoneNumber:
                 $pdf->SetFont('Helvetica', '', 9);
                 $pdf->SetXY(35, 106);
                 $pdf->Write(0, $pickupPhoneNumber);
-                
+
                 // Company :
                 $pdf->SetFont('Helvetica', '', 9);
                 $pdf->SetXY(126, 86);
                 $pdf->Write(0, $deliveryLocation);
-                
+
                 // destinationContact:
                 $pdf->SetFont('Helvetica', '', 9);
                 $pdf->SetXY(126, 92);
                 $pdf->Write(0, $deliveryContact);
-                
+
                 // Street Address:
                 $pdf->SetFont('Helvetica', '', 9);
                 $pdf->SetXY(126, 96);
                 $pdf->Write(0, $destinationAddress);
-                
+
                 // City, State Abbr, Zipcode:
                 $pdf->SetFont('Helvetica', '', 9);
                 $pdf->SetXY(126, 100);
                 $pdf->Write(0, $destinationCity . ', ' .  $destinationState . ' ' . $destinationZipcode);
-                
+
                 // destinationPhoneNumber:
                 $pdf->SetFont('Helvetica', '', 9);
                 $pdf->SetXY(126, 106);
                 $pdf->Write(0, $deliveryPhoneNumber);
-                
+
             }
-            
+
             $fileName = "hyundai-release-form-report-" . str_replace(" ", "-", strtolower($podFormType)) . "-" . $vinNumber . ".pdf";
             $pdf->Output(TEMP_LOCATION . "/" . $fileName, 'F');
-            
+
         } catch(Exception $e) {
             throw $e;
         }
-        
+
     } else {
-        
+
         try {
 
             $fileName = "downloadfiles/nationwide-pod-form.pdf";
-            
+
             $pageCount = $pdf->setSourceFile($fileName);
             for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
                 $templateId = $pdf->importPage($pageNo);
                 $dimSize = $pdf->getTemplateSize($templateId);
-                
+
                 if ($dimSize['width'] > $dimSize['height']) {
                     $pdf->AddPage('L', array($dimSize['width'], $dimSize['height']));
                 } else {
                     $pdf->AddPage('P', array($dimSize['width'], $dimSize['height']));
                 }
-                
+
                 $pdf->useTemplate($templateId);
-                
+
                 // 1st Column
                 // Unit #:
                 $pdf->SetFont('Helvetica', '', 9);
                 $pdf->SetXY(79, 35);
                 $pdf->Write(0, $unitNumber);
-                
+
                 // Vin #:
                 $pdf->SetFont('Helvetica', '', 9);
                 $pdf->SetXY(79, 38);
                 $pdf->Write(0, $vinNumber);
-                
+
                 // Sec. Unit #:
                 $pdf->SetFont('Helvetica', '', 9);
                 $pdf->SetXY(85, 41.3);
                 $pdf->Write(0, $trailerProNumber);
-                
+
                 // Year:
                 $pdf->SetFont('Helvetica', '', 9);
                 $pdf->SetXY(80, 45);
                 $pdf->Write(0, $year);
-                
+
                 // Size:
                 $pdf->SetFont('Helvetica', '', 9);
                 $pdf->SetXY(80, 48.3);
                 $pdf->Write(0, $size);
-                
+
                 // Type:
                 $pdf->SetFont('Helvetica', '', 9);
                 $pdf->SetXY(80, 51.5);
                 $pdf->Write(0, $type);
-                
+
                 // Door:
                 $pdf->SetFont('Helvetica', '', 9);
                 $pdf->SetXY(80, 54.6);
                 $pdf->Write(0, $door);
-                
+
                 // Decals:
                 $pdf->SetFont('Helvetica', '', 9);
                 $pdf->SetXY(80, 58);
                 $pdf->Write(0, $decals);
-                
+
                 // 2nd Column
-                
+
                 // Company :
                 $pdf->SetFont('Helvetica', '', 9);
                 $pdf->SetXY(113, 35);
                 $pdf->Write(0, $pickupLocation);
-                
+
                 if (strlen($originationCity) > 10 || strlen($originationZipcode) > 5) {
-                    
+
                     // Street Address:
                     $pdf->SetFont('Helvetica', '', 9);
                     $pdf->SetXY(113, 38);
                     $pdf->Write(0, $originationAddress);
-                    
+
                     // City:
                     $pdf->SetFont('Helvetica', '', 9);
                     $pdf->SetXY(113, 41.3);
                     $pdf->Write(0, $originationCity);
-                    
+
                     // State Abbr, Zipcode:
                     $pdf->SetFont('Helvetica', '', 9);
                     $pdf->SetXY(113, 45);
                     $pdf->Write(0, $originationState . ' ' . $originationZipcode);
-                    
+
                 } else {
-                    
+
                     // Street Address:
                     $pdf->SetFont('Helvetica', '', 9);
                     $pdf->SetXY(113, 41.3);
                     $pdf->Write(0, $originationAddress);
-                    
+
                     $cityAddress = $originationCity . ', ' .  $originationState . ' ' . $originationZipcode;
-                    
+
                     // City, State Abbr, Zipcode:
                     $pdf->SetFont('Helvetica', '', 9);
                     $pdf->SetXY(113, 45);
                     $pdf->Write(0, $cityAddress);
-                    
+
                 }
-                
+
                 // pickupPhoneNumber:
                 $pdf->SetFont('Helvetica', '', 9);
                 $pdf->SetXY(113, 51.5);
                 $pdf->Write(0, $pickupPhoneNumber);
-                
+
                 // pickupContact:
                 $pdf->SetFont('Helvetica', '', 9);
                 $pdf->SetXY(113, 54.6);
                 $pdf->Write(0, $pickupContact);
-                
+
                 // pickupHours:
                 $pdf->SetFont('Helvetica', '', 9);
                 $pdf->SetXY(113, 58);
                 $pdf->Write(0, $pickupHours);
-                
+
                 // 3rd Column
-                
+
                 // Company :
                 $pdf->SetFont('Helvetica', '', 9);
                 $pdf->SetXY(150, 35);
                 $pdf->Write(0, $deliveryLocation);
-                
+
                 if (strlen($destinationCity) > 10 || strlen($destinationZipcode) > 5) {
-                    
+
                     // Street Address:
                     $pdf->SetFont('Helvetica', '', 9);
                     $pdf->SetXY(150, 38);
                     $pdf->Write(0, $destinationAddress);
-                    
+
                     // City:
                     $pdf->SetFont('Helvetica', '', 9);
                     $pdf->SetXY(150, 41.3);
                     $pdf->Write(0, $destinationCity);
-                    
+
                     // State Abbr, Zipcode:
                     $pdf->SetFont('Helvetica', '', 9);
                     $pdf->SetXY(150, 45);
                     $pdf->Write(0, $destinationState . ' ' . $destinationZipcode);
-                    
+
                 } else {
-                    
+
                     // Street Address:
                     $pdf->SetFont('Helvetica', '', 9);
                     $pdf->SetXY(150, 41.3);
                     $pdf->Write(0, $destinationAddress);
-                    
+
                     $cityAddress = $destinationCity . ', ' .  $destinationState . ' ' . $destinationZipcode;
-                    
+
                     // City, State Abbr, Zipcode:
                     $pdf->SetFont('Helvetica', '', 9);
                     $pdf->SetXY(150, 45);
                     $pdf->Write(0, $cityAddress);
-                    
+
                 }
-                
+
                 // destinationPhoneNumber:
                 $pdf->SetFont('Helvetica', '', 9);
                 $pdf->SetXY(150, 51.5);
                 $pdf->Write(0, $deliveryPhoneNumber);
-                
+
                 // destinationContact:
                 $pdf->SetFont('Helvetica', '', 9);
                 $pdf->SetXY(150, 54.6);
                 $pdf->Write(0, $deliveryContact);
-                
+
                 // destinationHours:
                 $pdf->SetFont('Helvetica', '', 9);
                 $pdf->SetXY(150, 58);
                 $pdf->Write(0, $deliveryHours);
-                
+
             }
-            
+
             $fileName = "nationwide-pod-form-" . str_replace(' ', '-', strtolower($podFormType)) . "-" . $vinNumber . ".pdf";
             $pdf->Output(TEMP_LOCATION . '/' . $fileName, 'F');
-            
+
         } catch(Exception $e) {
             throw $e;
         }
-        
+
     }
 
     echo $fileName;
 });
 
 $app->route('GET /download-pdf/@filename', function($filename) {
-    
+
     header("Pragma: public"); // required
     header("Expires: 0");
     header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
@@ -908,12 +983,12 @@ $app->route('GET /download-pdf/@filename', function($filename) {
     header('Content-Type: application/octet-stream');
     header('Content-Length: ' . filesize(__DIR__ . "/tmp/" . $filename));
     header('Content-Disposition: attachment; filename=' . basename($filename));
-    
-    readfile(__DIR__ . "/tmp/" . $filename);    
+
+    readfile(__DIR__ . "/tmp/" . $filename);
     unlink(__DIR__ . "/tmp/" . $filename);
 
-});    
-    
+});
+
 /*****************************************************************************/
 // Quickbooks API Status Page
 /*****************************************************************************/

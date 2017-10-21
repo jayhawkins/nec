@@ -87,11 +87,13 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
     })();
 
     function addVINNumber(){
+
+		var count = $('#input-list-box > li').length;
+		var id = (count !== 0 ) ? count - 1 : 1;
         var li = '';
-
-        li += '<li class="list-group-item"><input type="text" class="form-control" value=""></li>\n';
-
+        li += '<li id="list-box-' + id + '" class="list-group-item"><input type="text" class="form-control" value=""></li>\n';
         $("#input-list-box").append(li);
+        
     }
       function post() {
 
@@ -863,35 +865,313 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
     function getOrderIDAndCustomerName(orderID){
 
         var url = '<?php echo API_HOST_URL; ?>';
-        url += '/orders?columns=id,customerID,orderID&filter=id,eq,' + orderID + '&transform=1';
+    	
+        switch(entityType) {
+        case 0:
 
-          $.ajax({
-             url: url,
-             type: "GET",
-             async: false,
-             success: function(data){
-                  var customerID = data.orders[0].customerID;
-                  var orderID = data.orders[0].orderID;
+            url += '/orders?columns=id,customerID,orderID&filter=id,eq,' + orderID + '&transform=1';
+                    	
+            $.ajax({
+                url: url,
+                type: "GET",
+                async: false,
+                success: function(data){
+                     var customerID = data.orders[0].customerID;
+                     var orderID = data.orders[0].orderID;
 
-                  $("#orderNumber").html(orderID);
+                     $("#orderNumber").html(orderID);
+                     
+                   var url = '<?php echo API_HOST_URL; ?>';
+                   url += '/entities?columns=id,name&filter=id,eq,' + customerID + '&transform=1';
 
+                   $.ajax({
+                      url: url,
+                      type: "GET",
+                      async: false,
+                      success: function(data){
+                           var customerName = data.entities[0].name;
 
-                var url = '<?php echo API_HOST_URL; ?>';
-                url += '/entities?columns=id,name&filter=id,eq,' + customerID + '&transform=1';
+                           $("#customerName").html(customerName);
 
-                $.ajax({
-                   url: url,
-                   type: "GET",
-                   async: false,
-                   success: function(data){
-                        var customerName = data.entities[0].name;
+                      }
+                   });
+                }  
+             });        	
 
-                        $("#customerName").html(customerName);
+        		break;
+        case 1:
 
-                   }
-                });
-             }
-          });
+			$('#editOrderDetails').click(function(){
+	            $("#editOrder").modal('show');
+			});
+     	    
+			$('#closeOrderDetails').click(function(){
+				closeOrderDetails();
+			});
+        	
+            url += '/orders?filter=id,eq,' + orderID + '&transform=1';
+
+            $.ajax({
+                url: url,
+                type: "GET",
+                async: false,
+                success: function(data){
+                     var customerID = data.orders[0].customerID;
+                     var orderID = data.orders[0].orderID;
+                     
+                     $("#orderNumber").html(orderID);
+
+             		var customer_podlist_table;
+             		
+					if (data.orders[0].pickupInformation !== null) {
+	             		$('#customer_pickupContactPerson').text(data.orders[0].pickupInformation.contactPerson);
+	             		$('#customer_pickupLocation').text(data.orders[0].pickupInformation.pickupLocation);
+	             		$('#customer_pickupPhoneNumber').text(data.orders[0].pickupInformation.phoneNumber);
+	             		$('#customer_pickupHoursOfOperation').text(data.orders[0].pickupInformation.hoursOfOperation);
+
+	             		$('#pickupContactPerson').val(data.orders[0].pickupInformation.contactPerson);
+	             		$('#pickupLocation').val(data.orders[0].pickupInformation.pickupLocation);
+	             		$('#pickupPhoneNumber').val(data.orders[0].pickupInformation.phoneNumber);
+	             		$('#pickupHoursOfOperation').val(data.orders[0].pickupInformation.hoursOfOperation);
+	             		
+					} else {
+	             		$('#customer_pickupContactPerson').text('');
+	             		$('#customer_pickupLocation').text('');
+	             		$('#customer_pickupPhoneNumber').text('');
+	             		$('#customer_pickupHoursOfOperation').text('');
+
+	             		$('#pickupContactPerson').val('');
+	             		$('#pickupLocation').val('');
+	             		$('#pickupPhoneNumber').val('');
+	             		$('#pickupHoursOfOperation').val('');
+					}
+
+					if (data.orders[0].deliveryInformation !== null) {
+						
+	             		$('#customer_deliveryContactPerson').text(data.orders[0].deliveryInformation.contactPerson);
+	             		$('#customer_deliveryLocation').text(data.orders[0].deliveryInformation.deliveryLocation);
+	             		$('#customer_deliveryLocation').text(data.orders[0].deliveryInformation.deliveryLocation);
+	             		$('#customer_deliveryPhoneNumber').text(data.orders[0].deliveryInformation.phoneNumber);
+	             		$('#customer_deliveryHoursOfOperation').text(data.orders[0].deliveryInformation.hoursOfOperation);
+
+	             		$('#deliveryContactPerson').val(data.orders[0].deliveryInformation.contactPerson);
+	             		$('#deliveryLocation').val(data.orders[0].deliveryInformation.deliveryLocation);
+	             		$('#deliveryLocation').val(data.orders[0].deliveryInformation.deliveryLocation);
+	             		$('#deliveryPhoneNumber').val(data.orders[0].deliveryInformation.phoneNumber);
+	             		$('#deliveryHoursOfOperation').val(data.orders[0].deliveryInformation.hoursOfOperation);
+	             		
+					} else {
+						
+	             		$('#customer_deliveryContactPerson').text('');
+	             		$('#customer_deliveryLocation').text('');
+	             		$('#customer_deliveryLocation').text('');
+	             		$('#customer_deliveryPhoneNumber').text('');
+	             		$('#customer_deliveryHoursOfOperation').text('');
+
+	             		$('#deliveryContactPerson').val('');
+	             		$('#deliveryLocation').val('');
+	             		$('#deliveryLocation').val('');
+	             		$('#deliveryPhoneNumber').val('');
+	             		$('#deliveryHoursOfOperation').val('');
+	             		
+					}
+
+					if (data.orders[0].originationAddress !== "" && data.orders[0].originationAddress !== null) {
+						$('#customer_originationAddress').css({'display':'block'}).text(data.orders[0].originationAddress);
+						$('#originationAddress').val(data.orders[0].originationAddress);
+					} else {
+						$('#customer_originationAddress').css({'display':'inline'}).text('');
+						$('#originationAddress').val('');
+					}
+
+             		if (data.orders[0].destinationAddress !== "" && data.orders[0].destinationAddress !== null) {
+             			$('#customer_destinationAddress').css({'display':'block'}).text(data.orders[0].destinationAddress);
+             			$('#destinationAddress').val(data.orders[0].destinationAddress);
+             		} else {
+             			$('#customer_destinationAddress').css({'display':'inline'}).text('');
+             			$('#destinationAddress').val('');
+             		}	
+
+             		var hasorigincity = false;
+             		if (data.orders[0].originationCity !== "" && data.orders[0].originationCity !== null) {
+             			hasorigincity = true;
+             			$('#customer_originationCity').text(data.orders[0].originationCity);
+             			$('#originationCity').val(data.orders[0].originationCity);
+             		} else {
+             			$('#customer_originationCity').text('');
+             			$('#originationCity').val('');
+             		}
+
+             		var hasdestcity = false;
+             		if (data.orders[0].destinationCity !== "" && data.orders[0].destinationCity !== null) {
+             			hasdestcity = true;
+             			$('#customer_destinationCity').text(data.orders[0].destinationCity);
+             			$('#destinationCity').val(data.orders[0].destinationCity);
+             		} else {
+             			$('#customer_destinationCity').text('');
+             			$('#destinationCity').val('');
+             		}	
+
+             		if (data.orders[0].originationState !== "" && data.orders[0].originationState !== null) {
+             			$('#customer_originationState').text((hasorigincity) ? ", " +  data.orders[0].originationState : data.orders[0].originationState);
+             			$('#originationState').val(data.orders[0].originationState);
+             		} else {
+             			$('#customer_originationState').text('');
+             			$('#originationState').text('');
+             		}
+
+             		if (data.orders[0].destinationState !== "" && data.orders[0].destinationState !== null) {
+             			$('#customer_destinationState').text((hasdestcity) ? ", " +  data.orders[0].destinationState : data.orders[0].destinationState);
+             			$('#destinationState').val(data.orders[0].destinationState);
+             		}
+
+             		if (data.orders[0].originationZip !== "" && data.orders[0].originationZip !== null) {
+             			$('#customer_originationZip').text(data.orders[0].originationZip);
+             			$('#originationZip').val(data.orders[0].originationZip);
+             		} else {
+             			$('#customer_originationZip').text('');
+             			$('#originationZip').val('');
+             		}
+
+             		if (data.orders[0].destinationZip !== "" && data.orders[0].destinationZip !== null) {
+             			$('#customer_destinationZip').text(data.orders[0].destinationZip);
+             			$('#destinationZip').val(data.orders[0].destinationZip);
+             		} else {
+             			$('#customer_destinationZip').text('');
+             			$('#destinationZip').val('');
+             		}
+
+             		if (data.orders[0].transportationMode !== "" && data.orders[0].transportationMode !== null) {
+	                		$("#transportationMode").val(data.orders[0].transportationMode);
+             		} else {
+                			$("#transportationMode").val('');
+             		}
+             		
+                    if (data.orders[0].rateType == "Flat Rate") {
+                        $('#editOrder input[name="rateType"][value="Flat Rate"]').prop('checked', true);
+                        $('#editOrder input[name="rateType"][value="Mileage"]').prop('checked', false);
+                    } else {
+                        $('#editOrder input[name="rateType"][value="Flat Rate"]').prop('checked', false);
+                        $('#editOrder input[name="rateType"][value="Mileage"]').prop('checked', true);
+                    }             		
+             		
+					$('#customer-pod-list-table').DataTable().destroy();
+
+					var dataSet = [['','','','']];
+					if (data.orders[0].podList !== null) {
+
+		                var items = '';
+		                for (var i = 0; i < data.orders[0].podList.length; i++) {
+			                	items += '<li class="list-group-item"><input type="text" class="form-control" value="' + data.orders[0].podList[i].vinNumber + '"></li>\n';
+		                }
+		                $("#input-list-box").html(items);
+		                
+		                items = "";
+		                for (var i = 0; i < dataPoints.object_type_data_points.length; i++) {
+		                    var selected = '';
+		                    var value = '';
+
+		                    $.each(data.orders[0].needsDataPoints, function(idx, obj) {
+		                      $.each(obj, function(key, val) {
+		                        if (dataPoints.object_type_data_points[i].columnName == key) {
+		                            value = val;
+		                        }
+		                      })
+		                    });
+		                    
+		                    items += '<li>' + dataPoints.object_type_data_points[i].title +
+		                            ' <select style="width:90%" class="form-control mb-sm" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '" disabled>';
+		                    for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
+		                        if (dataPoints.object_type_data_points[i].object_type_data_point_values[v].value === value) {
+		                            selected = ' selected ';
+		                        } else {
+		                            selected = '';
+		                        }
+		                        items += '<option' + selected + '>' + dataPoints.object_type_data_points[i].object_type_data_point_values[v].value + '</option>\n';
+		                    }
+
+		                    items += '</select>' +
+		                            '</li>\n';
+		                }
+		                
+		                $("#dp-check-list-box").html(items); 
+						
+						customer_podlist_table = $('#customer-pod-list-table').DataTable({
+                    	    		retrieve: true,
+                	            processing: true,
+                	            responsive: true,
+                	            data: data.orders[0].podList,
+                	            columns: [
+                	                { data: "vinNumber" },
+                	                { data: "deliveryDate" },
+                	                { data: "notes" },
+                	            ]
+						});
+						
+					} else {
+
+		                $("#input-list-box > li").remove();
+						
+						customer_podlist_table = $('#customer-pod-list-table').DataTable({
+                    	    		retrieve: true,
+                	            processing: true,
+                	            responsive: true,
+                	            data: [],
+						});
+					}
+					
+                   var url = '<?php echo API_HOST_URL; ?>';
+                   url += '/entities?columns=id,name&filter=id,eq,' + customerID + '&transform=1';
+
+                   $.ajax({
+                      url: url,
+                      type: "GET",
+                      async: false,
+                      success: function(data){
+                           var customerName = data.entities[0].name;
+
+                           $("#customerName").html(customerName);
+
+                      }
+                   });
+                }  
+             });        	
+    		
+            break;
+        case 2:   
+
+            url += '/orders?columns=id,customerID,orderID&filter=id,eq,' + orderID + '&transform=1';
+                    	
+            $.ajax({
+                url: url,
+                type: "GET",
+                async: false,
+                success: function(data){
+                     var customerID = data.orders[0].customerID;
+                     var orderID = data.orders[0].orderID;
+
+                     $("#orderNumber").html(orderID);
+                     
+                   var url = '<?php echo API_HOST_URL; ?>';
+                   url += '/entities?columns=id,name&filter=id,eq,' + customerID + '&transform=1';
+
+                   $.ajax({
+                      url: url,
+                      type: "GET",
+                      async: false,
+                      success: function(data){
+                           var customerName = data.entities[0].name;
+
+                           $("#customerName").html(customerName);
+
+                      }
+                   });
+                }  
+             });        	
+            
+            break;
+   		}
+ 
     }
 
       function formatListBox() {
@@ -1534,7 +1814,125 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             <?php
 
                   }
-            ?>
+
+                  switch($_SESSION['entitytype']) {
+                      case 1:
+                          ?>
+        <div class="widget-body">
+                 <div class="row">
+                     <div class="col-sm-2">
+                        <h5><span class="fw-semi-bold">Customer Name:</span></h5>
+                     </div>
+                     <div class="col-sm-10">
+                        <h5><span id="customerName"></span></h5>
+                     </div>
+                 </div>
+                 <div class="row">
+                     <div class="col-sm-2">
+                        <h5><span class="fw-semi-bold">Order ID:</span></h5>
+                     </div>
+                     <div class="col-sm-10">
+                        <h5><span id="orderNumber"></span></h5>
+                     </div>
+                 </div>
+                 <div class="container">
+                     <div class="row" style="padding:20px 0px;">
+                       <div class="col-xs-6">
+                            <h5 class="text-center"><strong>Origination Address</strong></h5>
+                        </div>
+                        <div class="col-xs-6">
+                             <h5 class="text-center"><strong>Destination Address</strong></h5>
+                         </div>
+                     </div>
+                     <div class="row" style="padding:15px 15px 5px 15px;background-color: #f3f3f3;">
+                         <div class="col-xs-6">
+                         	<div class="row"><label for="customer_pickupContactPerson">Contact</label></div>
+                         	<div class="row"><span id="customer_pickupContactPerson"></span></div>	
+                         </div>
+                         <div class="col-xs-6">
+                         	<div class="row"><label for="customer_deliveryContactPerson">Contact</label></div>
+                         	<div class="row"><span id="customer_deliveryContactPerson"></span></div>	
+                         </div>
+                     </div>
+                     <div class="row" style="padding:5px 15px;background-color:#f3f3f3;">
+                        <div class="col-xs-6">
+                         	<div class="row"><label for="customer_pickupLocation">Lot Name (Yard)</label></div>
+                         	<div class="row"><span id="customer_pickupLocation"></span></div>	
+                         </div>
+                         <div class="col-xs-6">
+                         	<div class="row"><label for="customer_deliveryLocation">Lot Name (Yard)</label></div>
+                         	<div class="row"><span id="customer_deliveryLocation"></span></div>	
+                         </div>
+                      </div>
+                     <div class="row" style="padding:5px 15px;background-color:#f3f3f3;">
+                        <div class="col-xs-6">
+                         	<div class="row"><label for="customer_originationAddress">Address</label></div>
+                         	<div class="row">
+                         		<span id="customer_originationAddress"></span>
+                         		<span id="customer_originationCity"></span>
+                         		<span id="customer_originationState"></span>
+                         		<span id="customer_originationZip"></span>
+                         	</div>	
+                         </div>
+                         <div class="col-xs-6">
+                         	<div class="row"><label for="customer_destinationAddress">Address</label></div>
+                         	<div class="row">
+                         		<span id="customer_destinationAddress"></span>
+                         		<span id="customer_destinationCity"></span>
+                         		<span id="customer_destinationState"></span>
+                         		<span id="customer_destinationZip"></span>
+                         	</div>	
+                         </div>
+                     </div>
+                     <div class="row" style="padding:5px 15px;background-color:#f3f3f3;">
+                        <div class="col-xs-6">
+                         	<div class="row"><label for="customer_pickupPhoneNumber">Phone Number</label></div>
+                         	<div class="row"><span id="customer_pickupPhoneNumber"></span></div>	
+                         </div>
+                         <div class="col-xs-6">
+                         	<div class="row"><label for="customer_deliveryPhoneNumber">Phone Number</label></div>
+                         	<div class="row"><span id="customer_deliveryPhoneNumber"></span></div>	
+                         </div>
+                     </div> 
+                     <div class="row" style="padding:5px 15px 15px 15px;background-color:#f3f3f3;">
+                        <div class="col-xs-6">
+                         	<div class="row"><label for="customer_pickupHoursOfOperation">Hours of Operation</label></div>
+                         	<div class="row"><span id="customer_pickupHoursOfOperation"></span></div>	
+                         </div>
+                         <div class="col-xs-6">
+                         	<div class="row"><label for="customer_deliveryHoursOfOperation">Hours of Operation</label></div>
+                         	<div class="row"><span id="customer_deliveryHoursOfOperation"></span></div>	
+                         </div>
+                     </div>                                                           
+                 </div>                 
+                 
+            <div id="dataTable-3" class="mt">
+                <h5><span class="fw-semi-bold">VIN List</span></h5>
+                <table id="customer-pod-list-table" class="table table-striped table-hover" width="100%">
+                    <thead>
+                    <tr>
+                        <th>VIN Number</th>
+                        <th>Date</th>
+                        <!-- <th>Delivery Status</th>  -->
+                        <th>Comments</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <!-- loadTableAJAX() is what populates this area -->
+                    </tbody>
+                 </table>
+            </div>
+                
+          <div class="modal-footer">
+          	<button id="closeOrderDetails" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          	<button id="editOrderDetails" type="button" class="btn btn-primary"><i class="glyphicon glyphicon-edit text"></i> <span class="text">Edit</span></button>
+        	  </div>
+        </div>
+			<?php 
+                          
+                          break;
+                      default:
+         ?>
         <div class="widget-body">
 
             <div id="dataTable-1" class="mt">
@@ -1603,7 +2001,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             <br>
             <div id="dataTable-3" class="mt">
                 <h5><span class="fw-semi-bold">POD List</span></h5>
-                <table id="pod-list-table" class="table table-striped table-hover">
+                <table id="pod-list-table" class="table table-striped table-hover" width="100%">
                     <thead>
                     <tr>
                         <th></th>
@@ -1611,9 +2009,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         <th>Carrier</th>
                         <th>Delivery Date</th>
                         <th>Notes</th>
-                        <th class="no-sort pull-right"></th>
-                        <th class="no-sort pull-right"></th>
-                        <th class="no-sort pull-right"></th>
+                        <th class="no-sort pull-right">&nbsp;</th>
+                        <th class="no-sort pull-right">&nbsp;</th>
+                        <th class="no-sort pull-right">&nbsp;</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -1650,6 +2048,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             ?>
 
         </div>
+			<?php 
+                          
+                          break;
+                  }
+                  
+            ?>
 
      </section>
 
@@ -2019,7 +2423,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                  <hr />
                  <div class="container" style="margin-top:20px;">
                      <div class="row">
-                       <div class="col-xs-6">
+                       <div class="col-xs-6" style="max-height: 90%; overflow: auto; display: inline-block;">
                             <h5 class="text-center"><strong>Trailer Data</strong></h5>
                             <div class="well" style="max-height: 200px;overflow: auto;">
                                 <ul id="dp-check-list-box" class="list-group">
@@ -2041,7 +2445,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                  </div>
                </form>
        </div>
-        <div class="modal-footer">
+          <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           <button id="load" type="button" class="btn btn-primary" onclick="return post();">Save Changes</button>
         </div>

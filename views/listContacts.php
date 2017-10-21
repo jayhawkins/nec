@@ -12,20 +12,6 @@ $contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?col
 
  <script>
 
-     var myApp;
-      myApp = myApp || (function () {
-       var pleaseWaitDiv = $('<div class="modal hide" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false"><div class="modal-header"><h1>Processing...</h1></div><div class="modal-body"><div class="progress progress-striped active"><div class="bar" style="width: 100%;"></div></div></div></div>');
-       return {
-           showPleaseWait: function() {
-               pleaseWaitDiv.modal();
-           },
-           hidePleaseWait: function () {
-               pleaseWaitDiv.modal('hide');
-           },
-
-       };
-      })();
-
       function verifyAndPost() {
 
         if ( $('#formContact').parsley().validate() ) {
@@ -116,8 +102,12 @@ $contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?col
       }
 
       function loadTableAJAX() {
+<<<<<<< HEAD
+        var url = '<?php echo API_HOST; ?>' + '/api/contacts?include=contact_types&columns=contacts.id,contacts.firstName,contacts.lastName,contact_types.id,contact_types.name,contacts.title,contacts.emailAddress,contacts.primaryPhone,contacts.secondaryPhone,contacts.fax,contacts.contactRating,contacts.status&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order=contactTypeID&transform=1';
+=======
         myApp.showPleaseWait();
         var url = '<?php echo API_HOST_URL; ?>' + '/contacts?include=contact_types&columns=contacts.id,contacts.firstName,contacts.lastName,contact_types.id,contact_types.name,contacts.title,contacts.emailAddress,contacts.primaryPhone,contacts.secondaryPhone,contacts.fax,contacts.contactRating,contacts.status&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order=contactTypeID&transform=1';
+>>>>>>> FS#368---Convert-POD-to-PDF-
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
             processing: true,
@@ -149,7 +139,7 @@ $contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?col
                         } else {
                                   buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text\"></i> <span class=\"text\">Enable</span></button>";
                         }
-                        table += "</div>";
+                        buttons += "</div>";
                         return buttons;
                     }
                 }
@@ -161,7 +151,6 @@ $contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?col
           //To Reload The Ajax
           //See DataTables.net for more information about the reload method
           example_table.ajax.reload();
-          myApp.hidePleaseWait();
 
       }
 

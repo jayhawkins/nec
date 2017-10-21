@@ -5,6 +5,9 @@ session_start();
 require '../../nec_config.php';
 require '../lib/common.php';
 
+$entities = '';
+$entities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=id,name&order=name'));
+
 $userTypeID = '';
 //$userTypes = json_decode(file_get_contents(API_HOST_URL . '/user_types?columns=id,name&order=id'));
 
@@ -33,52 +36,51 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
 
           if ( $('#formUser').parsley().validate() ) {
 
-              if ($("#userTypeID").val() == 5) {
+                  if ($("#emailAddress").val() > '') {
 
-                  if ($("#uniqueID").val() > 0) {
+                        if ($("#id").val() == '') { // Only check if this is an add
 
-                      var params = {
-                            uniqueID: $("#uniqueID").val()
-                      };
-                      $.ajax({
-                         url: '<?php echo HTTP_HOST."/checkforuniqueid" ?>',
-                         type: 'POST',
-                         data: JSON.stringify(params),
-                         contentType: "application/json",
-                         async: false,
-                         success: function(response){
-                            if (response == "success") {
-                                result = true;
-                            } else {
-                                alert("UniqueID Already Exists: " + response);
-                                result = false;
-                            }
-                         },
-                         error: function(response) {
-                            alert("UniqueID Verification Failed: " + response);
-                            result = false;
-                         }
-                      });
+                              var params = {
+                                    username: $("#emailAddress").val()
+                              };
+                              $.ajax({
+                                 url: '<?php echo HTTP_HOST."/checkforusername" ?>',
+                                 type: 'POST',
+                                 data: JSON.stringify(params),
+                                 contentType: "application/json",
+                                 async: false,
+                                 success: function(response){
+                                    if (response == "success") {
+                                        result = true;
+                                    } else {
+                                        alert("Username Already Exists: " + response);
+                                        result = false;
+                                    }
+                                 },
+                                 error: function(response) {
+                                    alert("Username Verification Failed: " + response);
+                                    result = false;
+                                 }
+                              });
 
-                      if (result) {
-                        verifyAndPost();
-                      } else {
-                        return false;
-                      }
+                              if (result) {
+                                verifyAndPost();
+                              } else {
+                                return false;
+                              }
+
+                        } else {
+
+                            verifyAndPost(); // If updating go ahead and post
+
+                        }
 
                 } else {
 
-                   alert('User Type is Driver. You Must Assign a Unique ID.');
+                   alert('You Must Assign a Username.');
                    return false;
 
                 }
-
-            } else {
-
-                $("#uniqueID").val(''); // They are actually saving a user type other than driver - set uniqueID to blank so as to make sure only drivers have uniqueIDs
-                verifyAndPost();
-
-            }
 
           } else {
 
@@ -89,6 +91,9 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
       }
 
       function verifyAndPost() {
+
+            $("#loadSave").html("<i class='fa fa-spinner fa-spin'></i> Saving Now");
+            $("#loadSave").prop("disabled", true);
 
             var passValidation = false;
             var type = "";
@@ -128,7 +133,7 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
             }
 
             var params = {
-                  user_id: $("#userID").val(),
+                  userID: $("#userID").val(),
                   member_id: $("#id").val(),
                   type: type,
                   entityID: $("#entityID").val(),
@@ -168,10 +173,14 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
                     passValidation = true;
                   } else {
                     alert("Adding User Failed!");
+                    $("#loadSave").html("Save");
+                    $("#loadSave").prop("disabled", false);
                   }
                },
                error: function() {
                   alert("There Was An Error Adding User!");
+                  $("#loadSave").html("Save");
+                  $("#loadSave").prop("disabled", false);
                }
             });
 
@@ -224,6 +233,8 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
           //To Reload The Ajax
           //See DataTables.net for more information about the reload method
           example_table.ajax.reload();
+          $("#loadSave").html("Save");
+          $("#loadSave").prop("disabled", false);
       }
 
       function recordEnableDisable(status) {
@@ -334,6 +345,40 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
                  <input type="hidden" id="userID" name="userID" value="" />
                  <input type="hidden" id="status" name="status" value="" />
                  <div class="row">
+                    <div class="col-sm-4">
+                         <label for="contactTypeID">User Type</label>
+                         <div class="form-group">
+                           <select id="userTypeID" name="userTypeID" data-placeholder="*User Type" class="form-control chzn-select" data-ui-jq="select2" required="required">
+                             <option value="">*Select Type...</option>
+            <?php
+                             foreach($userTypes->user_types->records as $value) {
+                                 $selected = ($value[0] == $userTypeID) ? 'selected=selected':'';
+                                 echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
+                             }
+            ?>
+                           </select>
+                         </div>
+                    </div>
+                    <div class="col-sm-4">
+                         <div class="form-group">
+             <?php if ($_SESSION['entityid'] > 0) { ?>
+                            <input type="hidden" id="entityID" name="entityID" value="<?php echo $_SESSION['entityid']; ?>" />
+             <?php } else { ?>
+                             <label for="entityID">Business:</label>
+                             <select id="entityID" name="entityID" data-placeholder="Business" class="form-control chzn-select" required="required">
+                               <option value="">*Select Business...</option>
+              <?php
+                               foreach($entities->entities->records as $value) {
+                                   $selected = ($value[0] == $entity) ? 'selected=selected':'';
+                                   echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
+                               }
+              ?>
+                             </select>
+              <?php } ?>
+                         </div>
+                     </div>
+                 </div>
+                 <div class="row">
                      <div class="col-sm-4">
                          <label for="firstName">First Name</label>
                          <div class="form-group">
@@ -347,65 +392,52 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
                          </div>
                      </div>
                      <div class="col-sm-4">
-                         <label for="contactTypeID">User Type</label>
-                         <div class="form-group">
-                           <select id="userTypeID" name="userTypeID" data-placeholder="*User Type" class="form-control chzn-select" data-ui-jq="select2" required="required">
-                             <option value="">*Select Type...</option>
-            <?php
-                             foreach($userTypes->user_types->records as $value) {
-                                 $selected = ($value[0] == $userTypeID) ? 'selected=selected':'';
-                                 echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
-                             }
-            ?>
-                           </select>
-                         </div>
-                     </div>
-                 </div>
-                 <div class="row">
-                     <div class="col-sm-4">
                        <label for="title">Username <i>(Use an Email Address)</i></label>
                        <div class="form-group">
                          <input type="text" id="emailAddress" name="emailAddress" class="form-control mb-sm" placeholder="*Email Address" required="required" data-parsley-type="email" />
                        </div>
                      </div>
-                     <div class="col-sm-4">
-                         <label for="textNumber">Text Number</label>
-                         <div class="form-group">
-                           <input type="text" id="textNumber" name="textNumber" class="form-control" placeholder="Text Number" required="required" />
-                         </div>
-                     </div>
-                     <div class="col-sm-4">
-                         <div id="divUserTypeID">
-                         <label for="uniqueID">Driver ID</label>
-                         <div class="form-group">
-                           <input type="text" id="uniqueID" name="uniqueID" class="form-control" placeholder="Unique ID" />
-                         </div>
-                         </div>
-                     </div>
                  </div>
                  <div class="row">
-                     <div class="col-sm-4">
-                         <label for="password">Password</label>
-                         <div class="form-group">
-                           <input type="text" id="password" name="password" class="form-control" placeholder="*Password" />
+                     <div id="divUserTypeID">
+                         <div class="col-sm-4">
+                             <label for="uniqueID">Driver ID</label>
+                             <div class="form-group">
+                               <input type="text" id="uniqueID" name="uniqueID" class="form-control" placeholder="Unique ID" />
+                             </div>
                          </div>
-                     </div>
-                     <div class="col-sm-4">
-                         <label for="uniqueID">Confirm Password</label>
-                         <div class="form-group">
-                           <input type="text" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="Confirm Password"
-                            data-parsley-equalto="#password" />
+                         <div class="col-sm-8">
                          </div>
-                     </div>
-                     <div class="col-sm-4">
-                         &nbsp;
+                    </div>
+                 </div>
+                 <div class="row">
+                     <div id="divPassword">
+                         <div class="col-sm-4">
+                             <label for="password">Password</label>
+                             <div class="form-group">
+                               <input type="text" id="password" name="password" class="form-control" placeholder="*Password" />
+                             </div>
+                         </div>
+                         <div class="col-sm-4">
+                             <label for="uniqueID">Confirm Password</label>
+                             <div class="form-group">
+                               <input type="text" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="Confirm Password"
+                                data-parsley-equalto="#password" />
+                             </div>
+                         </div>
+                         <div class="col-sm-4">
+                             <label for="textNumber">Text Number</label>
+                             <div class="form-group">
+                               <input type="text" id="textNumber" name="textNumber" class="form-control" placeholder="Text Number" />
+                             </div>
+                         </div>
                      </div>
                   </div>
                 </form>
        </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" onclick="return post();">Save changes</button>
+          <button type="button" class="btn btn-primary" onclick="return post();" id="loadSave">Save</button>
         </div>
       </div>
     </div>
@@ -493,7 +525,11 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
         $("#passwordConfirm").val('');
         $("#uniqueID").val('');
         $("#status").val('');
+        $("#textNumber").val('');
+        $("#textNumber").removeAttr('required');
+        $("#userTypeID").val('');
         $("#divUserTypeID").hide();
+        $("#divPassword").hide();
   		$("#myModal").modal('show');
   	});
 
@@ -511,11 +547,16 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
           $("#textNumber").val(data["users"][0]["textNumber"]);
           $("#userTypeID").val(data["users"][0]["user_types"][0]["id"]);
           $("#status").val(data['users'][0]['status']);
+
           if ($("#userTypeID").val() == 5) {
-              $("#divUserTypeID").show();
+              $("#textNumber").attr('required', 'required');
+              $("#divPassword").show();
           } else {
-              $("#divUserTypeID").hide();
+              $("#textNumber").removeAttr('required');
+              $("#divPassword").hide();
           }
+
+          $("#divUserTypeID").hide();
           $("#myModal").modal('show');
         } else {
             $("#id").val(data["id"]);
@@ -533,13 +574,15 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
 
     } );
 
+
     $('#userTypeID').on( 'change', function () {
         if ($("#userTypeID").val() == 5) {
-            $("#divUserTypeID").show();
+            $("#textNumber").attr('required', 'required');
+            $("#divPassword").show();
         } else {
-            $("#divUserTypeID").hide();
+            $("#textNumber").removeAttr('required');
+            $("#divPassword").hide();
         }
-
     });
 
  </script>
