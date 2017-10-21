@@ -15,7 +15,7 @@ class GenericWebserviceDataSource extends DataSource
         'options' => array(
             'headers' => array(),
             'options' => array(),
-            'type' => 'query'
+            'type'    => 'query'
         )
     );
     
@@ -135,8 +135,6 @@ class GenericWebserviceDataSource extends DataSource
         $options = $this->_resolveOptions($options);
         $options['url'] = (!empty($data)) ? $options['url'] . "?" . $this->_sendQuery($data) : $options['url'];
         
-        var_dump($options['url']);
-        
         return $this->_request($options['url'], 'DELETE', '', $options['headers'], $options['options']);
     }
     
@@ -147,7 +145,7 @@ class GenericWebserviceDataSource extends DataSource
      * @param string $data
      * @param array $headers
      * @param array $options
-     * @throws \Exception
+     * @throws \ErrorException
      * @return mixed
      */
     protected function _request(string $url, string $method = 'GET', string $data = "", array $headers = array(), array $options = array()) {
@@ -192,8 +190,6 @@ class GenericWebserviceDataSource extends DataSource
         curl_setopt($this->_instance, CURLOPT_HTTPHEADER, array_merge($this->_headers, $headers));
         
         $response = curl_exec($this->_instance);
-        
-        
         
         if ($response === false) {
             $response = curl_error($this->_instance);
