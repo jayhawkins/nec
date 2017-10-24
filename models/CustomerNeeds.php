@@ -1,8 +1,17 @@
 <?php
 
-class CustomerNeed
+require_once 'Model.php';
+
+class CustomerNeed extends Model
 {
 
+    /**
+     * The table name
+     *
+     * @var string
+     */
+    public $table = "customer_needs";
+    
     private $id;
     private $rootCustomerNeedsID;
     private $entityID;
@@ -359,10 +368,6 @@ class CustomerNeed
               header('Content-Type: text/plain; charset=utf8');
               return $e->getMessage();
         }
-    }
-
-    public function delete() {
-
     }
 
     public function getContactEmails() { // Contact Emails are stored as a JSON object/array in a JSON type field

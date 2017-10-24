@@ -1,11 +1,17 @@
 <?php
 
-class User
+require_once 'Model.php';
+
+class Users extends Model
 {
-    public function __construct() {
 
-    }
-
+    /**
+     * The table name
+     *
+     * @var string
+     */
+    public $table = "users";
+    
     public function loginapi($username,$password) {
         try {
             //$result = json_decode(file_get_contents(API_HOST_URL . '/users?filter=username,eq,' . $username));
