@@ -317,10 +317,14 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                            contentType: "application/json",
                                            async: false,
                                            success: function(notification){
-                                              alert(notification);
+                                               $("#load").html("Save Changes");
+                                               $("#load").prop("disabled", false);                                                
+	                                        	   alert(notification);
                                            },
                                            error: function() {
-                                              alert('Failed Sending Notifications! - Notify NEC of this failure.');
+                                               $("#load").html("Save Changes");
+                                               $("#load").prop("disabled", false);                                              
+	                                        	   alert('Failed Sending Notifications! - Notify NEC of this failure.');
                                            }
                                         });
                                       }
@@ -341,24 +345,32 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                       $("#destinationZip").val('');
                                       passValidation = true;
 
-                                      $(".loadSubmit").html("Save Changes");
-                                      $("#load").prop("disabled", false);
+                                      $("#load").html("Save Changes");
+                                      $("#load").prop("disabled", false);  
                                                                             
                                     } else {
-                                      alert("Adding Need Failed! Invalid Data...");
+                                        $("#load").html("Save Changes");
+                                        $("#load").prop("disabled", false);                                      
+	                                    	alert("Adding Need Failed! Invalid Data...");
                                     }
                                  },
                                  error: function() {
-                                    alert("There Was An Error Adding Location!");
+                                     $("#load").html("Save Changes");
+                                     $("#load").prop("disabled", false);                                    
+	                                	 alert("There Was An Error Adding Location!");
                                  }
                               });
 
                           } else {
-                              alert("ERROR Geo-Coding Destination Address!");
+                              $("#load").html("Save Changes");
+                              $("#load").prop("disabled", false);                              
+	                        	  alert("ERROR Geo-Coding Destination Address!");
                           }
                       });
                   } else {
-                      alert("ERROR Geo-Coding Origination Address!");
+                      $("#load").html("Save Changes");
+                      $("#load").prop("disabled", false);                      
+	                	  alert("ERROR Geo-Coding Origination Address!");
                   }
                 });
 
