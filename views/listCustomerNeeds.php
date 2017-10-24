@@ -71,7 +71,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
        };
       })();
 
-
         function getCustomerContactTitle(entityID){
             var customerContactTitle = "";
             entities.entities.records.forEach(function(value){
@@ -186,8 +185,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
         }
 
       }
-
-
 
       function verifyAndPost() {
           
