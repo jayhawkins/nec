@@ -1,6 +1,17 @@
 <?php
-class InsuranceCarrier
+
+require_once 'Model.php';
+
+class InsuranceCarrier extends Model
 {
+    
+    /**
+     * The table name
+     *
+     * @var string
+     */
+    public $table = "insurance_carriers";
+    
 	private $id;
 	private $entityID;
 	private $name;
@@ -96,10 +107,6 @@ class InsuranceCarrier
               header('Content-Type: text/plain; charset=utf8');
               return $e->getMessage();
         }
-    }
-
-    public function delete() {
-
     }
 
     public function viewpolicy($entityID,$file_location,$filename) {
