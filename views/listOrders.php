@@ -317,7 +317,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                                           },
                                           error: function(data){
-                                              console.log("Notification Error: ", JSON.stringify(data));
+                                              $("#load").html("Save Changes");
+                                              $("#load").prop("disabled", false);  
+	                                        	  console.log("Notification Error: ", JSON.stringify(data));
                                           }
                                       });
 

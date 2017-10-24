@@ -310,16 +310,22 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                                 contentType: "application/json",
                                                 async: false,
                                                 success: function(updateneeds){
-                                                    alert(notification);
+                                                    $("#load").html("Save Changes");
+                                                    $("#load").prop("disabled", false);                                                      
+	                                                	alert(notification);
                                                     countCommitments();
                                                 },
                                                 error: function() {
-                                                   alert('Failed Updating Root Customer Needs ID! - Notify NEC of this failure.');
+                                                    $("#load").html("Save Changes");
+                                                    $("#load").prop("disabled", false);                                                     
+	                                                	alert('Failed Updating Root Customer Needs ID! - Notify NEC of this failure.');
                                                 }
                                             });
                                         },
                                         error: function() {
-                                           alert('Failed Sending Notifications! - Notify NEC of this failure.');
+                                            $("#load").html("Save Changes");
+                                            $("#load").prop("disabled", false);                                             
+	                                        	alert('Failed Sending Notifications! - Notify NEC of this failure.');
                                         }
                                      });
                                   }
@@ -341,11 +347,15 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                   $("#destinationZip").val('');
                                   passValidation = true;
                                 } else {
-                                  alert("Adding Need Failed! Please Verify Your Data.");
-                                }
+                                    $("#load").html("Save Changes");
+                                    $("#load").prop("disabled", false);                                    
+	                                  alert("Adding Need Failed! Please Verify Your Data.");
+                            }
                              },
                              error: function() {
-                                alert("There Was An Error Adding Availability!");
+                                 $("#load").html("Save Changes");
+                                 $("#load").prop("disabled", false);                                  
+	                            	 alert("There Was An Error Adding Availability!");
                              }
                           });
 
