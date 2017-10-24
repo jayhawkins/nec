@@ -1,11 +1,17 @@
 <?php
 
-class Entity
+require_once 'Model.php';
+
+class Entity extends Model
 {
-    public function __construct() {
-
-    }
-
+ 
+    /**
+     * The table name
+     *
+     * @var string
+     */
+    public $table = "entities";
+ 
     public function post() {
 
     }
@@ -39,7 +45,4 @@ class Entity
         }
     }
 
-    public function delete() {
-
-    }
 }

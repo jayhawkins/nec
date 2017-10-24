@@ -44,10 +44,6 @@ class Contact
         }
     }
 
-    public function delete() {
-
-    }
-
     public function getContactsByEntity($id) {
         $args = array(
               "transform"=>"1",

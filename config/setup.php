@@ -39,7 +39,7 @@ require 'models/Orders.php';
 require 'models/MessageCenter.php';
 
 
-Flight::register( 'user', 'User' );
+Flight::register( 'user', 'Users' );
 Flight::register( 'entity', 'Entity' );
 Flight::register( 'member', 'Member' );
 Flight::register( 'location', 'Location' );
@@ -50,5 +50,5 @@ Flight::register( 'customerneed', 'CustomerNeed' );
 Flight::register( 'customerneedcommit', 'CustomerNeedCommit' );
 Flight::register( 'documents', 'Documents' );
 Flight::register( 'insurancecarrier', 'InsuranceCarrier' );
-Flight::register( 'order', 'Order' );
+Flight::register( 'order', 'Orders' );
 Flight::register( 'messagecenter', 'MessageCenter' );

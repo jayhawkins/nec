@@ -9,16 +9,24 @@ class Model
 {
     
     /**
-     * 
+     * The table name
+     *
      * @var string
      */
     public $table = "";
+
+    /**
+     * Assoicated other Models with this Model 
+     * 
+     * @var array
+     */
+    public $relationships = array();
     
     /**
      * 
      * @var string
      */
-    protected $_datasource = "GenericWebservice";
+    protected $_datasource = "NecWebservice";
     
     /**
      * 
@@ -35,7 +43,7 @@ class Model
         if (!file_exists(ROOT_LOCATION . "/models/datasource/" . $class . ".php")) {
             throw new Exception(sprintf('Cannot find %s class', $class));
         }
-        require ROOT_LOCATION . "/models/datasource/" . $class . ".php";
+        require_once ROOT_LOCATION . "/models/datasource/" . $class . ".php";
         $this->adapter($class);
     }
 
@@ -43,9 +51,9 @@ class Model
      * 
      * @param unknown $adapter
      * @throws Exception
-     * @return NULL|unknown
+     * @return NULL| DataSource
      */
-    public function adapter($adapter = null) {
+    public function adapter(string $adapter = null) {
         if ($adapter) {
             if (is_string($adapter)) {
                 $adapter = new $adapter();
@@ -76,7 +84,7 @@ class Model
      * @return unknown
      */
     public function read(array $query = array(), array $options = array()) {
-        return $this->_instance->read($this, $query, $options = array());
+        return $this->_instance->read($this, $query, $options);
     }
     
     /**
@@ -108,5 +116,3 @@ class Model
     }
     
 }
-
-?>

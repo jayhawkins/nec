@@ -1,7 +1,16 @@
 <?php
 
-class CarrierNeed
+require_once 'Model.php';
+
+class CarrierNeed extends Model
 {
+    
+    /**
+     * The table name
+     * 
+     * @var string
+     */
+    public $table = "carrier_needs";
 
     private $entityID;
     private $originationCity;
@@ -71,10 +80,6 @@ class CarrierNeed
               header('Content-Type: text/plain; charset=utf8');
               return $e->getMessage();
         }
-    }
-
-    public function delete() {
-
     }
 
     public function getContactEmails() { // Contact Emails are stored as a JSON object/array in a JSON type field

@@ -1,9 +1,15 @@
 <?php
 
-require 'Model.php';
+require_once 'Model.php';
 
 class Documents extends Model
 {
+
+    /**
+     * The table name
+     *
+     * @var string
+     */
     public $table = "documents";
     
     public function post($api_host,$id) {

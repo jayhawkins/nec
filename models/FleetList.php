@@ -2,7 +2,7 @@
 
 require_once 'Model.php';
 
-class EmailTemplates extends Model
+class FleetList extends Model
 {
     
     /**
@@ -10,6 +10,6 @@ class EmailTemplates extends Model
      *
      * @var string
      */
-    public $table = "email_templates";
-
+    public $table = "fleet_list";
+    
 }
