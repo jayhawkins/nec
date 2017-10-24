@@ -187,8 +187,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
 
       }
 
-
-
       function verifyAndPost() {
           
           $("#load").html("<i class='fa fa-spinner fa-spin'></i> Adding Availablity");
