@@ -1490,6 +1490,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
       $("#exampleModalLabel").html('Add New Need');
       $("#suggesstion-box").hide();
   		$("#myModal").modal('show');
+
+  		$('#formNeed').on('shown.bs.modal', function () {
+  		  $('#qty').focus()
+  		})
+  		
   	});
 
     $('#datatable-table tbody').on( 'click', 'button', function () {
