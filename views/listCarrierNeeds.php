@@ -104,7 +104,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
         }
 
       function post() {
-          if ( $('#formNeed').parsley().validate() ) {
+         if ( $('#formNeed').parsley().validate() ) {
 
                 // Build the contacts to verify one was chosen
                 var contactsarray = [];
@@ -156,32 +156,35 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                              success: function(response){
                                 if (response == "success") {
                                 } else {
-                                    alert("1: " + response);
+                                    //alert("1: " + response);
                                     result = false;
-                                    //alert('Preparation Failed!');
+                                    alert('Preparation Failed!');
                                 }
                              },
                              error: function(response) {
-                                alert("2: " + response);
+                                //alert("2: " + response);
                                 result = false;
-                                //alert('Failed Searching for Destination Location! - Notify NEC of this failure.');
+                                alert('Failed Searching for Destination Location! - Notify NEC of this failure.');
                              }
                           });
                       } else {
-                          alert("3: " + response);
+                          //alert("3: " + response);
                           result = false;
-                          //alert('Preparation Failed!');
+                          alert('Preparation Failed!');
                       }
                    },
                    error: function(response) {
-                      alert("4: " + JSON.stringify(response));
+                      //alert("4: " + JSON.stringify(response));
                       result = false;
-                      //alert('Failed Searching for Origination Location! - Notify NEC of this failure.');
+                      alert('Failed Searching for Origination Location! - Notify NEC of this failure.');
                    }
                 });
 
                 if (result) {
-                  verifyAndPost();
+                    verifyAndPost(function(data) {
+                        $("#load").html("Save Changes");
+                        $("#load").prop("disabled", false);
+                    });
                 } else {
                   return false;
                 }
@@ -196,7 +199,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
 
       function verifyAndPost() {
 
-                var passValidation = false;
+          $("#load").html("<i class='fa fa-spinner fa-spin'></i> Adding Needs");
+          $("#load").prop("disabled", true);
+
+    	  			var passValidation = false;
                 var type = "";
                 var today = new Date();
                 var dd = today.getDate();
@@ -334,6 +340,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                       $("#destinationState").val('');
                                       $("#destinationZip").val('');
                                       passValidation = true;
+
+                                      $(".loadSubmit").html("Save Changes");
+                                      $("#load").prop("disabled", false);
+                                                                            
                                     } else {
                                       alert("Adding Need Failed! Invalid Data...");
                                     }
@@ -1012,7 +1022,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
          <a id="downloadTemplate"></a>
          <br /><br />
          <div id="dataTable" class="mt">
-             <table id="datatable-table" class="table table-striped table-hover">
+             <table id="datatable-table" class="table table-striped table-hover" style="width: 100%;">
                  <thead>
                  <tr>
                      <th>Company</th>
@@ -1210,7 +1220,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
        </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" onclick="return post();">Save Changes</button>
+          <button id="load" type="button" class="btn btn-primary" onclick="return post();">Save Changes</button>
         </div>
       </div>
     </div>
@@ -1490,6 +1500,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
       $("#exampleModalLabel").html('Add New Need');
       $("#suggesstion-box").hide();
   		$("#myModal").modal('show');
+
+  		$('#formNeed').on('shown.bs.modal', function () {
+  		  $('#qty').focus()
+  		})
+  		
   	});
 
     $('#datatable-table tbody').on( 'click', 'button', function () {
