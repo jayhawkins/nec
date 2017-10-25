@@ -61,6 +61,62 @@ class User
         }
     }
 
+    public function loginapi2(&$db,$username,$password) {
+
+        try {
+            //$result = json_decode(file_get_contents(API_HOST_URL . '/users?filter=username,eq,' . $username));
+            //$result = json_decode(file_get_contents(API_HOST_URL . '/users?include=members,entities&filter=username,eq,' . $username));
+
+              $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
+              $result = $dbhandle->query("select users.id, users.username, users.password, users.status, users.userTypeID,
+                                          members.id as memberID, members.entityID,
+                                          entities.entityTypeID,
+                                          user_types.name
+                                         from users
+                                         left join members on users.id = members.userID
+                                         left join entities on entities.id = members.entityID
+                                         left join user_types on user_types.id = users.userTypeID
+                                         where users.username = '" . $username . "'");
+
+              if (count($result) > 0) {
+                  $row = $result->FetchAll();
+                  if ($row[0]['status'] == "Active") {
+                      if (password_verify($password, $row[0]['password'])) {
+                        $_SESSION['userid'] = $row[0]['id'];
+                        $_SESSION['user'] = $row[0]['id']; // Setup for api authentication
+                        $_SESSION['usertypeid'] = $row[0]['userTypeID'];
+                        $_SESSION['memberid'] = $row[0]['memberID'];
+                        $_SESSION['entityid'] = $row[0]['entityID'];
+                        $_SESSION['entitytype'] = $row[0]['entityTypeID'];
+                        $_SESSION['usertypename'] = $row[0]['name'];
+                        unset($_SESSION['invalidPassword']);
+                        return true;
+                      } else {
+                        unset($_SESSION['userid']);
+                        unset($_SESSION['user']);
+                        unset($_SESSION['usertypeid']);
+                        unset($_SESSION['memberid']);
+                        unset($_SESSION['entityid']);
+                        unset($_SESSION['entitytype']);
+                        unset($_SESSION['usertypename']);
+                        $_SESSION['invalidPassword'] = 'Password is invalid!';
+                        return false;
+                      }
+                  } else {
+                    $_SESSION['invalidPassword'] = 'Account Has Not Been Activated!';
+                    return false;
+                  }
+              } else {
+                return false;
+              }
+        } catch (Exception $e) { // The authorization query failed verification
+              header('HTTP/1.1 404 Not Found');
+              header('Content-Type: text/plain; charset=utf8');
+              echo $e->getMessage();
+              exit();
+        }
+    }
+
     public function registerapi($password,$firstName,$lastName,$title,$address1,$address2,$city,$state,$zip,$phone,$fax,$email,$entityName,$entityTypeID) {
       try {
 
