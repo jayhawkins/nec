@@ -71,7 +71,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
        };
       })();
 
-
         function getCustomerContactTitle(entityID){
             var customerContactTitle = "";
             entities.entities.records.forEach(function(value){
@@ -109,7 +108,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
         }
 
       function post() {
-
+    	  
         //console.log("Adding Availability.");
         if ( $('#formNeed').parsley().validate() ) {
 
@@ -150,32 +149,31 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                            success: function(response){
                               if (response == "success") {
                               } else {
-                                  alert("1: " + response);
                                   result = false;
-                                  //alert('Preparation Failed!');
+                                  alert('Preparation Failed!');
                               }
                            },
                            error: function(response) {
-                              alert("2: " + response);
                               result = false;
-                              //alert('Failed Searching for Destination Location! - Notify NEC of this failure.');
+                              alert('Failed Searching for Destination Location! - Notify NEC of this failure.');
                            }
                         });
                     } else {
-                        alert("3: " + response);
                         result = false;
-                        //alert('Preparation Failed!');
+                        alert('Preparation Failed!');
                     }
                  },
                  error: function(response) {
-                    alert("4: " + JSON.stringify(response));
                     result = false;
-                    //alert('Failed Searching for Origination Location! - Notify NEC of this failure.');
+                    alert('Failed Searching for Origination Location! - Notify NEC of this failure.');
                  }
               });
 
               if (result) {
-                  verifyAndPost();
+                  verifyAndPost(function(data) {
+                      $("#load").html("Save Changes");
+                      $("#load").prop("disabled", false);
+                  });
               } else {
                   return false;
               }
@@ -188,10 +186,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
 
       }
 
-
-
       function verifyAndPost() {
-
+          
+          $("#load").html("<i class='fa fa-spinner fa-spin'></i> Adding Availablity");
+          $("#load").prop("disabled", true);
+          
             var passValidation = false;
             var type = "";
             var today = new Date();
@@ -311,16 +310,22 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                                 contentType: "application/json",
                                                 async: false,
                                                 success: function(updateneeds){
-                                                    alert(notification);
+                                                    $("#load").html("Save Changes");
+                                                    $("#load").prop("disabled", false);                                                      
+	                                                	alert(notification);
                                                     countCommitments();
                                                 },
                                                 error: function() {
-                                                   alert('Failed Updating Root Customer Needs ID! - Notify NEC of this failure.');
+                                                    $("#load").html("Save Changes");
+                                                    $("#load").prop("disabled", false);                                                     
+	                                                	alert('Failed Updating Root Customer Needs ID! - Notify NEC of this failure.');
                                                 }
                                             });
                                         },
                                         error: function() {
-                                           alert('Failed Sending Notifications! - Notify NEC of this failure.');
+                                            $("#load").html("Save Changes");
+                                            $("#load").prop("disabled", false);                                             
+	                                        	alert('Failed Sending Notifications! - Notify NEC of this failure.');
                                         }
                                      });
                                   }
@@ -342,11 +347,15 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                   $("#destinationZip").val('');
                                   passValidation = true;
                                 } else {
-                                  alert("Adding Need Failed! Please Verify Your Data.");
-                                }
+                                    $("#load").html("Save Changes");
+                                    $("#load").prop("disabled", false);                                    
+	                                  alert("Adding Need Failed! Please Verify Your Data.");
+                            }
                              },
                              error: function() {
-                                alert("There Was An Error Adding Availability!");
+                                 $("#load").html("Save Changes");
+                                 $("#load").prop("disabled", false);                                  
+	                            	 alert("There Was An Error Adding Availability!");
                              }
                           });
 
@@ -1310,7 +1319,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
        </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" onclick="return post();">Save Changes</button>
+          <button id="load" type="button" class="btn btn-primary" onclick="return post();">Save Changes</button>
         </div>
       </div>
     </div>

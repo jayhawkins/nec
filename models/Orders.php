@@ -1,7 +1,17 @@
 <?php
 
-class Order
+require_once 'Model.php';
+
+class Orders extends Model
 {
+    
+    /**
+     * The table name
+     *
+     * @var string
+     */
+    public $table = "orders";
+    
     /*
     private $rateType;
     private $transportationMode;

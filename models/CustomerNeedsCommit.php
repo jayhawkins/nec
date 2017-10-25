@@ -1,7 +1,17 @@
 <?php
 
-class CustomerNeedCommit
+require_once 'Model.php';
+
+class CustomerNeedCommit extends Model
 {
+    
+    /**
+     * The table name
+     *
+     * @var string
+     */
+    public $table = "customer_needs_commit";
+    
     private $customerNeedsID;
     private $entityID;
     private $originationAddress1;
@@ -21,10 +31,6 @@ class CustomerNeedCommit
     private $rate;
     private $pickupDate;
     private $deliveryDate;
-
-    public function __construct() {
-
-    }
 
     public function post() {
 
@@ -76,10 +82,6 @@ class CustomerNeedCommit
               header('Content-Type: text/plain; charset=utf8');
               return $e->getMessage();
         }
-    }
-
-    public function delete() {
-
     }
 
     public function getContactEmails() { // Contact Emails are stored as a JSON object/array in a JSON type field

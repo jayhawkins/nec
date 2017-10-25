@@ -1,15 +1,23 @@
 <?php
 
+require_once 'Model.php';
+
 class Documents extends Model
 {
-    protected $_name = "documents";
+
+    /**
+     * The table name
+     *
+     * @var string
+     */
+    public $table = "documents";
     
     public function post($api_host,$id) {
 
     }
     
     public function viewdocument($entityID,$file_location,$filename) {
-		$dir = $file_location . "users/".floor($entityID / 65535)."/".$entityID;
+		$dir = $file_location . "/users/".floor($entityID / 65535)."/".$entityID;
 		$file = $dir . "/" . $filename;
 		$fileType = pathinfo($filename,PATHINFO_EXTENSION);
 		$mime_type="";
@@ -72,7 +80,7 @@ class Documents extends Model
 		$filebase = pathinfo($fileupload['name'],PATHINFO_FILENAME);;//md5(time());
 		$imageFileType = strtolower(pathinfo($fileupload['name'],PATHINFO_EXTENSION));
 		$filename = $filebase . "." .$imageFileType;
-		$target_directory = $file_location . "users/".floor($entityID / 65535)."/".$entityID."/";
+		$target_directory = $file_location . "/users/".floor($entityID / 65535)."/".$entityID."/";
 		$target_file = $target_directory.$filename;
 		$uploadOk = 1;
 		// Check file size
@@ -99,7 +107,7 @@ class Documents extends Model
 				return "failed";
 			} else {
 				// make user file directory
-				try { mkdir($file_location . "users/".floor($entityID / 65535)."/".$entityID."/", 0755, true); } catch(Exception $e) {/*echo 'Message: ' .$e->getMessage();*/}
+				try { mkdir($file_location . "/users/".floor($entityID / 65535)."/".$entityID."/", 0755, true); } catch(Exception $e) {/*echo 'Message: ' .$e->getMessage();*/}
 				file_put_contents($target_file, file_get_contents($fileupload["tmp_name"]));
 				// Load the documents data to send notification
 				//$this->load($api_host,$id);
@@ -141,7 +149,7 @@ class Documents extends Model
 		$filebase = pathinfo($fileupload['name'],PATHINFO_FILENAME);
 		$imageFileType = strtolower(pathinfo($fileupload['name'],PATHINFO_EXTENSION));
 		$filename = $filebase . "." .$imageFileType;
-		$target_directory = $file_location . "users/".floor($entityID / 65535)."/".$entityID."/";
+		$target_directory = $file_location . "/users/".floor($entityID / 65535)."/".$entityID."/";
 		$target_file = $target_directory.$filename;
 		$uploadOk = 1;
 
@@ -169,7 +177,7 @@ class Documents extends Model
 				return "failed";
 			} else {
 				// make user file directory
-				try { mkdir($file_location . "users/".floor($entityID / 65535)."/".$entityID."/", 0755, true); } catch(Exception $e) {/*echo 'Message: ' .$e->getMessage();*/}
+				try { mkdir($file_location . "/users/".floor($entityID / 65535)."/".$entityID."/", 0755, true); } catch(Exception $e) {/*echo 'Message: ' .$e->getMessage();*/}
 				file_put_contents($target_file, file_get_contents($fileupload["tmp_name"]));
 				// Load the documents data to send notification
 				//$this->load($api_host,$id);
@@ -544,7 +552,7 @@ class Documents extends Model
 		$filebase = pathinfo($fileupload['name'],PATHINFO_FILENAME);
 		$imageFileType = strtolower(pathinfo($fileupload['name'],PATHINFO_EXTENSION));
 		$filename = $filebase . "." .$imageFileType;
-		$target_directory = $file_location . "users/".floor($entityID / 65535)."/".$entityID."/";
+		$target_directory = $file_location . "/users/".floor($entityID / 65535)."/".$entityID."/";
 		$target_file = $target_directory.$filename;
 		$uploadOk = 1;
 
@@ -571,7 +579,7 @@ class Documents extends Model
 		if ($uploadOk == 1) {
 
 				// make user file directory
-				try { mkdir($file_location . "users/".floor($entityID / 65535)."/".$entityID."/", 0755, true); } catch(Exception $e) {/*echo 'Message: ' .$e->getMessage();*/}
+				try { mkdir($file_location . "/users/".floor($entityID / 65535)."/".$entityID."/", 0755, true); } catch(Exception $e) {/*echo 'Message: ' .$e->getMessage();*/}
 				file_put_contents($target_file, file_get_contents($fileupload["tmp_name"]));
 
                 $file = fopen($target_file, 'r');
@@ -821,7 +829,7 @@ class Documents extends Model
 		$filebase = pathinfo($fileupload['name'],PATHINFO_FILENAME);
 		$imageFileType = strtolower(pathinfo($fileupload['name'],PATHINFO_EXTENSION));
 		$filename = $filebase . "." .$imageFileType;
-		$target_directory = $file_location . "users/".floor($entityID / 65535)."/".$entityID."/";
+		$target_directory = $file_location . "/users/".floor($entityID / 65535)."/".$entityID."/";
 		$target_file = $target_directory.$filename;
 		$uploadOk = 1;
 
@@ -848,7 +856,7 @@ class Documents extends Model
 		if ($uploadOk == 1) {
 
 				// make user file directory
-				try { mkdir($file_location . "users/".floor($entityID / 65535)."/".$entityID."/", 0755, true); } catch(Exception $e) {/*echo 'Message: ' .$e->getMessage();*/}
+				try { mkdir($file_location . "/users/".floor($entityID / 65535)."/".$entityID."/", 0755, true); } catch(Exception $e) {/*echo 'Message: ' .$e->getMessage();*/}
 				file_put_contents($target_file, file_get_contents($fileupload["tmp_name"]));
 
                 $file = fopen($target_file, 'r');
