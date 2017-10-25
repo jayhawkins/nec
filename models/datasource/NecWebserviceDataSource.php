@@ -3,34 +3,7 @@
 require 'GenericWebserviceDataSource.php';
 
 /**
- * 
- * usage:
- * 
- * Flight::Model()->read(
- *       array(
- *           'columns' => array('id', 'name'),
- *           'include' => array('order'),
- *           'exclude' => array('customer'),
- *           'filter' => array(
- *               'height' => 34,
- *               'name' => array('tom', 'jane', 'smith')
- *               'members' => array(
- *                   'contains' => 'fiction',
- *                   'starts' => 'geography',
- *                   'ends' => 'world',
- *                   'between' => array('new york','seattle')
- *                   'is' => 'apple',
- *               )
- *               'weight >' => 32,
- *               'age >=' => 32,
- *               'books <' => 32,
- *               'oranges <=' => 32,
- *           ),
- *           'order' => array('asc' => array('name'), 'desc' => array('id')),
- *           'satisfy'=> array('any')
- *       ),
- *       array('transform' => true)
- *   )
+ * Nec Webservice Datasource 
  * 
  * @author euecheruo
  *
@@ -75,6 +48,7 @@ class NecWebserviceDataSource extends GenericWebserviceDataSource
     );
     
     /**
+     * Constructor
      * 
      * @param array $config
      */
@@ -101,12 +75,38 @@ class NecWebserviceDataSource extends GenericWebserviceDataSource
         
         $options = $this->_resolveOptions($options);
         $data = $this->_sendData($data, $options);
-        return $this->_request($options['url'], 'POST', $data, $options['headers'], $options['options']);
+        return $this->_getData($this->_request($options['url'], 'POST', $data, $options['headers'], $options['options']), $options);
     }
     
     /**
-     * 
-\     * {@inheritDoc}
+     *
+     * Flight::Model()->read(
+     *       array(
+     *           'columns' => array('id', 'name'),
+     *           'include' => array('order'),
+     *           'exclude' => array('customer'),
+     *           'filter' => array(
+     *               'height' => 34,
+     *               'name' => array('tom', 'jane', 'smith')
+     *               'members' => array(
+     *                   'contains' => 'fiction',
+     *                   'starts' => 'geography',
+     *                   'ends' => 'world',
+     *                   'between' => array('new york','seattle')
+     *                   'is' => 'apple',
+     *               )
+     *               'weight >' => 32,
+     *               'age >=' => 32,
+     *               'books <' => 32,
+     *               'oranges <=' => 32,
+     *           ),
+     *           'order' => array('asc' => array('name'), 'desc' => array('id')),
+     *           'satisfy'=> array('any')
+     *       ),
+     *       array('transform' => true)
+     *   )
+     *     
+     * {@inheritDoc}
      * @see GenericWebserviceDataSource::read()
      */
     public function read(Model $model, array $query = array(), array $options = array()) {
@@ -132,7 +132,7 @@ class NecWebserviceDataSource extends GenericWebserviceDataSource
         
         $options['url'] = (!empty($query)) ? $options['url'] . "?" . $querystring : $options['url'];
         
-        return $this->_request($options['url'], 'GET', '', $options['headers'], $options['options']);
+        return $this->_getData($this->_request($options['url'], 'GET', '', $options['headers'], $options['options']), $options);
     }
 
     /**
@@ -151,7 +151,7 @@ class NecWebserviceDataSource extends GenericWebserviceDataSource
         
         $options = array_merge($this->config['options'], $options);
         $data = $this->_sendData($data, $options);
-        return $this->_request($options['url'], 'PUT', $data, $options['headers'], $options['options']);
+        return $this->_getData($this->_request($options['url'], 'PUT', $data, $options['headers'], $options['options']), $options);
     }
 
     public function delete(Model $model, array $data = array(), array $options = array()) {
@@ -164,7 +164,7 @@ class NecWebserviceDataSource extends GenericWebserviceDataSource
         }
         
         $options = $this->_resolveOptions($options);
-        return $this->_request($options['url'], 'DELETE', '', $options['headers'], $options['options']);
+        return $this->_getData($this->_request($options['url'], 'DELETE', '', $options['headers'], $options['options']), $options);
     }
 
     /**

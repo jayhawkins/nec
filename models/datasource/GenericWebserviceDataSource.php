@@ -5,7 +5,7 @@ require_once ROOT_LOCATION . '/vendor/litlab/XML2Array.php';
 require_once 'DataSource.php';
 
 /**
- * 
+ * Generic Webservice Datasource
  * 
  * @author euecheruo
  *
@@ -39,7 +39,7 @@ class GenericWebserviceDataSource extends DataSource
      */
     protected $_options = array(
         CURLOPT_SSL_VERIFYPEER  => false,
-        CURLOPT_HEADER          => true,
+        CURLOPT_HEADER          => false,
         CURLOPT_RETURNTRANSFER  => true,
         CURLOPT_ENCODING        => 'gzip',
         CURLOPT_ENCODING        => '',    
@@ -93,7 +93,7 @@ class GenericWebserviceDataSource extends DataSource
         
         $options = $this->_resolveOptions($options);
         $data = $this->_sendData($data, $options);
-        return $this->_request($options['url'], 'POST', $data, $options['headers'], $options['options']);
+        return $this->_getData($this->_request($options['url'], 'POST', $data, $options['headers'], $options['options']), $options);
     }
     
     /**
@@ -108,7 +108,7 @@ class GenericWebserviceDataSource extends DataSource
         }
         $options = $this->_resolveOptions($options);
         $options['url'] = (!empty($query)) ? $options['url'] . "?" . $this->_getQuery($query) : $options['url'];
-        return $this->_request($options['url'], 'GET', '', $options['headers'], $options['options']);
+        return $this->_getData($this->_request($options['url'], 'GET', '', $options['headers'], $options['options']), $options);
     }
     
     /**
@@ -124,7 +124,7 @@ class GenericWebserviceDataSource extends DataSource
         
         $options = $this->_resolveOptions($options);
         $data = $this->_sendData($data, $options);
-        return $this->_request($options['url'], 'PUT', $data, $options['headers'], $options['options']);
+        return $this->_getData($this->_request($options['url'], 'PUT', $data, $options['headers'], $options['options']), $options);
     }
     
     /**
@@ -140,7 +140,7 @@ class GenericWebserviceDataSource extends DataSource
         
         $options = $this->_resolveOptions($options);
         $options['url'] = (!empty($data)) ? $options['url'] . "?" . $this->_sendQuery($data) : $options['url'];        
-        return $this->_request($options['url'], 'DELETE', '', $options['headers'], $options['options']);
+        return $this->_getData($this->_request($options['url'], 'DELETE', '', $options['headers'], $options['options']), $options);
     }
     
     /**
@@ -226,7 +226,7 @@ class GenericWebserviceDataSource extends DataSource
     }
     
     /**
-     * Generates querystring from array
+     * Generates Array to Querystring 
      * 
      * @param array $data The data
      * @return string fromated querystring 
@@ -236,17 +236,27 @@ class GenericWebserviceDataSource extends DataSource
     }
 
     /**
-     * Generates JSON data
+     * Converts Array to Json data
      * 
      * @param array $data The data
      * @return string
      */
-    protected function _generateJson(array $data = array()) {
+    protected function _formArraytoJson(array $data = array()) {
         return json_encode($data);
     }
     
     /**
-     * Coverts an array to XML 
+     * Converts Json to Array data
+     * 
+     * @param unknown $json The Json
+     * @return mixed The Array data
+     */
+    protected function _fromJsonToArray($json) {
+        return json_decode($json, true);
+    }
+    
+    /**
+     * Coverts Array to XML 
      *
      * useage:
      * 
@@ -255,24 +265,25 @@ class GenericWebserviceDataSource extends DataSource
      *  'book'=> array('1984','Foundation','Stranger in a Strange Land')
      * );
      * 
-     * @param array $data
-     * @return string
+     * @param array $data The Array
+     * @return string The XML data
      */
     protected function _fromArrayToXML(array $data = array(), $rootElement = 'soap') {
         return Array2XML::createXML($rootElement, $data);
     }
 
     /**
-     * Converts XML to an array
+     * Converts XML to Array
      * 
      * @param XML $xml A well-formed XML string 
-     * @return array 
+     * @return array The Array data
      */
     protected function _fromXMLToArray($xml) {
         return XML2Array::createArray($xml);
     }
     
     /**
+     * Formats the request
      * 
      * @param array $data
      * @param string $type
@@ -290,8 +301,33 @@ class GenericWebserviceDataSource extends DataSource
                 $this->_headers = $this->_setHeaders(array('Content-Type: application/xml', 'SOAPAction: ""'));
                 break;
             case 'json':
-                $data = $this->_generateJson($data);
+                $data = $this->_formArraytoJson($data);
                 $this->_headers = $this->_setHeaders(array('Content-Type: application/json', 'Content-Length: ' . strlen($data)));
+                break;
+        }
+        
+        return $data;
+    }
+
+    /**
+     * Formats the response data
+     * 
+     * @param array $data
+     * @param array $options
+     * @return array|mixed
+     */
+    protected function _getData($data, array $options = array('type' => 'json')) {
+        
+        if ($options['type'] === 'query') {
+            $options['type'] = "json";
+        }
+        
+        switch($options['type']) {
+            case 'xml':
+                $data = $this->_fromXMLToArray($data);
+                break;
+            case 'json':
+                $data = $this->_fromJsonToArray($data);
                 break;
         }
         
