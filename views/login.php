@@ -60,7 +60,7 @@
                         <p class="widget-login-info">
                             Don't have an account? <a href="register">Sign up now!</a>
                         </p>
-                        <form name="formLogin" class="login-form mt-lg" method="POST" action="/login" onsubmit="return verifyInput();">
+                        <form name="formLogin" class="login-form mt-lg" method="POST" action="/login">
                             <div class="form-group">
                                 <input type="text" class="form-control" id="username" name="username" placeholder="Email" required="required" />
                             </div>

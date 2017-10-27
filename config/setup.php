@@ -16,8 +16,8 @@ if(ENVIRONMENT == 'development') {
 
 Flight::register('db', 'PDO', array('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS ), function($db){
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 });
-$db = Flight::db();
 
 require 'lib/common.php';
 require "lib/googleApiClass.php";

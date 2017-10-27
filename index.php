@@ -5,6 +5,7 @@ use setasign\Fpdi\Fpdi;
 
 require 'vendor/autoload.php';
 require 'config/setup.php';
+require "lib/php_crud_api_transform.php";
 
 $app = new Engine();
 
@@ -88,7 +89,9 @@ $app->route('POST /login', function() {
     $username = Flight::request()->data['username'];
     $password = Flight::request()->data['password'];
     $user = Flight::users();
-    $return = $user->loginapi($username,$password);
+    $db = Flight::db();
+    //$return = $user->loginapi($username,$password);
+    $return = $user->loginapi2($db,$username,$password);
     if ($return) {
       Flight::redirect('dashboard');
     } else {
