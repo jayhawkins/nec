@@ -204,7 +204,7 @@ class NecWebserviceDataSource extends GenericWebserviceDataSource
                     }
                     
                     $query = implode(',', $records);
-                    echo $query . "<br />";
+                    echo $query;
                 }
                 
                 break;
