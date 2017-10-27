@@ -1119,7 +1119,7 @@ $app->route('GET|POST /oauth', function() {
             
             Flight::json($response);
             
-        } catch (\ResponseException $requestException) {
+        } catch (\ResponseException $responseException) {
             
             Flight::notFound();
             
@@ -1230,7 +1230,7 @@ $app->route('GET|POST /oauth', function() {
             
             Flight::json($response);
             
-        } catch (\ResponseException $requestException) {
+        } catch (\ResponseException $responseException) {
             
             Flight::notFound();
             
