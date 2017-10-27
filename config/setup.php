@@ -16,39 +16,43 @@ if(ENVIRONMENT == 'development') {
 
 Flight::register('db', 'PDO', array('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS ), function($db){
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 });
-$db = Flight::db();
 
 require 'lib/common.php';
 require "lib/googleApiClass.php";
 require 'lib/fpdf/fpdf.php';
 require "lib/fpdi/src/autoload.php";
 
-require 'models/Users.php';
-require 'models/Entities.php';
-require 'models/Members.php';
-require 'models/Locations.php';
-require 'models/Contacts.php';
-require 'models/LocationsContacts.php';
 require 'models/CarrierNeeds.php';
+require 'models/Contacts.php';
 require 'models/CustomerNeeds.php';
 require 'models/CustomerNeedsCommit.php';
 require 'models/Documents.php';
+require 'models/Entities.php';
+require 'models/FleetList.php';
 require 'models/InsuranceCarriers.php';
-require 'models/Orders.php';
+require 'models/Locations.php';
+require 'models/LocationsContacts.php';
+require 'models/Members.php';
 require 'models/MessageCenter.php';
+require 'models/Orders.php';
+require 'models/States.php';
+require 'models/Users.php';
 
+Flight::register('carrierNeeds', 'CarrierNeeds');
+Flight::register('contacts', 'Contacts' );
+Flight::register('customerNeeds', 'CustomerNeeds' );
+Flight::register('customerNeedsCommit', 'CustomerNeedsCommit');
+Flight::register('documents', 'Documents');
+Flight::register('entities', 'Entities');
+Flight::register('fleetList', 'FleetList');
+Flight::register('insuranceCarrier', 'InsuranceCarriers');
+Flight::register('locations', 'Locations');
+Flight::register('locationsContacts', 'LocationsContacts' );
+Flight::register('members', 'Members');
+Flight::register('messagecenter', 'MessageCenter');
+Flight::register('orders', 'Orders');
+Flight::register('states','States');
+Flight::register('users', 'Users');
 
-Flight::register( 'user', 'Users' );
-Flight::register( 'entity', 'Entity' );
-Flight::register( 'member', 'Member' );
-Flight::register( 'location', 'Location' );
-Flight::register( 'contact', 'Contact' );
-Flight::register( 'locationcontact', 'LocationContact' );
-Flight::register( 'carrierneed', 'CarrierNeed' );
-Flight::register( 'customerneed', 'CustomerNeed' );
-Flight::register( 'customerneedcommit', 'CustomerNeedCommit' );
-Flight::register( 'documents', 'Documents' );
-Flight::register( 'insurancecarrier', 'InsuranceCarrier' );
-Flight::register( 'order', 'Orders' );
-Flight::register( 'messagecenter', 'MessageCenter' );

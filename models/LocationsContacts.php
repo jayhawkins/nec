@@ -1,10 +1,16 @@
 <?php
 
-class LocationContact
-{
-    public function __construct() {
+require_once 'Model.php';
 
-    }
+class LocationsContacts
+{
+        
+    /**
+     * The table name
+     *
+     * @var string
+     */
+    public $table = "locations_contacts";
 
     public function post() {
 
@@ -43,7 +49,7 @@ class LocationContact
         }
     }
 
-    public function delete($location_id) {
+    public function deleteById($location_id) {
 
         try {
           $db = Flight::db();

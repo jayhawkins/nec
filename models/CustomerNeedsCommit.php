@@ -2,7 +2,7 @@
 
 require_once 'Model.php';
 
-class CustomerNeedCommit extends Model
+class CustomerNeedsCommit extends Model
 {
     
     /**

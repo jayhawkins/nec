@@ -1,10 +1,16 @@
 <?php
 
-class Location
-{
-    public function __construct() {
+require_once 'Model.php';
 
-    }
+class Locations extends Model
+{
+    
+    /**
+     * The table name
+     *
+     * @var string
+     */
+    public $table = "locations";
 
     public function post($entityID="0",$locationTypeID="1",$name="",$address1="",$address2="",$city="",$state="",$zip="",$latitude="0.00",$longitude="0.00") {
         // Now create the entity location
@@ -200,7 +206,4 @@ class Location
         }
     }
 
-    public function delete() {
-
-    }
 }

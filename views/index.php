@@ -18,6 +18,7 @@ $mapsMenuAccessList = array(0,1,2);
 $settingsMenuAccessList = array(0,1,2);
 
 $member = json_decode(file_get_contents(API_HOST_URL . '/users?include=members&filter=id,eq,'.$_SESSION['userid']));
+
 $firstName = $member->members->records[0][3];
 $lastName = $member->members->records[0][4];
 
