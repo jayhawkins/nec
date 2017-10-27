@@ -32,8 +32,14 @@ require_once "Twilio/Http/CurlClient.php"; // Twilio  Class
 */
 // NEC Message Center Class
 
-class MessageCenter {
+class MessageCenter extends Model {
 
+    /**
+     *
+     * @var string
+     */
+    protected $_datasource = "GenericWebservice";
+    
     // Message Center Constructor
     function __construct($content_type = '') {
         //

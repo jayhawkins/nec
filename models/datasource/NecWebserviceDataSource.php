@@ -142,8 +142,8 @@ class NecWebserviceDataSource extends GenericWebserviceDataSource
      */
     public function update(Model $model, array $data = array(), array $options = array()) {
         $options['url'] = $this->_getUrl($model);
-        $data = $this->_getQuery($data, 'PUT');
-        $options['url'] = (!empty($data)) ? $options['url'] . "/" . $data : $options['url'];
+        $querystring = $this->_getQuery($data, 'PUT');
+        $options['url'] = (!empty($querystring)) ? $options['url'] . "/" . $querystring : $options['url'];
         
         if (!isset($options['url']) || empty($options['url'])) {
             throw new \ErrorException('webservice url was not provided');
@@ -151,13 +151,14 @@ class NecWebserviceDataSource extends GenericWebserviceDataSource
         
         $options = array_merge($this->config['options'], $options);
         $data = $this->_sendData($data, $options);
+        
         return $this->_getData($this->_request($options['url'], 'PUT', $data, $options['headers'], $options['options']), $options);
     }
 
     public function delete(Model $model, array $data = array(), array $options = array()) {
         $options['url'] = $this->_getUrl($model);
-        $data = $this->_getQuery($data, 'DELETE');
-        $options['url'] = (!empty($data)) ? $options['url'] . "/" . $data : $options['url'];
+        $querystring = $this->_getQuery($data, 'DELETE');
+        $options['url'] = (!empty($querystring)) ? $options['url'] . "/" . $querystring : $options['url'];
         
         if (!isset($options['url']) || empty($options['url'])) {
             throw new \ErrorException('webservice url was not provided');
@@ -184,14 +185,26 @@ class NecWebserviceDataSource extends GenericWebserviceDataSource
             case 'DELETE':
                 
                 if (count($data) > 0) {
-                    foreach($data as $item) {
-                        if(isset($item['id'])) {
-                            $records[] = $item['id'];
+                    foreach($data as $count => $item) {
+                        if(is_numeric($count)) {
+                            foreach($item as $key => $value) {
+                                if($key == 'id') {
+                                    $records[] = $value;
+                                }
+                            }
                         } else {
-                            throw new \ErrorException('No entries for id found!');
+                            if($count == 'id') {
+                                $records[] = $item;
+                            }
                         }
                     }
+                    
+                    if (count($records) == 0) {
+                        throw new \ErrorException('No entries for id found!');
+                    }
+                    
                     $query = implode(',', $records);
+                    echo $query . "<br />";
                 }
                 
                 break;
@@ -343,10 +356,48 @@ class NecWebserviceDataSource extends GenericWebserviceDataSource
                     
                 }
                 
+                $query = (!empty($query)) ? substr($query, 0, strlen($query) - 1) : $query;
+                
                 break;
         }
         
-        return (!empty($query)) ? substr($query, 0, strlen($query) - 1) : $query;
+        return $query;
+    }
+    
+    /**
+     * Formats the request
+     *
+     * {@inheritDoc}
+     * @see GenericWebserviceDataSource::_sendData()
+     */
+    protected function _sendData(array $data = array(), array $options = array('type' => 'query')) {
+        
+        switch($options['type']) {
+            case 'query':
+                $data = $this->_generateQuery($data);
+                break;
+            case 'json':
+                
+                foreach($data as $count => $item) {
+                    if(is_numeric($count)) {
+                        foreach($item as $key => $value) {
+                            if($key == 'id') {
+                                unset($data[$count][$key]);
+                            }
+                        }
+                    } else {
+                        if($count == 'id') {
+                            unset($data[$count]);
+                        }
+                    }
+                }
+                
+                $data = $this->_formArraytoJson($data);
+                $this->_headers = $this->_setHeaders(array('Content-Type: application/json', 'Content-Length: ' . strlen($data)));
+                break;
+        }
+        
+        return $data;
     }
     
     /**

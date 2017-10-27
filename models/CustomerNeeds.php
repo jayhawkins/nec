@@ -2,7 +2,7 @@
 
 require_once 'Model.php';
 
-class CustomerNeed extends Model
+class CustomerNeeds extends Model
 {
 
     /**

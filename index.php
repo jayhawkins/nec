@@ -53,7 +53,7 @@ $app->route('GET|POST /json-data', function() {
 
 $app->route('GET|POST /testroute', function() {
     $carrierneedid = Flight::request()->data->id;
-    $carrierneed = Flight::carrierneed();
+    $carrierneed = Flight::carrierNeeds();
     $result = $carrierneed->load(API_HOST,$carrierneedid);
     $notificationresult = $carrierneed->getContactEmails();
     var_dump($notificationresult);
@@ -87,7 +87,7 @@ $app->route('GET /accountverified', function() {
 $app->route('POST /login', function() {
     $username = Flight::request()->data['username'];
     $password = Flight::request()->data['password'];
-    $user = Flight::user();
+    $user = Flight::users();
     $return = $user->loginapi($username,$password);
     if ($return) {
       Flight::redirect('dashboard');
@@ -99,7 +99,7 @@ $app->route('POST /login', function() {
 
 $app->route('POST /forgot', function() {
     $username = Flight::request()->data['username'];
-    $user = Flight::user();
+    $user = Flight::users();
     $return = $user->forgotpasswordapi($username);
     if ($return) {
       Flight::render('checkyouremail');
@@ -111,7 +111,7 @@ $app->route('POST /forgot', function() {
 });
 
 $app->route('GET /resetpassword/@id/@code', function($id, $code) {
-    $user = Flight::user();
+    $user = Flight::users();
     $password = $user->getPasswordById($id);
     $password = str_replace("/", "-", $password);
     $password = str_replace("?", "-", $password);
@@ -127,7 +127,7 @@ $app->route('GET /resetpassword/@id/@code', function($id, $code) {
 $app->route('POST /resetpassword', function() {
     $username = Flight::request()->data['username'];
     $password = Flight::request()->data['password'];
-    $user = Flight::user();
+    $user = Flight::users();
     $return = $user->resetpasswordapi($username,$password);
     if ($return) {
       Flight::redirect('login');
@@ -138,7 +138,7 @@ $app->route('POST /resetpassword', function() {
 });
 
 $app->route('GET /setpassword/@username', function($username) {
-    $user = Flight::user();
+    $user = Flight::users();
     $return = $user->getUserValidateById($username);
     if ($return == "success") {
         Flight::render('setpassword', array("username"=>$username));
@@ -150,7 +150,7 @@ $app->route('GET /setpassword/@username', function($username) {
 $app->route('POST /setpasswordvalidate', function() {
     $username = Flight::request()->data['username'];
     $password = Flight::request()->data['password'];
-    $user = Flight::user();
+    $user = Flight::users();
     $return = $user->setpasswordvalidateapi($username,$password);
     if ($return) {
       Flight::redirect('login');
@@ -162,7 +162,7 @@ $app->route('POST /setpasswordvalidate', function() {
 
 $app->route('POST /checkforuniqueid', function() {
     $uniqueID = Flight::request()->data['uniqueID'];
-    $user = Flight::user();
+    $user = Flight::users();
     $return = $user->checkforuniqueid($uniqueID);
 
     echo $return;
@@ -170,7 +170,7 @@ $app->route('POST /checkforuniqueid', function() {
 
 $app->route('POST /checkforusername', function() {
     $username = Flight::request()->data['username'];
-    $user = Flight::user();
+    $user = Flight::users();
     $return = $user->checkforusername($username);
 
     echo $return;
@@ -179,7 +179,7 @@ $app->route('POST /checkforusername', function() {
 $app->route('POST /mobilelogin', function() {
     $username = Flight::request()->data['username'];
     $password = Flight::request()->data['password'];
-    $user = Flight::user();
+    $user = Flight::users();
     $return = $user->loginapi($username,$password);
 
     echo $return;
@@ -200,7 +200,7 @@ $app->route('POST /register', function() {
     $email = Flight::request()->data['email'];
     $entityName = Flight::request()->data['entityName'];
     $entityTypeID = Flight::request()->data['entityTypeID'];
-    $user = Flight::user();
+    $user = Flight::users();
     $return = $user->registerapi($password,$firstName,$lastName,$title,$address1,$address2,$city,$state,$zip,$phone,$fax,$email,$entityName,$entityTypeID);
     if ($return == "success") {
       Flight::render('registrationsuccessful');
@@ -210,7 +210,7 @@ $app->route('POST /register', function() {
 });
 
 $app->route('GET /verifyaccount/@id/@code', function($id,$code) {
-    $user = Flight::user();
+    $user = Flight::users();
     $accountVerified = $user->verifyaccount($id,$code);
     if ($accountVerified) {
         Flight::redirect('/accountverified');
@@ -277,9 +277,9 @@ $app->route('POST /entities', function() {
     $email = Flight::request()->data['email'];
     $entityName = Flight::request()->data['entityName'];
     $entityTypeID = Flight::request()->data['entityTypeID'];
-    $entity = Flight::entity();
-    $location = Flight::location();
-    $contact = Flight::contact();
+    $entity = Flight::entities();
+    $location = Flight::locations();
+    $contact = Flight::contacts();
     $returnentity = $entity->put($entityName);
     $returnlocation = $location->put($locationid,$address1,$address2,$city,$state,$zip,$latitude,$longitude);
     $returncontact = $contact->put($contactid,$firstName,$lastName,$title,$phone,$fax,$email);
@@ -303,7 +303,7 @@ $app->route('PUT|POST /usermaintenance', function() {
     $password = Flight::request()->data['password'];
     $uniqueID = Flight::request()->data['uniqueID'];
     $textNumber = Flight::request()->data['textNumber'];
-    $user = Flight::user();
+    $user = Flight::users();
     $return = $user->maintenanceapi($type,$userID,$member_id,$entityID,$firstName,$lastName,$username,$password,$userTypeID,$uniqueID,$textNumber);
     if ($return == "success") {
       echo $return;
@@ -337,8 +337,8 @@ $app->route('/dashboard', function() {
 /*****************************************************************************/
 $app->route('POST /deletelocationcontacts', function() {
     $locationid = Flight::request()->data->location_id;
-    $locationcontact = Flight::locationcontact();
-    $recorddeleted = $locationcontact->delete($locationid);
+    $locationcontact = Flight::locationcontacts();
+    $recorddeleted = $locationcontact->deleteById($locationid);
     if ($recorddeleted) {
         echo "success";
     } else {
@@ -348,7 +348,7 @@ $app->route('POST /deletelocationcontacts', function() {
 
 $app->route('POST /getlocation', function() {
     $locationid = Flight::request()->data->id;
-    $location = Flight::location();
+    $location = Flight::locations();
     $result = $location->get($locationid);
     if ($result) {
         echo $result;
@@ -365,7 +365,7 @@ $app->route('POST /getlocationbycitystatezip', function() {
     $zip = Flight::request()->data->zip;
     $entityID = Flight::request()->data->entityID;
     $locationType = Flight::request()->data->locationType;
-    $location = Flight::location();
+    $location = Flight::locations();
     //$result = $location->getLocationByCityStateZip($city,$state,$zip,$entityID);
     $result = $location->getLocationByAddressCityStateZip($address1,$city,$state,$zip,$entityID); // Use a more specific address
 
@@ -428,7 +428,7 @@ $app->route('POST /getlocationbycitystatezip', function() {
 /*****************************************************************************/
 $app->route('POST /getcontactsbycustomer', function() {
     $entityid = Flight::request()->data->id;
-    $contact = Flight::contact();
+    $contact = Flight::contacts();
     $result = json_encode($contact->getContactsByEntity($entityid));
     if ($result) {
         echo $result;
@@ -442,7 +442,7 @@ $app->route('POST /getcontactsbycustomer', function() {
 /*****************************************************************************/
 $app->route('POST /getcontactsbycarrier', function() {
     $entityid = Flight::request()->data->id;
-    $contact = Flight::contact();
+    $contact = Flight::contacts();
     $result = json_encode($contact->getContactsByEntity($entityid));
     if ($result) {
         echo $result;
@@ -456,7 +456,7 @@ $app->route('POST /getcontactsbycarrier', function() {
 /*****************************************************************************/
 $app->route('POST /carrierneedsnotification', function() {
     $carrierneedid = Flight::request()->data->id;
-    $carrierneed = Flight::carrierneed();
+    $carrierneed = Flight::carrierNeeds();
     $notificationresult = $carrierneed->sendNotification(API_HOST,$carrierneedid);
     if ($notificationresult) {
         print_r($notificationresult);
@@ -471,7 +471,7 @@ $app->route('POST /carrierneedsnotification', function() {
 /*****************************************************************************/
 $app->route('POST /customerneedsnotification', function() {
     $customerneedid = Flight::request()->data->id;
-    $customerneed = Flight::customerneed();
+    $customerneed = Flight::customerNeeds();
     $notificationresult = $customerneed->sendNotification(API_HOST,$customerneedid);
     if ($notificationresult) {
         print_r($notificationresult);
@@ -483,7 +483,7 @@ $app->route('POST /customerneedsnotification', function() {
 
 $app->route('POST /commitacceptednotification', function() {
     $customerneedcommitid = Flight::request()->data->id;
-    $customerneedcommit = Flight::customerneedcommit();
+    $customerneedcommit = Flight::customerNeedsCommit();
     $notificationresult = $customerneedcommit->sendAcceptNotification(API_HOST,$customerneedcommitid);
     if ($notificationresult) {
         print_r($notificationresult);
@@ -516,7 +516,7 @@ $app->route('POST /createcustomerneedsfromexisting', function() {
     $transportation_type = Flight::request()->data->transportation_type;
     $pickupDate = Flight::request()->data->pickupDate;
     $deliveryDate = Flight::request()->data->deliveryDate;
-    $customerneed = Flight::customerneed();
+    $customerneed = Flight::customerNeeds();
     $result = $customerneed->createFromExisting(API_HOST,$id,$rootCustomerNeedsID,$carrierID,$qty,$originationAddress1,$originationCity,$originationState,$originationZip,$destinationAddress1,$destinationCity,$destinationState,$destinationZip,$originationLat,$originationLng,$destinationLat,$destinationLng,$distance,$transportationMode,$transportation_mode,$transportation_type,$pickupDate,$deliveryDate,GOOGLE_MAPS_API);
     if ($result == "success") {
         print_r($result);
@@ -528,7 +528,7 @@ $app->route('POST /createcustomerneedsfromexisting', function() {
 
 $app->route('GET|POST /availabilitymatching/@id', function($id) {
     //$customerneedid = Flight::request()->data->id;
-    $customerneed = Flight::customerneed();
+    $customerneed = Flight::customerNeeds();
     $matchingresult = $customerneed->availabilityMatching(API_HOST,$id);
     if ($matchingresult) {
         print_r($matchingresult);
@@ -608,7 +608,7 @@ $app->route('POST /sendorderupdatenotification', function() {
     $customerID = Flight::request()->data->customerID;
     $podList = Flight::request()->data->podList;
 
-    $orderNotification = Flight::order();
+    $orderNotification = Flight::orders();
 
     $result = $orderNotification->sendEmailNotification($rateType, $transportationMode, $originationAddress, $originationCity, $originationState, $originationZip,
             $destinationAddress, $destinationCity, $destinationState, $destinationZip, $distance, $updatedAt, $orderNumber, $customerID, $podList);
@@ -622,7 +622,7 @@ $app->route('POST /sendorderstatusnotification', function() {
     $customerID = Flight::request()->data->customerID;
     $carrierID = Flight::request()->data->carrierID;
 
-    $orderNotification = Flight::order();
+    $orderNotification = Flight::orders();
 
     $result = $orderNotification->sendOrderStatusNotification($orderNumber, $carrierID, $customerID);
     print_r($result);
@@ -1040,6 +1040,206 @@ $app->route('GET|POST /oauth', function() {
 
 
 //oauth
+
+/**
+ * APPLICATION API ROUTES
+ */
+
+/**
+ * READ REQUESTS
+ */
+
+    $app->route('GET /profiles/business/info', function() {
+        
+        /* TODO: Handling Authenication */
+        
+        try {
+
+            $states = Flight::states()->read(array(
+                'columns' => array('abbreviation', 'name'),
+                'order' => array('name')
+            ));
+            
+            $entities = Flight::entities()->read(array(
+                'include' => array('members', 'users', 'locations', 'contacts'),
+                'filter' => array('id' => $_SESSION['entityid'])
+            ));
+            
+            $response = array(
+                'status' => 'success',
+                'results' => array(
+                    'id' => (isset($entities['entities']['records'][0][0])) ? $entities['entities']['records'][0][0] : 0,
+                    'locationID' => 0,
+                    'contactID' => 0,
+                    'entityName' => (isset($entities['entities']['records'][0][2])) ? $entities['entities']['records'][0][2] : "",
+                    'address1' => "",
+                    'address2' => "",
+                    'city' => "",
+                    'state' => "",
+                    'zip' => "",
+                    'firstName' => "",
+                    'lastName' => "",
+                    'title' => "",
+                    'emailAddress' => "",
+                    'primaryPhone' => "",
+                    'fax' => "",
+                    'states' => (isset($states['states']['records'])) ? $states['states']['records'] : array()
+                )
+            );
+            
+            foreach ($entities['locations']['records'] as $row => $records) {
+                foreach ($records as $column => $item) {
+                    if ($column == 2 && $item == 1) {
+                        $response['results']['locationID'] = $entities['locations']['records'][$row][0];
+                        $response['results']['address1'] = $entities['locations']['records'][$row][4];
+                        $response['results']['address2'] = $entities['locations']['records'][$row][5];
+                        $response['results']['city'] = $entities['locations']['records'][$row][6];
+                        $response['results']['state'] = $entities['locations']['records'][$row][7];
+                        $response['results']['zip'] = $entities['locations']['records'][$row][8];
+                    }
+                }
+            }
+            
+            foreach ($entities['contacts']['records'] as $row => $records) {
+                foreach ($records as $column => $item) {
+                    if ($column == 2 && $item == 1) {
+                        $response['results']['contactID'] = $entities['contacts']['records'][$row][0];
+                        $response['results']['firstName'] = $entities['contacts']['records'][$row][3];
+                        $response['results']['lastName'] = $entities['contacts']['records'][$row][4];
+                        $response['results']['title'] = $entities['contacts']['records'][$row][5];
+                        $response['results']['emailAddress'] = $entities['contacts']['records'][$row][6];
+                        $response['results']['primaryPhone'] = $entities['contacts']['records'][$row][7];
+                        $response['results']['fax'] = $entities['contacts']['records'][$row][9];
+                    }
+                }
+            }
+            
+            Flight::json($response);
+            
+        } catch (\ResponseException $requestException) {
+            
+            Flight::notFound();
+            
+        }
+        
+    });
+            
+    
+/**
+ * CREATE & UPDATE REQUESTS
+ */
+
+    $app->route('POST /profiles/business/info', function() {
+        
+        /* TODO: Handling Authenication */
+        
+        try {
+            
+            $response = array(
+                'status' => 'success',
+                'results' => array()
+            );
+            
+            /* Validate fields */
+            
+            if (empty(Flight::request()->data->firstName)) {
+                $response['status'] = "fail";
+                $response['results']['firstName'] = "Please enter your first name";
+            }
+            
+            if (empty(Flight::request()->data->lastName)) {
+                $response['status'] = "fail";
+                $response['results']['lastName'] = "Please enter your last name";
+            }
+            
+            if (empty(Flight::request()->data->entityName)) {
+                $response['status'] = "fail";
+                $response['results']['entityName'] = "Please enter your company name";
+            }
+            
+            if (empty(Flight::request()->data->primaryPhone)) {
+                $response['status'] = "fail";
+                $response['results']['primaryPhone'] = "Please enter your phone";
+            }
+            
+            if (empty(Flight::request()->data->emailAddress)) {
+                $response['status'] = "fail";
+                $response['results']['emailAddress'] = "Please enter your email address";
+            }
+            
+            if ($response['status'] === 'success') {
+                
+                if (Flight::request()->data->locationID > 0) {
+
+                    
+                    // TODO: Handle webservice error 0 or [0,0] 
+                    //webservice did not update
+                    $webservice = Flight::locations()->update(array(
+                        'id' => Flight::request()->data->locationID,
+                        'address1' => Flight::request()->data->address1,
+                        'address2' => Flight::request()->data->address2,
+                        'city' => Flight::request()->data->city,
+                        'state' => Flight::request()->data->state,
+                        'zip' => Flight::request()->data->zip,
+                    ), array('type' => 'json'));
+                    
+                    
+                } else {
+                    
+                    $webservice = Flight::locations()->create(array(
+                        'address1' => Flight::request()->data->address1,
+                        'address2' => Flight::request()->data->address2,
+                        'city' => Flight::request()->data->city,
+                        'state' => Flight::request()->data->state,
+                        'zip' => Flight::request()->data->zip,
+                    ), array('type' => 'json'));
+                    
+                }
+                
+                if (Flight::request()->data->contactID > 0) {
+                    
+                    $webservice = Flight::contacts()->update(array(
+                        'id' => Flight::request()->data->contactID,
+                        'firstName' => Flight::request()->data->firstName,
+                        'lastName' => Flight::request()->data->lastName,
+                        'title' => Flight::request()->data->title,
+                        'emailAddress' => Flight::request()->data->emailAddress,
+                        'primaryPhone' => Flight::request()->data->primaryPhone,
+                        'fax' => Flight::request()->data->fax
+                    ), array('type' => 'json'));
+                    
+                } else {
+                    
+                    $webservice = Flight::contacts()->create(array(
+                        'firstName' => Flight::request()->data->firstName,
+                        'lastName' => Flight::request()->data->lastName,
+                        'title' => Flight::request()->data->title,
+                        'emailAddress' => Flight::request()->data->emailAddress,
+                        'primaryPhone' => Flight::request()->data->primaryPhone,
+                        'fax' => Flight::request()->data->fax
+                    ), array('type' => 'json'));
+                    
+                }
+                
+                $response['statusMessage'] = "Business Profile has been successfully updated!";
+                
+            } 
+            
+            Flight::json($response);
+            
+        } catch (\ResponseException $requestException) {
+            
+            Flight::notFound();
+            
+        }
+        
+    });
+    
+/**
+ * DELETE REQUESTS
+ */
+
+
 
 // Start the framework
 $app->start();

@@ -11,10 +11,10 @@ require ONELEVELUP.'nec_config.php';
 require DOCROOT.'lib/common.php';
 
 require DOCROOT.'models/CustomerNeeds.php';
-$customerneed = new CustomerNeed();
+$customerneed = new CustomerNeeds();
 
 require DOCROOT.'models/Contacts.php';
-$contact = new Contact();
+$contact = new Contacts();
 
 $needsMatchedArray = array();
 

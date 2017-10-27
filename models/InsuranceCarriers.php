@@ -2,7 +2,7 @@
 
 require_once 'Model.php';
 
-class InsuranceCarrier extends Model
+class InsuranceCarriers extends Model
 {
     
     /**
