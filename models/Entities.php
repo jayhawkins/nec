@@ -2,7 +2,7 @@
 
 require_once 'Model.php';
 
-class Entity extends Model
+class Entities extends Model
 {
  
     /**

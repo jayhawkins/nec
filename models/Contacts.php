@@ -1,11 +1,17 @@
 <?php
 
-class Contact
+require_once 'Model.php';
+
+class Contacts extends Model
 {
-    public function __construct() {
-
-    }
-
+    
+    /**
+     * The table name
+     *
+     * @var string
+     */
+    public $table = "contacts";
+ 
     public function post() {
 
     }

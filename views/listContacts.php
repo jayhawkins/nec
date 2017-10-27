@@ -11,8 +11,25 @@ $contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?col
  ?>
 
  <script>
+ 
+ var myApp;
+ myApp = myApp || (function () {
+  var pleaseWaitDiv = $('<div class="modal hide" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false"><div class="modal-header"><h1>Processing...</h1></div><div class="modal-body"><div class="progress progress-striped active"><div class="bar" style="width: 100%;"></div></div></div></div>');
+  return {
+      showPleaseWait: function() {
+          pleaseWaitDiv.modal();
+      },
+      hidePleaseWait: function () {
+          pleaseWaitDiv.modal('hide');
+      },
 
+  };
+ })();
+ 
       function verifyAndPost() {
+
+          $("#load").html("<i class='fa fa-spinner fa-spin'></i> Edit Contact");
+          $("#load").prop("disabled", true);
 
         if ( $('#formContact').parsley().validate() ) {
 
@@ -53,12 +70,44 @@ $contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?col
                     type = "POST";
                 }
 
+				var phone = $("#primaryPhone").val().replace(/(\d{3})\-?(\d{3})\-?(\d{4})/, '$1-$2-$3');
+				var ext = $("#primaryPhoneExt").val();
+				if (ext != "") {
+					phone = phone + " x" + ext;
+				} 
+				
                 if (type == "PUT") {
                     var date = today;
-                    var data = {entityID: $("#entityID").val(), contactTypeID: $("#contactTypeID").val(), firstName: $("#firstName").val(), lastName: $("#lastName").val(), title: $("#title").val(), emailAddress: $("#emailAddress").val(), primaryPhone: $("#primaryPhone").val(), secondaryPhone: $("#secondaryPhone").val(), fax: $("#fax").val(), contactRating: $("#contactRating").val(), updatedAt: date};
-                } else {
+                    var data = {
+                            entityID: $("#entityID").val(), 
+                            contactTypeID: $("#contactTypeID").val(), 
+                            firstName: $("#firstName").val(), 
+                            lastName: $("#lastName").val(), 
+                            title: $("#title").val(), 
+                            emailAddress: $("#emailAddress").val(), 
+                            primaryPhone: phone, 
+                            secondaryPhone: $("#secondaryPhone").val(), 
+                            fax: $("#fax").val(), 
+                            contactRating: $("#contactRating").val(), 
+                            updatedAt: date
+                       };
+                    
+                 } else {
+                     
                     var date = today;
-                    var data = {entityID: $("#entityID").val(), contactTypeID: $("#contactTypeID").val(), firstName: $("#firstName").val(), lastName: $("#lastName").val(), title: $("#title").val(), emailAddress: $("#emailAddress").val(), primaryPhone: $("#primaryPhone").val(), secondaryPhone: $("#secondaryPhone").val(), fax: $("#fax").val(), contactRating: $("#contactRating").val(), createdAt: date};
+                    var data = {
+                            entityID: $("#entityID").val(), 
+                            contactTypeID: $("#contactTypeID").val(), 
+                            firstName: $("#firstName").val(), 
+                            lastName: $("#lastName").val(), 
+                            title: $("#title").val(), 
+                            emailAddress: $("#emailAddress").val(), 
+                            primaryPhone: phone, 
+                            secondaryPhone: $("#secondaryPhone").val(), 
+                            fax: $("#fax").val(), 
+                            contactRating: $("#contactRating").val(), 
+                            createdAt: date
+                      };
                 }
 
                 $.ajax({
@@ -78,23 +127,35 @@ $contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?col
                         $("#title").val('');
                         $("#emailAddress").val('');
                         $("#primaryPhone").val('');
+                        $("#primaryPhoneExt").val('');
                         $("#secondaryPhone").val('');
                         $("#fax").val('');
                         $("#contactRating").val('');
+
+                        $("#load").html("Save Changes");
+                        $("#load").prop("disabled", false);                          
                         passValidation = true;
                       } else {
+                          $("#load").html("Save Changes");
+                          $("#load").prop("disabled", false);                            
                         alert("Adding Contact Failed!");
                       }
                    },
                    error: function() {
+                       $("#load").html("Save Changes");
+                       $("#load").prop("disabled", false);                         
                       alert("There Was An Error Adding Contact!");
                    }
                 });
 
+                $("#load").html("Save Changes");
+                $("#load").prop("disabled", false);                  
                 return passValidation;
 
           } else {
 
+              $("#load").html("Save Changes");
+              $("#load").prop("disabled", false);          	  
                 return false;
 
           }
@@ -102,12 +163,8 @@ $contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?col
       }
 
       function loadTableAJAX() {
-<<<<<<< HEAD
-        var url = '<?php echo API_HOST; ?>' + '/api/contacts?include=contact_types&columns=contacts.id,contacts.firstName,contacts.lastName,contact_types.id,contact_types.name,contacts.title,contacts.emailAddress,contacts.primaryPhone,contacts.secondaryPhone,contacts.fax,contacts.contactRating,contacts.status&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order=contactTypeID&transform=1';
-=======
         myApp.showPleaseWait();
         var url = '<?php echo API_HOST_URL; ?>' + '/contacts?include=contact_types&columns=contacts.id,contacts.firstName,contacts.lastName,contact_types.id,contact_types.name,contacts.title,contacts.emailAddress,contacts.primaryPhone,contacts.secondaryPhone,contacts.fax,contacts.contactRating,contacts.status&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order=contactTypeID&transform=1';
->>>>>>> FS#368---Convert-POD-to-PDF-
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
             processing: true,
@@ -131,6 +188,11 @@ $contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?col
                     data: null,
                     "bSortable": false,
                     "mRender": function (o) {
+
+                    		myApp.hidePleaseWait();
+
+						console.log(o);
+                            
                         var buttons = '<div class="pull-right text-nowrap">';
                         buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text\"></i> <span class=\"text\">Edit</span></button>';
 
@@ -304,7 +366,7 @@ $contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?col
                      <div class="col-sm-6">
                          <label for="emailAddress">Email Address</label>
                          <div class="form-group">
-                           <input type="text" id="emailAddress" name="emailAddress" class="form-control mb-sm" placeholder="*Email Address" required="required"/>
+                           <input type="email" data-parsley-type="email" id="emailAddress" name="emailAddress" class="form-control mb-sm" placeholder="*Email Address" required="required"/>
                          </div>
                      </div>
                  </div>
@@ -312,7 +374,12 @@ $contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?col
                      <div class="col-sm-6">
                          <label for="primaryPhone">Primary Phone</label>
                          <div class="form-group">
-                           <input type="text" id="primaryPhone" name="primaryPhone" class="form-control" placeholder="*Primary Phone" required="required" />
+                           <div class="col-sm-9" style="padding-left: 0; padding-right: 0">
+ 	                          <input type="text" id="primaryPhone" name="primaryPhone" class="form-control" placeholder="*Primary Phone" required="required" />
+                           </div>
+                           <div class="col-sm-3" style="padding-right: 0;">
+                              <input type="text" maxlength="15" data-parsley-maxlength="15" id="primaryPhoneExt" name="primaryPhoneExt" class="form-control" placeholder="Ext" />
+                           </div>	
                          </div>
                      </div>
                      <div class="col-sm-6">
@@ -349,7 +416,7 @@ $contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?col
        </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" onclick="return verifyAndPost();">Save changes</button>
+          <button id="load" type="button" class="btn btn-primary" onclick="return verifyAndPost();">Save changes</button>
         </div>
       </div>
     </div>
@@ -432,6 +499,7 @@ $contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?col
       $("#title").val('');
       $("#emailAddress").val('');
       $("#primaryPhone").val('');
+      $("#primaryPhoneExt").val('');
       $("#secondaryPhone").val('');
       $("#fax").val('');
       $("#contactRating").val('');
@@ -441,13 +509,26 @@ $contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?col
     $('#datatable-table tbody').on( 'click', 'button', function () {
         var data = table.row( $(this).parents('tr') ).data();
         if (this.textContent.indexOf("Edit") > -1) {
+	
+            
           $("#id").val(data["id"]);
-          $("#contactTypeID").val(data["contact_types"][0].id);
+          $("#contactTypeID").val(data["contact_types"].id);
           $("#firstName").val(data["firstName"]);
           $("#lastName").val(data["lastName"]);
           $("#title").val(data["title"]);
           $("#emailAddress").val(data["emailAddress"]);
-          $("#primaryPhone").val(data["primaryPhone"]);
+
+        		var phoneindex = data["primaryPhone"].indexOf(' x');
+            if (phoneindex != -1) {
+           	 	var phone  = data["primaryPhone"].substring(0, phoneindex);
+           	 	var ext = data["primaryPhone"].substring(phoneindex + 2, data["primaryPhone"].length);
+                $("#primaryPhone").val(phone);
+                $("#primaryPhoneExt").val(ext);
+            } else {
+                $("#primaryPhone").val(data["primaryPhone"]);
+                $("#primaryPhoneExt").val('');
+            }
+          
           $("#secondaryPhone").val(data["secondaryPhone"]);
           $("#fax").val(data["fax"]);
           $("#contactRating").val(data["contactRating"]);

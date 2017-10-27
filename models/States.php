@@ -2,14 +2,14 @@
 
 require_once 'Model.php';
 
-class Members extends Model
+class States extends Model
 {
-
+    
     /**
      * The table name
      *
      * @var string
      */
-    public $table = "members";
-
+    public $table = "states";
+    
 }

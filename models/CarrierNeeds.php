@@ -2,7 +2,7 @@
 
 require_once 'Model.php';
 
-class CarrierNeed extends Model
+class CarrierNeeds extends Model
 {
     
     /**
