@@ -1363,7 +1363,8 @@ if ($_SESSION['entityid'] > 0) {
 <script src="vendor/rickshaw/rickshaw.min.js"></script>
 <!--script src="vendor/raphael/raphael-min.js"></script-->
 <script src="vendor/jQuery-Mapael/js/raphael/raphael-min.js" charset="utf-8"></script>
-<script src="vendor/jQuery-Mapael/js/jquery.mapael.js" charset="utf-8"></script>
+<!--script src="vendor/jQuery-Mapael/js/jquery.mapael.js" charset="utf-8"></script-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-mapael/2.1.0/js/jquery.mapael.js"></script>
 <script src="vendor/jQuery-Mapael/js/maps/usa_states.js" charset="utf-8"></script>
 <script src="vendor/jQuery-Mapael/js/maps/world_countries.js" charset="utf-8"></script>
 <script src="vendor/bootstrap/js/dist/popover.js"></script>
@@ -1433,6 +1434,9 @@ $(function() {
            // Parse each elements
            // This variable will hold all the plots of our map
            var plots = {};
+           var links = {};
+           var linktitle = "";
+           var linkobjecttitle = "";
            var plotsColors = chroma.scale("Blues");
            $.each(data, function (index, value) {
 /*
@@ -1454,6 +1458,7 @@ $(function() {
                if (value.originationLat) {
                    // Will hold the plot information
                    var plot = {};
+                   var link = {};
                    // Assign position
                    plot.latitude = parseFloat(value.originationLat);
                    plot.longitude = parseFloat(value.originationLng);
@@ -1462,7 +1467,7 @@ $(function() {
                    // Assign some information inside the tooltip
                    plot.tooltip = {
                        content: "<span style='font-weight:bold;'>" +
-                                   value.originationCity + " (" + value.originationZip + ")" +
+                                   value.originationCity +
                                 "</span>"
                    };
 
@@ -1482,7 +1487,53 @@ $(function() {
                    };
 
                    // Set plot element to array
-                   plots["'" + value.id+'-'+value.originationCity + "'"] = plot;
+                   plots[value.id+'-'+value.originationCity] = plot;
+
+                   // Now plot the destination
+                   var plot = {};
+                   // Assign position
+                   plot.latitude = parseFloat(value.destinationLat);
+                   plot.longitude = parseFloat(value.destinationLng);
+                   plot.size = 22;
+                   plot.type = "square";
+                   // Assign some information inside the tooltip
+                   plot.tooltip = {
+                       content: "<span style='font-weight:bold;'>" +
+                                   value.destinationCity +
+                                "</span>"
+                   };
+
+                   plot.text = {
+                        content: value.qty,
+                        position: "inner",
+                        attrs: {
+                            "font-size": 16,
+                            "font-weight": "bold",
+                            "fill": "#fff"
+                        }
+                   };
+
+                   // Assign the background color randomize from a scale
+                   plot.attrs = {
+                       fill: plotsColors(Math.random())
+                   };
+
+                   // Set plot element to array
+                   plots[value.id+'-'+value.destinationCity] = plot;
+
+                   linktitle = value.originationCity+'-'+value.destinationCity;
+                   linkobjecttitle = value.originationCity+value.destinationCity;
+                   link.factor = 0.2;
+                   //link.between = [{"latitude": value.originationLat, "longitude": value.originationLng}, {"latitude": value.destinationLat, "longitude": value.destinationLng}];
+                   link.between = [value.id+'-'+value.originationCity, value.id+'-'+value.destinationCity];
+                   link.attrs = {
+                                "stroke": "#a4e100",
+                                "stroke-width": 2,
+                                "stroke-linecap": "round",
+                                "opacity": 0.6
+                            };
+                   link.tooltip = {"content": linktitle};
+                   links[linkobjecttitle] = link;
                } else {
                    console.warn("Ignored element " + id + " without GPS position");
                }
@@ -1550,7 +1601,7 @@ $(function() {
                            //};
 
                            // Set plot element to array
-                           plots["'" + value.id+'-'+value.city + "'"] = plot;
+                           plots[value.id+'-'+value.city] = plot;
                        } else {
                            console.warn("Ignored element " + value.id + " without GPS position");
                        }
@@ -1598,7 +1649,8 @@ $(function() {
                        step : 0.75
                    }
                },
-               plots: plots
+               plots: plots,
+               links: links
 
            });
 
