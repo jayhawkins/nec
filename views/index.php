@@ -1585,8 +1585,8 @@ $(function() {
            var plotsColors = chroma.scale("Reds");
            $.each(orders, function (index, values) {
                //console.log(values);
-               //$.each(values, function (index, value) {
-                       //console.log(value);
+               $.each(values, function (index, value) {
+                       console.log(index+'='+value);
                        // Check if we have the GPS position of the element
                        if (value.latitude) {
                            if (value.locationTypeID == 1) {
@@ -1643,7 +1643,7 @@ $(function() {
                            console.warn("Ignored element " + value.id + " without GPS position");
                        }
 
-               //});
+               });
            });
 
            // Create map
