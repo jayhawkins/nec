@@ -102,7 +102,6 @@ if ($_SESSION['entityid'] > 0) {
     $locresult2 = json_decode($locresult,true);
     $loccount = count($locresult2['locations']);
 
-
 } else {
 
     // Now get counts for Admin Logins
@@ -165,7 +164,7 @@ if ($_SESSION['entityid'] > 0) {
     $locresult = file_get_contents($locurl,false,$loccontext);
     $locresult2 = json_decode($locresult,true);
     $loccount = count($locresult2['locations']);
-
+$locresult = '{}';
 }
 
 ?>
@@ -229,6 +228,8 @@ if ($_SESSION['entityid'] > 0) {
          https://code.google.com/p/chromium/issues/detail?id=332189
          */
 
+         var orders;
+
          // Main call to change main content area based on menu item selected
          function ajaxFormCall(form) {
            var host = location.protocol+'//'+window.location.hostname;
@@ -279,7 +280,7 @@ if ($_SESSION['entityid'] > 0) {
                async: false,
                success: function(json){
 
-                    var orders = json.orders;
+                    orders = json.orders;
 
                     if(entityType == 2) {
 
@@ -1439,21 +1440,7 @@ $(function() {
            var linkobjecttitle = "";
            var plotsColors = chroma.scale("Blues");
            $.each(data, function (index, value) {
-/*
-              plots:{
-                     'ny' : {
-                         latitude: 40.717079,
-                         longitude: -74.00116,
-                         tooltip: {content : "New York"}
-                     },
-                     'on' : {
-                         latitude: 33.145235,
-                         longitude: -83.811834,
-                         size: 18,
-                         tooltip: {content : "Oconee National Forest"}
-                     }
-               }
-*/
+
                // Check if we have the GPS position of the element
                if (value.originationLat) {
                    // Will hold the plot information
@@ -1548,22 +1535,7 @@ $(function() {
            $.each(locations, function (index, values) {
                //console.log(values);
                $.each(values, function (index, value) {
-                      //console.log(value);
-/*
-                      plots:{
-                             'ny' : {
-                                 latitude: 40.717079,
-                                 longitude: -74.00116,
-                                 tooltip: {content : "New York"}
-                             },
-                             'on' : {
-                                 latitude: 33.145235,
-                                 longitude: -83.811834,
-                                 size: 18,
-                                 tooltip: {content : "Oconee National Forest"}
-                             }
-                       }
-*/
+                       //console.log(value);
                        // Check if we have the GPS position of the element
                        if (value.latitude) {
                            if (value.locationTypeID == 1) {
@@ -1602,6 +1574,70 @@ $(function() {
 
                            // Set plot element to array
                            plots[value.id+'-'+value.city] = plot;
+                       } else {
+                           console.warn("Ignored element " + value.id + " without GPS position");
+                       }
+
+               });
+           });
+
+           var plotsColors = chroma.scale("Oranges");
+           $.each(orders, function (index, values) {
+               //console.log(values);
+               $.each(values, function (index, value) {
+                       //console.log(value);
+                       // Check if we have the GPS position of the element
+                       if (value.latitude) {
+                           if (value.locationTypeID == 1) {
+                                var fontsize = 14;
+                           } else {
+                                var fontsize = 9;
+                           }
+                           // Will hold the plot information
+                           var plot = {};
+                           // Assign position
+                           plot.latitude = parseFloat(value.latitude);
+                           plot.longitude = parseFloat(value.longitude);
+                           plot.size = fontsize;
+                           plot.type = "circle";
+                           // Assign some information inside the tooltip
+                           plot.tooltip = {
+                               content: "<span style='font-weight:bold;'>" +
+                                           value.city + ', ' + value.state +
+                                        "</span>"
+                           };
+
+                           plot.text = {
+                                //content: value.qty,
+                                position: "inner",
+                                attrs: {
+                                    "font-size": 16,
+                                    "font-weight": "bold",
+                                    "fill": "#fff"
+                                }
+                           };
+
+                           // Assign the background color randomize from a scale
+                           //plot.attrs = {
+                           //    fill: plotsColors(Math.random())
+                           //};
+
+                           // Set plot element to array
+                           plots[value.id+'-'+value.city] = plot;
+
+                           linktitle = value.originationCity+'-'+value.destinationCity;
+                           linkobjecttitle = value.originationCity+value.destinationCity;
+                           link.factor = 0.2;
+                           link.between = [value.id+'-'+value.originationCity, value.id+'-'+value.destinationCity];
+                           link.attrs = {
+                                        "stroke": "#a4e100",
+                                        "stroke-width": 2,
+                                        "stroke-linecap": "round",
+                                        "opacity": 0.6
+                                    };
+                           link.tooltip = {"content": linktitle};
+                           links[linkobjecttitle] = link;
+
                        } else {
                            console.warn("Ignored element " + value.id + " without GPS position");
                        }
