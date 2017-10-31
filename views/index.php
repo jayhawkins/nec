@@ -261,13 +261,13 @@ if ($_SESSION['entityid'] > 0) {
             var orderCount = 0;
             switch(entityType){
                 case 0:     // URL for the Admin. The admin can see ALL Orders.
-                    url += '/orders?include=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,distance,needsDataPoints,status,qty,rateType,transportationMode,enitities.id,entities.name,documents.id,documents.documentURL&satisfy=all&transform=1';
+                    url += '/orders?include=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,originationLat,originationLng,destinationLat,destinationLng,distance,needsDataPoints,status,qty,rateType,transportationMode,enitities.id,entities.name,documents.id,documents.documentURL&satisfy=all&transform=1';
                     break;
                 case 1:    // URL for Customer. The Customer can only see their orders.
-                    url += '/orders?include=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,distance,needsDataPoints,status,qty,rateType,transportationMode,enitities.id,entities.name,documents.id,documents.documentURL&filter=customerID,eq,' + entityid + '&satisfy=all&transform=1';
+                    url += '/orders?include=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,originationLat,originationLng,destinationLat,destinationLng,distance,needsDataPoints,status,qty,rateType,transportationMode,enitities.id,entities.name,documents.id,documents.documentURL&filter=customerID,eq,' + entityid + '&satisfy=all&transform=1';
                     break;
                 case 2:     // URL for the Carrier. Same as the admin but will be filtered below.
-                    url += '/orders?include=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,distance,needsDataPoints,status,qty,rateType,transportationMode,enitities.id,entities.name,documents.id,documents.documentURL&satisfy=all&transform=1';
+                    url += '/orders?include=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,originationLat,originationLng,destinationLat,destinationLng,distance,needsDataPoints,status,qty,rateType,transportationMode,enitities.id,entities.name,documents.id,documents.documentURL&satisfy=all&transform=1';
                     break;
             }
 
@@ -1584,66 +1584,89 @@ $(function() {
 
            var plotsColors = chroma.scale("Reds");
            $.each(orders, function (index, values) {
-               //console.log(values);
-               $.each(values, function (index, value) {
-                       console.log(index+'='+value);
-                       // Check if we have the GPS position of the element
-                       if (value.originationCity && value.destinationCity) {
-                           if (value.locationTypeID == 1) {
-                                var fontsize = 14;
-                           } else {
-                                var fontsize = 9;
-                           }
-                           // Will hold the plot information
-                           var plot = {};
-                           // Assign position
-                           plot.latitude = parseFloat(value.latitude);
-                           plot.longitude = parseFloat(value.longitude);
-                           plot.size = fontsize;
-                           plot.type = "circle";
-                           // Assign some information inside the tooltip
-                           plot.tooltip = {
-                               content: "<span style='font-weight:bold;'>" +
-                                           value.city + ', ' + value.state +
-                                        "</span>"
-                           };
+                   //console.log(values);
+                   // Check if we have the GPS position of the element
+                   if (value.originationLat) {
+                       // Will hold the plot information
+                       var plot = {};
+                       var link = {};
+                       // Assign position
+                       plot.latitude = parseFloat(value.originationLat);
+                       plot.longitude = parseFloat(value.originationLng);
+                       plot.size = 22;
+                       plot.type = "circle";
+                       // Assign some information inside the tooltip
+                       plot.tooltip = {
+                           content: "<span style='font-weight:bold;'>" +
+                                       value.originationCity +
+                                    "</span>"
+                       };
 
-                           plot.text = {
-                                //content: value.qty,
-                                position: "inner",
-                                attrs: {
-                                    "font-size": 16,
-                                    "font-weight": "bold",
-                                    "fill": "#fff"
-                                }
-                           };
+                       plot.text = {
+                            content: value.qty,
+                            position: "inner",
+                            attrs: {
+                                "font-size": 16,
+                                "font-weight": "bold",
+                                "fill": "#fff"
+                            }
+                       };
 
-                           // Assign the background color randomize from a scale
-                           //plot.attrs = {
-                           //    fill: plotsColors(Math.random())
-                           //};
+                       // Assign the background color randomize from a scale
+                       plot.attrs = {
+                           fill: plotsColors(Math.random())
+                       };
 
-                           // Set plot element to array
-                           plots[value.id+'-'+value.city] = plot;
+                       // Set plot element to array
+                       plots[value.id+'-'+value.originationCity] = plot;
 
-                           linktitle = value.originationCity+'-'+value.destinationCity;
-                           linkobjecttitle = value.originationCity+value.destinationCity;
-                           link.factor = 0.2;
-                           link.between = [value.id+'-'+value.originationCity, value.id+'-'+value.destinationCity];
-                           link.attrs = {
-                                        "stroke": "#a4e100",
-                                        "stroke-width": 2,
-                                        "stroke-linecap": "round",
-                                        "opacity": 0.6
-                                    };
-                           link.tooltip = {"content": linktitle};
-                           links[linkobjecttitle] = link;
+                       // Now plot the destination
+                       var plot = {};
+                       // Assign position
+                       plot.latitude = parseFloat(value.destinationLat);
+                       plot.longitude = parseFloat(value.destinationLng);
+                       plot.size = 22;
+                       plot.type = "square";
+                       // Assign some information inside the tooltip
+                       plot.tooltip = {
+                           content: "<span style='font-weight:bold;'>" +
+                                       value.destinationCity +
+                                    "</span>"
+                       };
 
-                       } else {
-                           console.warn("Ignored element " + value.id + " without GPS position");
-                       }
+                       plot.text = {
+                            content: value.qty,
+                            position: "inner",
+                            attrs: {
+                                "font-size": 16,
+                                "font-weight": "bold",
+                                "fill": "#fff"
+                            }
+                       };
 
-               });
+                       // Assign the background color randomize from a scale
+                       plot.attrs = {
+                           fill: plotsColors(Math.random())
+                       };
+
+                       // Set plot element to array
+                       plots[value.id+'-'+value.destinationCity] = plot;
+
+                       linktitle = value.originationCity+'-'+value.destinationCity;
+                       linkobjecttitle = value.originationCity+value.destinationCity;
+                       link.factor = 0.2;
+                       link.between = [value.id+'-'+value.originationCity, value.id+'-'+value.destinationCity];
+                       link.attrs = {
+                                    "stroke": "#a4e100",
+                                    "stroke-width": 2,
+                                    "stroke-linecap": "round",
+                                    "opacity": 0.6
+                                };
+                       link.tooltip = {"content": linktitle};
+                       links[linkobjecttitle] = link;
+                   } else {
+                       console.warn("Ignored element " + id + " without GPS position");
+                   }
            });
 
            // Create map
