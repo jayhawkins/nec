@@ -1583,7 +1583,7 @@ $(function() {
            });
 
            var plotsColors = chroma.scale("Reds");
-           $.each(orders, function (index, values) {
+           $.each(orders, function (index, value) {
                    //console.log(values);
                    // Check if we have the GPS position of the element
                    if (value.originationLat) {
