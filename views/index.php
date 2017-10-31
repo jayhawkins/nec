@@ -1588,7 +1588,7 @@ $(function() {
                $.each(values, function (index, value) {
                        console.log(index+'='+value);
                        // Check if we have the GPS position of the element
-                       if (value.latitude) {
+                       if (value.originationCity && value.destinationCity) {
                            if (value.locationTypeID == 1) {
                                 var fontsize = 14;
                            } else {
