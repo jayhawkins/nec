@@ -159,12 +159,12 @@ if ($_SESSION['entityid'] > 0) {
         )
     );
 
-    $locurl = API_HOST_URL . "/locations?".http_build_query($locargs);
-    $loccontext  = stream_context_create($locoptions);
-    $locresult = file_get_contents($locurl,false,$loccontext);
-    $locresult2 = json_decode($locresult,true);
-    $loccount = count($locresult2['locations']);
-$locresult = '{}';
+    //$locurl = API_HOST_URL . "/locations?".http_build_query($locargs);
+    //$loccontext  = stream_context_create($locoptions);
+    //$locresult = file_get_contents($locurl,false,$loccontext);
+    //$locresult2 = json_decode($locresult,true);
+    //$loccount = count($locresult2['locations']);
+    $locresult = '{}';
 }
 
 ?>
@@ -281,6 +281,7 @@ $locresult = '{}';
                success: function(json){
 
                     orders = json.orders;
+                    console.log(orders);
 
                     if(entityType == 2) {
 
@@ -1581,7 +1582,7 @@ $(function() {
                });
            });
 
-           var plotsColors = chroma.scale("Oranges");
+           var plotsColors = chroma.scale("Reds");
            $.each(orders, function (index, values) {
                //console.log(values);
                $.each(values, function (index, value) {
