@@ -108,7 +108,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
         }
 
       function post() {
-    	  
+
         //console.log("Adding Availability.");
         if ( $('#formNeed').parsley().validate() ) {
 
@@ -187,10 +187,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
       }
 
       function verifyAndPost() {
-          
+
           $("#load").html("<i class='fa fa-spinner fa-spin'></i> Adding Availablity");
           $("#load").prop("disabled", true);
-          
+
             var passValidation = false;
             var type = "";
             var today = new Date();
@@ -311,20 +311,20 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                                 async: false,
                                                 success: function(updateneeds){
                                                     $("#load").html("Save Changes");
-                                                    $("#load").prop("disabled", false);                                                      
+                                                    $("#load").prop("disabled", false);
 	                                                	alert(notification);
                                                     countCommitments();
                                                 },
                                                 error: function() {
                                                     $("#load").html("Save Changes");
-                                                    $("#load").prop("disabled", false);                                                     
+                                                    $("#load").prop("disabled", false);
 	                                                	alert('Failed Updating Root Customer Needs ID! - Notify NEC of this failure.');
                                                 }
                                             });
                                         },
                                         error: function() {
                                             $("#load").html("Save Changes");
-                                            $("#load").prop("disabled", false);                                             
+                                            $("#load").prop("disabled", false);
 	                                        	alert('Failed Sending Notifications! - Notify NEC of this failure.');
                                         }
                                      });
@@ -348,13 +348,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                   passValidation = true;
                                 } else {
                                     $("#load").html("Save Changes");
-                                    $("#load").prop("disabled", false);                                    
+                                    $("#load").prop("disabled", false);
 	                                  alert("Adding Need Failed! Please Verify Your Data.");
                             }
                              },
                              error: function() {
                                  $("#load").html("Save Changes");
-                                 $("#load").prop("disabled", false);                                  
+                                 $("#load").prop("disabled", false);
 	                            	 alert("There Was An Error Adding Availability!");
                              }
                           });
@@ -1530,7 +1530,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
       formatListBoxDP();
 
       $("#entityID").prop('disabled', false);
-  		$("#myModal").modal('show');
+      $("#myModal").modal('show');
+      $('#myModal').on('shown.bs.modal', function () {
+          $('#qty').focus();
+      });
   	});
 
     $('#datatable-table tbody').on( 'click', 'button', function () {
