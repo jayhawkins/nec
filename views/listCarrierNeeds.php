@@ -318,12 +318,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                            async: false,
                                            success: function(notification){
                                                $("#load").html("Save Changes");
-                                               $("#load").prop("disabled", false);                                                
+                                               $("#load").prop("disabled", false);
 	                                        	   alert(notification);
                                            },
                                            error: function() {
                                                $("#load").html("Save Changes");
-                                               $("#load").prop("disabled", false);                                              
+                                               $("#load").prop("disabled", false);
 	                                        	   alert('Failed Sending Notifications! - Notify NEC of this failure.');
                                            }
                                         });
@@ -346,30 +346,30 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                       passValidation = true;
 
                                       $("#load").html("Save Changes");
-                                      $("#load").prop("disabled", false);  
-                                                                            
+                                      $("#load").prop("disabled", false);
+
                                     } else {
                                         $("#load").html("Save Changes");
-                                        $("#load").prop("disabled", false);                                      
+                                        $("#load").prop("disabled", false);
 	                                    	alert("Adding Need Failed! Invalid Data...");
                                     }
                                  },
                                  error: function() {
                                      $("#load").html("Save Changes");
-                                     $("#load").prop("disabled", false);                                    
+                                     $("#load").prop("disabled", false);
 	                                	 alert("There Was An Error Adding Location!");
                                  }
                               });
 
                           } else {
                               $("#load").html("Save Changes");
-                              $("#load").prop("disabled", false);                              
+                              $("#load").prop("disabled", false);
 	                        	  alert("ERROR Geo-Coding Destination Address!");
                           }
                       });
                   } else {
                       $("#load").html("Save Changes");
-                      $("#load").prop("disabled", false);                      
+                      $("#load").prop("disabled", false);
 	                	  alert("ERROR Geo-Coding Origination Address!");
                   }
                 });
@@ -1511,12 +1511,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
       $("#entityID").prop('disabled', false);
       $("#exampleModalLabel").html('Add New Need');
       $("#suggesstion-box").hide();
-  		$("#myModal").modal('show');
+      $("#myModal").modal('show');
 
-  		$('#formNeed').on('shown.bs.modal', function () {
-  		  $('#qty').focus()
-  		})
-  		
+      $('#myModal').on('shown.bs.modal', function () {
+          $('#qty').focus();
+      });
+
   	});
 
     $('#datatable-table tbody').on( 'click', 'button', function () {
