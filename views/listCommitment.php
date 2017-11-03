@@ -477,7 +477,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     "defaultContent": ''
                 },
                 { data: "entities[0].name" },
-                { data: "id"},
+                { data: "id", visible: false },
                 { data: "rootCustomerNeedsID", visible: false},
                 { data: "entityID", visible: false },
                 { data: "qty" },
@@ -624,7 +624,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         return entityName;
                     }, visible: true
                 },
-                { data: "id"},
+                { data: "id", visible: false },
                 { data: "rootCustomerNeedsID", visible: false},
                 { data: "entityID", visible: false },
                 { data: "qty" },
@@ -928,7 +928,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
     function getCarrierTotal(json){
 
             var customer_needs = json.customer_needs;
-            var customer_needs_commit = new Array();
             var carrierTotal = 0;
 
             customer_needs.forEach(function(customer_need){
@@ -997,9 +996,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                       contentType: "application/json",
                       async: false,
                       success: function(notification){
-                          console.log("rootCustomerNeedsID:", rootCustomerNeedsID);
-                          console.log("commitID:", commitID);
-                          console.log("carrierRate:", carrierRate);
+                          
                       },
                       error: function() {
                          alert('Failed Sending Notifications! - Notify NEC of this failure.');
@@ -1975,7 +1972,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             destinationState: selectedCustomerNeed.destinationState, destinationZip: selectedCustomerNeed.destinationZip,
                             destinationLng: selectedCustomerNeed.destinationLng, destinationLat: selectedCustomerNeed.destinationLat,
                             distance: selectedCustomerNeed.distance, needsDataPoints: selectedCustomerNeed.needsDataPoints,
-                            status: "Open", transportationMode: selectedCustomerNeed.transportationMode, qty: orderQty,
+                            pickupInformation: "[]", deliveryInformation: "[]",
+                            status: "Open", transportationMode: selectedCustomerNeed.transportationMode, qty: orderQty, podList: "[]", comments: "",
                             rateType: selectedCustomerNeed.rateType, customerRate: $('#customerRate').val(), carrierTotalRate: $('#carrierTotalRate').val(),
                             totalRevenue: $('#totalRevenue').val(), createdAt: today, updatedAt: today};
 
