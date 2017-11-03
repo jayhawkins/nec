@@ -638,7 +638,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                         var input = '';
                         var status = o.customer_needs_commit[0].status;
-                        var carrierRate = o.rate.toFixed(2);
+                        var carrierRate = o.customer_needs_commit[0].rate.toFixed(2);
                         var commitID = o.id;
 
                         if(status == "Available"){
@@ -933,7 +933,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             customer_needs.forEach(function(customer_need){
 
                 if(customer_need.length > 0 && customer_need.status !== "Available"){
-                    carrierTotal += customer_need.rate;
+                    carrierTotal += customer_need.customer_needs_commit[0].rate;
                 }
             });
 
