@@ -121,8 +121,10 @@ $app->route('GET /resetpassword/@id/@code', function($id, $code) {
     if ($password == $code) {
         Flight::render('resetpassword', array('id'=>$id));
     } else {
+        //Flight::render('forgot', array('invalidUsername'=> $invalidUsername));
+        $_SESSION['invalidUsername'] = "Your user account may not be Activated. Please contact Nationwide Equipment Control";
         $invalidUsername = (isset($_SESSION['invalidUsername'])) ? $_SESSION['invalidUsername']:''; // Just use the invalidPassword session var since it's just an error
-        Flight::render('forgot', array('invalidUsername'=> $invalidUsername));
+        Flight::redirect('/login');
     }
 
 });
@@ -1053,21 +1055,21 @@ $app->route('GET|POST /oauth', function() {
  */
 
     $app->route('GET /profiles/business/info', function() {
-        
+
         /* TODO: Handling Authenication */
-        
+
         try {
 
             $states = Flight::states()->read(array(
                 'columns' => array('abbreviation', 'name'),
                 'order' => array('name')
             ));
-            
+
             $entities = Flight::entities()->read(array(
                 'include' => array('members', 'users', 'locations', 'contacts'),
                 'filter' => array('id' => $_SESSION['entityid'])
             ));
-            
+
             $response = array(
                 'status' => 'success',
                 'results' => array(
@@ -1089,7 +1091,7 @@ $app->route('GET|POST /oauth', function() {
                     'states' => (isset($states['states']['records'])) ? $states['states']['records'] : array()
                 )
             );
-            
+
             foreach ($entities['locations']['records'] as $row => $records) {
                 foreach ($records as $column => $item) {
                     if ($column == 2 && $item == 1) {
@@ -1102,7 +1104,7 @@ $app->route('GET|POST /oauth', function() {
                     }
                 }
             }
-            
+
             foreach ($entities['contacts']['records'] as $row => $records) {
                 foreach ($records as $column => $item) {
                     if ($column == 2 && $item == 1) {
@@ -1116,66 +1118,66 @@ $app->route('GET|POST /oauth', function() {
                     }
                 }
             }
-            
+
             Flight::json($response);
-            
+
         } catch (\ResponseException $responseException) {
-            
+
             Flight::notFound();
-            
+
         }
-        
+
     });
-            
-    
+
+
 /**
  * CREATE & UPDATE REQUESTS
  */
 
     $app->route('POST /profiles/business/info', function() {
-        
+
         /* TODO: Handling Authenication */
-        
+
         try {
-            
+
             $response = array(
                 'status' => 'success',
                 'results' => array()
             );
-            
+
             /* Validate fields */
-            
+
             if (empty(Flight::request()->data->firstName)) {
                 $response['status'] = "fail";
                 $response['results']['firstName'] = "Please enter your first name";
             }
-            
+
             if (empty(Flight::request()->data->lastName)) {
                 $response['status'] = "fail";
                 $response['results']['lastName'] = "Please enter your last name";
             }
-            
+
             if (empty(Flight::request()->data->entityName)) {
                 $response['status'] = "fail";
                 $response['results']['entityName'] = "Please enter your company name";
             }
-            
+
             if (empty(Flight::request()->data->primaryPhone)) {
                 $response['status'] = "fail";
                 $response['results']['primaryPhone'] = "Please enter your phone";
             }
-            
+
             if (empty(Flight::request()->data->emailAddress)) {
                 $response['status'] = "fail";
                 $response['results']['emailAddress'] = "Please enter your email address";
             }
-            
+
             if ($response['status'] === 'success') {
-                
+
                 if (Flight::request()->data->locationID > 0) {
 
-                    
-                    // TODO: Handle webservice error 0 or [0,0] 
+
+                    // TODO: Handle webservice error 0 or [0,0]
                     //webservice did not update
                     $webservice = Flight::locations()->update(array(
                         'id' => Flight::request()->data->locationID,
@@ -1185,10 +1187,10 @@ $app->route('GET|POST /oauth', function() {
                         'state' => Flight::request()->data->state,
                         'zip' => Flight::request()->data->zip,
                     ), array('type' => 'json'));
-                    
-                    
+
+
                 } else {
-                    
+
                     $webservice = Flight::locations()->create(array(
                         'address1' => Flight::request()->data->address1,
                         'address2' => Flight::request()->data->address2,
@@ -1196,11 +1198,11 @@ $app->route('GET|POST /oauth', function() {
                         'state' => Flight::request()->data->state,
                         'zip' => Flight::request()->data->zip,
                     ), array('type' => 'json'));
-                    
+
                 }
-                
+
                 if (Flight::request()->data->contactID > 0) {
-                    
+
                     $webservice = Flight::contacts()->update(array(
                         'id' => Flight::request()->data->contactID,
                         'firstName' => Flight::request()->data->firstName,
@@ -1210,9 +1212,9 @@ $app->route('GET|POST /oauth', function() {
                         'primaryPhone' => Flight::request()->data->primaryPhone,
                         'fax' => Flight::request()->data->fax
                     ), array('type' => 'json'));
-                    
+
                 } else {
-                    
+
                     $webservice = Flight::contacts()->create(array(
                         'firstName' => Flight::request()->data->firstName,
                         'lastName' => Flight::request()->data->lastName,
@@ -1221,23 +1223,23 @@ $app->route('GET|POST /oauth', function() {
                         'primaryPhone' => Flight::request()->data->primaryPhone,
                         'fax' => Flight::request()->data->fax
                     ), array('type' => 'json'));
-                    
+
                 }
-                
+
                 $response['statusMessage'] = "Business Profile has been successfully updated!";
-                
-            } 
-            
+
+            }
+
             Flight::json($response);
-            
+
         } catch (\ResponseException $responseException) {
-            
+
             Flight::notFound();
-            
+
         }
-        
+
     });
-    
+
 /**
  * DELETE REQUESTS
  */

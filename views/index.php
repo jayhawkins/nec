@@ -281,7 +281,7 @@ if ($_SESSION['entityid'] > 0) {
                success: function(json){
 
                     orders = json.orders;
-                    console.log(orders);
+                    //console.log(orders);
 
                     if(entityType == 2) {
 
@@ -1382,15 +1382,20 @@ if ($_SESSION['entityid'] > 0) {
 <script src="vendor/datatables/media/js/jquery.dataTables.js"></script>
 <script src="vendor/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
 
-<?php if(ENVIRONMENT == 'development') { ?>
-<script type="text/javascript" src="vendor/datatables/media/js/dataTables-r-2_2_0.min.js"></script>
-<script type="text/javascript" src="vendor/bootstrap3-typeahead/js/bootstrap3-typeahead-4_0_2.min.js"></script>
-<script type="text/javascript" src="vendor/chroma/js/chroma-1_1_1.min.js"></script>
-<script type="text/javascript" src="vendor/googlemaps/js/googlemaps.js"></script>
-<?php } else { ?>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=<?php echo GOOGLE_MAPS_API ?>&callback=initMap"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.16/b-1.4.2/r-2.2.0/datatables.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/1.1.1/chroma.min.js" charset="utf-8"></script>
+
+<?php if(ENVIRONMENT == 'development') { ?>
+<!--script type="text/javascript" src="vendor/datatables/media/js/dataTables-r-2_2_0.min.js"></script-->
+<!--script type="text/javascript" src="vendor/bootstrap3-typeahead/js/bootstrap3-typeahead-4_0_2.min.js"></script-->
+<!--script type="text/javascript" src="vendor/chroma/js/chroma-1_1_1.min.js"></script-->
+<!--script type="text/javascript" src="vendor/googlemaps/js/googlemaps.js"></script-->
+<?php } else { ?>
+<!--script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.16/b-1.4.2/r-2.2.0/datatables.min.js"></script-->
+<!--script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script-->
+<!--script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/1.1.1/chroma.min.js" charset="utf-8"></script-->
 <?php } ?>
 
 <!-- Can't use or the settings gear dropdown won't work -->

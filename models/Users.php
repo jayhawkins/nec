@@ -11,7 +11,7 @@ class Users extends Model
      * @var string
      */
     public $table = "users";
-    
+
     public function loginapi($username,$password) {
         try {
             //$result = json_decode(file_get_contents(API_HOST_URL . '/users?filter=username,eq,' . $username));
@@ -493,7 +493,7 @@ class Users extends Model
                     "transform"=>1,
                     "filter[]"=>"username,eq,".$username
               );
-              $usernameurl = API_HOST."/api/users?".http_build_query($usernameargs);
+              $usernameurl = API_HOST_URL."/users?".http_build_query($usernameargs);
               $usernameoptions = array(
                   'http' => array(
                       'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -676,7 +676,7 @@ class Users extends Model
                     //$templateresult = json_decode(file_get_contents(API_HOST.'/api/email_templates?filter=title,eq,Authorize Account'));
 
                     $templateargs = array("filter"=>"title,eq,User Setup Notification");
-                    $templateurl = API_HOST."/api/email_templates?".http_build_query($templateargs);
+                    $templateurl = API_HOST_URL."/email_templates?".http_build_query($templateargs);
                     $templateoptions = array(
                         'http' => array(
                             'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -718,7 +718,7 @@ class Users extends Model
                     "transform"=>1,
                     "filter[]"=>"username,eq,".$username
               );
-              $usernameurl = API_HOST."/api/users?".http_build_query($usernameargs);
+              $usernameurl = API_HOST_URL."/users?".http_build_query($usernameargs);
               $usernameoptions = array(
                   'http' => array(
                       'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -741,7 +741,7 @@ class Users extends Model
                 //$templateresult = json_decode(file_get_contents(API_HOST.'/api/email_templates?filter=title,eq,Authorize Account'));
 
                 $templateargs = array("filter"=>"title,eq,Forgot Password");
-                $templateurl = API_HOST."/api/email_templates?".http_build_query($templateargs);
+                $templateurl = API_HOST_URL."/email_templates?".http_build_query($templateargs);
                 $templateoptions = array(
                     'http' => array(
                         'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
