@@ -2255,7 +2255,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         var selectedTable = $('#selected-customer-need').DataTable();
         var selectedCustomerNeed = selectedTable.ajax.json().customer_needs[0];
 
-        console.log(JSON.stringigy(selectedCustomerNeed));
+        console.log(JSON.stringify(selectedCustomerNeed));
         
         var commitTable = $('#customer-needs-commit-table').DataTable();
         var customer_needs = commitTable.ajax.json().customer_needs;
