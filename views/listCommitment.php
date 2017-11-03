@@ -1916,11 +1916,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
         customer_needs.forEach(function(customer_need){
 
-            if(customer_need.length > 0 &&
-                    customer_need.status == "Close"){
+            if(customer_need.customer_needs_commit.length > 0 &&
+                    customer_need.customer_needs_commit[0].status == "Close"){
 
                 var order_detail = {
-                    carrierID: customer_need.entityID,
+                    carrierID: customer_need.customer_needs_commit[0].entityID,
                     orderID: orderID,
                     originationCity: customer_need.originationCity,
                     originationState: customer_need.originationState,
@@ -1934,9 +1934,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     status: "Open",
                     transportationMode: customer_need.transportationMode,
                     qty: customer_need.qty,
-                    carrierRate: customer_need.rate,
-                    pickupDate: customer_need.pickupDate,
-                    deliveryDate: customer_need.deliveryDate,
+                    carrierRate: customer_need.customer_needs_commit[0].rate,
+                    pickupDate: customer_need.customer_needs_commit[0].pickupDate,
+                    deliveryDate: customer_need.customer_needs_commit[0].deliveryDate,
                     createdAt: today,
                     updatedAt: today
                 };
