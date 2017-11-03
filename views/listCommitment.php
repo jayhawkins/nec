@@ -1957,7 +1957,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     if(selectedCustomerNeed.qty > carrierQty) {
                         orderQty = carrierQty;
                         differenceQty = selectedCustomerNeed.qty - carrierQty;
-                        //createNewAvailability(selectedCustomerNeed.id, differenceQty, today);
+                        createNewAvailability(selectedCustomerNeed.id, differenceQty, today);
                     }
                     else {
                         orderQty = selectedCustomerNeed.qty;
@@ -2467,6 +2467,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         //var entityID = data.customer_needs_commit[0].entityID;
         var carrierRate = $("#carrierRate-" + commitID).val();
 
+	console.log("rootCustomerNeedsID:", rootCustomerNeedsID);
+	console.log("commitID:", commitID);
+	console.log("carrierRate:", carrierRate);
+        
         approveCommit(rootCustomerNeedsID, commitID, carrierRate);
     });
 
