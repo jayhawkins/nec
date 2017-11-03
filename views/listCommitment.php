@@ -932,7 +932,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
             customer_needs.forEach(function(customer_need){
 
-                if(customer_need.customer_needs_commit[0].length > 0 && customer_need.customer_needs_commit[0].status !== "Available"){
+                if(customer_need.customer_needs_commit.length > 0 && customer_need.customer_needs_commit[0].status !== "Available"){
                     carrierTotal += customer_need.customer_needs_commit[0].rate;
                 }
             });
