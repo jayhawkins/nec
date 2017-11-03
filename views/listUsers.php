@@ -32,6 +32,8 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
 
  <script>
 
+      var entityID = <?php echo $_SESSION['entityid']; ?>;
+
       function post() {
 
           if ( $('#formUser').parsley().validate() ) {
@@ -189,7 +191,12 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
       }
 
       function loadTableAJAX() {
-        var url = '<?php echo API_HOST_URL; ?>' + '/members?include=users,user_types&columns=members.id,members.entityID,members.userID,members.firstName,members.lastName,user_types.id,user_types.name,users.username,users.uniqueID,users.textNumber,users.status&filter[]=members.entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order[]=lastName&order[]=firstName&transform=1';
+        if (entityID > 0) {
+            var url = '<?php echo API_HOST_URL; ?>' + '/members?include=users,user_types,entities&columns=members.id,members.entityID,members.userID,members.firstName,members.lastName,user_types.id,user_types.name,users.username,users.uniqueID,users.textNumber,users.status,entities.name&filter[]=members.entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&order[0]=entityID&order[1]=lastName&order[2]=firstName&transform=1';
+        } else {
+            var url = '<?php echo API_HOST_URL; ?>' + '/members?include=users,user_types,entities&columns=members.id,members.entityID,members.userID,members.firstName,members.lastName,user_types.id,user_types.name,users.username,users.uniqueID,users.textNumber,users.status,entities.name&order[0]=entityID&order[1]=lastName&order[2]=firstName&transform=1';
+        }
+
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
             processing: true,
@@ -201,6 +208,7 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
                 { data: "id", visible: false },
                 { data: "entityID", visible: false },
                 { data: "userID", visible: false },
+                { data: "entities[0].name" },
                 { data: "firstName" },
                 { data: "lastName" },
                 { data: "users[0].user_types[0].id", visible: false },
@@ -309,6 +317,7 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
                      <th>Members ID</th>
                      <th>Entity ID</th>
                      <th>User ID</th>
+                     <th class="sm-down">Business</th>
                      <th class="hidden-sm-down">First Name</th>
                      <th class="hidden-sm-down">Last Name</th>
                      <th class="no-sort">User Type ID</th>
@@ -340,7 +349,6 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
        </div>
        <div class="modal-body">
                <form id="formUser" class="register-form mt-lg">
-                 <input type="hidden" id="entityID" name="entityID" value="<?php echo $_SESSION['entityid']; ?>" />
                  <input type="hidden" id="id" name="id" value="" />
                  <input type="hidden" id="userID" name="userID" value="" />
                  <input type="hidden" id="status" name="status" value="" />
