@@ -624,7 +624,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         return entityName;
                     }, visible: true
                 },
-                { data: "id", visible: false },
+                { data: "id"},
                 { data: "rootCustomerNeedsID", visible: false},
                 { data: "entityID", visible: false },
                 { data: "qty" },
