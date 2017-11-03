@@ -2263,8 +2263,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         var carrierQty = 0;
         customer_needs.forEach(function(customer_need){
 
-            if(customer_need.length > 0 && customer_need.status == "Close"){
-                var carrier = {carrierID: customer_need.entityID};
+            if(customer_need.customer_needs_commit.length > 0 && customer_need.customer_needs_commit[0].status == "Close"){
+                var carrier = {carrierID: customer_need.customer_needs_commit[0].entityID};
 
                 if (carrierIDs.indexOf(carrier) === -1) carrierIDs.push(carrier);
 
@@ -2353,11 +2353,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                         customer_needs_commit.forEach(function(customer_need){
 
-                            if(customer_need.length > 0 &&
-                                    customer_need.status == "Close"){
+                            if(customer_need.customer_needs_commit.length > 0 &&
+                                    customer_need.customer_needs_commit[0].status == "Close"){
 
                                 var entityName = "";
-                                var entityID = customer_need.entityID;
+                                var entityID = customer_need.customer_needs_commit[0].entityID;
 
 
                                 allEntities.entities.forEach(function(entity){
@@ -2372,7 +2372,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                                 var carrier_detail = {
                                     carrierName: entityName,                // This is the carrier's Name
-                                    carrierRate: customer_need.rate,    // This is that carrier's rate.
+                                    carrierRate: customer_need.customer_needs_commit[0].rate,    // This is that carrier's rate.
                                     billingAddress: carrierBillingAddress.address1,
                                     billingCity: carrierBillingAddress.city,
                                     billingState: carrierBillingAddress.state,
@@ -2410,10 +2410,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         contentType: "application/json",
                         async: false,
                         success: function(response){
-
+                            console.log(JSON.stringify(response));
                             saveOrderDetails(response);
                             closeCustomerCommitLegs(selectedCustomerNeed.id);
-                            if (differenceQty != 0) createNewAvailability(selectedCustomerNeed.id, differenceQty, today);
+                            if (differenceQty > 0) createNewAvailability(selectedCustomerNeed.id, differenceQty, today);
 
                             $.ajax({
                                 url: '<?php echo API_HOST_URL ?>' + '/customer_needs/' + selectedCustomerNeed.id,
