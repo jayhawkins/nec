@@ -2461,7 +2461,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
         var rootCustomerNeedsID = data["rootCustomerNeedsID"];
 
-		console.log(data.customer_needs_commit[0]);
+		console.log(JSON.stringify(data.customer_needs_commit[0]));
 
         var commitID = data.customer_needs_commit[0].id;
         //var entityID = data.customer_needs_commit[0].entityID;
