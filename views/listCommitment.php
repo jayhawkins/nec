@@ -637,7 +637,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     "mRender": function (o) {
 
                         var input = '';
-                        var status = o.status;
+                        var status = o.customer_needs_commit[0].status;
                         var carrierRate = o.rate.toFixed(2);
                         var commitID = o.id;
 
@@ -705,7 +705,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     "mRender": function (o) {
 
                         var buttons = '';
-                        var status = o.status;
+                        var status = o.customer_needs_commit[0].status;
 
                         if(status == "Available"){
                             buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"fa fa-check text-info\"></i> <span class=\"text-info\">Accept Commit</span></button>';
@@ -2465,7 +2465,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
 	console.log(JSON.stringify(data.customer_needs_commit[0]));
 
-        var commitID = data.customer_needs_commit[0].id;
+        var commitID = data.id;
         //var entityID = data.customer_needs_commit[0].entityID;
         var carrierRate = $("#carrierRate-" + commitID).val();
 
