@@ -261,19 +261,19 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                           var needsdatapoints = needsarray;
 
                           var availableDateString = $("#availableDate").val();
-                        var expirationDateString = $("#expirationDate").val();
+                          var expirationDateString = $("#expirationDate").val();
 
-                        var availableDate = new Date(parseDate(availableDateString));
-                        var expirationDate = new Date();
+                          var availableDate = new Date(parseDate(availableDateString));
+                          var expirationDate = new Date();
 
-                        if (expirationDateString == ""){
-                            expirationDate.setDate(availableDate.getDate() + 30);
-                            expirationDateString = formatDate(expirationDate);
-                        }
-                        else{
-                            expirationDate = new Date(parseDate(expirationDateString));
-                            expirationDateString = formatDate(expirationDate);
-                        }
+                          if (expirationDateString == ""){
+                              expirationDate.setDate(availableDate.getDate() + 30);
+                              expirationDateString = formatDate(expirationDate);
+                          } else {
+                              expirationDate = new Date(parseDate(expirationDateString));
+                              expirationDateString = formatDate(expirationDate);
+                          }
+                          //console.log("Expiration Date String:" + expirationDateString);
 
                           if (type == "PUT") {
                               var date = today;
