@@ -7,7 +7,7 @@ if ($_SESSION['userid'] <= 0 || $_SESSION['userid'] == "") {
 // Use arrays to determine which user types get access to each section
 $needsMenuAccessList = array(0,1,2,4);
 $availabilityMenuAccessList = array(0,1,2,4);
-$ordersMenuAccessList = array(0,1,2,4,5);
+$ordersMenuAccessList = array(0,1,2,3,4,5);
 $invoicingMenuAccessList = array(0,1,2,3);
 $claimsMenuAccessList = array(0,1,2,3,4);
 $collectionsMenuAccessList = array(0,1,2,4);
