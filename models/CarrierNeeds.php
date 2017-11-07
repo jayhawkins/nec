@@ -1,8 +1,6 @@
 <?php
 
-require_once 'Model.php';
-
-class CarrierNeeds extends Model
+class CarrierNeeds
 {
     
     /**

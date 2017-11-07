@@ -1,8 +1,6 @@
 <?php
 
-require_once 'Model.php';
-
-class States extends Model
+class States
 {
     
     /**
