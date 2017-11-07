@@ -1,8 +1,6 @@
 <?php
 
-require_once 'Model.php';
-
-class Documents extends Model
+class Documents
 {
 
     /**

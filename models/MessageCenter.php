@@ -32,7 +32,7 @@ require_once "Twilio/Http/CurlClient.php"; // Twilio  Class
 */
 // NEC Message Center Class
 
-class MessageCenter extends Model {
+class MessageCenter{
 
     /**
      *

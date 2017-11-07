@@ -1,8 +1,6 @@
 <?php
 
-require_once 'Model.php';
-
-class Locations extends Model
+class Locations
 {
     
     /**
