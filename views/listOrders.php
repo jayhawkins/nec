@@ -72,6 +72,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
     var entityType = <?php echo $_SESSION['entitytype'];  ?>;
 
     var carrierEntities = <?php echo json_encode($carrierEntities); ?>;
+    var vinNumbersList = [];
 
     var myApp;
     myApp = myApp || (function () {
@@ -85,6 +86,18 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             }
         };
     })();
+
+    function loadVinNumberList(){
+        var option = '';
+        
+        $('#orderStatusVinNumber').empty();
+                
+        for(var i=0; i< vinNumbersList.length; i++){
+            option += '<option value="' + vinNumbersList[i] + '">' + vinNumbersList[i] + '</option>';
+        }
+        
+        $('#orderStatusVinNumber').append(option);
+    }
 
     function addVINNumber(){
 
@@ -624,7 +637,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
     function loadOrderStatusesAJAX(orderID){
 
-        var url = '<?php echo API_HOST_URL; ?>/order_statuses?include=entities&columns=id,orderID,carrierID,city,state,status,note,createdAt,entities.id,entities.name&filter=orderID,eq,' + orderID + '&transform=1';
+        //var url = '<?php echo API_HOST_URL; ?>/order_statuses?include=entities&columns=id,orderID,carrierID,city,state,status,note,createdAt,entities.id,entities.name&filter=orderID,eq,' + orderID + '&transform=1';
+        var url = '<?php echo API_HOST_URL; ?>/orders?columns=id,carrierIDs,deliveryInformation,pickupInformation,podList&filter=id,eq,' + orderID + '&transform=1';
         var blnShow = false;
 
         if(entityType != 1) blnShow = true;
@@ -636,10 +650,39 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 processing: true,
                 ajax: {
                     url: url,
-                    dataSrc: 'order_statuses'
+                    //dataSrc: 'order_statuses'
+                    dataSrc: function(json){
+
+                        var data = [];
+                        
+                        var podList = json.orders[0].podList;
+                        
+                        if (podList === null){
+                            data = [];
+                        }
+                        else{
+                            podList.forEach(function(pod){
+                                
+                                if(pod.order_statuses != null){
+                                    var order_statuses = pod.order_statuses;
+
+                                    if(order_statuses.length > 0){
+                                        order_statuses.forEach(function(order_status){
+                                            order_status.vinNumber = pod.vinNumber;
+
+                                            data.push(order_status);
+                                        });
+                                    }
+                                }
+                            });
+                        }                        
+
+                        return data;
+                    }
                 },
                 columns: [
-                    { data: "entities[0].name" },
+                    { data: "vinNumber" },
+                    { data: "carrier" },
                     { data: "createdAt" },
                     { data: "city" },
                     { data: "state" },
@@ -658,8 +701,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             var reload_table = $('#order-history-table').DataTable();
             reload_table.ajax.url(url).load();
         }
-
-
     }
 
     function loadPODListAJAX(orderID){
@@ -680,12 +721,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     dataSrc: function(json){
 
                         var data = [];
+                        vinNumbersList = [];
                         
                         var podList = json.orders[0].podList;
                         var deliveryInformation = json.orders[0].deliveryInformation;
                         var pickupInformation = json.orders[0].pickupInformation;
-
-                        console.log("Orders: " + JSON.stringify(json.orders[0]));
                         
                         if (podList == null){
                             data = [];
@@ -708,11 +748,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     pod.pickupInformation = pickupInformation;
                                 }
                                 data.push(pod);
+                                vinNumbersList.push(pod.vinNumber);
                             });
                         }
-                        
-
-                        console.log("POD List Passed: " + JSON.stringify(data));
 
                         return data;
                     }
@@ -1505,26 +1543,69 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         }
 
         today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
-
+        
+        var podTable = $("#pod-list-table").DataTable();
+        var podList = podTable.ajax.json().orders[0].podList;
+            
         var orderHistoryTable = $('#order-history-table').DataTable();
         var orderDetailTable = $('#order-details-table').DataTable();
         var orderDetailJSON = orderDetailTable.ajax.json();
 
         var orderNumber = orderDetailJSON.order_details[0].orders[0].orderID;
         var customerID = orderDetailJSON.order_details[0].orders[0].customerID;
-
-
+        
         var id = $("#id").val();
+        var vinNumber = $("#orderStatusVinNumber").val();
         var city = $("#city").val();
         var state = $("#state").val();
         var status = $("#orderStatus").val();
         var notes = $("#statusNotes").val();
         var carrierID = $("#carrierID").val();
+        
+        var carrier = "";
 
-        var orderStatus = {orderID: id, carrierID:carrierID, city: city, state: state, status: status, note: notes, createdAt: today, updatedAt: today};
+        allEntities.entities.forEach(function(entity){
+
+            if(carrierID == entity.id){
+
+                carrier = entity.name;
+            }
+        });
+        
+        var podIndex = -1;
+            
+        podList.forEach(function(pod, index){
+            if(pod.vinNumber == vinNumber){
+                podIndex = index;
+            }
+        });
+        
+        var orderStatus = {carrier:carrier, city: city, state: state, status: status, note: notes, createdAt: today, updatedAt: today};
+        
+        var data = podList[podIndex];
+        var unitNumber = data.unitNumber;
+        var truckProNumber = data.truckProNumber;
+        var trailerYear = data.trailerYear;
+        var trailerNotes = data.trailerNotes;
+        var podNotes = data.notes;
+        var deliveryDate = data.deliveryDate;
+        var fileName = data.fileName;
+        var podCarrier = data.carrier;
+
+        var order_statuses = [];
+        
+        if(data.order_statuses != null) order_statuses = data.order_statuses;
+        
+        order_statuses.push(orderStatus);
+
+        var pod = {vinNumber: vinNumber, notes: podNotes, deliveryDate: deliveryDate, fileName: fileName, carrier: podCarrier,
+        unitNumber: unitNumber, truckProNumber: truckProNumber, trailerYear: trailerYear, trailerNotes: trailerNotes, order_statuses: order_statuses};
+    
+        
 
         var emailData = {carrierID: carrierID, customerID: customerID, orderNumber: orderNumber};
-
+        
+/*
         $.ajax({
            url: '<?php echo API_HOST_URL . "/order_statuses"; ?>',
            type: "POST",
@@ -1567,6 +1648,57 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 $("#saveOrderStatus").prop("disabled", false);
            }
         });
+*/
+   
+   
+            podList.splice(podIndex, 1, pod);
+
+            var orderData = {podList: podList};
+
+            $.ajax({
+                url: '<?php echo API_HOST_URL . "/orders/"; ?>' + id,
+                type: 'PUT',
+                data: JSON.stringify(orderData),
+                contentType: "application/json",
+                async: false,
+                success: function(){
+
+                    $.ajax({
+                        url: '<?php echo HTTP_HOST; ?>' + '/sendorderstatusnotification',
+                        type: "POST",
+                        data: JSON.stringify(emailData),
+                        contentType: "application/json",
+                        async:false,
+                        success: function(data){
+                            alert(data);
+
+                            // Clear Form
+                            $("#id").val('');
+                            $("#orderStatusVinNumber").val('');
+                            $("#city").val('');
+                            $("#state").val('');
+                            $("#orderStatus").val('');
+                            $("#statusNotes").val('');
+                            $("#carrierID").val('');
+                            $("#saveOrderStatus").html("Save");
+                            $("#saveOrderStatus").prop("disabled", false);
+                            orderHistoryTable.ajax.reload();
+                            podTable.ajax.reload();
+                            $("#addOrderStatus").modal('hide');
+                        },
+                        error: function(error){
+                            alert("Unable to send notification about status change.");
+                            $("#saveOrderStatus").html("Save");
+                            $("#saveOrderStatus").prop("disabled", false);
+                        }
+                    });
+                },
+                error: function() {
+                   alert("There Was An Error Saving the Status");
+                     $("#saveOrderStatus").html("Save");
+                     $("#saveOrderStatus").prop("disabled", false);
+                }
+            });
 
     }
 
@@ -1574,8 +1706,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         var orderDetailsTable = $("#order-details-table").DataTable();
         var json = orderDetailsTable.ajax.json();
         var data = json.order_details[0];
-
-        //console.log(data);
 
             var orderStatusSelect = '<select id="orderStatus" name="orderStatus" class="form-control mb-sm" required="required">\n';
 
@@ -1588,6 +1718,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             var atConsignee = "";
             var trailerDelivered = "";
 
+            loadVinNumberList();
+        
             if (data['status'] == "In Transit") {
                 inTransit = "selected=selected";
             } else if (data['status'] == "In Carrier's Yard"){
@@ -1968,6 +2100,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 <table id="order-history-table" class="table table-striped table-hover">
                     <thead>
                     <tr>
+                        <th>Trailer VIN</th>
                         <th>Carrier</th>
                         <th>Date</th>
                         <th>City</th>
@@ -2073,7 +2206,17 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         </div>
         <div class="modal-body">
                 <form id="formAddOrderStatus" class="register-form mt-lg">
-                  <input type="hidden" id="id" name="id" value="" />
+                    <input type="hidden" id="id" name="id" />
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <label for="orderStatusVinNumber">VIN Number</label>
+                          <div class="form-group">
+                              <select id="orderStatusVinNumber" name="orderStatusVinNumber" data-placeholder="orderStatusVinNumber" class="form-control chzn-select" data-ui-jq="select2">
+                              
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                   <div class="row">
                       <div class="col-sm-3">
                           <label for="city">City</label>
@@ -2571,102 +2714,161 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
     $(document).ready(function(){
 
-    loadTableAJAX();
+        loadTableAJAX();
 
-    $('.datepicker').datepicker({
-        autoclose: true,
-        todayHighlight: true,
-        format: "yyyy-mm-dd"
-    });
+        $('.datepicker').datepicker({
+            autoclose: true,
+            todayHighlight: true,
+            format: "yyyy-mm-dd"
+        });
 
-    var table = $("#orders-table").DataTable();
+        var table = $("#orders-table").DataTable();
 
-    $("#order-details").css("display", "none");
-
-
-    $('#order-details-table tbody').on( 'click', 'button', function () {
-
-        var table = $("#order-details-table").DataTable();
-        var data = table.row( $(this).parents('tr') ).data();
-
-        var orderID = data.orders[0].id;
-
-        $("#id").val(orderID);
-
-        var url = '<?php echo API_HOST_URL . '/orders/' ?>' + orderID;
-
-        $.ajax({
-            url: url,
-            type: "GET",
-            contentType: "application/json",
-            async: false,
-            success: function(data){
-
-            var dpli = '';
-            var dpchecked = '';
-            $("#id").val(data["id"]);
-            $("#entityID").val(data["entityID"]);
-            $("#qty").text(data["qty"]);
-            $("#rate").val(data["customerRate"].toFixed(2));
-<?php if ($_SESSION['entityid'] > 0) { ?>
-            $("#rate").prop("disabled", true);
-<?php } ?>
+        $("#order-details").css("display", "none");
 
 
-            if(data["pickupInformation"] == null){
-                $("#pickupLocation").val('');
-                $("#pickupContactPerson").val('');
-                $("#pickupPhoneNumber").val('');
-                $("#pickupHoursOfOperation").val('');
-            }
-            else{
-                $("#pickupLocation").val(data["pickupInformation"].pickupLocation);
-                $("#pickupContactPerson").val(data["pickupInformation"].contactPerson);
-                $("#pickupPhoneNumber").val(data["pickupInformation"].phoneNumber);
-                $("#pickupHoursOfOperation").val(data["pickupInformation"].hoursOfOperation);
-            }
+        $('#order-details-table tbody').off('click').on( 'click', 'button', function () {
 
-            if(data["deliveryInformation"] == null){
-                $("#deliveryLocation").val('');
-                $("#deliveryContactPerson").val('');
-                $("#deliveryPhoneNumber").val('');
-                $("#deliveryHoursOfOperation").val('');
-            }
-            else{
-                $("#deliveryLocation").val(data["deliveryInformation"].deliveryLocation);
-                $("#deliveryContactPerson").val(data["deliveryInformation"].contactPerson);
-                $("#deliveryPhoneNumber").val(data["deliveryInformation"].phoneNumber);
-                $("#deliveryHoursOfOperation").val(data["deliveryInformation"].hoursOfOperation);
-            }
+            var table = $("#order-details-table").DataTable();
+            var data = table.row( $(this).parents('tr') ).data();
 
-            $("#transportationMode").val(data["transportationMode"]);
-            $("#originationAddress").val(data["originationAddress"]);
-            $("#originationCity").val(data["originationCity"]);
-            $("#originationState").val(data["originationState"]);
-            $("#originationZip").val(data["originationZip"]);
-            $("#destinationAddress").val(data["destinationAddress"]);
-            $("#destinationCity").val(data["destinationCity"]);
-            $("#destinationState").val(data["destinationState"]);
-            $("#destinationZip").val(data["destinationZip"]);
-            var ndp = data["needsDataPoints"];
-            var pod = data["podList"];
+            var orderID = data.orders[0].id;
 
-            if (data['rateType'] == "Flat Rate") {
-                $('input[name="rateType"][value="Flat Rate"]').prop('checked', true);
-            } else {
-                $('input[name="rateType"][value="Mileage"]').prop('checked', true);
-            }
+            $("#id").val(orderID);
 
-            if (pod != null){
-                var li = '';
-                for (var i = 0; i < pod.length; i++) {
+            var url = '<?php echo API_HOST_URL . '/orders/' ?>' + orderID;
 
-                    li += '<li class="list-group-item"><input type="text" class="form-control" value="' + pod[i].vinNumber + '"></li>\n';
+            $.ajax({
+                url: url,
+                type: "GET",
+                contentType: "application/json",
+                async: false,
+                success: function(data){
+
+                    var dpli = '';
+                    var dpchecked = '';
+                    $("#id").val(data["id"]);
+                    $("#entityID").val(data["entityID"]);
+                    $("#qty").text(data["qty"]);
+                    $("#rate").val(data["customerRate"].toFixed(2));
+        <?php if ($_SESSION['entityid'] > 0) { ?>
+                    $("#rate").prop("disabled", true);
+        <?php } ?>
+
+
+                    if(data["pickupInformation"] == null){
+                        $("#pickupLocation").val('');
+                        $("#pickupContactPerson").val('');
+                        $("#pickupPhoneNumber").val('');
+                        $("#pickupHoursOfOperation").val('');
+                    }
+                    else{
+                        $("#pickupLocation").val(data["pickupInformation"].pickupLocation);
+                        $("#pickupContactPerson").val(data["pickupInformation"].contactPerson);
+                        $("#pickupPhoneNumber").val(data["pickupInformation"].phoneNumber);
+                        $("#pickupHoursOfOperation").val(data["pickupInformation"].hoursOfOperation);
+                    }
+
+                    if(data["deliveryInformation"] == null){
+                        $("#deliveryLocation").val('');
+                        $("#deliveryContactPerson").val('');
+                        $("#deliveryPhoneNumber").val('');
+                        $("#deliveryHoursOfOperation").val('');
+                    }
+                    else{
+                        $("#deliveryLocation").val(data["deliveryInformation"].deliveryLocation);
+                        $("#deliveryContactPerson").val(data["deliveryInformation"].contactPerson);
+                        $("#deliveryPhoneNumber").val(data["deliveryInformation"].phoneNumber);
+                        $("#deliveryHoursOfOperation").val(data["deliveryInformation"].hoursOfOperation);
+                    }
+
+                    $("#transportationMode").val(data["transportationMode"]);
+                    $("#originationAddress").val(data["originationAddress"]);
+                    $("#originationCity").val(data["originationCity"]);
+                    $("#originationState").val(data["originationState"]);
+                    $("#originationZip").val(data["originationZip"]);
+                    $("#destinationAddress").val(data["destinationAddress"]);
+                    $("#destinationCity").val(data["destinationCity"]);
+                    $("#destinationState").val(data["destinationState"]);
+                    $("#destinationZip").val(data["destinationZip"]);
+                    var ndp = data["needsDataPoints"];
+                    var pod = data["podList"];
+
+                    if (data['rateType'] == "Flat Rate") {
+                        $('input[name="rateType"][value="Flat Rate"]').prop('checked', true);
+                    } else {
+                        $('input[name="rateType"][value="Mileage"]').prop('checked', true);
+                    }
+
+                    if (pod != null){
+                        var li = '';
+                        for (var i = 0; i < pod.length; i++) {
+
+                            li += '<li class="list-group-item"><input type="text" class="form-control" value="' + pod[i].vinNumber + '"></li>\n';
+                        }
+                        $("#input-list-box").html(li);
+
+                    }
+
+
+                    for (var i = 0; i < dataPoints.object_type_data_points.length; i++) {
+                        var selected = '';
+                        var value = '';
+
+                        $.each(ndp, function(idx, obj) {
+                          $.each(obj, function(key, val) {
+                            if (dataPoints.object_type_data_points[i].columnName == key) {
+                                value = val; // Get the value from the JSON data in the record to use to set the selected option in the dropdown
+                            }
+                          })
+                        });
+
+                        dpli += '<li>' + dataPoints.object_type_data_points[i].title +
+                                ' <select class="form-control mb-sm" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '" disabled>';
+                        for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
+
+                            if (dataPoints.object_type_data_points[i].object_type_data_point_values[v].value === value) {
+                                selected = ' selected ';
+                            } else {
+                                selected = '';
+                            }
+
+                            dpli += '<option' + selected + '>' + dataPoints.object_type_data_points[i].object_type_data_point_values[v].value + '</option>\n';
+
+                        }
+
+                        dpli += '</select>' +
+                                '</li>\n';
+                    }
+                    $("#dp-check-list-box").html(dpli);
+                    //formatListBox();
+                    formatListBoxDP();
+                    $("#entityID").prop('disabled', true);
+                    $("#editOrder").modal('show');
                 }
-                $("#input-list-box").html(li);
+            });
+        });
 
-            }
+        $('#orders-table tbody').on( 'click', 'td.order-details-link', function () {
+            var data = table.row( $(this).parents('tr') ).data();
 
+            var orderID = data["id"];
+
+            getOrderIDAndCustomerName(orderID);
+            loadOrderDetailsAJAX(orderID);
+            loadOrderStatusesAJAX(orderID);
+            loadPODListAJAX(orderID);
+            loadOrderComments(orderID);
+
+        });
+
+        // Formatting function for row details - modify as you need
+        function format ( d ) {
+
+            var table = '<table  class="col-sm-12" cellpadding="5" cellspacing="0" border="0"><tr>';
+
+            // `d` is the original data object for the row
+            var ndp = d.needsDataPoints;
 
             for (var i = 0; i < dataPoints.object_type_data_points.length; i++) {
                 var selected = '';
@@ -2680,560 +2882,507 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                   })
                 });
 
-                dpli += '<li>' + dataPoints.object_type_data_points[i].title +
-                        ' <select class="form-control mb-sm" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '" disabled>';
+                table += '<td>' + dataPoints.object_type_data_points[i].title;
                 for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
 
                     if (dataPoints.object_type_data_points[i].object_type_data_point_values[v].value === value) {
-                        selected = ' selected ';
-                    } else {
-                        selected = '';
-                    }
-
-                    dpli += '<option' + selected + '>' + dataPoints.object_type_data_points[i].object_type_data_point_values[v].value + '</option>\n';
-
-                }
-
-                dpli += '</select>' +
-                        '</li>\n';
-            }
-            $("#dp-check-list-box").html(dpli);
-            //formatListBox();
-            formatListBoxDP();
-            $("#entityID").prop('disabled', true);
-            $("#editOrder").modal('show');
-            }
-        });
-    });
-
-    $('#orders-table tbody').on( 'click', 'td.order-details-link', function () {
-        var data = table.row( $(this).parents('tr') ).data();
-
-        var orderID = data["id"];
-
-        getOrderIDAndCustomerName(orderID);
-        loadOrderDetailsAJAX(orderID);
-        loadOrderStatusesAJAX(orderID);
-        loadPODListAJAX(orderID);
-        loadOrderComments(orderID);
-
-    });
-
-    // Formatting function for row details - modify as you need
-    function format ( d ) {
-
-        var table = '<table  class="col-sm-12" cellpadding="5" cellspacing="0" border="0"><tr>';
-
-        // `d` is the original data object for the row
-        var ndp = d.needsDataPoints;
-
-        for (var i = 0; i < dataPoints.object_type_data_points.length; i++) {
-            var selected = '';
-            var value = '';
-
-            $.each(ndp, function(idx, obj) {
-              $.each(obj, function(key, val) {
-                if (dataPoints.object_type_data_points[i].columnName == key) {
-                    value = val; // Get the value from the JSON data in the record to use to set the selected option in the dropdown
-                }
-              })
-            });
-
-            table += '<td>' + dataPoints.object_type_data_points[i].title;
-            for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
-
-                if (dataPoints.object_type_data_points[i].object_type_data_point_values[v].value === value) {
-                    table += ' <br/> <strong>' + dataPoints.object_type_data_points[i].object_type_data_point_values[v].value + '</strong>';
-                }
-            }
-
-            table += '</td>\n';
-        }
-
-        table += '</tr></table>\n';
-        return table;
-
-    }
-
-    $('#orders-table tbody').on('click', 'td.details-control-add', function () {
-
-        var tr = $(this).closest('tr');
-        var row = table.row( tr );
-        var td = $(this).closest('td');
-
-        // Open this row
-        row.child( format(row.data()) ).show();
-        td.addClass('details-control-minus');
-        td.removeClass('details-control-add');
-
-    } );
-
-    $('#orders-table tbody').on('click', 'td.details-control-minus', function () {
-
-        var tr = $(this).closest('tr');
-        var row = table.row( tr );
-        var td = $(this).closest('td');
-
-        // This row is already open - close it
-        row.child.hide();
-        td.removeClass('details-control-minus');
-        td.addClass('details-control-add');
-
-    } );
-
-    $('#pod-list-table tbody').off('click', 'td button.download-pod').on('click', 'td button.download-pod', function () {
-
-		var ele = $(this);    	
-        var podTable = $("#pod-list-table").DataTable();
-        var pod = podTable.row( $(this).parents('tr') ).data();
-        var podList = podTable.ajax.json().orders[0].podList;
-
-        var orderDetailsTable = $("#order-details-table").DataTable();
-        var orderDetails = orderDetailsTable.ajax.json();
-        var orderID = orderDetails.order_details[0].orderID;
-
-        var url = '<?php echo API_HOST_URL . '/orders/' ?>' + orderID;
-
-        $.ajax({
-            url: url,
-            type: "GET",
-            contentType: "application/json",
-            async: false,
-            success: function(data){
-                var customerID = data.customerID;
-                var customerName = "";
-
-                allEntities.entities.forEach(function(entity){
-
-                    if(customerID == entity.id){
-
-                        customerName = entity.name;
-                    }
-                });
-
-                var size = data.needsDataPoints[3].length + ' x ' + data.needsDataPoints[4].width + ' x ' + data.needsDataPoints[0].height;
-
-                var podDataJSON = {
-                    podFormType: customerName,
-                    unitNumber: pod.unitNumber, vinNumber: pod.vinNumber, trailerProNumber: pod.truckProNumber, year: pod.trailerYear,
-                    size: size, type: data.needsDataPoints[5].type, door: data.needsDataPoints[1].door, decals: data.needsDataPoints[13].decals,
-                    originationAddress: data.originationAddress, originationCity: data.originationCity, originationState: data.originationState, originationZipcode: data.originationZip,
-                    destinationAddress: data.destinationAddress, destinationCity: data.destinationCity, destinationState: data.destinationState, destinationZipcode: data.destinationZip,
-                    pickupLocation: data.pickupInformation.pickupLocation, pickupContact: data.pickupInformation.contactPerson,
-                    pickupPhoneNumber: data.pickupInformation.phoneNumber, pickupHours: data.pickupInformation.hoursOfOperation,
-                    deliveryLocation: data.deliveryInformation.deliveryLocation, deliveryContact: data.deliveryInformation.contactPerson,
-                    deliveryPhoneNumber: data.deliveryInformation.phoneNumber, deliveryHours: data.deliveryInformation.hoursOfOperation
-                };
-                
-                var podURL = '<?php echo HTTP_HOST . '/pod_form_api'; ?>';
-
-                $.ajax({
-                    url: podURL,
-                    type: "POST",
-                    contentType: "application/json",
-                    responseType: "arraybuffer",
-                    data: JSON.stringify(podDataJSON),
-                    success: function(data){
-
-                    		var iframe = $('#download-pdf-container');
-                    		if (iframe.length == 0) {
-                         	iframe = $('<iframe id="download=pdf-container" style="visibility:hidden;"></iframe>').appendTo('body');
-                    		}	  
-						iframe.attr('src', '<?php echo HTTP_HOST; ?>/download-pdf/' + data);
-
-                    },
-                    error: function(data){
-                        console.log("Could not get POD Form.");
-                    }
-                });
-            },
-            error: function(data){
-                console.log("Could not get Order Information.");
-            }
-        });
-
-    } );
-
-    $('#pod-list-table tbody').on('click', 'button.trailer-data-missing', function () {
-
-        $("#trailer-data-missing").modal('show');
-    } );
-    $('#pod-list-table tbody').on('click', 'button.upload-pod', function () {
-
-        var podTable = $("#pod-list-table").DataTable();
-        var data = podTable.row( $(this).parents('tr') ).data();
-        var podList = podTable.ajax.json().orders[0].podList;
-        var index = podList.indexOf(data);
-        var vinNumber = data.vinNumber;
-
-        var orderDetailsTable = $("#order-details-table").DataTable();
-        var orderDetails = orderDetailsTable.ajax.json();
-
-        var orderID = orderDetails.order_details[0].orderID;
-        var customerID = orderDetails.order_details[0].orders[0].customerID;
-
-        $('#vinNumber').val(vinNumber);
-        $('#index').val(index);
-        $('#orderID').val(orderID);
-        $('#customerID').val(customerID);
-        $('#filePOD').val('');
-        $('#deliveryDate').val('');
-        $('#podNotes').val('');
-        $('#fileName').val('');
-        $('#viewPOD').hide();
-        $('#replacePOD').hide();
-        $('#sectionPOD').show();
-        $('#blnReplacePOD').attr('checked', false);
-        $("#uploadPOD").modal('show');
-    } );
-
-    $('#pod-list-table tbody').on('click', 'button.view-edit-pod', function () {
-
-        var podTable = $("#pod-list-table").DataTable();
-        var data = podTable.row( $(this).parents('tr') ).data();
-        var podList = podTable.ajax.json().orders[0].podList;
-        var index = podList.indexOf(data);
-        var vinNumber = data.vinNumber;
-
-        var podNotes = data.notes;
-        var deliveryDate = data.deliveryDate;
-        var fileName = data.fileName;
-
-        var carrierID = 0;
-        var carrier = data.carrier;
-
-        allEntities.entities.forEach(function(entity){
-
-            if(carrier == entity.name){
-
-                carrierID = entity.id;
-            }
-        });
-
-        var orderDetailsTable = $("#order-details-table").DataTable();
-        var orderDetails = orderDetailsTable.ajax.json();
-
-        var orderID = orderDetails.order_details[0].orderID;
-        var customerID = orderDetails.order_details[0].orders[0].customerID;
-
-        $('#vinNumber').val(vinNumber);
-        $('#index').val(index);
-        $('#orderID').val(orderID);
-        $('#customerID').val(customerID);
-        $('#filePOD').val('');
-        $('#deliveryDate').val(deliveryDate);
-        $('#podNotes').val(podNotes);
-        $('#podCarrierID').val(carrierID);
-        $('#fileName').val(fileName);
-
-        $('#viewPOD').show();
-        $('#replacePOD').show();
-        $('#sectionPOD').hide();
-        $('#blnReplacePOD').attr('checked', false);
-        $("#uploadPOD").modal('show');
-    } );
-
-    $('#pod-list-table tbody').on('click', 'button.edit-trailer-data', function () {
-
-        var orderDetailsTable = $("#order-details-table").DataTable();
-        var orderDetails = orderDetailsTable.ajax.json();
-
-        var orderID = orderDetails.order_details[0].orderID;
-        var customerID = orderDetails.order_details[0].orders[0].customerID;
-
-        var podTable = $("#pod-list-table").DataTable();
-        var data = podTable.row( $(this).parents('tr') ).data();
-        var podList = podTable.ajax.json().orders[0].podList;
-        var carrierIDs = podTable.ajax.json().orders[0].carrierIDs;
-        var index = podList.indexOf(data);
-        var vinNumber = data.vinNumber;
-
-        var unitNumber = data.unitNumber;
-        var truckProNumber = data.truckProNumber;
-        var trailerYear = data.trailerYear;
-        var trailerNotes = data.trailerNotes;
-
-        var entityName = "";
-
-        for(var i = 0; i < carrierIDs.length; i++){
-
-            if(i > 0) entityName += ", ";
-
-            allEntities.entities.forEach(function(entity){
-
-                if(carrierIDs[i].carrierID == entity.id){
-
-                    entityName += entity.name;
-                }
-            });
-
-        }
-
-
-        var url = '<?php echo API_HOST_URL; ?>';
-        url += '/order_details?filter=orderID,eq,' + orderID + '&transform=1';
-
-        $.ajax({
-           url: url,
-           type: "GET",
-           contentType: "application/json",
-           success: function(json){
-
-                var order_details = json.order_details;
-                var earliestPickup = order_details[0].pickupDate;
-                var latestDelivery = order_details[0].deliveryDate;
-
-                for(var i = 1; i < order_details.length; i++){
-
-                    var newPickupDate = new Date(order_details[i].pickupDate);
-                    var newDeliveryDate = new Date(order_details[i].deliveryDate);
-
-                    var currentPickupDate = new Date(earliestPickup);
-                    var currentDeliveryDate = new Date(latestDelivery);
-
-                    if (newPickupDate.getTime() < currentPickupDate.getTime()) {
-                        earliestPickup = order_details[i].pickupDate;
-                    }
-
-                    if (newDeliveryDate.getTime() > currentDeliveryDate.getTime()) {
-                        latestDelivery = order_details[i].deliveryDate;
+                        table += ' <br/> <strong>' + dataPoints.object_type_data_points[i].object_type_data_point_values[v].value + '</strong>';
                     }
                 }
 
-
-                var pickupDate = earliestPickup;
-                var dropoffDate = latestDelivery;
-
-                $('#pickupDate').val(pickupDate);
-                $('#dropOffDate').val(dropoffDate);
-           }
-        });
-
-
-        $('#trailerVIN').val(vinNumber);
-        $('#index').val(index);
-        $('#orderID').val(orderID);
-        $('#customerID').val(customerID);
-        $('#trailerCarrier').val(entityName);
-
-        $('#unitNumber').val(unitNumber);
-        $('#truckProNumber').val(truckProNumber);
-        $('#year').val(trailerYear);
-        $('#trailerNotes').val(trailerNotes);
-
-        $("#editTrailerData").modal('show');
-    } );
-
-    function uploadPOD(){
-
-        var today = new Date();
-        var dd = today.getDate();
-        var mm = today.getMonth()+1; //January is 0!
-        var yyyy = today.getFullYear();
-        var hours = today.getHours();
-        var min = today.getMinutes();
-        var sec = today.getSeconds();
-
-        if(dd<10) {
-            dd='0'+dd;
-        }
-
-        if(mm<10) {
-            mm='0'+mm;
-        }
-
-        if(hours<10) {
-            hours='0'+hours;
-        }
-
-        if(min<10) {
-            min='0'+min;
-        }
-
-        if(sec<10) {
-            sec='0'+sec;
-        }
-
-        today = mm+'/'+dd+'/'+yyyy;
-        today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
-
-        var carrierID = $('#podCarrierID').val();
-        var carrier = "";
-
-        allEntities.entities.forEach(function(entity){
-
-            if(carrierID == entity.id){
-
-                carrier = entity.name;
+                table += '</td>\n';
             }
-        });
 
-        var formData = new FormData();
-        var fileData = $('#filePOD')[0].files[0];
-        formData.append('entityID', $("#customerID").val());
-        formData.append('name', $("#vinNumber").val());
-        formData.append('fileupload', fileData);
+            table += '</tr></table>\n';
+            return table;
 
-        var url = '<?php echo HTTP_HOST."/uploaddocument" ?>';
-	var type = "POST";
+        }
 
-        if(fileData != undefined){
+        $('#orders-table tbody').on('click', 'td.details-control-add', function () {
+
+            var tr = $(this).closest('tr');
+            var row = table.row( tr );
+            var td = $(this).closest('td');
+
+            // Open this row
+            row.child( format(row.data()) ).show();
+            td.addClass('details-control-minus');
+            td.removeClass('details-control-add');
+
+        } );
+
+        $('#orders-table tbody').on('click', 'td.details-control-minus', function () {
+
+            var tr = $(this).closest('tr');
+            var row = table.row( tr );
+            var td = $(this).closest('td');
+
+            // This row is already open - close it
+            row.child.hide();
+            td.removeClass('details-control-minus');
+            td.addClass('details-control-add');
+
+        } );
+
+        $('#pod-list-table tbody').off('click', 'td button.download-pod').on('click', 'td button.download-pod', function () {
+
+                    var ele = $(this);    	
+            var podTable = $("#pod-list-table").DataTable();
+            var pod = podTable.row( $(this).parents('tr') ).data();
+            var podList = podTable.ajax.json().orders[0].podList;
+
+            var orderDetailsTable = $("#order-details-table").DataTable();
+            var orderDetails = orderDetailsTable.ajax.json();
+            var orderID = orderDetails.order_details[0].orderID;
+
+            var url = '<?php echo API_HOST_URL . '/orders/' ?>' + orderID;
+
             $.ajax({
-                url : url,
-                type : 'POST',
-                data : formData,
-                processData: false,  // tell jQuery not to process the data
-                contentType: false,  // tell jQuery not to set contentType
-                success : function(data) {
-                    var files = $('#filePOD').prop("files");
-                    var fileNames = $.map(files, function(val) { return val.name; }).join(',');
-                    var podTable = $("#pod-list-table").DataTable();
-                    var podList = podTable.ajax.json().orders[0].podList;
-                    var index = $('#index').val();
-                    var orderID = $('#orderID').val();
+                url: url,
+                type: "GET",
+                contentType: "application/json",
+                async: false,
+                success: function(data){
+                    var customerID = data.customerID;
+                    var customerName = "";
 
-                    var pod = {vinNumber: $('#vinNumber').val(), notes: $('#podNotes').val(), deliveryDate: $('#deliveryDate').val(), fileName: fileNames, carrier: carrier};
+                    allEntities.entities.forEach(function(entity){
 
-                    podList.splice(index, 1, pod);
+                        if(customerID == entity.id){
 
-                    var orderData = {podList: podList};
-
-                    $.ajax({
-                        url: '<?php echo API_HOST_URL . "/orders/"; ?>' + orderID,
-                        type: 'PUT',
-                        data: JSON.stringify(orderData),
-                        contentType: "application/json",
-                        async: false,
-                        success: function(){
-
-                            alert("POD Successfully Uploaded.");
-                            var podListTable = $('#pod-list-table').DataTable();
-                            podListTable.ajax.reload();
-
-                            // Clear Form
-                            $('#orderID').val('');
-                            $('#index').val('');
-                            $('#customerID').val('');
-                            $('#vinNumber').val('');
-                            $('#deliveryDate').val('');
-                            $('#podCarrierID').val('');
-                            $('#podNotes').val('');
-                            $("#uploadPOD").modal('hide');
-
-                        },
-                        error: function(error){
-                            alert("Unable to Save POD List to Orders.");
+                            customerName = entity.name;
                         }
                     });
 
+                    var size = data.needsDataPoints[3].length + ' x ' + data.needsDataPoints[4].width + ' x ' + data.needsDataPoints[0].height;
+
+                    var podDataJSON = {
+                        podFormType: customerName,
+                        unitNumber: pod.unitNumber, vinNumber: pod.vinNumber, trailerProNumber: pod.truckProNumber, year: pod.trailerYear,
+                        size: size, type: data.needsDataPoints[5].type, door: data.needsDataPoints[1].door, decals: data.needsDataPoints[13].decals,
+                        originationAddress: data.originationAddress, originationCity: data.originationCity, originationState: data.originationState, originationZipcode: data.originationZip,
+                        destinationAddress: data.destinationAddress, destinationCity: data.destinationCity, destinationState: data.destinationState, destinationZipcode: data.destinationZip,
+                        pickupLocation: data.pickupInformation.pickupLocation, pickupContact: data.pickupInformation.contactPerson,
+                        pickupPhoneNumber: data.pickupInformation.phoneNumber, pickupHours: data.pickupInformation.hoursOfOperation,
+                        deliveryLocation: data.deliveryInformation.deliveryLocation, deliveryContact: data.deliveryInformation.contactPerson,
+                        deliveryPhoneNumber: data.deliveryInformation.phoneNumber, deliveryHours: data.deliveryInformation.hoursOfOperation
+                    };
+
+                    var podURL = '<?php echo HTTP_HOST . '/pod_form_api'; ?>';
+
+                    $.ajax({
+                        url: podURL,
+                        type: "POST",
+                        contentType: "application/json",
+                        responseType: "arraybuffer",
+                        data: JSON.stringify(podDataJSON),
+                        success: function(data){
+
+                                    var iframe = $('#download-pdf-container');
+                                    if (iframe.length == 0) {
+                                    iframe = $('<iframe id="download=pdf-container" style="visibility:hidden;"></iframe>').appendTo('body');
+                                    }	  
+                                                    iframe.attr('src', '<?php echo HTTP_HOST; ?>/download-pdf/' + data);
+
+                        },
+                        error: function(data){
+                            console.log("Could not get POD Form.");
+                        }
+                    });
                 },
-                error: function(error){
-                    alert("Unable to Upload POD File.");
+                error: function(data){
+                    console.log("Could not get Order Information.");
                 }
             });
-        }
-        else{
-            alert("You must select a file to upload.");
-        }
-    }
 
-    function savePODInfo(){
+        } );
 
-        var carrierID = $('#podCarrierID').val();
-        var carrier = "";
+        $('#pod-list-table tbody').on('click', 'button.trailer-data-missing', function () {
 
-        allEntities.entities.forEach(function(entity){
+            $("#trailer-data-missing").modal('show');
+        } );
 
-            if(carrierID == entity.id){
+        $('#pod-list-table tbody').on('click', 'button.upload-pod', function () {
 
-                carrier = entity.name;
-            }
-        });
+            var podTable = $("#pod-list-table").DataTable();
+            var data = podTable.row( $(this).parents('tr') ).data();
+            var podList = podTable.ajax.json().orders[0].podList;
+            var index = podList.indexOf(data);
+            var vinNumber = data.vinNumber;
 
-        var podTable = $("#pod-list-table").DataTable();
-        var podList = podTable.ajax.json().orders[0].podList;
-        var index = $('#index').val();
-        var orderID = $('#orderID').val();
-        var fileName = $('#fileName').val();
+            var orderDetailsTable = $("#order-details-table").DataTable();
+            var orderDetails = orderDetailsTable.ajax.json();
 
-        var data = podList[index];
-        var unitNumber = data.unitNumber;
-        var truckProNumber = data.truckProNumber;
-        var trailerYear = data.trailerYear;
-        var trailerNotes = data.trailerNotes;
+            var orderID = orderDetails.order_details[0].orderID;
+            var customerID = orderDetails.order_details[0].orders[0].customerID;
 
-        var pod = {vinNumber: $('#vinNumber').val(), notes: $('#podNotes').val(), deliveryDate: $('#deliveryDate').val(), fileName: fileName, carrier: carrier,
-        unitNumber: unitNumber, truckProNumber: truckProNumber, trailerYear: trailerYear, trailerNotes: trailerNotes};
-
-        podList.splice(index, 1, pod);
-
-        var orderData = {podList: podList};
-
-        $.ajax({
-            url: '<?php echo API_HOST_URL . "/orders/"; ?>' + orderID,
-            type: 'PUT',
-            data: JSON.stringify(orderData),
-            contentType: "application/json",
-            async: false,
-            success: function(){
-
-                alert("POD Info Successfully Saved.");
-                var podListTable = $('#pod-list-table').DataTable();
-                podListTable.ajax.reload();
-
-                // Clear Form
-                $('#orderID').val('');
-                $('#index').val('');
-                $('#customerID').val('');
-                $('#vinNumber').val('');
-                $('#deliveryDate').val('');
-                $('#podCarrierID').val('');
-                $('#podNotes').val('');
-                $("#uploadPOD").modal('hide');
-
-            },
-            error: function(error){
-                alert("Unable to Save POD List to Orders.");
-            }
-        });
-
-    }
-
-    $('#blnReplacePOD').change(function(){
-        if($(this).is(":checked")){
+            $('#vinNumber').val(vinNumber);
+            $('#index').val(index);
+            $('#orderID').val(orderID);
+            $('#customerID').val(customerID);
+            $('#filePOD').val('');
+            $('#deliveryDate').val('');
+            $('#podNotes').val('');
+            $('#fileName').val('');
+            $('#viewPOD').hide();
+            $('#replacePOD').hide();
             $('#sectionPOD').show();
-        }
-        else{
+            $('#blnReplacePOD').attr('checked', false);
+            $("#uploadPOD").modal('show');
+        } );
+
+        $('#pod-list-table tbody').on('click', 'button.view-edit-pod', function () {
+
+            var podTable = $("#pod-list-table").DataTable();
+            var data = podTable.row( $(this).parents('tr') ).data();
+            var podList = podTable.ajax.json().orders[0].podList;
+            var index = podList.indexOf(data);
+            var vinNumber = data.vinNumber;
+
+            var podNotes = data.notes;
+            var deliveryDate = data.deliveryDate;
+            var fileName = data.fileName;
+
+            var carrierID = 0;
+            var carrier = data.carrier;
+
+            allEntities.entities.forEach(function(entity){
+
+                if(carrier == entity.name){
+
+                    carrierID = entity.id;
+                }
+            });
+
+            var orderDetailsTable = $("#order-details-table").DataTable();
+            var orderDetails = orderDetailsTable.ajax.json();
+
+            var orderID = orderDetails.order_details[0].orderID;
+            var customerID = orderDetails.order_details[0].orders[0].customerID;
+
+            $('#vinNumber').val(vinNumber);
+            $('#index').val(index);
+            $('#orderID').val(orderID);
+            $('#customerID').val(customerID);
+            $('#filePOD').val('');
+            $('#deliveryDate').val(deliveryDate);
+            $('#podNotes').val(podNotes);
+            $('#podCarrierID').val(carrierID);
+            $('#fileName').val(fileName);
+
+            $('#viewPOD').show();
+            $('#replacePOD').show();
             $('#sectionPOD').hide();
+            $('#blnReplacePOD').attr('checked', false);
+            $("#uploadPOD").modal('show');
+        } );
+
+        $('#pod-list-table tbody').on('click', 'button.edit-trailer-data', function () {
+
+            var orderDetailsTable = $("#order-details-table").DataTable();
+            var orderDetails = orderDetailsTable.ajax.json();
+
+            var orderID = orderDetails.order_details[0].orderID;
+            var customerID = orderDetails.order_details[0].orders[0].customerID;
+
+            var podTable = $("#pod-list-table").DataTable();
+            var data = podTable.row( $(this).parents('tr') ).data();
+            var podList = podTable.ajax.json().orders[0].podList;
+            var carrierIDs = podTable.ajax.json().orders[0].carrierIDs;
+            var index = podList.indexOf(data);
+            var vinNumber = data.vinNumber;
+
+            var unitNumber = data.unitNumber;
+            var truckProNumber = data.truckProNumber;
+            var trailerYear = data.trailerYear;
+            var trailerNotes = data.trailerNotes;
+
+            var entityName = "";
+
+            for(var i = 0; i < carrierIDs.length; i++){
+
+                if(i > 0) entityName += ", ";
+
+                allEntities.entities.forEach(function(entity){
+
+                    if(carrierIDs[i].carrierID == entity.id){
+
+                        entityName += entity.name;
+                    }
+                });
+
+            }
+
+
+            var url = '<?php echo API_HOST_URL; ?>';
+            url += '/order_details?filter=orderID,eq,' + orderID + '&transform=1';
+
+            $.ajax({
+               url: url,
+               type: "GET",
+               contentType: "application/json",
+               success: function(json){
+
+                    var order_details = json.order_details;
+                    var earliestPickup = order_details[0].pickupDate;
+                    var latestDelivery = order_details[0].deliveryDate;
+
+                    for(var i = 1; i < order_details.length; i++){
+
+                        var newPickupDate = new Date(order_details[i].pickupDate);
+                        var newDeliveryDate = new Date(order_details[i].deliveryDate);
+
+                        var currentPickupDate = new Date(earliestPickup);
+                        var currentDeliveryDate = new Date(latestDelivery);
+
+                        if (newPickupDate.getTime() < currentPickupDate.getTime()) {
+                            earliestPickup = order_details[i].pickupDate;
+                        }
+
+                        if (newDeliveryDate.getTime() > currentDeliveryDate.getTime()) {
+                            latestDelivery = order_details[i].deliveryDate;
+                        }
+                    }
+
+
+                    var pickupDate = earliestPickup;
+                    var dropoffDate = latestDelivery;
+
+                    $('#pickupDate').val(pickupDate);
+                    $('#dropOffDate').val(dropoffDate);
+               }
+            });
+
+
+            $('#trailerVIN').val(vinNumber);
+            $('#index').val(index);
+            $('#orderID').val(orderID);
+            $('#customerID').val(customerID);
+            $('#trailerCarrier').val(entityName);
+
+            $('#unitNumber').val(unitNumber);
+            $('#truckProNumber').val(truckProNumber);
+            $('#year').val(trailerYear);
+            $('#trailerNotes').val(trailerNotes);
+
+            $("#editTrailerData").modal('show');
+        } );
+
+        function uploadPOD(){
+
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth()+1; //January is 0!
+            var yyyy = today.getFullYear();
+            var hours = today.getHours();
+            var min = today.getMinutes();
+            var sec = today.getSeconds();
+
+            if(dd<10) {
+                dd='0'+dd;
+            }
+
+            if(mm<10) {
+                mm='0'+mm;
+            }
+
+            if(hours<10) {
+                hours='0'+hours;
+            }
+
+            if(min<10) {
+                min='0'+min;
+            }
+
+            if(sec<10) {
+                sec='0'+sec;
+            }
+
+            today = mm+'/'+dd+'/'+yyyy;
+            today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+
+            var carrierID = $('#podCarrierID').val();
+            var carrier = "";
+
+            allEntities.entities.forEach(function(entity){
+
+                if(carrierID == entity.id){
+
+                    carrier = entity.name;
+                }
+            });
+
+            var formData = new FormData();
+            var fileData = $('#filePOD')[0].files[0];
+            formData.append('entityID', $("#customerID").val());
+            formData.append('name', $("#vinNumber").val());
+            formData.append('fileupload', fileData);
+
+            var url = '<?php echo HTTP_HOST."/uploaddocument" ?>';
+            var type = "POST";
+
+            if(fileData != undefined){
+                $.ajax({
+                    url : url,
+                    type : 'POST',
+                    data : formData,
+                    processData: false,  // tell jQuery not to process the data
+                    contentType: false,  // tell jQuery not to set contentType
+                    success : function(data) {
+                        var files = $('#filePOD').prop("files");
+                        var fileNames = $.map(files, function(val) { return val.name; }).join(',');
+                        var podTable = $("#pod-list-table").DataTable();
+                        var podList = podTable.ajax.json().orders[0].podList;
+                        var index = $('#index').val();
+                        var orderID = $('#orderID').val();
+
+                        var pod = {vinNumber: $('#vinNumber').val(), notes: $('#podNotes').val(), deliveryDate: $('#deliveryDate').val(), fileName: fileNames, carrier: carrier};
+
+                        podList.splice(index, 1, pod);
+
+                        var orderData = {podList: podList};
+
+                        $.ajax({
+                            url: '<?php echo API_HOST_URL . "/orders/"; ?>' + orderID,
+                            type: 'PUT',
+                            data: JSON.stringify(orderData),
+                            contentType: "application/json",
+                            async: false,
+                            success: function(){
+
+                                alert("POD Successfully Uploaded.");
+                                var podListTable = $('#pod-list-table').DataTable();
+                                podListTable.ajax.reload();
+
+                                // Clear Form
+                                $('#orderID').val('');
+                                $('#index').val('');
+                                $('#customerID').val('');
+                                $('#vinNumber').val('');
+                                $('#deliveryDate').val('');
+                                $('#podCarrierID').val('');
+                                $('#podNotes').val('');
+                                $("#uploadPOD").modal('hide');
+
+                            },
+                            error: function(error){
+                                alert("Unable to Save POD List to Orders.");
+                            }
+                        });
+
+                    },
+                    error: function(error){
+                        alert("Unable to Upload POD File.");
+                    }
+                });
+            }
+            else{
+                alert("You must select a file to upload.");
+            }
         }
-    });
 
+        function savePODInfo(){
 
-    $("#btnUploadPOD").unbind('click').bind('click',function(){ // Doing it like this because it was double posting document giving me duplicates
+            var carrierID = $('#podCarrierID').val();
+            var carrier = "";
 
-            console.log($('#fileName').val());
+            allEntities.entities.forEach(function(entity){
 
-        // fileName will tell us if we're in Upload Mode or View/Edit Mode
-        if($('#fileName').val() == ""){
-            // We are in Upload mode,
-            // Lets upload POD
-            uploadPOD();
+                if(carrierID == entity.id){
+
+                    carrier = entity.name;
+                }
+            });
+
+        var orderHistoryTable = $('#order-history-table').DataTable();
+            var podTable = $("#pod-list-table").DataTable();
+            var podList = podTable.ajax.json().orders[0].podList;
+            var index = $('#index').val();
+            var orderID = $('#orderID').val();
+            var fileName = $('#fileName').val();
+
+            var data = podList[index];
+            var unitNumber = data.unitNumber;
+            var truckProNumber = data.truckProNumber;
+            var trailerYear = data.trailerYear;
+            var trailerNotes = data.trailerNotes;
+            
+            var order_statuses = [];
+
+            if(data.order_statuses != null) order_statuses = data.order_statuses;
+
+            var pod = {vinNumber: $('#vinNumber').val(), notes: $('#podNotes').val(), deliveryDate: $('#deliveryDate').val(), fileName: fileName, carrier: carrier,
+            unitNumber: unitNumber, truckProNumber: truckProNumber, trailerYear: trailerYear, trailerNotes: trailerNotes, order_statuses: order_statuses};
+
+            podList.splice(index, 1, pod);
+
+            var orderData = {podList: podList};
+
+            $.ajax({
+                url: '<?php echo API_HOST_URL . "/orders/"; ?>' + orderID,
+                type: 'PUT',
+                data: JSON.stringify(orderData),
+                contentType: "application/json",
+                async: false,
+                success: function(){
+
+                    alert("POD Info Successfully Saved.");
+                    var podListTable = $('#pod-list-table').DataTable();
+                    orderHistoryTable.ajax.reload();
+                    podListTable.ajax.reload();
+
+                    // Clear Form
+                    $('#orderID').val('');
+                    $('#index').val('');
+                    $('#customerID').val('');
+                    $('#vinNumber').val('');
+                    $('#deliveryDate').val('');
+                    $('#podCarrierID').val('');
+                    $('#podNotes').val('');
+                    $("#uploadPOD").modal('hide');
+
+                },
+                error: function(error){
+                    alert("Unable to Save POD List to Orders.");
+                }
+            });
+
         }
-        else{
-            // We are in View/Edit Mode
-            // Now we need to know if we need to replace the POD
-            if($('#blnReplacePOD').is(":checked")){
-                // We need to replace the POD
-                // So we upload
+
+        $('#blnReplacePOD').change(function(){
+            if($(this).is(":checked")){
+                $('#sectionPOD').show();
+            }
+            else{
+                $('#sectionPOD').hide();
+            }
+        });
+
+        $("#btnUploadPOD").unbind('click').bind('click',function(){ // Doing it like this because it was double posting document giving me duplicates
+
+                console.log($('#fileName').val());
+
+            // fileName will tell us if we're in Upload Mode or View/Edit Mode
+            if($('#fileName').val() == ""){
+                // We are in Upload mode,
+                // Lets upload POD
                 uploadPOD();
             }
             else{
-                // Otherwise,
-                // We save the POD Info
-                savePODInfo();
+                // We are in View/Edit Mode
+                // Now we need to know if we need to replace the POD
+                if($('#blnReplacePOD').is(":checked")){
+                    // We need to replace the POD
+                    // So we upload
+                    uploadPOD();
+                }
+                else{
+                    // Otherwise,
+                    // We save the POD Info
+                    savePODInfo();
+                }
             }
-        }
-    });
+        });
 
     });
  </script>
