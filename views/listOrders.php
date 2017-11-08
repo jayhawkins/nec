@@ -1515,12 +1515,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         $("#saveOrderStatus").prop("disabled", true);
 
         var today = new Date();
+        var tzName = today.toLocaleString('en', {timeZoneName:'short'}).split(' ').pop();
         var dd = today.getDate();
         var mm = today.getMonth()+1; //January is 0!
         var yyyy = today.getFullYear();
         var hours = today.getHours();
         var min = today.getMinutes();
         var sec = today.getSeconds();
+        var tod = "";
 
         if(dd<10) {
             dd='0'+dd;
@@ -1529,10 +1531,30 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         if(mm<10) {
             mm='0'+mm;
         }
+        
+        if(hours < 12){
+            tod = "a.m.";
+            
+            if(hours == 0){
+                hours = "12";
+            }
+            else if(hours<10) {
 
-        if(hours<10) {
-            hours='0'+hours;
+                hours='0'+hours;
+            }
         }
+        else{
+            hours = hours - 12;
+            tod = "p.m.";
+            
+            if(hours == 0){
+                hours = "12";
+            }
+            else if(hours<10) {
+
+                hours='0'+hours;
+            }
+        }        
 
         if(min<10) {
             min='0'+min;
@@ -1542,7 +1564,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             sec='0'+sec;
         }
 
-        today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+        today = mm+"-"+dd+"-"+yyyy+" "+hours+":"+min+" "+tod+" "+tzName;
         
         var podTable = $("#pod-list-table").DataTable();
         var podList = podTable.ajax.json().orders[0].podList;
@@ -1600,57 +1622,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
         var pod = {vinNumber: vinNumber, notes: podNotes, deliveryDate: deliveryDate, fileName: fileName, carrier: podCarrier,
         unitNumber: unitNumber, truckProNumber: truckProNumber, trailerYear: trailerYear, trailerNotes: trailerNotes, order_statuses: order_statuses};
-    
         
-
         var emailData = {carrierID: carrierID, customerID: customerID, orderNumber: orderNumber};
         
-/*
-        $.ajax({
-           url: '<?php echo API_HOST_URL . "/order_statuses"; ?>',
-           type: "POST",
-           data: JSON.stringify(orderStatus),
-           contentType: "application/json",
-           async: false,
-           success: function(data){
-
-                $.ajax({
-                    url: '<?php echo HTTP_HOST; ?>' + '/sendorderstatusnotification',
-                    type: "POST",
-                    data: JSON.stringify(emailData),
-                    contentType: "application/json",
-                    async:false,
-                    success: function(data){
-                        alert(data);
-                        $("#id").val('');
-                        $("#city").val('');
-                        $("#state").val('');
-                        $("#orderStatus").val('');
-                        $("#statusNotes").val('');
-                        $("#carrierID").val('');
-
-                        $("#saveOrderStatus").html("Save");
-                        $("#saveOrderStatus").prop("disabled", false);
-                        orderHistoryTable.ajax.reload();
-                        $("#addOrderStatus").modal('hide');
-                    },
-                    error: function(error){
-                        alert("Unable to send notification about status change.");
-                        $("#saveOrderStatus").html("Save");
-                        $("#saveOrderStatus").prop("disabled", false);
-                    }
-                });
-
-           },
-           error: function() {
-              alert("There Was An Error Saving the Status");
-                $("#saveOrderStatus").html("Save");
-                $("#saveOrderStatus").prop("disabled", false);
-           }
-        });
-*/
-   
-   
             podList.splice(podIndex, 1, pod);
 
             var orderData = {podList: podList};
@@ -1699,6 +1673,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                      $("#saveOrderStatus").prop("disabled", false);
                 }
             });
+            
+               
+               
 
     }
 
