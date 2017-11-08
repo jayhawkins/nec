@@ -613,7 +613,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     "mRender": function (o) {
 
                         var entityName = '';
-                        var entityID = o.entityID;
+                        var entityID = o.customer_needs_commit[0].entityID;
 
                         allEntities.entities.forEach(function(entity){
 
@@ -626,8 +626,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         return entityName;
                     }, visible: true
                 },
-                { data: "id", visible: false },
-                { data: "rootCustomerNeedsID", visible: false},
+                { data: "id", visible: true },
+                { data: "rootCustomerNeedsID", visible: true},
                 { data: "entityID", visible: false },
                 { data: "qty" },
                 { data: "customer_needs_commit[0].pickupDate" },
