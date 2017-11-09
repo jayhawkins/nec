@@ -9,6 +9,7 @@
     <![endif]-->
     <link rel="stylesheet" href="vendor/select2/select2.css">
     <link rel="stylesheet" href="vendor/select2/select2-bootstrap.css">
+    <link rel="stylesheet" href="vendor/font-awesome/css/font-awesome.min.css">
     <link rel="shortcut icon" href="img/favicon.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="">
@@ -30,7 +31,7 @@
                   var listitems = '';
                   var $select = $('#state');
                   $.each(data.states, function( index ){
-                     console.log(data.states[index].abbreviation);
+                     //console.log(data.states[index].abbreviation);
                      listitems += '<option value=' + data.states[index].abbreviation + '>' + data.states[index].name + '</option>';
                   });
                   $select.append(listitems);
@@ -211,12 +212,12 @@
                         </div>
                         <div class="row">
                             <div class="col-sm-4">
-                                <label for="rate">Password</label>
+                                <label>Password   <span  id="lblPassword" class="fa fa-info-circle"></span></label>
                                 <div class="form-group">
                                   <input type="password" id="password" name="password" class="form-control" placeholder="*Password"
                                          data-parsley-trigger="change"
                                          data-parsley-minlength="6"
-                                         required="required" />
+                                         required="required" title=""/>
                                 </div>
                             </div>
                             <div class="col-sm-4">
@@ -289,6 +290,20 @@
 $(function() {
     //$( "#state" ).select2();
     loadStates();
+    $('#lblPassword')
+            .tooltip(
+            {
+                html: true,
+                title: "Password requirements: <br>" +
+                    "Minimum 8 characters <br>" +
+                    "Maximum of 32 characters <br>" +
+                    "Contains one numeric character <br>" +
+                    "Contains one special character <br> (! @ # * >) <br>" +
+                    "Cannot contain spaces", 
+                placement: "right",
+                trigger: "click"
+            }
+                    );
 });
 </script>
 
