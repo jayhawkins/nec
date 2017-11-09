@@ -56,7 +56,7 @@
          function verifyPassword(){
             var password = $('#password').val();
             var checkNumber = new RegExp("\d");
-            var checkWhitespace = new RegExp("\s");
+            var checkWhitespace = new RegExp(" ");
             
             if(password.length < 8 || password.length > 32) return false;
             else if(!checkNumber.test(password)) return false;
