@@ -41,6 +41,30 @@
                }
             });
          }
+         
+         function checkSpecialCharacter(password){
+            var specialChars = "!@#*>";
+            
+            for(var i = 0; i < specialChars.length; i++){
+                if(password.indexOf(specialChars[i]) > -1){
+                    return true;
+                }
+            }
+            return false;
+         }
+         
+         function verifyPassword(){
+            var password = $('#password').val();
+            var checkNumber = new RegExp("\d");
+            var checkWhitespace = new RegExp("\s");
+            
+            if(password.length < 8 || password.length > 32) return false;
+            else if(!checkNumber.test(password)) return false;
+            else if(checkWhitespace.test(password)) return false;
+            else if(!checkSpecialCharacter(password)) return false;
+            
+            return true;
+         }
 
          function verifyInput() {
              var passValidation = false;
@@ -55,7 +79,14 @@
                      //$("#dialogMessage").text('Email Already Exists in the System!');
                      //$("#dialog").dialog("open");
                    } else {
-                     passValidation = true;
+                       if(!verifyPassword()){
+                            alert('The password does not meet the password policy requirements.');
+                            //$("#dialogMessage").text('The password does not meet the password policy requirements.');
+                            //$("#dialog").dialog("open");
+                       }
+                       else{
+                            passValidation = true;
+                       }
                    }
                 },
                 error: function() {
