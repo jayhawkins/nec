@@ -7,6 +7,7 @@
     <!--[if IE 9]>
         <link href="css/application-ie9-part2.css" rel="stylesheet">
     <![endif]-->
+    <link rel="stylesheet" href="<?php echo HTTP_HOST ?>/vendor/font-awesome/css/font-awesome.min.css">
     <link rel="shortcut icon" href="<?php echo HTTP_HOST ?>/img/favicon.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="">
@@ -54,9 +55,11 @@
                         <form id="formLogin" class="login-form mt-lg" method="POST" action="/resetpassword" onsubmit="return verifyInput();">
                             <input type="hidden" id="username" name="username" value="<?php echo $id ?>" />
                             <div class="form-group">
+                                <label>Password   <span  id="lblPassword" class="fa fa-info-circle"></span></label>
                                 <input type="text" class="form-control" id="password" name="password" placeholder="Password" required="required" />
                             </div>
                             <div class="form-group">
+                                <label for="rate">Confirm Password</label>
                                 <input type="text" class="form-control" id="passwordConfirm" name="passwordConfirm" placeholder="Confirm Password" data-parsley-equalto="#password" required="required" />
                             </div>
                             <div class="clearfix">
@@ -108,5 +111,26 @@
 <!-- page specific libs -->
 <script src="<?php echo HTTP_HOST; ?>/vendor/parsleyjs/dist/parsley.min.js"></script>
 <!-- page specific js -->
+
+
+<script>
+$(function() {
+    $('#lblPassword')
+            .tooltip(
+            {
+                html: true,
+                title: "Password requirements: <br>" +
+                    "Minimum 8 characters <br>" +
+                    "Maximum of 32 characters <br>" +
+                    "Contains one numeric character <br>" +
+                    "Contains one special character <br> (! @ # * >) <br>" +
+                    "Cannot contain spaces", 
+                placement: "right",
+                trigger: "click"
+            }
+                    );
+});
+</script>
+
 </body>
 </html>
