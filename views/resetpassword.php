@@ -39,9 +39,6 @@
              var password = $('#password').val();
              var password2 = $('#passwordConfirm').val();
              
-             console.log("\"" + password + "\"");
-             console.log("\"" + password.trim() + "\"");
-             
              $('#password').val(password.trim());
              $('#passwordConfirm').val(password2.trim());
          }

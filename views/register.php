@@ -60,10 +60,7 @@
              
              var password = $('#password').val();
              var password2 = $('#password2').val();
-             
-             console.log("\"" + password + "\"");
-             console.log("\"" + password.trim() + "\"");
-             
+                          
              $('#password').val(password.trim());
              $('#password2').val(password2.trim());
          }
