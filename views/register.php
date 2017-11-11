@@ -42,31 +42,34 @@
             });
          }
          
-         function checkSpecialCharacter(password){
-            var specialChars = "!@#*>";
-            
-            for(var i = 0; i < specialChars.length; i++){
-                if(password.indexOf(specialChars[i]) > -1){
-                    return true;
-                }
-            }
-            return false;
-         }
-         
          function verifyPassword(){
             var password = $('#password').val();
-            var checkNumber = new RegExp("\d");
-            var checkWhitespace = new RegExp(" ");
+            var checkNumber = new RegExp("\\d");
+            var checkWhitespace = new RegExp("\\s");
+            var searchSpecialChars = new RegExp("[-!@#$%^&*()_+|~=`{}\\[\\]':\";<>?,.\\/]");
             
             if(password.length < 8 || password.length > 32) return false;
             else if(!checkNumber.test(password)) return false;
             else if(checkWhitespace.test(password)) return false;
-            else if(!checkSpecialCharacter(password)) return false;
+            else if(!searchSpecialChars.test(password)) return false;
             
             return true;
          }
+         
+         function trimPasswords(){
+             
+             var password = $('#password').val();
+             var password2 = $('#password2').val();
+             
+             console.log("\"" + password + "\"");
+             console.log("\"" + password.trim() + "\"");
+             
+             $('#password').val(password.trim());
+             $('#password2').val(password2.trim());
+         }
 
-         function verifyInput() {
+         function verifyInput() {             
+             trimPasswords();
              var passValidation = false;
              var url = '<?php echo API_HOST_URL . "/users?filter=username,eq,' + $('#email').val() + '&transform=1" ?>';
              $.ajax({
