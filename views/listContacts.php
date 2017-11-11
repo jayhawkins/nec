@@ -272,6 +272,7 @@ $contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?col
             columns: [
                 { data: "id", visible: false },
                 { data: "name" },
+                { data: "locations[0].id", visible: false },
                 { data: "locations[0].address1" },
                 { data: "locations[0].address2" },
                 { data: "locations[0].city" },
@@ -384,6 +385,7 @@ $contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?col
                  <tr>
                      <th>ID</th>
                      <th class="hidden-sm-down">Name</th>
+                     <th class="hidden-sm-down">Location ID</th>
                      <th class="hidden-sm-down">Address 1</th>
                      <th class="hidden-sm-down">Address 2</th>
                      <th class="hidden-sm-down">City</th>
