@@ -259,8 +259,54 @@ $contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?col
           //return passValidation;
       }
 
+      function loadBusinessTableAJAX(){
+          myApp.showPleaseWait();
+        var url = '<?php echo API_HOST_URL; ?>' + '/entities?include=locations&filter[0]=status,eq,Active&filter[1]=locations.status,eq,Active&filter[2]=locations.name,eq,Headquarters&transform=1';
+        var example_table = $('#business-datatable-table').DataTable({
+            retrieve: true,
+            processing: true,
+            ajax: {
+                url: url,
+                dataSrc: 'entities'
+            },
+            columns: [
+                { data: "id", visible: false },
+                { data: "name" },
+                { data: "locations[0].address1" },
+                { data: "locations[0].address2" },
+                { data: "locations[0].city" },
+                { data: "locations[0].state" },
+                { data: "locations[0].zip" },
+                {
+                    data: null,
+                    "bSortable": false,
+                    "mRender": function (o) {
+
+                        myApp.hidePleaseWait();
+
+                        var buttons = '<div class="pull-right text-nowrap">';
+                        buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-eye-open text\"></i> <span class=\"text\">View Contacts</span></button>';
+
+                        buttons += "</div>";
+                        return buttons;
+                    }
+                }
+            ]
+          });
+
+          example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
+
+          //To Reload The Ajax
+          //See DataTables.net for more information about the reload method
+          example_table.ajax.reload();
+
+    }
+
  </script>
 
+ <?php
+ if($_SESSION['entitytype'] != 0){
+ ?>
  <ol class="breadcrumb">
    <li>ADMIN</li>
    <li class="active">Contact Maintenance</li>
@@ -307,6 +353,104 @@ $contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?col
      </div>
  </section>
 
+ <?php
+ }
+ else{
+     ?>
+ <div id="business-list">
+ <ol class="breadcrumb">
+   <li>ADMIN</li>
+   <li class="active">Contact Maintenance</li>
+ </ol>
+ <section class="widget">
+     <header>
+         <h4><span class="fw-semi-bold">Businesses</span></h4>
+         <div class="widget-controls">
+             <!--<a data-widgster="expand" title="Expand" href="#"><i class="glyphicon glyphicon-chevron-up"></i></a>
+             <a data-widgster="collapse" title="Collapse" href="#"><i class="glyphicon glyphicon-chevron-down"></i></a>
+             <a data-widgster="close" title="Close" href="#"><i class="glyphicon glyphicon-remove"></i></a>-->
+         </div>
+     </header>
+     <div class="widget-body">
+         <!--p>
+             Column sorting, live search, pagination. Built with
+             <a href="http://www.datatables.net/" target="_blank">jQuery DataTables</a>
+         </p 
+         <button type="button" id="addContact" class="btn btn-primary pull-xs-right" data-target="#myModal">Add Contact</button>-->
+         <br /><br />
+         <div id="dataTable" class="mt">
+             <table id="business-datatable-table" class="table table-striped table-hover">
+                 <thead>
+                 <tr>
+                     <th>ID</th>
+                     <th class="hidden-sm-down">Name</th>
+                     <th class="hidden-sm-down">Address 1</th>
+                     <th class="hidden-sm-down">Address 2</th>
+                     <th class="hidden-sm-down">City</th>
+                     <th class="hidden-sm-down">State</th>
+                     <th class="hidden-sm-down">Zip Code</th>
+                     <th class="no-sort pull-right">&nbsp;</th>
+                 </tr>
+                 </thead>
+                 <tbody>
+                      <!-- loadTableAJAX() is what populates this area -->
+                 </tbody>
+             </table>
+         </div>
+     </div>
+ </section>
+ </div>
+ <div id="business-contacts" style="display: none;">
+ <ol class="breadcrumb">
+   <li>ADMIN</li>
+   <li class="active">Contact Maintenance</li>
+ </ol>
+ <section class="widget">
+     <header>
+         <h4><span class="fw-semi-bold">Contacts</span></h4>
+         <div class="widget-controls">
+             <!--<a data-widgster="expand" title="Expand" href="#"><i class="glyphicon glyphicon-chevron-up"></i></a>
+             <a data-widgster="collapse" title="Collapse" href="#"><i class="glyphicon glyphicon-chevron-down"></i></a>-->
+             <a data-widgster="close" title="Close" href="#"><i class="glyphicon glyphicon-remove"></i></a>
+         </div>
+     </header>
+     <div class="widget-body">
+         <!--p>
+             Column sorting, live search, pagination. Built with
+             <a href="http://www.datatables.net/" target="_blank">jQuery DataTables</a>
+         </p -->
+         <button type="button" id="addContact" class="btn btn-primary pull-xs-right" data-target="#myModal">Add Contact</button>
+         <br /><br />
+         <div id="dataTable" class="mt">
+             <table id="datatable-table" class="table table-striped table-hover">
+                 <thead>
+                 <tr>
+                     <th>ID</th>
+                     <th>Type ID</th>
+                     <th class="hidden-sm-down">Type</th>
+                     <th class="hidden-sm-down">First Name</th>
+                     <th class="hidden-sm-down">Last Name</th>
+                     <th class="hidden-sm-down">Title</th>
+                     <th class="hidden-sm-down">Email Address</th>
+                     <th class="hidden-sm-down">Primary Phone</th>
+                     <th class="no-sort">Secondary Phone</th>
+                     <th class="no-sort">Fax</th>
+                     <th class="no-sort">Contact Rating</th>
+                     <th class="no-sort pull-right">&nbsp;</th>
+                 </tr>
+                 </thead>
+                 <tbody>
+                      <!-- loadTableAJAX() is what populates this area -->
+                 </tbody>
+             </table>
+         </div>
+     </div>
+ </section>
+ </div>
+ <?php
+ }
+ ?>
+ 
  <!-- Modal -->
  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
    <div class="modal-dialog modal-lg" role="document">
@@ -485,6 +629,9 @@ $contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?col
       </div>
     </div>
 
+ <?php
+ if($_SESSION['entitytype'] != 0){
+ ?>
  <script>
 
     loadTableAJAX();
@@ -549,3 +696,16 @@ $contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?col
     } );
 
  </script>
+ <?php 
+ }
+ else{
+ ?>    
+<script>
+
+    loadBusinessTableAJAX();
+
+ </script>
+<?php     
+ }
+ 
+ ?>
