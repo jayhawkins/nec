@@ -20,33 +20,34 @@
          https://code.google.com/p/chromium/issues/detail?id=332189
          */
 
-         
-         function checkSpecialCharacter(password){
-            var specialChars = "!@#*>";
-            
-            for(var i = 0; i < specialChars.length; i++){
-                if(password.indexOf(specialChars[i]) > -1){
-                    return true;
-                }
-            }
-            return false;
-         }
-         
          function verifyPassword(){
             var password = $('#password').val();
-            var checkNumber = new RegExp("\d");
-            var checkWhitespace = new RegExp(" ");
+            var checkNumber = new RegExp("\\d");
+            var checkWhitespace = new RegExp("\\s");
+            var searchSpecialChars = new RegExp("[-!@#$%^&*()_+|~=`{}\\[\\]':\";<>?,.\\/]");
             
             if(password.length < 8 || password.length > 32) return false;
             else if(!checkNumber.test(password)) return false;
             else if(checkWhitespace.test(password)) return false;
-            else if(!checkSpecialCharacter(password)) return false;
+            else if(!searchSpecialChars.test(password)) return false;
             
             return true;
          }
 
-         function verifyInput() {
+         function trimPasswords(){
+             
+             var password = $('#password').val();
+             var password2 = $('#passwordConfirm').val();
+             
+             console.log("\"" + password + "\"");
+             console.log("\"" + password.trim() + "\"");
+             
+             $('#password').val(password.trim());
+             $('#passwordConfirm').val(password2.trim());
+         }
 
+         function verifyInput() {
+             trimPasswords();
              if ( $('#formLogin').parsley().validate() ) {
                     if(!verifyPassword()){
                             alert('The password does not meet the password policy requirements.');
