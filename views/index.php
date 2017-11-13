@@ -1427,10 +1427,16 @@ $(function() {
 
    if ( entityTypeID == 1 ) { // Customer
        cnresult = cnresult['carrier_needs'];
+       var originationPlotColor = "blue";
+       var list = "listAvailability";
    } else if ( entityTypeID == 2 ) { // Carrier
        cnresult = cnresult['customer_needs'];
+       var originationPlotColor = "red";
+       var list = "listNeeds";
    } else {
        cnresult = cnresult['customer_needs'];
+       var originationPlotColor = "green";
+       var list = "listOrders";
    }
 
    // We need a setTimeout (~200ms) in order to allow the UI to be refreshed for the message to be shown
@@ -1455,17 +1461,25 @@ $(function() {
                    // Assign position
                    plot.latitude = parseFloat(value.originationLat);
                    plot.longitude = parseFloat(value.originationLng);
-                   plot.size = 22;
+                   plot.size = 10;
                    plot.type = "circle";
+                   plot.value = "H";
                    // Assign some information inside the tooltip
                    plot.tooltip = {
                        content: "<span style='font-weight:bold;'>" +
-                                   value.originationCity +
+                                   value.originationCity + ", " + value.originationState +
+                                   "<br />" +
+                                   value.destinationCity + ", " + value.destinationState +
+                                   "<br /># of Trailers: " +
+                                   value.qty +
+                                   "<br />" +
+                                   formatDate(new Date(value.availableDate)) +
+                                   "<br />Click for more details" +
                                 "</span>"
                    };
 
                    plot.text = {
-                        content: value.qty,
+                        //content: qty,
                         position: "inner",
                         attrs: {
                             "font-size": 16,
@@ -1474,9 +1488,17 @@ $(function() {
                         }
                    };
 
+                   plot.eventHandlers = {
+                        click: function() {
+                                ajaxFormCall(list)
+                        }
+                   };
+
                    // Assign the background color randomize from a scale
                    plot.attrs = {
-                       fill: plotsColors(Math.random())
+                       //fill: plotsColors(Math.random())
+                       fill: originationPlotColor,
+                       cursor: "pointer"
                    };
 
                    // Set plot element to array
@@ -1487,8 +1509,8 @@ $(function() {
                    // Assign position
                    plot.latitude = parseFloat(value.destinationLat);
                    plot.longitude = parseFloat(value.destinationLng);
-                   plot.size = 22;
-                   plot.type = "square";
+                   plot.size = 3;
+                   plot.type = "";
                    // Assign some information inside the tooltip
                    plot.tooltip = {
                        content: "<span style='font-weight:bold;'>" +
@@ -1497,7 +1519,7 @@ $(function() {
                    };
 
                    plot.text = {
-                        content: value.qty,
+                        //content: value.qty,
                         position: "inner",
                         attrs: {
                             "font-size": 16,
@@ -1508,7 +1530,8 @@ $(function() {
 
                    // Assign the background color randomize from a scale
                    plot.attrs = {
-                       fill: plotsColors(Math.random())
+                       //fill: plotsColors(Math.random())
+                       fill: "#fff"
                    };
 
                    // Set plot element to array
@@ -1587,7 +1610,7 @@ $(function() {
                });
            });
 
-           var plotsColors = chroma.scale("Reds");
+           var plotsColors = chroma.scale("Oranges");
            $.each(orders, function (index, value) {
                    //console.log(values);
                    // Check if we have the GPS position of the element
@@ -1598,17 +1621,23 @@ $(function() {
                        // Assign position
                        plot.latitude = parseFloat(value.originationLat);
                        plot.longitude = parseFloat(value.originationLng);
-                       plot.size = 22;
+                       plot.size = 10;
                        plot.type = "circle";
                        // Assign some information inside the tooltip
                        plot.tooltip = {
                            content: "<span style='font-weight:bold;'>" +
-                                       value.originationCity +
+                                       value.originationCity + ", " + value.originationState +
+                                       "<br />" +
+                                       value.destinationCity + ", " + value.destinationState +
+                                       "<br />" +
+                                       value.qty +
+                                       "<br />" +
+                                       value.availableDate +
                                     "</span>"
                        };
 
                        plot.text = {
-                            content: value.qty,
+                            //content: value.qty,
                             position: "inner",
                             attrs: {
                                 "font-size": 16,
@@ -1619,7 +1648,8 @@ $(function() {
 
                        // Assign the background color randomize from a scale
                        plot.attrs = {
-                           fill: plotsColors(Math.random())
+                           //fill: plotsColors(Math.random())
+                           fill: "orange"
                        };
 
                        // Set plot element to array
@@ -1630,8 +1660,7 @@ $(function() {
                        // Assign position
                        plot.latitude = parseFloat(value.destinationLat);
                        plot.longitude = parseFloat(value.destinationLng);
-                       plot.size = 22;
-                       plot.type = "square";
+
                        // Assign some information inside the tooltip
                        plot.tooltip = {
                            content: "<span style='font-weight:bold;'>" +
@@ -1640,7 +1669,7 @@ $(function() {
                        };
 
                        plot.text = {
-                            content: value.qty,
+                            //content: value.qty,
                             position: "inner",
                             attrs: {
                                 "font-size": 16,
@@ -1662,7 +1691,7 @@ $(function() {
                        link.factor = 0.2;
                        link.between = [value.id+'-'+value.originationCity, value.id+'-'+value.destinationCity];
                        link.attrs = {
-                                    "stroke": "#a4e100",
+                                    "stroke": "#ffffff",
                                     "stroke-width": 2,
                                     "stroke-linecap": "round",
                                     "opacity": 0.6

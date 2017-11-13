@@ -444,7 +444,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
     function loadTableAJAX(committed) {
 
-        var baseUrl = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate&filter[]=id,in,' + committed + '&filter[]=status,eq,Available';
+        var baseUrl = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=customer_needs_commit,entities&columns=entities.name,id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.rateType,entities.negotiatedRate&filter[]=id,in,' + committed + '&filter[]=status,eq,Available';
 
         var url = baseUrl + '&order[]=entityID&order[]=rootCustomerNeedsID&order[]=availableDate,desc&transform=1';
 
@@ -481,6 +481,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 { data: "rootCustomerNeedsID", visible: false},
                 { data: "entityID", visible: false },
                 { data: "qty" },
+                { data: "rate", visible: false},
                 { data: "availableDate" },
                 {
                     data: null,
@@ -533,7 +534,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                           }
                       }
                       return newStatus;
-                    }, visible: false
+                    }
                 },
                 { data: "customer_needs_commit[0].id", visible: false },
                 { data: "customer_needs_commit[0].status", visible: false },
@@ -541,7 +542,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 { data: "customer_needs_commit[0].transportation_mode", visible: false },
                 { data: "entities[0].name", visible: false },
                 { data: "entities[0].rateType", visible: false },
-                { data: "rate", visible: false},
+                { data: "entities[0].negotiatedRate", visible: false},
                 {
                     data: null,
                     "bSortable": false,
@@ -550,7 +551,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         var status = o.status;
 
                         if(status == "Available"){
-                            buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"fa fa-thumbs-up text-info\"></i> <span class=\"text-info\">View Commits</span></button>';
+                            buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"fa fa-thumbs-up text\"></i> <span class=\"text\">View Commits</span></button>';
 
                         }
                         else{
@@ -562,7 +563,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 }
 
             ],
-            scrollX: true
+            //scrollX: true
           });
 
           example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
@@ -575,9 +576,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
     function loadCustomerNeedsCommitAJAX (id){
 
-        var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,availableDate,expirationDate,transportationMode,rate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.entityID,customer_needs_commit.status,customer_needs_commit.pickupDate,customer_needs_commit.deliveryDate,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate&filter=rootCustomerNeedsID,eq,' + id + '&satisfy=all&order[]=entityID&order[]=rootCustomerNeedsID&order[]=availableDate,desc&transform=1';
-
-        console.log(id);
+        var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,transportationMode,rate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.entityID,customer_needs_commit.status,customer_needs_commit.pickupDate,customer_needs_commit.deliveryDate,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate&filter=rootCustomerNeedsID,eq,' + id + '&satisfy=all&order[]=entityID&order[]=rootCustomerNeedsID&order[]=availableDate,desc&transform=1';
+        //console.log(id);
 
         if ( ! $.fn.DataTable.isDataTable( '#customer-needs-commit-table' ) ) {
 
@@ -624,7 +624,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         });
 
                         return entityName;
-                    }, visible: true
+                    }
                 },
                 { data: "id", visible: false },
                 { data: "rootCustomerNeedsID", visible: false},
@@ -651,7 +651,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         }
 
                         return input;
-                    }, visible: true
+                    }
                 },
                 { data: "originationAddress1", visible: false },
                 { data: "originationCity" },
@@ -691,7 +691,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                           }
                       }
                       return newStatus;
-                    }, visible: false
+                    }
                 },
                 { data: "customer_needs_commit[0].id", visible: false },
                 { data: "customer_needs_commit[0].status", visible: false },
@@ -720,7 +720,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     }
                 }
             ],
-            scrollX: true
+            //scrollX: true
           });
 
             //To Reload The Ajax
@@ -773,6 +773,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 { data: "rootCustomerNeedsID", visible: false},
                 { data: "entityID", visible: false },
                 { data: "qty" },
+                { data: "rate", visible: false},
                 { data: "availableDate" },
                 {
                     data: null,
@@ -824,7 +825,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                           }
                       }
                       return newStatus;
-                    }, visible: false
+                    }
                 },
                 { data: "customer_needs_commit[0].id", visible: false },
                 { data: "customer_needs_commit[0].status", visible: false },
@@ -832,7 +833,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 { data: "customer_needs_commit[0].transportation_mode", visible: false },
                 { data: "entities[0].name", visible: false },
                 { data: "entities[0].rateType", visible: false },
-                { data: "rate", visible: false},
+                { data: "entities[0].negotiatedRate", visible: false},
                 {
                     data: null,
                     "bSortable": false,
@@ -842,7 +843,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"fa fa-thumbs-up text-info\"></i> <span class=\"text-info\">View Commits</span></button>';
 
                         return buttons;
-                    }, visible: false
+                    }
                 }
 
             ]
@@ -998,7 +999,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                       contentType: "application/json",
                       async: false,
                       success: function(notification){
-                          
+
                       },
                       error: function() {
                          alert('Failed Sending Notifications! - Notify NEC of this failure.');
@@ -1078,11 +1079,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
  <section id="customer-needs" class="widget">
      <header>
          <h4><span class="fw-semi-bold">Available Transport</span></h4>
-         <!--<div class="widget-controls">
+         <div class="widget-controls">
              <a data-widgster="expand" title="Expand" href="#"><i class="glyphicon glyphicon-chevron-up"></i></a>
              <a data-widgster="collapse" title="Collapse" href="#"><i class="glyphicon glyphicon-chevron-down"></i></a>
              <a data-widgster="close" title="Close" href="#"><i class="glyphicon glyphicon-remove"></i></a>
-         </div>-->
+         </div>
      </header>
      <div class="widget-body">
          <br /><br />
@@ -1145,7 +1146,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
         <div class="mt">
             <h5><span class="fw-semi-bold">Selected Customer Transport</span></h5>
-            <table id="selected-customer-need" class="table table-striped table-hover" width="100%">
+            <table id="selected-customer-need" class="table table-striped table-hover">
                  <thead>
                  <tr>
                      <th></th>
@@ -2258,7 +2259,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         var selectedCustomerNeed = selectedTable.ajax.json().customer_needs[0];
 
         console.log(JSON.stringify(selectedCustomerNeed));
-        
+
         var commitTable = $('#customer-needs-commit-table').DataTable();
         var customer_needs = commitTable.ajax.json().customer_needs;
         var carrierIDs = new Array();
@@ -2473,7 +2474,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 	console.log("rootCustomerNeedsID:", rootCustomerNeedsID);
 	console.log("commitID:", commitID);
 	console.log("carrierRate:", carrierRate);
-        
+
         approveCommit(rootCustomerNeedsID, commitID, carrierRate);
     });
 
