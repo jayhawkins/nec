@@ -1626,14 +1626,15 @@ $(function() {
                        // Assign some information inside the tooltip
                        plot.tooltip = {
                            content: "<span style='font-weight:bold;'>" +
-                                       value.originationCity + ", " + value.originationState +
-                                       "<br />" +
-                                       value.destinationCity + ", " + value.destinationState +
-                                       "<br />" +
-                                       value.qty +
-                                       "<br />" +
-                                       value.availableDate +
-                                    "</span>"
+                                   value.originationCity + ", " + value.originationState +
+                                   "<br />" +
+                                   value.destinationCity + ", " + value.destinationState +
+                                   "<br /># of Trailers: " +
+                                   value.qty +
+                                   "<br />" +
+                                   formatDate(new Date(value.pickupDate)) +
+                                   "<br />Click for more details" +
+                                "</span>"
                        };
 
                        plot.text = {
