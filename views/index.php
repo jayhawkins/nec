@@ -512,7 +512,7 @@ if ($_SESSION['entityid'] > 0) {
  <?php
     }
 
-    if ( ($_SESSION['entityid'] == 0 ) ) {
+    if ( ($_SESSION['entityid'] == 0 ) || ($_SESSION['entitytype'] == 2) && in_array($_SESSION['usertypeid'], $ordersMenuAccessList)) { // Let NEC Admin and Carriers see it as Orders
  ?>
             <li>
                 <a href="#" onclick="ajaxFormCall('listOrders');">
