@@ -623,6 +623,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 { data: "rootCustomerNeedsID", visible: false},
                 { data: "entityID", visible: false },
                 { data: "qty" },
+                { data: "rate", visible: false },
                 {
                     data: null,
                     "bSortable": false,
@@ -704,8 +705,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 },
                 { data: "customer_needs_commit[0].id", visible: false },
                 { data: "customer_needs_commit[0].status", visible: false },
-                //{ data: "customer_needs_commit[0].rate", visible: false },
-
+                { data: "customer_needs_commit[0].rate", visible: false },
                 { data: "customer_needs_commit[0].transportation_mode", visible: false },
                 { data: "entities[0].name", visible: false },
                 { data: "entities[0].rateType", visible: false },
@@ -783,15 +783,22 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 { data: "entityID", visible: false },
                 { data: "qty" },
                 { data: "rate", visible: false},
-                { data: "availableDate" },
                 {
                     data: null,
                     "bSortable": true,
-                    "render": function(o) {
+                    "mRender": function (o) {
+                        var theDate = o.availableDate;
+                        return formatDate(new Date(theDate));
+                    }
+                },
+                {
+                    data: null,
+                    "bSortable": true,
+                    "mRender": function(o) {
                       if (o.expirationDate == "0000-00-00") {
                           return '';
                       } else {
-                          return o.expirationDate;
+                          return formatDate(new Date(o.expirationDate));
                       }
                     }
                 },
@@ -813,7 +820,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 {
                     data: null,
                     "bSortable": false,
-                    "render": function(o) {
+                    "mRender": function(o) {
 
                       var newStatus = o.status;
                       if (o.length > 0) {
@@ -1165,7 +1172,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                      <th>Root Customer Needs ID</th>
                      <th>Entity ID</th>
                      <th>Qty</th>
-                     <th>Rate</th>
                      <th>Available</th>
                      <th>Expires</th>
                      <th>Transport Mode</th>
@@ -1236,6 +1242,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     <th>Root Customer Needs ID</th>
                     <th>Entity ID</th>
                     <th>Qty</th>
+                    <th>Rate</th>
                     <th>Pick Up</th>
                     <th>Delivery</th>
                     <th>Transport Mode</th>
