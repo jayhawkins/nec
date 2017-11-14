@@ -856,7 +856,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     "mRender": function (o) {
                         var buttons = '';
 
-                        buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"fa fa-thumbs-up text-info\"></i> <span class=\"text-info\">View Commits</span></button>';
+                        //buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"fa fa-thumbs-up text-info\"></i> <span class=\"text-info\">View Commits</span></button>';
 
                         return buttons;
                     }
