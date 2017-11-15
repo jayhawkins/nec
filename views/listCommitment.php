@@ -540,15 +540,15 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     data: null,
                     "bSortable": false,
                     "mRender": function (o) {
-                        var buttons = '';
+
                         var status = o.status;
 
                         if(status == "Available"){
+                            var buttons = '<div class="pull-right text-nowrap">';
                             buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"fa fa-thumbs-up text\"></i> <span class=\"text\">View Commits</span></button>';
-
-                        }
-                        else{
-                            buttons += "Commitment Complete!" ;
+                            buttons += '</div>';
+                        } else {
+                            var buttons = "Commitment Complete!" ;
                         }
 
                         return buttons;
@@ -569,12 +569,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
     function loadCustomerNeedsCommitAJAX (id){
 
-        var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,transportationMode,rate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.entityID,customer_needs_commit.status,customer_needs_commit.pickupDate,customer_needs_commit.deliveryDate,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate&filter=rootCustomerNeedsID,eq,' + id + '&satisfy=all&order[]=entityID&order[]=rootCustomerNeedsID&order[]=availableDate,desc&transform=1';
-        //console.log(id);
+        var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,transportationMode,rate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.entityID,customer_needs_commit.status,customer_needs_commit.pickupDate,customer_needs_commit.deliveryDate,customer_needs_commit.rate,customer_needs_commit.transportation_mode,entities.name,entities.rateType,entities.negotiatedRate&filter=rootCustomerNeedsID,eq,' + id + '&satisfy=all&order[]=entityID&order[]=rootCustomerNeedsID&order[]=availableDate,desc&transform=1';
+        //alert(url);
 
         if ( ! $.fn.DataTable.isDataTable( '#customer-needs-commit-table' ) ) {
 
-            var example_table = $('#customer-needs-commit-table').DataTable({
+            var example_table_commit = $('#customer-needs-commit-table').DataTable({
             retrieve: true,
             processing: true,
             ajax: {
@@ -630,7 +630,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     "mRender": function (o) {
                         var theDate = o.customer_needs_commit[0].pickupDate;
                         return formatDate(new Date(theDate));
-                        //return theDate;
                     }
                 },
                 {
@@ -639,7 +638,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     "mRender": function (o) {
                         var theDate = o.customer_needs_commit[0].deliveryDate;
                         return formatDate(new Date(theDate));
-                        //return theDate;
                     }
                 },
                 { data: "transportationMode" },
@@ -663,16 +661,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         return input;
                     }
                 },
-                { data: "originationAddress1", visible: false },
                 { data: "originationCity" },
                 { data: "originationState" },
-                { data: "originationZip", visible: false },
                 { data: "originationLat", visible: false },
                 { data: "originationLng", visible: false },
-                { data: "destinationAddress1", visible: false },
                 { data: "destinationCity" },
                 { data: "destinationState" },
-                { data: "destinationZip", visible: false },
                 { data: "destinationLat", visible: false },
                 { data: "destinationLng", visible: false },
                 { data: "distance", render: $.fn.dataTable.render.number(',', '.', 0, '')  },
@@ -715,7 +709,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     "bSortable": false,
                     "mRender": function (o) {
 
-                        var buttons = '';
+                        var buttons = '<div class="pull-right text-nowrap">';
+
                         var status = o.customer_needs_commit[0].status;
 
                         if(status == "Available"){
@@ -725,6 +720,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             buttons += "<b>Approved!</b>" ;
                         }
 
+                        buttons += '</div>';
+
                         return buttons;
                     }
                 }
@@ -732,17 +729,19 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             //scrollX: true
           });
 
+            example_table_commit.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table_commit.table().container() ) );
+
             //To Reload The Ajax
             //See DataTables.net for more information about the reload method
-            example_table.ajax.reload(function(json){
+            example_table_commit.ajax.reload(function(json){
                 getCarrierTotal(json);
             });
         }
         else{
           //The URL will change with each "View Commit" button click
           // Must load new Url each time.
-            var reload_table = $('#customer-needs-commit-table').DataTable();
-            reload_table.ajax.url(url).load(function(json){
+            var reload_table_commit = $('#customer-needs-commit-table').DataTable();
+            reload_table_commit.ajax.url(url).load(function(json){
                 getCarrierTotal(json);
             });
         }
@@ -754,7 +753,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
     function loadSelectedCustomer(id){
 
-        var baseUrl = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate';
+        var baseUrl = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transportation_mode,entities.name,entities.rateType,entities.negotiatedRate';
 
         baseUrl = baseUrl + "&filter[]=id,eq," + id;
 
@@ -762,120 +761,95 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
         if ( ! $.fn.DataTable.isDataTable( '#selected-customer-need' ) ) {
 
-            var example_table = $('#selected-customer-need').DataTable({
-            retrieve: true,
-            processing: true,
-            ajax: {
-                url: url,
-                dataSrc: 'customer_needs'
-            },
-            columns: [
-                {
-                    "className":      'details-control-add',
-                    "orderable":      false,
-                    "data":           null,
-                    "defaultContent": '',
-                    visible: false
+            var example_table_customer = $('#selected-customer-need').DataTable({
+                retrieve: true,
+                processing: true,
+                ajax: {
+                    url: url,
+                    dataSrc: 'customer_needs'
                 },
-                { data: "entities[0].name", visible: true },
-                { data: "id", visible: false },
-                { data: "rootCustomerNeedsID", visible: false},
-                { data: "entityID", visible: false },
-                { data: "qty" },
-                { data: "rate", visible: false},
-                {
-                    data: null,
-                    "bSortable": true,
-                    "mRender": function (o) {
-                        var theDate = o.availableDate;
-                        return formatDate(new Date(theDate));
-                    }
-                },
-                {
-                    data: null,
-                    "bSortable": true,
-                    "mRender": function(o) {
-                      if (o.expirationDate == "0000-00-00") {
-                          return '';
-                      } else {
-                          return formatDate(new Date(o.expirationDate));
-                      }
-                    }
-                },
-                { data: "transportationMode" },
-                { data: "originationAddress1", visible: false },
-                { data: "originationCity" },
-                { data: "originationState" },
-                { data: "originationZip", visible: false },
-                { data: "originationLat", visible: false },
-                { data: "originationLng", visible: false },
-                { data: "destinationAddress1", visible: false },
-                { data: "destinationCity" },
-                { data: "destinationState" },
-                { data: "destinationZip", visible: false },
-                { data: "destinationLat", visible: false },
-                { data: "destinationLng", visible: false },
-                { data: "distance", render: $.fn.dataTable.render.number(',', '.', 0, '')  },
-                { data: "needsDataPoints", visible: false },
-                {
-                    data: null,
-                    "bSortable": false,
-                    "mRender": function(o) {
+                columns: [
+                    { data: "entities[0].name", visible: true },
+                    { data: "id", visible: false },
+                    { data: "rootCustomerNeedsID", visible: false},
+                    { data: "entityID", visible: false },
+                    { data: "qty" },
+                    {
+                        data: null,
+                        "bSortable": true,
+                        "mRender": function (o) {
+                            var theDate = o.availableDate;
+                            return formatDate(new Date(theDate));
+                        }
+                    },
+                    {
+                        data: null,
+                        "bSortable": true,
+                        "mRender": function(o) {
+                          if (o.expirationDate == "0000-00-00") {
+                              return '';
+                          } else {
+                              return formatDate(new Date(o.expirationDate));
+                          }
+                        }
+                    },
+                    { data: "transportationMode" },
+                    { data: "originationCity" },
+                    { data: "originationState" },
+                    { data: "originationLat", visible: false },
+                    { data: "originationLng", visible: false },
+                    { data: "destinationCity" },
+                    { data: "destinationState" },
+                    { data: "destinationLat", visible: false },
+                    { data: "destinationLng", visible: false },
+                    { data: "distance", render: $.fn.dataTable.render.number(',', '.', 0, '')  },
+                    { data: "needsDataPoints", visible: false },
+                    {
+                        data: null,
+                        "bSortable": false,
+                        "mRender": function(o) {
 
-                      var newStatus = o.status;
-                      if (o.length > 0) {
-                          var showAmount = o.rate.toString().split(".");
-                          showAmount[0] = showAmount[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                          if (showAmount.length > 1) {
-                              if (showAmount[1].length < 2) {
-                                  showAmount[1] = showAmount[1] + '0';
+                          var newStatus = o.status;
+                          if (o.length > 0) {
+                              var showAmount = o.rate.toString().split(".");
+                              showAmount[0] = showAmount[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                              if (showAmount.length > 1) {
+                                  if (showAmount[1].length < 2) {
+                                      showAmount[1] = showAmount[1] + '0';
+                                  }
+                                  showAmount = "$" + showAmount[0] + "." + showAmount[1];
+                              } else {
+                                  showAmount = "$" + showAmount[0] + ".00";
                               }
-                              showAmount = "$" + showAmount[0] + "." + showAmount[1];
-                          } else {
-                              showAmount = "$" + showAmount[0] + ".00";
+                              if (o.status == "Cancelled") {
+                                  newStatus = "<strong>Cancelled</strong>";
+                              } else {
+                                  newStatus = "<strong>Committed</strong>";
+                              }
                           }
-                          if (o.status == "Cancelled") {
-                              newStatus = "<strong>Cancelled</strong>";
-                          } else {
-                              newStatus = "<strong>Committed</strong>";
-                          }
-                      }
-                      return newStatus;
-                    }
-                },
-                { data: "customer_needs_commit[0].id", visible: false },
-                { data: "customer_needs_commit[0].status", visible: false },
-                { data: "customer_needs_commit[0].rate", visible: false },
-                { data: "customer_needs_commit[0].transportation_mode", visible: false },
-                { data: "entities[0].name", visible: false },
-                { data: "entities[0].rateType", visible: false },
-                { data: "entities[0].negotiatedRate", visible: false},
-                {
-                    data: null,
-                    "bSortable": false,
-                    "mRender": function (o) {
-                        var buttons = '';
+                          return newStatus;
+                        }
+                    },
+                    { data: "customer_needs_commit[0].id", visible: false },
+                    { data: "customer_needs_commit[0].status", visible: false },
+                    { data: "customer_needs_commit[0].rate", visible: false },
+                    { data: "customer_needs_commit[0].transportation_mode", visible: false },
+                    { data: "entities[0].rateType", visible: false },
+                    { data: "entities[0].negotiatedRate", visible: false}
 
-                        //buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"fa fa-thumbs-up text-info\"></i> <span class=\"text-info\">View Commits</span></button>';
+                ]
+            });
 
-                        return buttons;
-                    }
-                }
-
-            ]
-          });
-
-            example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
+            example_table_customer.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table_customer.table().container() ) );
 
             //To Reload The Ajax
             //See DataTables.net for more information about the reload method
-            example_table.ajax.reload();
-        }
-        else{
+            example_table_customer.ajax.reload();
+        } else {
           //The URL will change with each "View Commit" button click
           // Must load new Url each time.
-            var reload_table = $('#selected-customer-need').DataTable();
-            reload_table.ajax.url(url).load();
+            var reload_table_customer = $('#selected-customer-need').DataTable();
+            reload_table_customer.ajax.url(url).load();
         }
     }
 
@@ -890,7 +864,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
         if ( ! $.fn.DataTable.isDataTable( '#customer-needs-note-table' ) ) {
 
-            var example_table = $('#customer-needs-note-table').DataTable({
+            var example_table_notes = $('#customer-needs-note-table').DataTable({
             retrieve: true,
             processing: true,
             ajax: {
@@ -930,17 +904,17 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             ]
           });
 
-            example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
+            example_table_notes.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table_notes.table().container() ) );
 
             //To Reload The Ajax
             //See DataTables.net for more information about the reload method
-            example_table.ajax.reload();
+            example_table_notes.ajax.reload();
         }
         else{
           //The URL will change with each "View Commit" button click
           // Must load new Url each time.
-            var reload_table = $('#customer-needs-note-table').DataTable();
-            reload_table.ajax.url(url).load();
+            var reload_table_note = $('#customer-needs-note-table').DataTable();
+            reload_table_note.ajax.url(url).load();
         }
     }
 
@@ -1102,7 +1076,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
          </div>
      </header>
      <div class="widget-body">
-         <br /><br />
          <div id="dataTable" class="mt">
              <table id="datatable-table" class="table table-striped table-hover">
                  <thead>
@@ -1135,7 +1108,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                      <th>Commit ID</th>
                      <th>Commit Status</th>
                      <th>Commit Rate</th>
-                     <th>Transporation Mode</th>
+                     <th>Transportation Mode</th>
                      <th>Name</th>
                      <th>Rate Type</th>
                      <th>Negotiated Rate</th>
@@ -1153,20 +1126,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 <section class="widget"  id="customer-needs-commit" style="display: none;">
      <header>
          <h4><span class="fw-semi-bold">Committed Transport</span></h4>
-         <div class="widget-controls">
-             <a data-widgster="close" title="Close" href="Javascript:closeCommitTransport()"><i class="glyphicon glyphicon-remove"></i></a>
-         </div>
      </header>
-    <br>
-    <br>
+     <br />
      <div class="widget-body">
-
-        <div class="mt">
+        <div id="dataTable-1" class="mt">
             <h5><span class="fw-semi-bold">Selected Customer Transport</span></h5>
-            <table id="selected-customer-need" class="table table-striped table-hover">
+            <table id="selected-customer-need" class="table table-striped table-hover" width="100%">
                  <thead>
                  <tr>
-                     <th></th>
                      <th>Company</th>
                      <th>ID</th>
                      <th>Root Customer Needs ID</th>
@@ -1175,16 +1142,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                      <th>Available</th>
                      <th>Expires</th>
                      <th>Transport Mode</th>
-                     <th class="hidden-sm-down">Orig. Address1</th>
                      <th class="hidden-sm-down">Orig. City</th>
                      <th class="hidden-sm-down">Orig. State</th>
-                     <th class="hidden-sm-down">Orig. Zip</th>
                      <th class="hidden-sm-down">Orig. Lat.</th>
                      <th class="hidden-sm-down">Orig. Long.</th>
-                     <th class="hidden-sm-down">Dest. Address1</th>
                      <th class="hidden-sm-down">Dest. City</th>
                      <th class="hidden-sm-down">Dest. State</th>
-                     <th class="hidden-sm-down">Dest. Zip</th>
                      <th class="hidden-sm-down">Dest. Lat.</th>
                      <th class="hidden-sm-down">Dest. Long.</th>
                      <th class="hidden-sm-down">Mileage</th>
@@ -1193,11 +1156,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                      <th>Commit ID</th>
                      <th>Commit Status</th>
                      <th>Commit Rate</th>
-                     <th>Transporation Mode</th>
-                     <th>Name</th>
+                     <th>Transportation Mode</th>
                      <th>Rate Type</th>
                      <th>Negotiated Rate</th>
-                     <th class="no-sort pull-right"></th>
                  </tr>
                  </thead>
                  <tbody>
@@ -1205,12 +1166,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                  </tbody>
              </table>
         </div>
-
+    </div>
     <br>
-
+    <div class="widget-body">
         <div id="dataTable-2" class="mt">
             <h5><span class="fw-semi-bold">Notes</span></h5>
-            <table id="customer-needs-note-table" class="table table-striped table-hover">
+            <table id="customer-needs-note-table" class="table table-striped table-hover" width="100%">
                 <thead>
                     <tr>
                         <th>View Access</th>
@@ -1229,12 +1190,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 <a data-widgster="addNote" title="Add" href="Javascript:addNewNote();"><i class="fa fa-plus-square-o"></i> Add Note</a>
             </div>
         </div>
-
+    </div>
     <br>
-
-        <div id="dataTable-2" class="mt">
+    <div class="widget-body">
+        <div id="dataTable-3" class="mt">
             <h5><span class="fw-semi-bold">Carrier Committed Transport</span></h5>
-            <table id="customer-needs-commit-table" class="table table-striped table-hover">
+            <table id="customer-needs-commit-table" class="table table-striped table-hover" width="100%">
                 <thead>
                 <tr>
                     <th>Carrier Name</th>
@@ -1247,16 +1208,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     <th>Delivery</th>
                     <th>Transport Mode</th>
                     <th>Carrier Rate</th>
-                    <th class="hidden-sm-down">Orig. Address1</th>
                     <th class="hidden-sm-down">Orig. City</th>
                     <th class="hidden-sm-down">Orig. State</th>
-                    <th class="hidden-sm-down">Orig. Zip</th>
                     <th class="hidden-sm-down">Orig. Lat.</th>
                     <th class="hidden-sm-down">Orig. Long.</th>
-                    <th class="hidden-sm-down">Dest. Address1</th>
                     <th class="hidden-sm-down">Dest. City</th>
                     <th class="hidden-sm-down">Dest. State</th>
-                    <th class="hidden-sm-down">Dest. Zip</th>
                     <th class="hidden-sm-down">Dest. Lat.</th>
                     <th class="hidden-sm-down">Dest. Long.</th>
                     <th class="hidden-sm-down">Mileage</th>
@@ -1264,11 +1221,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     <th>Status</th>
                     <th>Commit ID</th>
                     <th>Commit Status</th>
+                    <th>Commit Rate</th>
                     <th>Transportation Mode</th>
                     <th>Name</th>
                     <th>Rate Type</th>
                     <th>Negotiated Rate</th>
-                    <th class="no-sort pull-right"></th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -1282,9 +1240,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 <a data-widgster="addCommit" title="Add" href="Javascript:addNewCommit();"><i class="fa fa-plus-square-o"></i> Add Carrier Commitment</a>
             </div>
         </div>
-
+    </div>
     <br>
-
+    <div class="widget-body">
         <div class="row">
             <div class="col-sm-4">
                 <label for="customerRate">Customer Rate</label>
@@ -2482,42 +2440,46 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
         var rootCustomerNeedsID = data["rootCustomerNeedsID"];
 
-	console.log(JSON.stringify(data.customer_needs_commit[0]));
+        //console.log(JSON.stringify(data.customer_needs_commit[0]));
 
         var commitID = data.customer_needs_commit[0].id;
         var customerNeedsID = data.id;
         //var entityID = data.customer_needs_commit[0].entityID;
         var carrierRate = $("#carrierRate-" + customerNeedsID).val();
 
-	console.log("rootCustomerNeedsID:", rootCustomerNeedsID);
-	console.log("commitID:", commitID);
-	console.log("carrierRate:", carrierRate);
+        //console.log("rootCustomerNeedsID:", rootCustomerNeedsID);
+        //console.log("commitID:", commitID);
+        //console.log("carrierRate:", carrierRate);
 
         approveCommit(rootCustomerNeedsID, commitID, carrierRate);
     });
 
-    $('#datatable-table tbody').on( 'click', 'button', function () {
-    var table = $("#datatable-table").DataTable();
+    $('#datatable-table tbody').unbind('click').on( 'click', 'button', function () {
+
+        var table = $("#datatable-table").DataTable();
+
         var data = table.row( $(this).parents('tr') ).data();
 
-        var id = data["id"];
-        var rate = data["rate"];
-        var entityID = data["entityID"];
+        if (this.textContent.indexOf("View Commits") > -1) {
+            var id = data["id"];
+            var rate = data["rate"];
+            var entityID = data["entityID"];
 
-        $("#customerNeedsID").val(id);
-        $("#entityID").val(entityID);
-        $("#customerRate").val(rate.toFixed(2));
+            $("#customerNeedsID").val(id);
+            $("#entityID").val(entityID);
+            $("#customerRate").val(rate.toFixed(2));
 
-        loadSelectedCustomer(id)
-        loadCustomerNeedsCommitAJAX(id);
-        loadCustomerNeedsNotesAJAX(id);
+            loadSelectedCustomer(id)
+            loadCustomerNeedsCommitAJAX(id);
+            loadCustomerNeedsNotesAJAX(id);
+        }
     });
 
     function closeCommitTransport(){
 
         $("#customer-needs-commit").css("display", "none");
         $("#customer-needs").css("display", "block");
-    var table = $("#datatable-table").DataTable();
+        var table = $("#datatable-table").DataTable();
         table.ajax.reload();
     }
 
