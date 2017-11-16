@@ -1306,7 +1306,22 @@ if ($_SESSION['entityid'] > 0) {
                                 </span>
                             </div>
                         </div>
-                        <!--
+<?php
+if ($_SESSION['entityid'] == 0) {
+?>
+                        <h6 class="fw-semi-bold mt">Filter Activity</h6>
+                        <div class="input-group mt">
+                            <label for="activityFilter">Select a filter:</label>
+                              <select id="activityFilter" name="activityFilter" class="form-control chzn-select" required="required">
+                                <option value="Customer Availability">Customer Availability</option>
+                                <option value="Carrier Needs">Carrier Needs</option>
+                                <option value="Orders">Orders</option>
+                              </select>
+                        </div>
+<?php
+}
+?>
+<!--
                         <h6 class="fw-semi-bold mt">Map Distributions</h6>
                         <p>Tracking: <strong>Active</strong></p>
                         <p>
@@ -1321,7 +1336,7 @@ if ($_SESSION['entityid'] > 0) {
                                 </button>
                             </span>
                         </div>
-                      -->
+-->
                     </div>
                 </section>
             </div>
@@ -1428,11 +1443,11 @@ $(function() {
    if ( entityTypeID == 1 ) { // Customer
        cnresult = cnresult['carrier_needs'];
        var originationPlotColor = "blue";
-       var list = "listAvailability";
+       var list = "listNeeds";
    } else if ( entityTypeID == 2 ) { // Carrier
        cnresult = cnresult['customer_needs'];
        var originationPlotColor = "red";
-       var list = "listNeeds";
+       var list = "listAvailability";
    } else {
        cnresult = cnresult['customer_needs'];
        var originationPlotColor = "green";
@@ -1455,6 +1470,17 @@ $(function() {
 
                // Check if we have the GPS position of the element
                if (value.originationLat) {
+                   // Setup Availability Date
+                   if (value.availableDate > '') {
+                       var availableDate = formatDate(new Date(value.availableDate));
+                   } else {
+                       var availableDate = "Closed";
+                   }
+                   if (value.expirationDate > '') {
+                       var expirationDate = formatDate(new Date(value.expirationDate));
+                   } else {
+                       var expirationDate = "Closed";
+                   }
                    // Will hold the plot information
                    var plot = {};
                    var link = {};
@@ -1473,7 +1499,9 @@ $(function() {
                                    "<br /># of Trailers: " +
                                    value.qty +
                                    "<br />" +
-                                   formatDate(new Date(value.availableDate)) +
+                                   "Available: " + availableDate +
+                                   "<br />" +
+                                   "Expires: " + expirationDate +
                                    "<br />Click for more details" +
                                 "</span>"
                    };
