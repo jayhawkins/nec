@@ -102,9 +102,12 @@ if ($_SESSION['entityid'] > 0) {
     $locresult2 = json_decode($locresult,true);
     $loccount = count($locresult2['locations']);
 
+    $carrierneedresult = '{}';
+    $customerneedresult = '{}';
+
 } else {
 
-    // Now get counts for Admin Logins
+    // Now get resultsets and counts for Admin Logins
     $cnargs = array(
           "transform"=>"1",
           //"filter[]"=>"entityID,eq," . $_SESSION['entityid'],
@@ -121,8 +124,8 @@ if ($_SESSION['entityid'] > 0) {
         )
     );
     $cncontext  = stream_context_create($cnoptions);
-    $cnresult = file_get_contents($cnurl,false,$cncontext);
-    $cnresult2 = json_decode($cnresult,true);
+    $carrierneedresult = file_get_contents($cnurl,false,$cncontext);
+    $cnresult2 = json_decode($carrierneedresult,true);
     $carrierncount = count($cnresult2['carrier_needs']);
 
     $cnargs = array(
@@ -140,9 +143,10 @@ if ($_SESSION['entityid'] > 0) {
             'method'  => 'GET'
         )
     );
+
     $cncontext  = stream_context_create($cnoptions);
-    $cnresult = file_get_contents($cnurl,false,$cncontext);
-    $cnresult2 = json_decode($cnresult,true);
+    $customerneedresult = file_get_contents($cnurl,false,$cncontext);
+    $cnresult2 = json_decode($customerneedresult,true);
     $customerncount = count($cnresult2['customer_needs']);
 
 
@@ -165,6 +169,8 @@ if ($_SESSION['entityid'] > 0) {
     //$locresult2 = json_decode($locresult,true);
     //$loccount = count($locresult2['locations']);
     $locresult = '{}';
+
+    $cnresult = '{}';
 }
 
 ?>
@@ -254,23 +260,29 @@ if ($_SESSION['entityid'] > 0) {
 
         function countUserOrders(){
 
-        var entityid = <?php echo $_SESSION['entityid']; ?>;
-        var entityType = <?php echo $_SESSION['entitytype'];  ?>;
+            var entityid = <?php echo $_SESSION['entityid']; ?>;
+            var entityType = <?php echo $_SESSION['entitytype'];  ?>;
+
+            var today = new Date();
+            var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+            var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+            var dateTime = date+' '+time;
 
             var url = '<?php echo API_HOST_URL; ?>';
             var orderCount = 0;
             switch(entityType){
                 case 0:     // URL for the Admin. The admin can see ALL Orders.
-                    url += '/orders?include=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,originationLat,originationLng,destinationLat,destinationLng,distance,needsDataPoints,status,qty,rateType,transportationMode,enitities.id,entities.name,documents.id,documents.documentURL&satisfy=all&transform=1';
+                    url += '/orders?include=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,originationLat,originationLng,destinationLat,destinationLng,distance,needsDataPoints,status,qty,rateType,transportationMode,enitities.id,entities.name,documents.id,documents.documentURL';
                     break;
                 case 1:    // URL for Customer. The Customer can only see their orders.
-                    url += '/orders?include=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,originationLat,originationLng,destinationLat,destinationLng,distance,needsDataPoints,status,qty,rateType,transportationMode,enitities.id,entities.name,documents.id,documents.documentURL&filter=customerID,eq,' + entityid + '&satisfy=all&transform=1';
+                    url += '/orders?include=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,originationLat,originationLng,destinationLat,destinationLng,distance,needsDataPoints,status,qty,rateType,transportationMode,enitities.id,entities.name,documents.id,documents.documentURL&filter=customerID,eq,' + entityid;
                     break;
                 case 2:     // URL for the Carrier. Same as the admin but will be filtered below.
-                    url += '/orders?include=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,originationLat,originationLng,destinationLat,destinationLng,distance,needsDataPoints,status,qty,rateType,transportationMode,enitities.id,entities.name,documents.id,documents.documentURL&satisfy=all&transform=1';
+                    url += '/orders?include=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,originationLat,originationLng,destinationLat,destinationLng,distance,needsDataPoints,status,qty,rateType,transportationMode,enitities.id,entities.name,documents.id,documents.documentURL';
                     break;
             }
 
+            url += '&filter[]=createdAt,ge,' + dateTime + '&satisfy=all&transform=1';
 
             $.ajax({
                //url: '<?php echo API_HOST_URL . "/orders" ?>?transform=1',
@@ -281,7 +293,7 @@ if ($_SESSION['entityid'] > 0) {
                success: function(json){
 
                     orders = json.orders;
-                    //console.log(orders);
+                    console.log(orders);
 
                     if(entityType == 2) {
 
@@ -1315,9 +1327,10 @@ if ($_SESSION['entityid'] == 0) {
                               <select id="activityFilter" name="activityFilter" class="form-control chzn-select" required="required">
                                 <option value="Customer Availability">Customer Availability</option>
                                 <option value="Carrier Needs">Carrier Needs</option>
-                                <option value="Orders">Orders</option>
+                                <option value="Orders" selected=selected>Orders</option>
                               </select>
                         </div>
+
 <?php
 }
 ?>
@@ -1437,6 +1450,8 @@ $(function() {
 
    // Assign JS var to PHP customer needs JSON list
    var cnresult = <?php echo $cnresult; ?>;
+   var carrierneedresult = <?php echo $carrierneedresult; ?>;
+   var customerneedresult = <?php echo $customerneedresult; ?>;
    var locresult = <?php echo $locresult; ?>;
    var entityTypeID = <?php echo $eresult['entities'][0]['entityTypeID']; ?>;
 
@@ -1449,15 +1464,16 @@ $(function() {
        var originationPlotColor = "red";
        var list = "listAvailability";
    } else {
-       cnresult = cnresult['customer_needs'];
+       cnresult = orders['order_details'];
        var originationPlotColor = "green";
        var list = "listOrders";
    }
 
    // We need a setTimeout (~200ms) in order to allow the UI to be refreshed for the message to be shown
    setTimeout(function(){
-            var data = cnresult;
-            var locations = locresult;
+
+           var data = cnresult;
+           var locations = locresult;
 
            // Parse each elements
            // This variable will hold all the plots of our map
@@ -1465,152 +1481,86 @@ $(function() {
            var links = {};
            var linktitle = "";
            var linkobjecttitle = "";
-           var plotsColors = chroma.scale("Blues");
-           $.each(data, function (index, value) {
 
-               // Check if we have the GPS position of the element
-               if (value.originationLat) {
-                   // Setup Availability Date
-                   if (value.availableDate > '') {
-                       var availableDate = formatDate(new Date(value.availableDate));
-                   } else {
-                       var availableDate = "Closed";
-                   }
-                   if (value.expirationDate > '') {
-                       var expirationDate = formatDate(new Date(value.expirationDate));
-                   } else {
-                       var expirationDate = "Closed";
-                   }
-                   // Will hold the plot information
-                   var plot = {};
-                   var link = {};
-                   // Assign position
-                   plot.latitude = parseFloat(value.originationLat);
-                   plot.longitude = parseFloat(value.originationLng);
-                   plot.size = 10;
-                   plot.type = "circle";
-                   plot.value = "H";
-                   // Assign some information inside the tooltip
-                   plot.tooltip = {
-                       content: "<span style='font-weight:bold;'>" +
-                                   value.originationCity + ", " + value.originationState +
-                                   "<br />" +
-                                   value.destinationCity + ", " + value.destinationState +
-                                   "<br /># of Trailers: " +
-                                   value.qty +
-                                   "<br />" +
-                                   "Available: " + availableDate +
-                                   "<br />" +
-                                   "Expires: " + expirationDate +
-                                   "<br />Click for more details" +
-                                "</span>"
-                   };
+           if (entityTypeID > 0) {
+                   var plotsColors = chroma.scale("Blues");
+                   $.each(data, function (index, value) {
 
-                   plot.text = {
-                        //content: qty,
-                        position: "inner",
-                        attrs: {
-                            "font-size": 16,
-                            "font-weight": "bold",
-                            "fill": "#fff"
-                        }
-                   };
-
-                   plot.eventHandlers = {
-                        click: function() {
-                                ajaxFormCall(list)
-                        }
-                   };
-
-                   // Assign the background color randomize from a scale
-                   plot.attrs = {
-                       //fill: plotsColors(Math.random())
-                       fill: originationPlotColor,
-                       cursor: "pointer"
-                   };
-
-                   // Set plot element to array
-                   plots[value.id+'-'+value.originationCity] = plot;
-
-                   // Now plot the destination
-                   var plot = {};
-                   // Assign position
-                   plot.latitude = parseFloat(value.destinationLat);
-                   plot.longitude = parseFloat(value.destinationLng);
-                   plot.size = 3;
-                   plot.type = "";
-                   // Assign some information inside the tooltip
-                   plot.tooltip = {
-                       content: "<span style='font-weight:bold;'>" +
-                                   value.destinationCity +
-                                "</span>"
-                   };
-
-                   plot.text = {
-                        //content: value.qty,
-                        position: "inner",
-                        attrs: {
-                            "font-size": 16,
-                            "font-weight": "bold",
-                            "fill": "#fff"
-                        }
-                   };
-
-                   // Assign the background color randomize from a scale
-                   plot.attrs = {
-                       //fill: plotsColors(Math.random())
-                       fill: "#fff"
-                   };
-
-                   // Set plot element to array
-                   plots[value.id+'-'+value.destinationCity] = plot;
-
-                   linktitle = value.originationCity+'-'+value.destinationCity;
-                   linkobjecttitle = value.originationCity+value.destinationCity;
-                   link.factor = 0.2;
-                   //link.between = [{"latitude": value.originationLat, "longitude": value.originationLng}, {"latitude": value.destinationLat, "longitude": value.destinationLng}];
-                   link.between = [value.id+'-'+value.originationCity, value.id+'-'+value.destinationCity];
-                   link.attrs = {
-                                "stroke": "#a4e100",
-                                "stroke-width": 2,
-                                "stroke-linecap": "round",
-                                "opacity": 0.6
-                            };
-                   link.tooltip = {"content": linktitle};
-                   links[linkobjecttitle] = link;
-               } else {
-                   console.warn("Ignored element " + id + " without GPS position");
-               }
-           });
-
-           // Parse location elements
-           // This variable will hold all the plots of our map - ALREADY INIT ABOVE
-           //var plots = {};
-
-           var plotsColors = chroma.scale("Yellows");
-           //console.log(locations);
-           $.each(locations, function (index, values) {
-               //console.log(values);
-               $.each(values, function (index, value) {
-                       //console.log(value);
                        // Check if we have the GPS position of the element
-                       if (value.latitude) {
-                           if (value.locationTypeID == 1) {
-                                var fontsize = 14;
+                       if (value.originationLat) {
+                           // Setup Availability Date
+                           if (value.availableDate > '') {
+                               var availableDate = formatDate(new Date(value.availableDate));
                            } else {
-                                var fontsize = 9;
+                               var availableDate = "Closed";
+                           }
+                           if (value.expirationDate > '') {
+                               var expirationDate = formatDate(new Date(value.expirationDate));
+                           } else {
+                               var expirationDate = "Closed";
                            }
                            // Will hold the plot information
                            var plot = {};
+                           var link = {};
                            // Assign position
-                           plot.latitude = parseFloat(value.latitude);
-                           plot.longitude = parseFloat(value.longitude);
-                           plot.size = fontsize;
+                           plot.latitude = parseFloat(value.originationLat);
+                           plot.longitude = parseFloat(value.originationLng);
+                           plot.size = 10;
                            plot.type = "circle";
+                           plot.value = "H";
                            // Assign some information inside the tooltip
                            plot.tooltip = {
                                content: "<span style='font-weight:bold;'>" +
-                                           value.city + ', ' + value.state +
+                                           value.originationCity + ", " + value.originationState +
+                                           "<br />" +
+                                           value.destinationCity + ", " + value.destinationState +
+                                           "<br /># of Trailers: " +
+                                           value.qty +
+                                           "<br />" +
+                                           "Available: " + availableDate +
+                                           "<br />" +
+                                           "Expires: " + expirationDate +
+                                           "<br />Click for more details" +
+                                        "</span>"
+                           };
+
+                           plot.text = {
+                                //content: qty,
+                                position: "inner",
+                                attrs: {
+                                    "font-size": 16,
+                                    "font-weight": "bold",
+                                    "fill": "#fff"
+                                }
+                           };
+
+                           plot.eventHandlers = {
+                                click: function() {
+                                        ajaxFormCall(list)
+                                }
+                           };
+
+                           // Assign the background color randomize from a scale
+                           plot.attrs = {
+                               //fill: plotsColors(Math.random())
+                               fill: originationPlotColor,
+                               cursor: "pointer"
+                           };
+
+                           // Set plot element to array
+                           plots[value.id+'-'+value.originationCity] = plot;
+
+                           // Now plot the destination
+                           var plot = {};
+                           // Assign position
+                           plot.latitude = parseFloat(value.destinationLat);
+                           plot.longitude = parseFloat(value.destinationLng);
+                           plot.size = 3;
+                           plot.type = "";
+                           // Assign some information inside the tooltip
+                           plot.tooltip = {
+                               content: "<span style='font-weight:bold;'>" +
+                                           value.destinationCity +
                                         "</span>"
                            };
 
@@ -1625,112 +1575,184 @@ $(function() {
                            };
 
                            // Assign the background color randomize from a scale
-                           //plot.attrs = {
-                           //    fill: plotsColors(Math.random())
-                           //};
+                           plot.attrs = {
+                               //fill: plotsColors(Math.random())
+                               fill: "#fff"
+                           };
 
                            // Set plot element to array
-                           plots[value.id+'-'+value.city] = plot;
+                           plots[value.id+'-'+value.destinationCity] = plot;
+
+                           linktitle = value.originationCity+'-'+value.destinationCity;
+                           linkobjecttitle = value.originationCity+value.destinationCity;
+                           link.factor = 0.2;
+                           //link.between = [{"latitude": value.originationLat, "longitude": value.originationLng}, {"latitude": value.destinationLat, "longitude": value.destinationLng}];
+                           link.between = [value.id+'-'+value.originationCity, value.id+'-'+value.destinationCity];
+                           link.attrs = {
+                                        "stroke": "#a4e100",
+                                        "stroke-width": 2,
+                                        "stroke-linecap": "round",
+                                        "opacity": 0.6
+                                    };
+                           link.tooltip = {"content": linktitle};
+                           links[linkobjecttitle] = link;
                        } else {
-                           console.warn("Ignored element " + value.id + " without GPS position");
+                           console.warn("Ignored element " + id + " without GPS position");
                        }
+                   });
 
-               });
-           });
+                   // Parse location elements
+                   // This variable will hold all the plots of our map - ALREADY INIT ABOVE
+                   //var plots = {};
 
-           var plotsColors = chroma.scale("Oranges");
-           $.each(orders, function (index, value) {
-                   //console.log(values);
-                   // Check if we have the GPS position of the element
-                   if (value.originationLat) {
-                       // Will hold the plot information
-                       var plot = {};
-                       var link = {};
-                       // Assign position
-                       plot.latitude = parseFloat(value.originationLat);
-                       plot.longitude = parseFloat(value.originationLng);
-                       plot.size = 10;
-                       plot.type = "circle";
-                       // Assign some information inside the tooltip
-                       plot.tooltip = {
-                           content: "<span style='font-weight:bold;'>" +
-                                   value.originationCity + ", " + value.originationState +
-                                   "<br />" +
-                                   value.destinationCity + ", " + value.destinationState +
-                                   "<br /># of Trailers: " +
-                                   value.qty +
-                                   "<br />" +
-                                   formatDate(new Date(value.pickupDate)) +
-                                   "<br />Click for more details" +
-                                "</span>"
-                       };
+                   var plotsColors = chroma.scale("Yellows");
+                   //console.log(locations);
+                   $.each(locations, function (index, values) {
+                       //console.log(values);
+                       $.each(values, function (index, value) {
+                               //console.log(value);
+                               // Check if we have the GPS position of the element
+                               if (value.latitude) {
+                                   if (value.locationTypeID == 1) {
+                                        var fontsize = 14;
+                                   } else {
+                                        var fontsize = 9;
+                                   }
+                                   // Will hold the plot information
+                                   var plot = {};
+                                   // Assign position
+                                   plot.latitude = parseFloat(value.latitude);
+                                   plot.longitude = parseFloat(value.longitude);
+                                   plot.size = fontsize;
+                                   plot.type = "circle";
+                                   // Assign some information inside the tooltip
+                                   plot.tooltip = {
+                                       content: "<span style='font-weight:bold;'>" +
+                                                   value.city + ', ' + value.state +
+                                                "</span>"
+                                   };
 
-                       plot.text = {
-                            //content: value.qty,
-                            position: "inner",
-                            attrs: {
-                                "font-size": 16,
-                                "font-weight": "bold",
-                                "fill": "#fff"
-                            }
-                       };
+                                   plot.text = {
+                                        //content: value.qty,
+                                        position: "inner",
+                                        attrs: {
+                                            "font-size": 16,
+                                            "font-weight": "bold",
+                                            "fill": "#fff"
+                                        }
+                                   };
 
-                       // Assign the background color randomize from a scale
-                       plot.attrs = {
-                           //fill: plotsColors(Math.random())
-                           fill: "orange"
-                       };
+                                   // Assign the background color randomize from a scale
+                                   //plot.attrs = {
+                                   //    fill: plotsColors(Math.random())
+                                   //};
 
-                       // Set plot element to array
-                       plots[value.id+'-'+value.originationCity] = plot;
+                                   // Set plot element to array
+                                   plots[value.id+'-'+value.city] = plot;
+                               } else {
+                                   console.warn("Ignored element " + value.id + " without GPS position");
+                               }
 
-                       // Now plot the destination
-                       var plot = {};
-                       // Assign position
-                       plot.latitude = parseFloat(value.destinationLat);
-                       plot.longitude = parseFloat(value.destinationLng);
+                       });
+                   });
 
-                       // Assign some information inside the tooltip
-                       plot.tooltip = {
-                           content: "<span style='font-weight:bold;'>" +
-                                       value.destinationCity +
-                                    "</span>"
-                       };
+           } else {
 
-                       plot.text = {
-                            //content: value.qty,
-                            position: "inner",
-                            attrs: {
-                                "font-size": 16,
-                                "font-weight": "bold",
-                                "fill": "#fff"
-                            }
-                       };
+                   // Setup Orders plots
+                   var plotsColors = chroma.scale("Oranges");
+                   $.each(orders, function (index, value) {
+                           //console.log(values);
+                           // Check if we have the GPS position of the element
+                           if (value.originationLat) {
+                               // Will hold the plot information
+                               var plot = {};
+                               var link = {};
+                               // Assign position
+                               plot.latitude = parseFloat(value.originationLat);
+                               plot.longitude = parseFloat(value.originationLng);
+                               plot.size = 10;
+                               plot.type = "circle";
+                               // Assign some information inside the tooltip
+                               plot.tooltip = {
+                                   content: "<span style='font-weight:bold;'>" +
+                                           value.originationCity + ", " + value.originationState +
+                                           "<br />" +
+                                           value.destinationCity + ", " + value.destinationState +
+                                           "<br /># of Trailers: " +
+                                           value.qty +
+                                           "<br />" +
+                                           formatDate(new Date(value.pickupDate)) +
+                                           "<br />Click for more details" +
+                                        "</span>"
+                               };
 
-                       // Assign the background color randomize from a scale
-                       plot.attrs = {
-                           fill: plotsColors(Math.random())
-                       };
+                               plot.text = {
+                                    //content: value.qty,
+                                    position: "inner",
+                                    attrs: {
+                                        "font-size": 16,
+                                        "font-weight": "bold",
+                                        "fill": "#fff"
+                                    }
+                               };
 
-                       // Set plot element to array
-                       plots[value.id+'-'+value.destinationCity] = plot;
+                               // Assign the background color randomize from a scale
+                               plot.attrs = {
+                                   //fill: plotsColors(Math.random())
+                                   fill: "orange"
+                               };
 
-                       linktitle = value.originationCity+'-'+value.destinationCity;
-                       linkobjecttitle = value.originationCity+value.destinationCity;
-                       link.factor = 0.2;
-                       link.between = [value.id+'-'+value.originationCity, value.id+'-'+value.destinationCity];
-                       link.attrs = {
-                                    "stroke": "#ffffff",
-                                    "stroke-width": 2,
-                                    "stroke-linecap": "round",
-                                    "opacity": 0.6
-                                };
-                       link.tooltip = {"content": linktitle};
-                       links[linkobjecttitle] = link;
-                   } else {
-                       console.warn("Ignored element " + id + " without GPS position");
-                   }
-           });
+                               // Set plot element to array
+                               plots[value.id+'-'+value.originationCity] = plot;
+
+                               // Now plot the destination
+                               var plot = {};
+                               // Assign position
+                               plot.latitude = parseFloat(value.destinationLat);
+                               plot.longitude = parseFloat(value.destinationLng);
+
+                               // Assign some information inside the tooltip
+                               plot.tooltip = {
+                                   content: "<span style='font-weight:bold;'>" +
+                                               value.destinationCity +
+                                            "</span>"
+                               };
+
+                               plot.text = {
+                                    //content: value.qty,
+                                    position: "inner",
+                                    attrs: {
+                                        "font-size": 16,
+                                        "font-weight": "bold",
+                                        "fill": "#fff"
+                                    }
+                               };
+
+                               // Assign the background color randomize from a scale
+                               plot.attrs = {
+                                   fill: plotsColors(Math.random())
+                               };
+
+                               // Set plot element to array
+                               plots[value.id+'-'+value.destinationCity] = plot;
+
+                               linktitle = value.originationCity+'-'+value.destinationCity;
+                               linkobjecttitle = value.originationCity+value.destinationCity;
+                               link.factor = 0.2;
+                               link.between = [value.id+'-'+value.originationCity, value.id+'-'+value.destinationCity];
+                               link.attrs = {
+                                            "stroke": "#ffffff",
+                                            "stroke-width": 2,
+                                            "stroke-linecap": "round",
+                                            "opacity": 0.6
+                                        };
+                               link.tooltip = {"content": linktitle};
+                               links[linkobjecttitle] = link;
+                           } else {
+                               console.warn("Ignored element " + id + " without GPS position");
+                           }
+                   });
+           }
 
            // Create map
            var $map = $('.mapcontainer');//,
