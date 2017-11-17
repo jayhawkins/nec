@@ -267,17 +267,47 @@ $contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?col
             processing: true,
             ajax: {
                 url: url,
-                dataSrc: 'entities'
+                //dataSrc: 'entities',
+                dataSrc: function ( json ) {
+
+                    var entities = json.entities;
+                    var businesses = new Array();
+                    
+                        entities.forEach(function(entity){
+                            
+                            if(entity.locations.length == 0){
+                                var location = {id: 0, address1: "", address2: "",
+                                    city: "", state: "", zip: ""};
+                                
+                                entity.locations.push(location);
+                            }
+                            
+                            var business = {
+                                id: entity.id,
+                                name: entity.name,
+                                addressid: entity.locations[0].id,
+                                address1: entity.locations[0].address1,
+                                address2: entity.locations[0].address2,
+                                city: entity.locations[0].city,
+                                state: entity.locations[0].state,
+                                zip: entity.locations[0].zip
+                            };
+                            
+                            businesses.push(business);
+                        });
+                        
+                    return businesses;
+                }
             },
             columns: [
                 { data: "id", visible: false },
                 { data: "name" },
-                { data: "locations[0].id", visible: false },
-                { data: "locations[0].address1" },
-                { data: "locations[0].address2" },
-                { data: "locations[0].city" },
-                { data: "locations[0].state" },
-                { data: "locations[0].zip" },
+                { data: "addressid", visible: false },
+                { data: "address1" },
+                { data: "address2" },
+                { data: "city" },
+                { data: "state" },
+                { data: "zip" },
                 {
                     data: null,
                     "bSortable": false,
@@ -286,7 +316,7 @@ $contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?col
                         myApp.hidePleaseWait();
 
                         var buttons = '<div class="pull-right text-nowrap">';
-                        buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-eye-open text\"></i> <span class=\"text\">View Contacts</span></button>';
+                        buttons += '<button class=\"btn btn-primary btn-xs view-contacts\" role=\"button\"><i class=\"glyphicon glyphicon-eye-open text\"></i> <span class=\"text\">View Contacts</span></button>';
 
                         buttons += "</div>";
                         return buttons;
@@ -302,6 +332,70 @@ $contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?col
           example_table.ajax.reload();
 
     }
+
+
+      function loadBusinessContacts(entityID) {
+        myApp.showPleaseWait();
+        var url = '<?php echo API_HOST_URL; ?>' + '/contacts?include=contact_types&columns=contacts.id,contacts.firstName,contacts.lastName,contact_types.id,contact_types.name,contacts.title,contacts.emailAddress,contacts.primaryPhone,contacts.secondaryPhone,contacts.fax,contacts.contactRating,contacts.status&filter=entityID,eq,' + entityID + '&order=contactTypeID&transform=1';
+        if ( ! $.fn.DataTable.isDataTable( '#datatable-table' ) ) {
+            var example_table = $('#datatable-table').DataTable({
+            retrieve: true,
+            processing: true,
+            ajax: {
+                url: url,
+                dataSrc: 'contacts'
+            },
+            columns: [
+                { data: "id", visible: false },
+                { data: "contact_types[0].id", visible: false },
+                { data: "contact_types[0].name" },
+                { data: "firstName" },
+                { data: "lastName" },
+                { data: "title" },
+                { data: "emailAddress" },
+                { data: "primaryPhone" },
+                { data: "secondaryPhone", visible: false },
+                { data: "fax" },
+                { data: "contactRating", visible: false },
+                {
+                    data: null,
+                    "bSortable": false,
+                    "mRender": function (o) {
+
+                    		myApp.hidePleaseWait();
+
+						console.log(o);
+                            
+                        var buttons = '<div class="pull-right text-nowrap">';
+                        buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text\"></i> <span class=\"text\">Edit</span></button>';
+
+                        if (o.status == "Active") {
+                                  buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text\"></i> <span class=\"text\">Disable</span></button>";
+                        } else {
+                                  buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text\"></i> <span class=\"text\">Enable</span></button>";
+                        }
+                        buttons += "</div>";
+                        return buttons;
+                    }
+                }
+            ]
+          });
+          
+          example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
+
+          //To Reload The Ajax
+          //See DataTables.net for more information about the reload method
+          example_table.ajax.reload();
+        }
+        else{
+        
+            //The URL will change with each "View Commit" button click
+            // Must load new Url each time.
+            var reload_table = $('#datatable-table').DataTable();
+            reload_table.ajax.url(url).load();
+        }
+
+      }
 
  </script>
 
@@ -402,6 +496,7 @@ $contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?col
      </div>
  </section>
  </div>
+ 
  <div id="business-contacts" style="display: none;">
  <ol class="breadcrumb">
    <li>ADMIN</li>
@@ -413,7 +508,7 @@ $contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?col
          <div class="widget-controls">
              <!--<a data-widgster="expand" title="Expand" href="#"><i class="glyphicon glyphicon-chevron-up"></i></a>
              <a data-widgster="collapse" title="Collapse" href="#"><i class="glyphicon glyphicon-chevron-down"></i></a>-->
-             <a data-widgster="close" title="Close" href="#"><i class="glyphicon glyphicon-remove"></i></a>
+             <a data-widgster="close" title="Close" href="Javascript:closeContacts()"><i class="glyphicon glyphicon-remove"></i></a>
          </div>
      </header>
      <div class="widget-body">
@@ -704,8 +799,92 @@ $contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?col
  ?>    
 <script>
 
-    loadBusinessTableAJAX();
+        function openContacts(){
+            $("#business-list").css("display", "none");
+            $("#business-contacts").css("display", "block");
+        }
 
+
+        function closeContacts(){
+            var table = $("#business-datatable-table").DataTable();
+            $("#business-contacts").css("display", "none");
+            $("#business-list").css("display", "block");
+            table.ajax.reload();
+        }
+
+        loadBusinessTableAJAX();
+        
+
+        $('#business-datatable-table tbody').off('click').on( 'click', 'button', function () {
+            var businesstable = $("#business-datatable-table").DataTable();
+            var data = businesstable.row( $(this).parents('tr') ).data();
+
+            var entityID = data["id"];
+
+            loadBusinessContacts(entityID);
+            openContacts();
+        });
+        
+
+        $("#addContact").click(function(){
+          $("#id").val('');
+          $("#contactTypeID").val('');
+          $("#firstName").val('');
+          $("#lastName").val('');
+          $("#title").val('');
+          $("#emailAddress").val('');
+          $("#primaryPhone").val('');
+          $("#primaryPhoneExt").val('');
+          $("#secondaryPhone").val('');
+          $("#fax").val('');
+          $("#contactRating").val('');
+                    $("#myModal").modal('show');
+            });
+
+        $('#datatable-table tbody').on( 'click', 'button', function () {
+            
+            var table = $("#datatable-table").DataTable();
+            var data = table.row( $(this).parents('tr') ).data();
+            if (this.textContent.indexOf("Edit") > -1) {
+
+
+              $("#id").val(data["id"]);
+              $("#contactTypeID").val(data["contact_types"].id);
+              $("#firstName").val(data["firstName"]);
+              $("#lastName").val(data["lastName"]);
+              $("#title").val(data["title"]);
+              $("#emailAddress").val(data["emailAddress"]);
+
+                            var phoneindex = data["primaryPhone"].indexOf(' x');
+                if (phoneindex != -1) {
+                            var phone  = data["primaryPhone"].substring(0, phoneindex);
+                            var ext = data["primaryPhone"].substring(phoneindex + 2, data["primaryPhone"].length);
+                    $("#primaryPhone").val(phone);
+                    $("#primaryPhoneExt").val(ext);
+                } else {
+                    $("#primaryPhone").val(data["primaryPhone"]);
+                    $("#primaryPhoneExt").val('');
+                }
+
+              $("#secondaryPhone").val(data["secondaryPhone"]);
+              $("#fax").val(data["fax"]);
+              $("#contactRating").val(data["contactRating"]);
+              $("#myModal").modal('show');
+            } else {
+                $("#id").val(data["id"]);
+                if (this.textContent.indexOf("Disable") > -1) {
+                  $("#disableDialogLabel").html('Disable <strong>' + data['firstName'] + ' ' + data['lastName'] + '</strong>');
+                  $("#myDisableDialog").modal('show');
+                } else {
+                  if (this.textContent.indexOf("Enable") > -1) {
+                    $("#enableDialogLabel").html('Enable <strong>' + data['name'] + ' ' + data['lastName'] + '</strong>');
+                    $("#myEnableDialog").modal('show');
+                  }
+                }
+            }
+
+        } );
+        
  </script>
 <?php     
  }
