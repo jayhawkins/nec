@@ -466,6 +466,7 @@ $contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?col
              <a data-widgster="close" title="Close" href="#"><i class="glyphicon glyphicon-remove"></i></a>-->
          </div>
      </header>
+     
      <div class="widget-body">
          <!--p>
              Column sorting, live search, pagination. Built with
