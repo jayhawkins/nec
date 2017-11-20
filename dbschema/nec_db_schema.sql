@@ -1073,6 +1073,12 @@ ALTER TABLE `customer_needs_commit`
 	ON DELETE No Action
 	ON UPDATE No Action;
 
+ALTER TABLE `customer_needs_commit`
+	ADD CONSTRAINT `lnk_entities_customer_needs_commit` FOREIGN KEY ( `entityID` )
+	REFERENCES `entities`( `id` )
+	ON DELETE No Action
+	ON UPDATE No Action;
+
 ALTER TABLE `entities`
 	ADD CONSTRAINT `lnk_entity_types_entities` FOREIGN KEY ( `entityTypeID` )
 	REFERENCES `entity_types`( `id` )

@@ -89,13 +89,13 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
     function loadVinNumberList(){
         var option = '';
-        
+
         $('#orderStatusVinNumber').empty();
-                
+
         for(var i=0; i< vinNumbersList.length; i++){
             option += '<option value="' + vinNumbersList[i] + '">' + vinNumbersList[i] + '</option>';
         }
-        
+
         $('#orderStatusVinNumber').append(option);
     }
 
@@ -106,7 +106,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         var li = '';
         li += '<li id="list-box-' + id + '" class="list-group-item"><input type="text" class="form-control" value=""></li>\n';
         $("#input-list-box").append(li);
-        
+
     }
       function post() {
 
@@ -331,7 +331,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                           },
                                           error: function(data){
                                               $("#load").html("Save Changes");
-                                              $("#load").prop("disabled", false);  
+                                              $("#load").prop("disabled", false);
 	                                        	  console.log("Notification Error: ", JSON.stringify(data));
                                           }
                                       });
@@ -360,14 +360,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
         switch(entityType){
             case 0:     // URL for the Admin. The admin can see ALL Orders.
-                url += '/orders?include=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,distance,needsDataPoints,status,qty,rateType,transportationMode,enitities.id,entities.name,documents.id,documents.documentURL&satisfy=all&transform=1';
+                url += '/orders?includes=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,distance,needsDataPoints,status,qty,rateType,transportationMode,entities.id,entities.name,documents.id,documents.documentURL&satisfy=all&transform=1';
                 blnShow = true;
                 break;
             case 1:    // URL for Customer. The Customer can only see their orders.
-                url += '/orders?include=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,distance,needsDataPoints,status,qty,rateType,transportationMode,enitities.id,entities.name,documents.id,documents.documentURL&filter=customerID,eq,' + entityid + '&satisfy=all&transform=1';
+                url += '/orders?includes=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,distance,needsDataPoints,status,qty,rateType,transportationMode,entities.id,entities.name,documents.id,documents.documentURL&filter=customerID,eq,' + entityid + '&satisfy=all&transform=1';
                 break;
             case 2:     // URL for the Carrier. Same as the admin but will be filtered below.
-                url += '/orders?include=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,distance,needsDataPoints,status,qty,rateType,transportationMode,enitities.id,entities.name,documents.id,documents.documentURL&satisfy=all&transform=1';
+                url += '/orders?includes=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,distance,needsDataPoints,status,qty,rateType,transportationMode,entities.id,entities.name,documents.id,documents.documentURL&satisfy=all&transform=1';
                 break;
         }
 
@@ -439,14 +439,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 },
                 { data: "qty" },
                 { data: "transportationMode" },
-                { data: "originationAddress" },
+                { data: "originationAddress", visible: false },
                 { data: "originationCity" },
                 { data: "originationState" },
-                { data: "originationZip" },
-                { data: "destinationAddress" },
+                { data: "originationZip", visible: false },
+                { data: "destinationAddress", visible: false },
                 { data: "destinationCity" },
                 { data: "destinationState" },
-                { data: "destinationZip" },
+                { data: "destinationZip", visible: false },
                 { data: "distance", render: $.fn.dataTable.render.number(',', '.', 0, '')  },
                 { data: "needsDataPoints", visible: false },
                 { data: "status",visible: false },
@@ -654,15 +654,15 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     dataSrc: function(json){
 
                         var data = [];
-                        
+
                         var podList = json.orders[0].podList;
-                        
+
                         if (podList === null){
                             data = [];
                         }
                         else{
                             podList.forEach(function(pod){
-                                
+
                                 if(pod.order_statuses != null){
                                     var order_statuses = pod.order_statuses;
 
@@ -675,7 +675,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     }
                                 }
                             });
-                        }                        
+                        }
 
                         return data;
                     }
@@ -722,17 +722,17 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                         var data = [];
                         vinNumbersList = [];
-                        
+
                         var podList = json.orders[0].podList;
                         var deliveryInformation = json.orders[0].deliveryInformation;
                         var pickupInformation = json.orders[0].pickupInformation;
-                        
+
                         if (podList == null){
                             data = [];
                         }
                         else{
                             podList.forEach(function(pod){
-                                
+
                                 if (deliveryInformation === null){
 
                                     pod.deliveryInformation = {};
@@ -776,10 +776,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         "mRender": function (podDataJSON) {
                             var buttons = '';
                             var errorCount = 0;
-                                                  
+
                             if(podDataJSON.unitNumber == "" || podDataJSON.unitNumber == null){
                                 errorCount++;
-                            }  
+                            }
                             if(podDataJSON.trailerYear == "" || podDataJSON.trailerYear == null){
                                 errorCount++;
                             }
@@ -826,7 +826,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             else{
                                 buttons = '<button class="btn btn-primary btn-xs download-pod"><i class="fa fa-download text"></i> <span class="text">Download POD</span></button>';
                             }
-                            
+
                             return buttons;
                         }
                     },
@@ -905,12 +905,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
     function getOrderIDAndCustomerName(orderID){
 
         var url = '<?php echo API_HOST_URL; ?>';
-    	
+
         switch(entityType) {
         case 0:
 
             url += '/orders?columns=id,customerID,orderID&filter=id,eq,' + orderID + '&transform=1';
-                    	
+
             $.ajax({
                 url: url,
                 type: "GET",
@@ -920,7 +920,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                      var orderID = data.orders[0].orderID;
 
                      $("#orderNumber").html(orderID);
-                     
+
                    var url = '<?php echo API_HOST_URL; ?>';
                    url += '/entities?columns=id,name&filter=id,eq,' + customerID + '&transform=1';
 
@@ -935,8 +935,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                       }
                    });
-                }  
-             });        	
+                }
+             });
 
         		break;
         case 1:
@@ -944,11 +944,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 			$('#editOrderDetails').click(function(){
 	            $("#editOrder").modal('show');
 			});
-     	    
+
 			$('#closeOrderDetails').click(function(){
 				closeOrderDetails();
 			});
-        	
+
             url += '/orders?filter=id,eq,' + orderID + '&transform=1';
 
             $.ajax({
@@ -958,11 +958,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 success: function(data){
                      var customerID = data.orders[0].customerID;
                      var orderID = data.orders[0].orderID;
-                     
+
                      $("#orderNumber").html(orderID);
 
              		var customer_podlist_table;
-             		
+
 					if (data.orders[0].pickupInformation !== null) {
 	             		$('#customer_pickupContactPerson').text(data.orders[0].pickupInformation.contactPerson);
 	             		$('#customer_pickupLocation').text(data.orders[0].pickupInformation.pickupLocation);
@@ -973,7 +973,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 	             		$('#pickupLocation').val(data.orders[0].pickupInformation.pickupLocation);
 	             		$('#pickupPhoneNumber').val(data.orders[0].pickupInformation.phoneNumber);
 	             		$('#pickupHoursOfOperation').val(data.orders[0].pickupInformation.hoursOfOperation);
-	             		
+
 					} else {
 	             		$('#customer_pickupContactPerson').text('');
 	             		$('#customer_pickupLocation').text('');
@@ -987,7 +987,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 					}
 
 					if (data.orders[0].deliveryInformation !== null) {
-						
+
 	             		$('#customer_deliveryContactPerson').text(data.orders[0].deliveryInformation.contactPerson);
 	             		$('#customer_deliveryLocation').text(data.orders[0].deliveryInformation.deliveryLocation);
 	             		$('#customer_deliveryLocation').text(data.orders[0].deliveryInformation.deliveryLocation);
@@ -999,9 +999,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 	             		$('#deliveryLocation').val(data.orders[0].deliveryInformation.deliveryLocation);
 	             		$('#deliveryPhoneNumber').val(data.orders[0].deliveryInformation.phoneNumber);
 	             		$('#deliveryHoursOfOperation').val(data.orders[0].deliveryInformation.hoursOfOperation);
-	             		
+
 					} else {
-						
+
 	             		$('#customer_deliveryContactPerson').text('');
 	             		$('#customer_deliveryLocation').text('');
 	             		$('#customer_deliveryLocation').text('');
@@ -1013,7 +1013,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 	             		$('#deliveryLocation').val('');
 	             		$('#deliveryPhoneNumber').val('');
 	             		$('#deliveryHoursOfOperation').val('');
-	             		
+
 					}
 
 					if (data.orders[0].originationAddress !== "" && data.orders[0].originationAddress !== null) {
@@ -1030,7 +1030,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
              		} else {
              			$('#customer_destinationAddress').css({'display':'inline'}).text('');
              			$('#destinationAddress').val('');
-             		}	
+             		}
 
              		var hasorigincity = false;
              		if (data.orders[0].originationCity !== "" && data.orders[0].originationCity !== null) {
@@ -1050,7 +1050,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
              		} else {
              			$('#customer_destinationCity').text('');
              			$('#destinationCity').val('');
-             		}	
+             		}
 
              		if (data.orders[0].originationState !== "" && data.orders[0].originationState !== null) {
              			$('#customer_originationState').text((hasorigincity) ? ", " +  data.orders[0].originationState : data.orders[0].originationState);
@@ -1086,15 +1086,15 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
              		} else {
                 			$("#transportationMode").val('');
              		}
-             		
+
                     if (data.orders[0].rateType == "Flat Rate") {
                         $('#editOrder input[name="rateType"][value="Flat Rate"]').prop('checked', true);
                         $('#editOrder input[name="rateType"][value="Mileage"]').prop('checked', false);
                     } else {
                         $('#editOrder input[name="rateType"][value="Flat Rate"]').prop('checked', false);
                         $('#editOrder input[name="rateType"][value="Mileage"]').prop('checked', true);
-                    }             		
-             		
+                    }
+
 					$('#customer-pod-list-table').DataTable().destroy();
 
 					var dataSet = [['','','','']];
@@ -1105,7 +1105,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 			                	items += '<li class="list-group-item"><input type="text" class="form-control" value="' + data.orders[0].podList[i].vinNumber + '"></li>\n';
 		                }
 		                $("#input-list-box").html(items);
-		                
+
 		                items = "";
 		                for (var i = 0; i < dataPoints.object_type_data_points.length; i++) {
 		                    var selected = '';
@@ -1118,7 +1118,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 		                        }
 		                      })
 		                    });
-		                    
+
 		                    items += '<li>' + dataPoints.object_type_data_points[i].title +
 		                            ' <select style="width:90%" class="form-control mb-sm" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '" disabled>';
 		                    for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
@@ -1133,9 +1133,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 		                    items += '</select>' +
 		                            '</li>\n';
 		                }
-		                
-		                $("#dp-check-list-box").html(items); 
-						
+
+		                $("#dp-check-list-box").html(items);
+
 						customer_podlist_table = $('#customer-pod-list-table').DataTable({
                     	    		retrieve: true,
                 	            processing: true,
@@ -1147,11 +1147,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 	                { data: "notes" },
                 	            ]
 						});
-						
+
 					} else {
 
 		                $("#input-list-box > li").remove();
-						
+
 						customer_podlist_table = $('#customer-pod-list-table').DataTable({
                     	    		retrieve: true,
                 	            processing: true,
@@ -1159,7 +1159,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 	            data: [],
 						});
 					}
-					
+
                    var url = '<?php echo API_HOST_URL; ?>';
                    url += '/entities?columns=id,name&filter=id,eq,' + customerID + '&transform=1';
 
@@ -1174,14 +1174,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                       }
                    });
-                }  
-             });        	
-    		
+                }
+             });
+
             break;
-        case 2:   
+        case 2:
 
             url += '/orders?columns=id,customerID,orderID&filter=id,eq,' + orderID + '&transform=1';
-                    	
+
             $.ajax({
                 url: url,
                 type: "GET",
@@ -1191,7 +1191,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                      var orderID = data.orders[0].orderID;
 
                      $("#orderNumber").html(orderID);
-                     
+
                    var url = '<?php echo API_HOST_URL; ?>';
                    url += '/entities?columns=id,name&filter=id,eq,' + customerID + '&transform=1';
 
@@ -1206,12 +1206,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                       }
                    });
-                }  
-             });        	
-            
+                }
+             });
+
             break;
    		}
- 
+
     }
 
       function formatListBox() {
@@ -1531,10 +1531,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         if(mm<10) {
             mm='0'+mm;
         }
-        
+
         if(hours < 12){
             tod = "a.m.";
-            
+
             if(hours == 0){
                 hours = "12";
             }
@@ -1546,7 +1546,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         else{
             hours = hours - 12;
             tod = "p.m.";
-            
+
             if(hours == 0){
                 hours = "12";
             }
@@ -1554,7 +1554,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                 hours='0'+hours;
             }
-        }        
+        }
 
         if(min<10) {
             min='0'+min;
@@ -1565,17 +1565,17 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         }
 
         today = mm+"-"+dd+"-"+yyyy+" "+hours+":"+min+" "+tod+" "+tzName;
-        
+
         var podTable = $("#pod-list-table").DataTable();
         var podList = podTable.ajax.json().orders[0].podList;
-            
+
         var orderHistoryTable = $('#order-history-table').DataTable();
         var orderDetailTable = $('#order-details-table').DataTable();
         var orderDetailJSON = orderDetailTable.ajax.json();
 
         var orderNumber = orderDetailJSON.order_details[0].orders[0].orderID;
         var customerID = orderDetailJSON.order_details[0].orders[0].customerID;
-        
+
         var id = $("#id").val();
         var vinNumber = $("#orderStatusVinNumber").val();
         var city = $("#city").val();
@@ -1583,7 +1583,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         var status = $("#orderStatus").val();
         var notes = $("#statusNotes").val();
         var carrierID = $("#carrierID").val();
-        
+
         var carrier = "";
 
         allEntities.entities.forEach(function(entity){
@@ -1593,17 +1593,17 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 carrier = entity.name;
             }
         });
-        
+
         var podIndex = -1;
-            
+
         podList.forEach(function(pod, index){
             if(pod.vinNumber == vinNumber){
                 podIndex = index;
             }
         });
-        
+
         var orderStatus = {carrier:carrier, city: city, state: state, status: status, note: notes, createdAt: today, updatedAt: today};
-        
+
         var data = podList[podIndex];
         var unitNumber = data.unitNumber;
         var truckProNumber = data.truckProNumber;
@@ -1615,16 +1615,16 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         var podCarrier = data.carrier;
 
         var order_statuses = [];
-        
+
         if(data.order_statuses != null) order_statuses = data.order_statuses;
-        
+
         order_statuses.push(orderStatus);
 
         var pod = {vinNumber: vinNumber, notes: podNotes, deliveryDate: deliveryDate, fileName: fileName, carrier: podCarrier,
         unitNumber: unitNumber, truckProNumber: truckProNumber, trailerYear: trailerYear, trailerNotes: trailerNotes, order_statuses: order_statuses};
-        
+
         var emailData = {carrierID: carrierID, customerID: customerID, orderNumber: orderNumber};
-        
+
             podList.splice(podIndex, 1, pod);
 
             var orderData = {podList: podList};
@@ -1673,9 +1673,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                      $("#saveOrderStatus").prop("disabled", false);
                 }
             });
-            
-               
-               
+
+
+
 
     }
 
@@ -1696,7 +1696,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             var trailerDelivered = "";
 
             loadVinNumberList();
-        
+
             if (data['status'] == "In Transit") {
                 inTransit = "selected=selected";
             } else if (data['status'] == "In Carrier's Yard"){
@@ -1863,7 +1863,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
      <div class="widget-body">
          <br /><br />
          <div id="dataTable" class="mt">
-             <table id="orders-table" class="table table-striped table-hover">
+             <table id="orders-table" class="table table-striped table-hover" width="100%">
                  <thead>
                  <tr>
                      <th></th>
@@ -1884,7 +1884,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                      <th class="hidden-sm-down">Mileage</th>
                      <th class="hidden-sm-down">Data Points</th>
                      <th>Status</th>
-                     <th class="no-sort pull-right"></th>
+                     <th></th>
                  </tr>
                  </thead>
                  <tbody>
@@ -1958,21 +1958,21 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                      <div class="row" style="padding:15px 15px 5px 15px;background-color: #f3f3f3;">
                          <div class="col-xs-6">
                          	<div class="row"><label for="customer_pickupContactPerson">Contact</label></div>
-                         	<div class="row"><span id="customer_pickupContactPerson"></span></div>	
+                         	<div class="row"><span id="customer_pickupContactPerson"></span></div>
                          </div>
                          <div class="col-xs-6">
                          	<div class="row"><label for="customer_deliveryContactPerson">Contact</label></div>
-                         	<div class="row"><span id="customer_deliveryContactPerson"></span></div>	
+                         	<div class="row"><span id="customer_deliveryContactPerson"></span></div>
                          </div>
                      </div>
                      <div class="row" style="padding:5px 15px;background-color:#f3f3f3;">
                         <div class="col-xs-6">
                          	<div class="row"><label for="customer_pickupLocation">Lot Name (Yard)</label></div>
-                         	<div class="row"><span id="customer_pickupLocation"></span></div>	
+                         	<div class="row"><span id="customer_pickupLocation"></span></div>
                          </div>
                          <div class="col-xs-6">
                          	<div class="row"><label for="customer_deliveryLocation">Lot Name (Yard)</label></div>
-                         	<div class="row"><span id="customer_deliveryLocation"></span></div>	
+                         	<div class="row"><span id="customer_deliveryLocation"></span></div>
                          </div>
                       </div>
                      <div class="row" style="padding:5px 15px;background-color:#f3f3f3;">
@@ -1983,7 +1983,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                          		<span id="customer_originationCity"></span>
                          		<span id="customer_originationState"></span>
                          		<span id="customer_originationZip"></span>
-                         	</div>	
+                         	</div>
                          </div>
                          <div class="col-xs-6">
                          	<div class="row"><label for="customer_destinationAddress">Address</label></div>
@@ -1992,31 +1992,31 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                          		<span id="customer_destinationCity"></span>
                          		<span id="customer_destinationState"></span>
                          		<span id="customer_destinationZip"></span>
-                         	</div>	
+                         	</div>
                          </div>
                      </div>
                      <div class="row" style="padding:5px 15px;background-color:#f3f3f3;">
                         <div class="col-xs-6">
                          	<div class="row"><label for="customer_pickupPhoneNumber">Phone Number</label></div>
-                         	<div class="row"><span id="customer_pickupPhoneNumber"></span></div>	
+                         	<div class="row"><span id="customer_pickupPhoneNumber"></span></div>
                          </div>
                          <div class="col-xs-6">
                          	<div class="row"><label for="customer_deliveryPhoneNumber">Phone Number</label></div>
-                         	<div class="row"><span id="customer_deliveryPhoneNumber"></span></div>	
+                         	<div class="row"><span id="customer_deliveryPhoneNumber"></span></div>
                          </div>
-                     </div> 
+                     </div>
                      <div class="row" style="padding:5px 15px 15px 15px;background-color:#f3f3f3;">
                         <div class="col-xs-6">
                          	<div class="row"><label for="customer_pickupHoursOfOperation">Hours of Operation</label></div>
-                         	<div class="row"><span id="customer_pickupHoursOfOperation"></span></div>	
+                         	<div class="row"><span id="customer_pickupHoursOfOperation"></span></div>
                          </div>
                          <div class="col-xs-6">
                          	<div class="row"><label for="customer_deliveryHoursOfOperation">Hours of Operation</label></div>
-                         	<div class="row"><span id="customer_deliveryHoursOfOperation"></span></div>	
+                         	<div class="row"><span id="customer_deliveryHoursOfOperation"></span></div>
                          </div>
-                     </div>                                                           
-                 </div>                 
-                 
+                     </div>
+                 </div>
+
             <div id="dataTable-3" class="mt">
                 <h5><span class="fw-semi-bold">VIN List</span></h5>
                 <table id="customer-pod-list-table" class="table table-striped table-hover" width="100%">
@@ -2033,21 +2033,21 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     </tbody>
                  </table>
             </div>
-                
+
           <div class="modal-footer">
           	<button id="closeOrderDetails" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           	<button id="editOrderDetails" type="button" class="btn btn-primary"><i class="glyphicon glyphicon-edit text"></i> <span class="text">Edit</span></button>
         	  </div>
         </div>
-			<?php 
-                          
+			<?php
+
                           break;
                       default:
          ?>
         <div class="widget-body">
 
             <div id="dataTable-1" class="mt">
-                <table id="order-details-table" class="table table-striped table-hover">
+                <table id="order-details-table" class="table table-striped table-hover" width="100%">
                     <thead>
                     <tr>
                         <th>Order ID</th>
@@ -2063,7 +2063,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         <th class="hidden-sm-down">Dest. State</th>
                         <th class="hidden-sm-down">Mileage</th>
                         <th>Rate</th>
-                        <th class="no-sort pull-right"></th>
+                        <th></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -2121,9 +2121,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         <th>Carrier</th>
                         <th>Delivery Date</th>
                         <th>Notes</th>
-                        <th class="no-sort pull-right">&nbsp;</th>
-                        <th class="no-sort pull-right">&nbsp;</th>
-                        <th class="no-sort pull-right">&nbsp;</th>
+                        <th>&nbsp;</th>
+                        <th>&nbsp;</th>
+                        <th>&nbsp;</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -2160,11 +2160,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             ?>
 
         </div>
-			<?php 
-                          
+			<?php
+
                           break;
                   }
-                  
+
             ?>
 
      </section>
@@ -2189,7 +2189,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             <label for="orderStatusVinNumber">VIN Number</label>
                           <div class="form-group">
                               <select id="orderStatusVinNumber" name="orderStatusVinNumber" data-placeholder="orderStatusVinNumber" class="form-control chzn-select" data-ui-jq="select2">
-                              
+
                                 </select>
                             </div>
                         </div>
@@ -2677,7 +2677,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 <li>Delivery Phone Number</li>
                 <li>Delivery Hours of Operation</li>
             </ul>
-            
+
             Thank you.
         </div>
         <div class="modal-footer">
@@ -2903,7 +2903,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
         $('#pod-list-table tbody').off('click', 'td button.download-pod').on('click', 'td button.download-pod', function () {
 
-                    var ele = $(this);    	
+                    var ele = $(this);
             var podTable = $("#pod-list-table").DataTable();
             var pod = podTable.row( $(this).parents('tr') ).data();
             var podList = podTable.ajax.json().orders[0].podList;
@@ -2958,7 +2958,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     var iframe = $('#download-pdf-container');
                                     if (iframe.length == 0) {
                                     iframe = $('<iframe id="download=pdf-container" style="visibility:hidden;"></iframe>').appendTo('body');
-                                    }	  
+                                    }
                                                     iframe.attr('src', '<?php echo HTTP_HOST; ?>/download-pdf/' + data);
 
                         },
@@ -3283,7 +3283,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             var truckProNumber = data.truckProNumber;
             var trailerYear = data.trailerYear;
             var trailerNotes = data.trailerNotes;
-            
+
             var order_statuses = [];
 
             if(data.order_statuses != null) order_statuses = data.order_statuses;
