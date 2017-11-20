@@ -331,8 +331,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                           },
                                           error: function(data){
                                               $("#load").html("Save Changes");
-                                              $("#load").prop("disabled", false);
-	                                        	  console.log("Notification Error: ", JSON.stringify(data));
+                                              $("#load").prop("disabled", false);  
+	                                      console.log("Notification Error: ", JSON.stringify(data));
                                           }
                                       });
 
@@ -2339,7 +2339,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
     </div>
   </div>
 
-
  <!-- Edit Order Modal -->
  <div class="modal fade" id="editOrder" z-index="1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
    <div class="modal-dialog modal-lg" role="document">
@@ -2955,15 +2954,15 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         data: JSON.stringify(podDataJSON),
                         success: function(data){
 
-                                    var iframe = $('#download-pdf-container');
-                                    if (iframe.length == 0) {
-                                    iframe = $('<iframe id="download=pdf-container" style="visibility:hidden;"></iframe>').appendTo('body');
-                                    }
-                                                    iframe.attr('src', '<?php echo HTTP_HOST; ?>/download-pdf/' + data);
+                            var iframe = $('#download-pdf-container');
+                            if (iframe.length == 0) {
+                                iframe = $('<iframe id="download=pdf-container" style="visibility:hidden;"></iframe>').appendTo('body');
+                            }	  
+                            iframe.attr('src', '<?php echo HTTP_HOST; ?>/download-pdf/' + data);
 
                         },
                         error: function(data){
-                            console.log("Could not get POD Form.");
+                            console.log(JSON.stringify(data));
                         }
                     });
                 },

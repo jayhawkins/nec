@@ -607,7 +607,6 @@ if ($_SESSION['entityid'] > 0) {
         <!--h5 class="sidebar-nav-title">&nbsp; <a class="action-link" href="#"><i class="glyphicon glyphicon-refresh"></i></a></h5-->
         <ul class="sidebar-nav">
 <?php
-    if ( in_array($_SESSION['usertypeid'], $profilesMenuAccessList) ) { // Determine is user type id has access to this menu item
 ?>
             <li>
                 <!-- an example of nested submenu. basic bootstrap collapse component -->
@@ -619,15 +618,19 @@ if ($_SESSION['entityid'] > 0) {
                     <i class="toggle fa fa-angle-down"></i>
                 </a>
                 <ul id="sidebar-forms" class="collapse">
+                    
                     <?php
-                    if ($_SESSION['entityid'] == 0) {
-                    ?>
-                        <li><a href="#" onclick="ajaxFormCall('listBusinesses');">Businesses</a></li>
-                    <?php
-                    } else {
-                    ?>
-                        <li><a href="#" onclick="ajaxFormCall('businessProfile');">Business</a></li>
-                    <?php
+                    if ( in_array($_SESSION['usertypeid'], $profilesMenuAccessList) ) { // Determine is user type id has access to this menu item
+                        if ($_SESSION['entityid'] == 0) {
+                        ?>
+                            <li><a href="#" onclick="ajaxFormCall('listBusinesses');">Businesses</a></li>
+                        <?php
+                        } else {
+                        ?>
+                            <li><a href="#" onclick="ajaxFormCall('businessProfile');">Business</a></li>
+                        <?php
+                        }                   
+                        
                     }
                     ?>
                     <?php
@@ -635,6 +638,7 @@ if ($_SESSION['entityid'] > 0) {
                           echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listUsers');\">Users</a></li>";
                         }
                     ?>
+                        
                     <li><a href="#" onclick="ajaxFormCall('listContacts');">Contacts</a></li>
                     <li><a class="collapsed" href="#sidebar-sub-levels" data-toggle="collapse" data-parent="#sidebar-levels">
                               Location
@@ -656,6 +660,8 @@ if ($_SESSION['entityid'] > 0) {
                     ?>
 
                     <?php
+                    if ( in_array($_SESSION['usertypeid'], $profilesMenuAccessList) ) { // Determine is user type id has access to this menu item
+                    
                         if ($_SESSION['entitytype'] == 1) {
                           //echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listTrailers');\">Trailers</a></li>";
                         } else if ($_SESSION['entitytype'] == 2) {
@@ -665,12 +671,12 @@ if ($_SESSION['entityid'] > 0) {
                           //echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listTrailers');\">Trailers</a></li>";
                           echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listInsurance');\">Insurance</a></li>";
                         }
+                    }
                     ?>
                     <li><a href="#" onclick="ajaxFormCall('listLinks');">Links</a></li>
                 </ul>
             </li>
 <?php
-    } // End check for profilesMenuAccessList
 
     if ( ($_SESSION['entityid'] == 0) ) {
 ?>
