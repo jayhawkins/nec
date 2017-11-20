@@ -105,6 +105,9 @@ if ($_SESSION['entityid'] > 0) {
     $carrierneedresult = '{}';
     $customerneedresult = '{}';
 
+    //print_r($cnresult);
+    //die();
+
 } else {
 
     // Now get resultsets and counts for Admin Logins
@@ -272,17 +275,17 @@ if ($_SESSION['entityid'] > 0) {
             var orderCount = 0;
             switch(entityType){
                 case 0:     // URL for the Admin. The admin can see ALL Orders.
-                    url += '/orders?include=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,originationLat,originationLng,destinationLat,destinationLng,distance,needsDataPoints,status,qty,rateType,transportationMode,enitities.id,entities.name,documents.id,documents.documentURL';
+                    url += '/orders?include=documents,entities,order_details&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,originationLat,originationLng,destinationLat,destinationLng,distance,needsDataPoints,status,qty,rateType,transportationMode,entities.id,entities.name,documents.id,documents.documentURL,order_details.pickupDate';
                     break;
                 case 1:    // URL for Customer. The Customer can only see their orders.
-                    url += '/orders?include=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,originationLat,originationLng,destinationLat,destinationLng,distance,needsDataPoints,status,qty,rateType,transportationMode,enitities.id,entities.name,documents.id,documents.documentURL&filter=customerID,eq,' + entityid;
+                    url += '/orders?include=documents,entities,order_details&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,originationLat,originationLng,destinationLat,destinationLng,distance,needsDataPoints,status,qty,rateType,transportationMode,entities.id,entities.name,documents.id,documents.documentURL,order_details.pickupDate&filter=customerID,eq,' + entityid;
                     break;
                 case 2:     // URL for the Carrier. Same as the admin but will be filtered below.
-                    url += '/orders?include=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,originationLat,originationLng,destinationLat,destinationLng,distance,needsDataPoints,status,qty,rateType,transportationMode,enitities.id,entities.name,documents.id,documents.documentURL';
+                    url += '/orders?include=documents,entities,order_details&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,originationLat,originationLng,destinationLat,destinationLng,distance,needsDataPoints,status,qty,rateType,transportationMode,entities.id,entities.name,documents.id,documents.documentURL,order_details.pickupDate';
                     break;
             }
 
-            url += '&filter[]=createdAt,ge,' + dateTime + '&satisfy=all&transform=1';
+            url += '&filter[]=status,eq,Open&satisfy=all&transform=1';
 
             $.ajax({
                //url: '<?php echo API_HOST_URL . "/orders" ?>?transform=1',
@@ -293,7 +296,7 @@ if ($_SESSION['entityid'] > 0) {
                success: function(json){
 
                     orders = json.orders;
-                    console.log(orders);
+                    //console.log(orders);
 
                     if(entityType == 2) {
 
@@ -315,7 +318,7 @@ if ($_SESSION['entityid'] > 0) {
                     $('#orderCount').html(orderCount);
                },
                error: function() {
-                  alert("There Was An Error Saving the Status");
+                  alert("There Was An Error Getting User Orders Count");
                }
             });
 
@@ -345,7 +348,7 @@ if ($_SESSION['entityid'] > 0) {
 
            },
            error: function() {
-              alert("There Was An Error Saving the Status");
+              alert("There Was An Error Getting Commitments Count");
            }
         });
 
@@ -366,13 +369,12 @@ if ($_SESSION['entityid'] > 0) {
 
                     var customer_needs = json.customer_needs;
 
-
                     var commitmentCount = customer_needs.length;
 
                     $('#commitmentCount').html(commitmentCount);
                },
                error: function() {
-                  alert("There Was An Error Saving the Status");
+                  alert("There Was An Error Getting Committed Count");
                }
             });
 
@@ -1463,11 +1465,11 @@ $(function() {
 
    if ( entityTypeID == 1 ) { // Customer
        cnresult = cnresult['carrier_needs'];
-       var originationPlotColor = "blue";
+       var originationPlotColor = "red";
        var list = "listNeeds";
    } else if ( entityTypeID == 2 ) { // Carrier
        cnresult = cnresult['customer_needs'];
-       var originationPlotColor = "red";
+       var originationPlotColor = "blue";
        var list = "listAvailability";
    } else {
        cnresult = orders['order_details'];
@@ -1517,15 +1519,13 @@ $(function() {
                            // Assign some information inside the tooltip
                            plot.tooltip = {
                                content: "<span style='font-weight:bold;'>" +
-                                           value.originationCity + ", " + value.originationState +
+                                           "Origin: " + value.originationCity + ", " + value.originationState +
                                            "<br />" +
-                                           value.destinationCity + ", " + value.destinationState +
+                                           "Dest: " + value.destinationCity + ", " + value.destinationState +
                                            "<br /># of Trailers: " +
                                            value.qty +
                                            "<br />" +
                                            "Available: " + availableDate +
-                                           "<br />" +
-                                           "Expires: " + expirationDate +
                                            "<br />Click for more details" +
                                         "</span>"
                            };
@@ -1598,7 +1598,8 @@ $(function() {
                                         "stroke": "#a4e100",
                                         "stroke-width": 2,
                                         "stroke-linecap": "round",
-                                        "opacity": 0.6
+                                        "opacity": 0.6,
+                                        "arrow-end": "classic-wide-long"
                                     };
                            link.tooltip = {"content": linktitle};
                            links[linkobjecttitle] = link;
@@ -1610,7 +1611,7 @@ $(function() {
                    // Parse location elements
                    // This variable will hold all the plots of our map - ALREADY INIT ABOVE
                    //var plots = {};
-
+/*
                    var plotsColors = chroma.scale("Yellows");
                    //console.log(locations);
                    $.each(locations, function (index, values) {
@@ -1661,13 +1662,19 @@ $(function() {
 
                        });
                    });
-
+*/
            } else {
 
                    // Setup Orders plots
                    var plotsColors = chroma.scale("Oranges");
                    $.each(orders, function (index, value) {
-                           //console.log(values);
+                           // Setup Pickup Date
+                           //alert(formatDate(new Date(value.order_details[0].pickupDate)));
+                           if (value.pickupDate > '') {
+                               var pickupDate = formatDate(new Date(value.order_details[0].pickupDate));
+                           } else {
+                               var pickupDate = "Closed";
+                           }
                            // Check if we have the GPS position of the element
                            if (value.originationLat) {
                                // Will hold the plot information
@@ -1687,7 +1694,7 @@ $(function() {
                                            "<br /># of Trailers: " +
                                            value.qty +
                                            "<br />" +
-                                           formatDate(new Date(value.pickupDate)) +
+                                           pickupDate +
                                            "<br />Click for more details" +
                                         "</span>"
                                };
@@ -1716,7 +1723,8 @@ $(function() {
                                // Assign position
                                plot.latitude = parseFloat(value.destinationLat);
                                plot.longitude = parseFloat(value.destinationLng);
-
+                               plot.size = 3;
+                               plot.type = "";
                                // Assign some information inside the tooltip
                                plot.tooltip = {
                                    content: "<span style='font-weight:bold;'>" +
@@ -1750,7 +1758,8 @@ $(function() {
                                             "stroke": "#ffffff",
                                             "stroke-width": 2,
                                             "stroke-linecap": "round",
-                                            "opacity": 0.6
+                                            "opacity": 0.6,
+                                            "arrow-end": "classic-wide-long"
                                         };
                                link.tooltip = {"content": linktitle};
                                links[linkobjecttitle] = link;

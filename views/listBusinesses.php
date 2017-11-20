@@ -13,6 +13,7 @@ $contacts = file_get_contents(API_HOST_URL . '/contacts?columns=id,firstName,las
 
      var contacts = <?php echo $contacts; ?>;
 
+
      var myApp;
       myApp = myApp || (function () {
        var pleaseWaitDiv = $('<div class="modal hide" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false"><div class="modal-header"><h1>Processing...</h1></div><div class="modal-body"><div class="progress progress-striped active"><div class="bar" style="width: 100%;"></div></div></div></div>');
@@ -120,7 +121,7 @@ $contacts = file_get_contents(API_HOST_URL . '/contacts?columns=id,firstName,las
       }
 
       function loadTableAJAX() {
-        myApp.showPleaseWait();
+        //myApp.showPleaseWait();
         var url = '<?php echo API_HOST_URL; ?>' + '/entities?columns=id,entityTypeID,name,entityRating,contactID,status,rateType,negotiatedRate,towAwayRateMin,towAwayRateMax,towAwayRateType,loadOutRateMin,loadOutRateMax,loadOutRateType&filter[]=id,gt,0&order=name&transform=1';
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
@@ -147,7 +148,8 @@ $contacts = file_get_contents(API_HOST_URL . '/contacts?columns=id,firstName,las
                     data: null,
                     "bSortable": false,
                     "mRender": function (o) {
-                        var buttons = '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text\"></i> <span class=\"text\">Edit</span></button>';
+                        var buttons = '<div class="pull-right text-nowrap">';
+                        buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text\"></i> <span class=\"text\">Edit</span></button>';
 /*
                         if (o.status == "Active") {
                                   buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text\"></i> <span class=\"text\">Disable</span></button>";
@@ -155,6 +157,7 @@ $contacts = file_get_contents(API_HOST_URL . '/contacts?columns=id,firstName,las
                                   buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text\"></i> <span class=\"text\">Enable</span></button>";
                         }
 */
+                        buttons += "</div>";
                         return buttons;
                     }
                 }
@@ -244,7 +247,7 @@ $contacts = file_get_contents(API_HOST_URL . '/contacts?columns=id,firstName,las
          <!--button type="button" id="addBusiness" class="btn btn-primary pull-xs-right" data-target="#myModal">Add Business</button-->
          <br /><br />
          <div id="dataTable" class="mt">
-             <table id="datatable-table" class="table table-striped table-hover">
+             <table id="datatable-table" class="table table-striped table-hover" width="100%">
                  <thead>
                  <tr>
                      <th>ID</th>
@@ -260,7 +263,7 @@ $contacts = file_get_contents(API_HOST_URL . '/contacts?columns=id,firstName,las
                      <th class="no-sort hidden-sm-down">Load Out Min</th>
                      <th class="no-sort hidden-sm-down">Load Out Rate Max</th>
                      <th class="no-sort hidden-sm-down">Load Out Rate Type</th>
-                     <th class="no-sort pull-right">&nbsp;</th>
+                     <th>&nbsp;</th>
                  </tr>
                  </thead>
                  <tbody>

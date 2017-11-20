@@ -311,7 +311,7 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
          <button type="button" id="addUser" class="btn btn-primary pull-xs-right" data-target="#myModal">Add User</button>
          <br /><br />
          <div id="dataTable" class="mt">
-             <table id="datatable-table" class="table table-striped table-hover">
+             <table id="datatable-table" class="table table-striped table-hover" width="100%">
                  <thead>
                  <tr>
                      <th>Members ID</th>
@@ -326,7 +326,7 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
                      <th class="no-sort">Unique ID</th>
                      <th class="no-sort">Text Number</th>
                      <th class="no-sort">Status</th>
-                     <th class="no-sort pull-right">&nbsp;</th>
+                     <th>&nbsp;</th>
                  </tr>
                  </thead>
                  <tbody>
