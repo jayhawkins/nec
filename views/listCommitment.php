@@ -444,7 +444,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
     function loadTableAJAX(committed) {
 
-        var baseUrl = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=customer_needs_commit,entities&columns=entities.name,id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.rateType,entities.negotiatedRate&filter[]=id,in,(' + committed + ')&filter[]=status,eq,Available';
+        var baseUrl = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=customer_needs_commit,entities&columns=entities.name,id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.rateType,entities.negotiatedRate&filter[]=id,in,(0,' + committed + ')&filter[]=status,eq,Available';
 
         var url = baseUrl + '&order[]=entityID&order[]=rootCustomerNeedsID&order[]=availableDate,desc&transform=1';
 
@@ -462,7 +462,26 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     "data":           null,
                     "defaultContent": ''
                 },
-                { data: "entities[0].name" },
+                //{ data: "entities[0].name" },
+                {
+                    data: null,
+                    "bSortable": true,
+                    "mRender": function (o) {
+
+                        var entityName = '';
+                        var entityID = o.entityID;
+
+                        allEntities.entities.forEach(function(entity){
+
+                            if(entityID == entity.id){
+
+                                entityName = entity.name;
+                            }
+                        });
+
+                        return entityName;
+                    }
+                },
                 { data: "id", visible: false },
                 { data: "rootCustomerNeedsID", visible: false},
                 { data: "entityID", visible: false },
@@ -769,7 +788,26 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     dataSrc: 'customer_needs'
                 },
                 columns: [
-                    { data: "entities[0].name", visible: true },
+                    //{ data: "entities[0].name", visible: true },
+                    {
+                        data: null,
+                        "bSortable": true,
+                        "mRender": function (o) {
+
+                            var entityName = '';
+                            var entityID = o.entityID;
+
+                            allEntities.entities.forEach(function(entity){
+
+                                if(entityID == entity.id){
+
+                                    entityName = entity.name;
+                                }
+                            });
+
+                            return entityName;
+                        }
+                    },
                     { data: "id", visible: false },
                     { data: "rootCustomerNeedsID", visible: false},
                     { data: "entityID", visible: false },
@@ -970,8 +1008,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         var data = {rate: carrierRate, status: "Close", updatedAt: date};
         //var data = {rate: carrierRate, updatedAt: date};
 
-        //console.log("CommitID:", commitID);
-
         $.ajax({
            url: url,
            type: type,
@@ -1112,7 +1148,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                      <th>Name</th>
                      <th>Rate Type</th>
                      <th>Negotiated Rate</th>
-                     <th class="no-sort pull-right"></th>
+                     <th></th>
                  </tr>
                  </thead>
                  <tbody>
@@ -1269,7 +1305,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             </div>
             <div class="col-sm-4 col-sm-offset-4">
                 <div class="form-group">
-                    <button id="completeOrder" class="btn btn-primary btn-block" role="button"><i class="fa fa-check-square-o text-info"></i> <span class="text-info">Submit for Order</span></button>
+                    <button id="completeOrder" class="btn btn-primary btn-block" role="button"><i class="fa fa-check-square-o text"></i> <span class="text">Submit for Order</span></button>
                 </div>
             </div>
         </div>

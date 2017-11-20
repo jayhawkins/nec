@@ -211,12 +211,12 @@ require '../lib/common.php';
          <button type="button" id="addType" class="btn btn-primary pull-xs-right" data-target="#myModal">Add Type</button>
          <br /><br />
          <div id="dataTable" class="mt">
-             <table id="datatable-table" class="table table-striped table-hover">
+             <table id="datatable-table" class="table table-striped table-hover" width="100%">
                  <thead>
                  <tr>
                      <th>ID</th>
                      <th class="hidden-sm-down">Name</th>
-                     <th class="no-sort pull-right">&nbsp;</th>
+                     <th>&nbsp;</th>
                  </tr>
                  </thead>
                  <tbody>

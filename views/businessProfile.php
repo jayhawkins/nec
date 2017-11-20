@@ -9,8 +9,8 @@
             <div class="widget-body">
               <form id="formRegister" class="register-form mt-lg">
                 <input type="hidden" id="entityID" name="entityID" value="" />
-                <input type="hidden" id="locationID" name="locationID" value="" />                
-                <input type="hidden" id="contactID" name="contactID" value="" />                
+                <input type="hidden" id="locationID" name="locationID" value="" />
+                <input type="hidden" id="contactID" name="contactID" value="" />
                 <div class="row">
                     <div class="col-sm-4">
                         <label for="firstName">First Name</label>
@@ -86,7 +86,7 @@
                            </div>
                            <div class="col-sm-5" style="padding-right: 0;">
                               <input type="text" maxlength="15" id="phoneExt" name="phoneExt" class="form-control" placeholder="Ext" />
-                           </div>                        
+                           </div>
                         </div>
                     </div>
                     <div class="col-sm-6">
@@ -103,7 +103,7 @@
                           <input type="email" id="email" name="email" class="form-control" placeholder="*Email Address" value="" required="required" />
                         </div>
                     </div>
-				</div>                
+				</div>
                 <div class="clearfix">
                     <div class="btn-toolbar pull-left">
                       &nbsp;
@@ -124,7 +124,7 @@
  function handleError(property, selector, data) {
 	 addError(property, selector, data);
 	 removeError(selector);
- }	
+ }
 
  function removeError(selector) {
 		if ($('#' + selector + '-error').length > 0) {
@@ -132,7 +132,7 @@
 			$('#' + selector).removeClass('form-control-danger');
 			$('#' + selector).parent().removeClass('has-danger');
 		}
- }	
+ }
 
  function addError(property, selector, data) {
 	if (data.results.hasOwnProperty(property)) {
@@ -142,14 +142,14 @@
 		}
 	}
  }
- 
+
  $(function() {
 
-	/* load content */ 
+	/* load content */
     var profileBusinessInfoXhr = $.getJSON('/profiles/business/info', function(data) {
 
 		if (data.hasOwnProperty('status') && data.hasOwnProperty('results')) {
-			
+
 			if (data.status === 'success') {
 
 				if (data.results.hasOwnProperty('id')) {
@@ -163,31 +163,31 @@
 				if (data.results.hasOwnProperty('contactID')) {
 					$('#contactID').val(data.results.contactID);
 				}
-				
+
 				if (data.results.hasOwnProperty('entityName')) {
 					$('#entityName').val(data.results.entityName);
 				}
-				
+
 				if (data.results.hasOwnProperty('title')) {
 					$('#title').val(data.results.title);
 				}
-		 		
+
 				if (data.results.hasOwnProperty('firstName')) {
 					$('#firstName').val(data.results.firstName);
 				}
-				
+
 				if (data.results.hasOwnProperty('lastName')) {
 					$('#lastName').val(data.results.lastName);
 				}
-				
+
 				if (data.results.hasOwnProperty('address1')) {
 					$('#address1').val(data.results.address1);
 				}
-				
+
 				if (data.results.hasOwnProperty('address2')) {
 					$('#address2').val(data.results.address2);
 				}
-				
+
 				if (data.results.hasOwnProperty('city')) {
 					$('#city').val(data.results.city);
 				}
@@ -199,7 +199,7 @@
 				if (data.results.hasOwnProperty('emailAddress')) {
 					$('#email').val(data.results.emailAddress);
 				}
-				
+
 				if (data.results.hasOwnProperty('primaryPhone')) {
 
 		    			var phoneindex = data.results.primaryPhone.indexOf(' x');
@@ -212,7 +212,7 @@
 		                $('#phone').val(data.results.primaryPhone);
 		                $('#phoneExt').val('');
 		            }
-					
+
 				}
 
 				if (data.results.hasOwnProperty('fax')) {
@@ -228,25 +228,25 @@
 						} else {
 							state.append($("<option />").val(val[0]).text(val[1]));
 						}
-						
-					});			
+
+					});
 				}
-				
+
 			}
 		}
-        
+
     });
 
     $('#register').click(function(event) {
 
-    		event.preventDefault(); 
-    	
+    		event.preventDefault();
+
 		var phone = $('#phone').val().replace(/(\d{3})\-?(\d{3})\-?(\d{4})/, '$1-$2-$3');
 		var phoneExt = $('#phoneExt').val();
 		if (phoneExt != "") {
 			phone = phone + " x" + phoneExt;
-		} 
-    	
+		}
+
         var json = {
                     'id' : $('#entityID').val(),
                     'locationID' : $('#locationID').val(),
@@ -264,7 +264,7 @@
                     'primaryPhone' : phone,
                     'fax' : $('#fax').val()
                 };
-        
+
         	$.ajax({
         	    type: 'POST',
         	    contentType: 'application/json; charset=utf-8',
@@ -274,9 +274,9 @@
         	    success: function(data) {
 
         			if (data.hasOwnProperty('status') && data.hasOwnProperty('results')) {
-        				
+
         				if (data.status == 'fail') {
-        					
+
                 			if ($('#successMessage').length > 0) {
                 				$('#successMessage').remove();
                 			}
@@ -293,7 +293,7 @@
             						$('#entityName').parent().removeClass('has-danger');
             					}
         					}
-        					
+
            				if (data.results.hasOwnProperty('title')) {
             					if ($('#title-error').length == 0) {
             						$('#title').addClass('form-control-danger').after('<div id="title-error" class="form-control-feedback">' + data.results.title + '</div>');
@@ -319,7 +319,7 @@
             						$('#firstName').parent().removeClass('has-danger');
             					}
         					}
-    
+
            				if (data.results.hasOwnProperty('lastName')) {
             					if ($('#lastName-error').length == 0) {
             						$('#lastName').addClass('form-control-danger').after('<div id="lastName-error" class="form-control-feedback">' + data.results.lastName + '</div>');
@@ -383,7 +383,7 @@
             						$('#zip').removeClass('form-control-danger');
             						$('#zip').parent().removeClass('has-danger');
             					}
-        					}    
+        					}
 
          				if (data.results.hasOwnProperty('emailAddress')) {
             					if ($('#email-error').length == 0) {
@@ -396,7 +396,7 @@
             						$('#email').removeClass('form-control-danger');
             						$('#email').parent().removeClass('has-danger');
             					}
-        					}    
+        					}
 
          				if (data.results.hasOwnProperty('primaryPhone')) {
             					if ($('#phone-error').length == 0) {
@@ -409,7 +409,7 @@
             						$('#phone').removeClass('form-control-danger');
             						$('#phone').parent().removeClass('has-danger');
             					}
-        					}    
+        					}
 
          				if (data.results.hasOwnProperty('fax')) {
             					if ($('#fax-error').length == 0) {
@@ -422,10 +422,10 @@
             						$('#fax').removeClass('form-control-danger');
             						$('#fax').parent().removeClass('has-danger');
             					}
-        					}    
-         				
+        					}
+
         				} else if(data.status == 'success') {
-        					
+
         					removeError('entityName');
         					removeError('title');
         					removeError('firstName');
@@ -443,20 +443,20 @@
                     			if ($('#successMessage').length == 0) {
                     				$('#formRegister').before('<div id="successMessage" class="alert alert-success" role="alert">' + data.statusMessage + '</div>');
                     			}
-                    			
+
                     		}
-        					
+
         				}
 
         			}
-        			
+
         	    },
         	    error: function(err) {
         	    }
         	});
-    	
+
     });
-	 
+
  });
- 
+
  </script>
