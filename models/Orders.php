@@ -250,8 +250,10 @@ class Orders
             //$to = array($adminContact['emailAddress'] => $adminContact['firstName'] . " " . $adminContact['lastName']);
             $to = array("implesaytest123@gmail.com" => "Bad Email Address");
             
-            $returnObject = sendmail($to, $subject, $body, $from);                            
-
+            $returnObject = sendmail($to, $subject, $body, $from); 
+            
+            return $returnObject;
+/*
             // Are there any failed emails?
             if(sizeof($returnObject["failedRecipients"]) > 0){
                // Send the list to the admin
@@ -297,8 +299,9 @@ class Orders
                         $adminReturnObject = sendmail($adminTo, $adminSubject, $adminBody, $from);
                   }
 */
+            /*
             }
-
+*/
         } 
         catch (Exception $mailex) {
           return $mailex;
