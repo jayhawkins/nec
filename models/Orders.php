@@ -252,7 +252,7 @@ class Orders
             
             $returnObject = sendmail($to, $subject, $body, $from); 
             
-            return $returnObject["failedRecipients"];
+            return $returnObject['failedRecipients'];
 /*
             // Are there any failed emails?
             if(sizeof($returnObject["failedRecipients"]) > 0){
