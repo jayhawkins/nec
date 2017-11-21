@@ -128,11 +128,43 @@ class Orders
                     $body .= "Change List: <br/>";
                     $body .= $changeList . "<br/><br/>";
                     
-                    if (sendmail($to, $subject, $body, $from)) {
-                        $numSent = 1;
-                    } else {
-                        return $mailex;
+                    $returnObject = sendmail($to, $subject, $body, $from);                            
+
+                    // Are there any failed emails?
+                    if(sizeof($returnObject["failedRecipients"]) > 0){
+                       // Send the list to the admin
+                        $contactargs = array(
+                                "transform"=>1,
+                                "filter"=>"entityID,eq,0"
+                          );
+                          $contacturl = API_HOST_URL . "/contacts?".http_build_query($contactargs);
+                          $contactoptions = array(
+                              'http' => array(
+                                  'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                                  'method'  => 'GET'
+                              )
+                          );
+                          $contactcontext  = stream_context_create($contactoptions);
+                          $contactresult = json_decode(file_get_contents($contacturl,false,$contactcontext),true);
+
+                          $contactList = $contactresult["contacts"];
+
+                          for($i=0; $i<sizeof($contactList); $i++){
+
+                              $adminTo = array($contactList[$i]['emailAddress'] => $contactList[$i]['firstName'] . " " . $contactList[$i]['lastName']);
+
+                                $adminBody = "Hello " . $contactList[$i]['firstName'] . ",<br /><br />";
+                                $adminBody .= "The following emails were returned as failures: <br />";
+
+                                $adminBody .= implode("<br/>", $returnObject["failedRecipients"]);
+
+                                $adminSubject = "Rejected Email Addresses";
+
+                                $adminReturnObject = sendmail($adminTo, $adminSubject, $adminBody, $from);
+                          }
+
                     }
+
               } catch (Exception $mailex) {
                 return $mailex;
               }
@@ -150,11 +182,43 @@ class Orders
                     $body .= $adminresult['firstName'] . " " . $adminresult['lastName'] . "<br/>";
                     $body .= "Nationwide Equipment Control<br/>";
                     
-                    if (sendmail($to, $subject, $body, $from)) {
-                        $numSent = 1;
-                    } else {
-                        return $mailex;
+                    $returnObject = sendmail($to, $subject, $body, $from);                            
+
+                    // Are there any failed emails?
+                    if(sizeof($returnObject["failedRecipients"]) > 0){
+                       // Send the list to the admin
+                        $contactargs = array(
+                                "transform"=>1,
+                                "filter"=>"entityID,eq,0"
+                          );
+                          $contacturl = API_HOST_URL . "/contacts?".http_build_query($contactargs);
+                          $contactoptions = array(
+                              'http' => array(
+                                  'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                                  'method'  => 'GET'
+                              )
+                          );
+                          $contactcontext  = stream_context_create($contactoptions);
+                          $contactresult = json_decode(file_get_contents($contacturl,false,$contactcontext),true);
+
+                          $contactList = $contactresult["contacts"];
+
+                          for($i=0; $i<sizeof($contactList); $i++){
+
+                              $adminTo = array($contactList[$i]['emailAddress'] => $contactList[$i]['firstName'] . " " . $contactList[$i]['lastName']);
+
+                                $adminBody = "Hello " . $contactList[$i]['firstName'] . ",<br /><br />";
+                                $adminBody .= "The following emails were returned as failures: <br />";
+
+                                $adminBody .= implode("<br/>", $returnObject["failedRecipients"]);
+
+                                $adminSubject = "Rejected Email Addresses";
+
+                                $adminReturnObject = sendmail($adminTo, $adminSubject, $adminBody, $from);
+                          }
+
                     }
+
               } catch (Exception $mailex) {
                 return $mailex;
               }
@@ -183,28 +247,105 @@ class Orders
         
         // Send to Admin
         try {
-            $to = array($adminContact['emailAddress'] => $adminContact['firstName'] . " " . $adminContact['lastName']);
+            //$to = array($adminContact['emailAddress'] => $adminContact['firstName'] . " " . $adminContact['lastName']);
+            $to = array("implesaytest123@gmail.com" => "Bad Email Address");
+            
+            $returnObject = sendmail($to, $subject, $body, $from);                            
 
-            if (sendmail($to, $subject, $adminBody, $from)) {
-                $numSent = 1;
-            } else {
-                return $mailex;
+            // Are there any failed emails?
+            if(sizeof($returnObject["failedRecipients"]) > 0){
+               // Send the list to the admin
+                $contactargs = array(
+                        "transform"=>1,
+                        "filter"=>"entityID,eq,0"
+                  );
+                  $contacturl = API_HOST_URL . "/contacts?".http_build_query($contactargs);
+                  $contactoptions = array(
+                      'http' => array(
+                          'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                          'method'  => 'GET'
+                      )
+                  );
+                  $contactcontext  = stream_context_create($contactoptions);
+                  $contactresult = json_decode(file_get_contents($contacturl,false,$contactcontext),true);
+
+                  $contactList = $contactresult["contacts"];
+
+                  
+                      $adminTo = array("dsmith@dubtel.com" => "Dennis Smith");
+
+                        $adminBody = "Hello Dennis,<br /><br />";
+                        $adminBody .= "The following emails were returned as failures: <br />";
+
+                        $adminBody .= implode("<br/>", $returnObject["failedRecipients"]);
+
+                        $adminSubject = "Rejected Email Addresses";
+
+                        $adminReturnObject = sendmail($adminTo, $adminSubject, $adminBody, $from);
+                  /*
+                  for($i=0; $i<sizeof($contactList); $i++){
+
+                      $adminTo = array($contactList[$i]['emailAddress'] => $contactList[$i]['firstName'] . " " . $contactList[$i]['lastName']);
+
+                        $adminBody = "Hello " . $contactList[$i]['firstName'] . ",<br /><br />";
+                        $adminBody .= "The following emails were returned as failures: <br />";
+
+                        $adminBody .= implode("<br/>", $returnObject["failedRecipients"]);
+
+                        $adminSubject = "Rejected Email Addresses";
+
+                        $adminReturnObject = sendmail($adminTo, $adminSubject, $adminBody, $from);
+                  }
+*/
             }
+
         } 
         catch (Exception $mailex) {
           return $mailex;
         }
         
-        
+        /*
         // Send to Carrier
         try {
             $to = array($carrierContact['emailAddress'] => $carrierContact['firstName'] . " " . $carrierContact['lastName']);
 
-            if (sendmail($to, $subject, $body, $from)) {
-                $numSent++;
-            } else {
-                return $mailex;
+            $returnObject = sendmail($to, $subject, $body, $from);                            
+
+            // Are there any failed emails?
+            if(sizeof($returnObject["failedRecipients"]) > 0){
+               // Send the list to the admin
+                $contactargs = array(
+                        "transform"=>1,
+                        "filter"=>"entityID,eq,0"
+                  );
+                  $contacturl = API_HOST_URL . "/contacts?".http_build_query($contactargs);
+                  $contactoptions = array(
+                      'http' => array(
+                          'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                          'method'  => 'GET'
+                      )
+                  );
+                  $contactcontext  = stream_context_create($contactoptions);
+                  $contactresult = json_decode(file_get_contents($contacturl,false,$contactcontext),true);
+
+                  $contactList = $contactresult["contacts"];
+
+                  for($i=0; $i<sizeof($contactList); $i++){
+
+                      $adminTo = array($contactList[$i]['emailAddress'] => $contactList[$i]['firstName'] . " " . $contactList[$i]['lastName']);
+
+                        $adminBody = "Hello " . $contactList[$i]['firstName'] . ",<br /><br />";
+                        $adminBody .= "The following emails were returned as failures: <br />";
+
+                        $adminBody .= implode("<br/>", $returnObject["failedRecipients"]);
+
+                        $adminSubject = "Rejected Email Addresses";
+
+                        $adminReturnObject = sendmail($adminTo, $adminSubject, $adminBody, $from);
+                  }
+
             }
+
         } 
         catch (Exception $mailex) {
           return $mailex;
@@ -215,15 +356,48 @@ class Orders
         try {
             $to = array($customerContact['emailAddress'] => $customerContact['firstName'] . " " . $customerContact['lastName']);
 
-            if (sendmail($to, $subject, $body, $from)) {
-                $numSent++;
-            } else {
-                return $mailex;
+            $returnObject = sendmail($to, $subject, $body, $from);                            
+
+            // Are there any failed emails?
+            if(sizeof($returnObject["failedRecipients"]) > 0){
+               // Send the list to the admin
+                $contactargs = array(
+                        "transform"=>1,
+                        "filter"=>"entityID,eq,0"
+                  );
+                  $contacturl = API_HOST_URL . "/contacts?".http_build_query($contactargs);
+                  $contactoptions = array(
+                      'http' => array(
+                          'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                          'method'  => 'GET'
+                      )
+                  );
+                  $contactcontext  = stream_context_create($contactoptions);
+                  $contactresult = json_decode(file_get_contents($contacturl,false,$contactcontext),true);
+
+                  $contactList = $contactresult["contacts"];
+
+                  for($i=0; $i<sizeof($contactList); $i++){
+
+                      $adminTo = array($contactList[$i]['emailAddress'] => $contactList[$i]['firstName'] . " " . $contactList[$i]['lastName']);
+
+                        $adminBody = "Hello " . $contactList[$i]['firstName'] . ",<br /><br />";
+                        $adminBody .= "The following emails were returned as failures: <br />";
+
+                        $adminBody .= implode("<br/>", $returnObject["failedRecipients"]);
+
+                        $adminSubject = "Rejected Email Addresses";
+
+                        $adminReturnObject = sendmail($adminTo, $adminSubject, $adminBody, $from);
+                  }
+
             }
+
         } 
         catch (Exception $mailex) {
           return $mailex;
         }
+        */
         
         return "The order status has been successfully updated.";
     }
