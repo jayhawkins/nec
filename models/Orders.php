@@ -247,8 +247,7 @@ class Orders
         
         // Send to Admin
         try {
-            //$to = array($adminContact['emailAddress'] => $adminContact['firstName'] . " " . $adminContact['lastName']);
-            $to = array("implesaytest123+1@gmail.com" => "Bad Email Address");
+            $to = array($adminContact['emailAddress'] => $adminContact['firstName'] . " " . $adminContact['lastName']);
             
             $returnObject = sendmail($to, $subject, $body, $from); 
             
@@ -269,20 +268,8 @@ class Orders
                   $contactcontext  = stream_context_create($contactoptions);
                   $contactresult = json_decode(file_get_contents($contacturl,false,$contactcontext),true);
 
-                  $contactList = $contactresult["contacts"];
-
-                  
-                      $adminTo = array("dsmith@dubtel.com" => "Dennis Smith");
-
-                        $adminBody = "Hello Dennis,<br /><br />";
-                        $adminBody .= "The following emails were returned as failures: <br />";
-
-                        $adminBody .= implode("<br/>", $returnObject["failedRecipients"]);
-
-                        $adminSubject = "Rejected Email Addresses";
-
-                        $adminReturnObject = sendmail($adminTo, $adminSubject, $adminBody, $from);
-                  /*
+                  $contactList = $contactresult["contacts"];                  
+                      
                   for($i=0; $i<sizeof($contactList); $i++){
 
                       $adminTo = array($contactList[$i]['emailAddress'] => $contactList[$i]['firstName'] . " " . $contactList[$i]['lastName']);
@@ -296,8 +283,6 @@ class Orders
 
                         $adminReturnObject = sendmail($adminTo, $adminSubject, $adminBody, $from);
                   }
-*/
-            
             }
 
         } 
