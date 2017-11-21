@@ -44,7 +44,7 @@ function sendmail($to, $subject, $body, $from, $document='', $bcc='') {
     /********************************************************************/
     $returnObject = array(
         "numSent" => 0,
-        "failedRecipents" => ""
+        "failedRecipients" => array()
     );
     
     $failedRecipients = array();
@@ -61,8 +61,7 @@ function sendmail($to, $subject, $body, $from, $document='', $bcc='') {
 
         try {
             if (!$mailer->send($message, $failedRecipients)) {
-                $returnObject["failedRecipients"] .= $failedRecipients[0] . ",";
-                //array_push($returnObject["failedRecipients"], $failedRecipients[0]);
+                array_push($returnObject["failedRecipients"], $failedRecipients[0]);
             }
             else{                
               $numSent++;

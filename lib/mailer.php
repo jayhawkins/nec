@@ -45,7 +45,7 @@ function sendmail($to, $subject, $body, $from, $document='') {
     /********************************************************************/
     $returnObject = array(
         "numSent" => 0,
-        "failedRecipents" => array()
+        "failedRecipients" => array()
     );
     
     $failedRecipients = array();
