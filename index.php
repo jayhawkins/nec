@@ -790,7 +790,8 @@ $app->route('POST /pod_form_api', function() {
             $fileName = "hyundai-release-form-report-" . str_replace(" ", "-", strtolower($podFormType)) . "-" . $vinNumber . ".pdf";
             $pdf->Output(TEMP_LOCATION . "/" . $fileName, 'F');
 
-        } catch(Exception $e) {
+        } 
+        catch(Exception $e) {
             throw $e;
         }
 
@@ -969,7 +970,8 @@ $app->route('POST /pod_form_api', function() {
             $fileName = "nationwide-pod-form-" . str_replace(' ', '-', strtolower($podFormType)) . "-" . $vinNumber . ".pdf";
             $pdf->Output(TEMP_LOCATION . '/' . $fileName, 'F');
 
-        } catch(Exception $e) {
+        } 
+        catch(Exception $e) {
             throw $e;
         }
 
