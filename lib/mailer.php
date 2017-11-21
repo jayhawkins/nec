@@ -43,6 +43,11 @@ function sendmail($to, $subject, $body, $from, $document='') {
     /********************************************************************/
     // Send the message
     /********************************************************************/
+    $returnObject = array(
+        "numSent" => 0,
+        "failedRecipents" => array()
+    );
+    
     $failedRecipients = array();
     $numSent = 0;
     foreach ($to as $address => $name)
@@ -54,8 +59,11 @@ function sendmail($to, $subject, $body, $from, $document='') {
       }
 
       $numSent += $mailer->send($message, $failedRecipients);
+      
+      $returnObject["numSent"] = $numSent;
+      array_push($returnObject["failedRecipients"], $failedRecipients[0]);
     }
 
-    return $numSent;
+    return $returnObject;
 
 }

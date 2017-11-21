@@ -42,6 +42,11 @@ function sendmail($to, $subject, $body, $from, $document='', $bcc='') {
     /********************************************************************/
     // Send the message
     /********************************************************************/
+    $returnObject = array(
+        "numSent" => 0,
+        "failedRecipents" => array()
+    );
+    
     $failedRecipients = array();
     $numSent = 0;
     foreach ($to as $address => $name) {
@@ -55,7 +60,10 @@ function sendmail($to, $subject, $body, $from, $document='', $bcc='') {
         }
 
         try {
-            if ($mailer->send($message, $failedRecipients)) {
+            if (!$mailer->send($message, $failedRecipients)) {
+                array_push($returnObject["failedRecipients"], $failedRecipients[0]);
+            }
+            else{                
               $numSent++;
             }
         } catch (Exception $e) {
@@ -64,7 +72,9 @@ function sendmail($to, $subject, $body, $from, $document='', $bcc='') {
         }
     }
 
-    return $numSent;
+      $returnObject["numSent"] = $numSent;
+      
+    return $returnObject;
 
 }
 
