@@ -321,8 +321,8 @@ if ($_SESSION['entityid'] > 0) {
             var orderCount = 0;
             switch(entityType){
                 case 0:     // URL for the Admin. The admin can see ALL Orders.
-                    //url += '/orders?include=order_details&columns=id,customerID,carrierIDs,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,originationLat,originationLng,destinationLat,destinationLng,distance,needsDataPoints,status,qty,rateType,transportationMode,order_details.pickupDate';
-                    url += '/order_details?columns=id,originationCity,originationState,destinationCity,destinationState,originationLat,originationLng,destinationLat,destinationLng,distance,status,qty,pickupDate';
+                    //url += '/orders?include=order_details&columns=id,customerID,carrierIDs,orderID,originationCity,originationState,destinationCity,destinationState,originationLat,originationLng,destinationLat,destinationLng,distance,needsDataPoints,status,qty,rateType,transportationMode,order_details.pickupDate,order_details.deliveryDate';
+                    url += '/order_details?include=orders';
                     break;
                 case 1:    // URL for Customer. The Customer can only see their orders.
                     url += '/orders?include=documents,entities,order_details&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,originationLat,originationLng,destinationLat,destinationLng,distance,needsDataPoints,status,qty,rateType,transportationMode,entities.id,entities.name,documents.id,documents.documentURL,order_details.pickupDate&filter=customerID,eq,' + entityid;
@@ -332,8 +332,8 @@ if ($_SESSION['entityid'] > 0) {
                     break;
             }
 
-            url += '&filter[]=status,eq,Open&filter[]=pickupDate,ge,'+theDate+'&satisfy=all&transform=1';
-
+            url += '&filter[]=status,eq,Open&filter[]=deliveryDate,ge,'+theDate+'&satisfy=all&transform=1';
+//console.log(url);
             $.ajax({
                //url: '<?php echo API_HOST_URL . "/orders" ?>?transform=1',
                url: url,
@@ -342,6 +342,7 @@ if ($_SESSION['entityid'] > 0) {
                async: false,
                success: function(json){
 
+                    //orders = json.order;
                     orders = json.order_details;
                     //console.log(orders);
 
@@ -569,7 +570,7 @@ if ($_SESSION['entityid'] > 0) {
                             }
 
                             url += filter+satisfy+'&transform=1';
-//alert(url);
+//console.log(url);
                             $.ajax({
                                  url: url,
                                  type: 'GET',
@@ -2265,7 +2266,12 @@ $(function() {
        var originationPlotColor = "blue";
        var list = "listCarrierNeeds";
    } else {
-       cnresult = orders['order_details'];
+       if (orders) {
+            //cnresult = orders['orders'];
+            cnresult = orders['order_details'];
+       } else {
+           cnresult = [];
+       }
        var originationPlotColor = "green";
        var list = "listOrders";
    }
@@ -2273,7 +2279,12 @@ $(function() {
    // We need a setTimeout (~200ms) in order to allow the UI to be refreshed for the message to be shown
    setTimeout(function(){
 
-           var data = cnresult;
+           if (cnresult) {
+               var data = cnresult;
+           } else {
+               var data = [];
+           }
+
            var locations = locresult;
 
            // Parse each elements
@@ -2460,7 +2471,7 @@ $(function() {
                                    // Set plot element to array
                                    plots[value.id+'-'+value.city] = plot;
                                } else {
-                                   console.warn("Ignored element " + value.id + " without GPS position");
+                                   console.warn("Ignored element " + vcolumbusalue.id + " without GPS position");
                                }
 
                        });
@@ -2470,7 +2481,7 @@ $(function() {
 
                    // Setup Orders plots
                    var plotsColors = chroma.scale("Oranges");
-                   $.each(orders, function (index, value) {
+                   $.each(data, function (index, value) {
                            // Setup Pickup Date
                            //alert(formatDate(new Date(value.order_details[0].pickupDate)));
                            //var pickupDate = formatDate(new Date(value.order_details[0].pickupDate));
