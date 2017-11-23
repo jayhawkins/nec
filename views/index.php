@@ -2473,7 +2473,8 @@ $(function() {
                    $.each(orders, function (index, value) {
                            // Setup Pickup Date
                            //alert(formatDate(new Date(value.order_details[0].pickupDate)));
-                           var pickupDate = formatDate(new Date(value.order_details[0].pickupDate));
+                           //var pickupDate = formatDate(new Date(value.order_details[0].pickupDate));
+                           var pickupDate = formatDate(new Date(value.pickupDate));
                            // Check if we have the GPS position of the element
                            if (value.originationLat) {
                                // Will hold the plot information
