@@ -17,7 +17,7 @@ $myavailabilityMenuAccessList = array(0,1,2,3,4);
 $mapsMenuAccessList = array(0,1,2);
 $settingsMenuAccessList = array(0,1,2);
 
-
+/*
 $cityargs = array(
       //"transform"=>"1",
       "columns"=>"originationCity,destinationCity",
@@ -36,6 +36,7 @@ $cityoptions = array(
 );
 $citycontext  = stream_context_create($cityoptions);
 $cityresult = json_decode(file_get_contents($cityurl,false,$citycontext), true);
+*/
 //print_r($cityresult);
 //die();
 
@@ -314,12 +315,14 @@ if ($_SESSION['entityid'] > 0) {
             var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
             var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
             var dateTime = date+' '+time;
+            var theDate = date;
 
             var url = '<?php echo API_HOST_URL; ?>';
             var orderCount = 0;
             switch(entityType){
                 case 0:     // URL for the Admin. The admin can see ALL Orders.
-                    url += '/orders?include=documents,entities,order_details&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,originationLat,originationLng,destinationLat,destinationLng,distance,needsDataPoints,status,qty,rateType,transportationMode,entities.id,entities.name,documents.id,documents.documentURL,order_details.pickupDate';
+                    //url += '/orders?include=documents,entities,order_details&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,originationLat,originationLng,destinationLat,destinationLng,distance,needsDataPoints,status,qty,rateType,transportationMode,entities.id,entities.name,documents.id,documents.documentURL,order_details.pickupDate';
+                    url += 'order_details?include=orders,entities&columns=id,orders.customerID,orders.carrierIDs,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,originationLat,originationLng,destinationLat,destinationLng,distance,needsDataPoints,status,qty,rateType,transportationMode,entities.id,entities.name,pickupDate';
                     break;
                 case 1:    // URL for Customer. The Customer can only see their orders.
                     url += '/orders?include=documents,entities,order_details&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,originationLat,originationLng,destinationLat,destinationLng,distance,needsDataPoints,status,qty,rateType,transportationMode,entities.id,entities.name,documents.id,documents.documentURL,order_details.pickupDate&filter=customerID,eq,' + entityid;
@@ -329,7 +332,7 @@ if ($_SESSION['entityid'] > 0) {
                     break;
             }
 
-            url += '&filter[]=status,eq,Open&satisfy=all&transform=1';
+            url += '&filter[]=orders.status,eq,Open&filter[]=order_details.pickupDate,ge,'+theDate+'&satisfy=all&transform=1';
 
             $.ajax({
                //url: '<?php echo API_HOST_URL . "/orders" ?>?transform=1',
