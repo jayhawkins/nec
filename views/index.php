@@ -321,8 +321,8 @@ if ($_SESSION['entityid'] > 0) {
             var orderCount = 0;
             switch(entityType){
                 case 0:     // URL for the Admin. The admin can see ALL Orders.
-                    //url += '/orders?include=documents,entities,order_details&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,originationLat,originationLng,destinationLat,destinationLng,distance,needsDataPoints,status,qty,rateType,transportationMode,entities.id,entities.name,documents.id,documents.documentURL,order_details.pickupDate';
-                    url += '/order_details?include=orders,entities&columns=id,orders.customerID,orders.carrierIDs,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,originationLat,originationLng,destinationLat,destinationLng,distance,needsDataPoints,status,qty,rateType,transportationMode,entities.id,entities.name,pickupDate';
+                    //url += '/orders?include=order_details&columns=id,customerID,carrierIDs,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,originationLat,originationLng,destinationLat,destinationLng,distance,needsDataPoints,status,qty,rateType,transportationMode,order_details.pickupDate';
+                    url += '/order_details?columns=id,originationCity,originationState,destinationCity,destinationState,originationLat,originationLng,destinationLat,destinationLng,distance,status,qty,pickupDate';
                     break;
                 case 1:    // URL for Customer. The Customer can only see their orders.
                     url += '/orders?include=documents,entities,order_details&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,originationLat,originationLng,destinationLat,destinationLng,distance,needsDataPoints,status,qty,rateType,transportationMode,entities.id,entities.name,documents.id,documents.documentURL,order_details.pickupDate&filter=customerID,eq,' + entityid;
@@ -332,7 +332,7 @@ if ($_SESSION['entityid'] > 0) {
                     break;
             }
 
-            url += '&filter[]=orders.status,eq,Open&filter[]=order_details.pickupDate,ge,'+theDate+'&satisfy=all&transform=1';
+            url += '&filter[]=status,eq,Open&filter[]=pickupDate,ge,'+theDate+'&satisfy=all&transform=1';
 console.log(url);
             $.ajax({
                //url: '<?php echo API_HOST_URL . "/orders" ?>?transform=1',
@@ -342,13 +342,13 @@ console.log(url);
                async: false,
                success: function(json){
 
-                    orders = json.orders;
+                    orders = json.order_details;
                     //console.log(orders);
 
                     if(entityType == 2) {
 
                         orders.forEach(function(order){
-                            var carrierIDs = order.carrierIDs;
+                            var carrierIDs = order.orders[0].carrierIDs;
 
                             for(var i = 0; i < carrierIDs.length; i++){
                                 if(carrierIDs[i].carrierID == entityid){
