@@ -442,46 +442,131 @@ if ($_SESSION['entityid'] > 0) {
             var entityid = <?php echo $_SESSION['entityid']; ?>;
             var orderCount = 0;
 
+            var strarray = "";
+            var statearray = "";
+            var cityarray = "";
+
             if ($("#activityFilter").val() > '') {
                 var str = $("#activityFilter").val().toString();
                 var strarray = str.split(",");
+            }
+
+            if ($("#stateFilter").val() > '') {
+                var str = $("#stateFilter").val().toString();
+                var statearray = str.split(",");
+            }
+
+            if ($("#cityFilter").val() > '') {
+                var str = $("#cityFilter").val().toString();
+                var cityarray = str.split(",");
             }
 
             if (strarray) {
                     strarray.forEach(function(string) {
                             var url = '<?php echo API_HOST_URL; ?>';
                             var filter = '';
+                            var satisfy = '';
                             switch ( string ) {
                                 case 'Availability':
                                     url += "/customer_needs?";
-                                    filter += 'filter[]=rootCustomerNeedsID,eq,0';
+                                    filter += '&filter[]=rootCustomerNeedsID,eq,0';
                                     filter += '&filter[]=status,eq,Available';
                                     filter += '&filter[]=expirationDate,ge,'+dateTime;
                                     if (entityid > 0) {
                                         filter += '&filter[]=entityID,eq,'+entityid;
                                     }
+                                    if (statearray) {
+                                        if ($('input[name=locationStatus]:checked').val() == "Origination") {
+                                            filter += '&filter[]=originationState,in,'+statearray;
+                                        } else {
+                                            filter += '&filter[]=destinationState,in,'+statearray;
+                                        }
+                                        satisfy = '&satisfy=all';
+                                    }
+                                    if (cityarray) {
+                                        if ($('input[name=locationStatus]:checked').val() == "Origination") {
+                                            filter += '&filter[]=originationCity,in,'+cityarray;
+                                        } else {
+                                            filter += '&filter[]=destinationCity,in,'+cityarray;
+                                        }
+                                        satisfy = '&satisfy=all';
+                                    }
                                     originationPlotColor = "red";
                                     break;
                                 case 'Needs':
                                     url += "/carrier_needs?";
-                                    filter += 'filter[]=status,eq,Available';
+                                    filter += '&filter[]=status,eq,Available';
                                     filter += '&filter[]=expirationDate,ge,'+dateTime;
+                                    if (statearray) {
+                                        if ($('input[name=locationStatus]:checked').val() == "Origination") {
+                                            filter += '&filter[]=originationState,in,'+statearray;
+                                        } else {
+                                            filter += '&filter[]=destinationState,in,'+statearray;
+                                        }
+                                        satisfy = '&satisfy=all';
+                                    }
+                                    if (cityarray) {
+                                        if ($('input[name=locationStatus]:checked').val() == "Origination") {
+                                            filter += '&filter[]=originationCity,in,'+cityarray;
+                                        } else {
+                                            filter += '&filter[]=destinationCity,in,'+cityarray;
+                                        }
+                                        satisfy = '&satisfy=all';
+                                    }
                                     originationPlotColor = "blue";
                                     break;
                                 case 'Commitments':
                                     url += "/customer_needs_commit?";
-                                    filter += 'filter[]=status,eq,Available';
+                                    //url += "include=customer_needs";
+                                    filter += '&filter[]=status,eq,Available';
                                     filter += '&filter[]=deliveryDate,ge,'+dateTime;
+                                    if (statearray) {
+                                        if ($('input[name=locationStatus]:checked').val() == "Origination") {
+                                            filter += '&filter[]=originationState,in,'+statearray;
+                                        } else {
+                                            filter += '&filter[]=destinationState,in,'+statearray;
+                                        }
+                                        satisfy = '&satisfy=all';
+                                    }
+                                    if (cityarray) {
+                                        if ($('input[name=locationStatus]:checked').val() == "Origination") {
+                                            filter += '&filter[]=originationCity,in,'+cityarray;
+                                        } else {
+                                            filter += '&filter[]=destinationCity,in,'+cityarray;
+                                        }
+                                        satisfy = '&satisfy=all';
+                                    }
+                                    originationPlotColor = "green";
                                     break;
                                 case 'Orders':
-
+                                    url += "/orders?";
+                                    url += "include=order_details";
+                                    filter += '&filter[]=status,eq,Open';
+                                    filter += '&filter[]=order_details.deliveryDate,ge,'+dateTime;
+                                    if (statearray) {
+                                        if ($('input[name=locationStatus]:checked').val() == "Origination") {
+                                            filter += '&filter[]=orders.originationState,in,'+statearray;
+                                        } else {
+                                            filter += '&filter[]=orders.destinationState,in,'+statearray;
+                                        }
+                                        satisfy = '&satisfy=all';
+                                    }
+                                    if (cityarray) {
+                                        if ($('input[name=locationStatus]:checked').val() == "Origination") {
+                                            filter += '&filter[]=orders.originationCity,in,'+cityarray;
+                                        } else {
+                                            filter += '&filter[]=orders.destinationCity,in,'+cityarray;
+                                        }
+                                        satisfy = '&satisfy=all';
+                                    }
+                                    originationPlotColor = "orange";
                                     break;
                                 default:
 
                             }
 
-                            url += '&'+filter+'&satisfy=all&transform=1';
-
+                            url += filter+satisfy+'&transform=1';
+//alert(url);
                             $.ajax({
                                  url: url,
                                  type: 'GET',
@@ -545,7 +630,7 @@ if ($_SESSION['entityid'] > 0) {
 
                                                    plot.eventHandlers = {
                                                         click: function() {
-                                                                ajaxFormCall(list)
+                                                                ajaxFormCall('listCustomerNeeds')
                                                         }
                                                    };
 
@@ -667,7 +752,7 @@ if ($_SESSION['entityid'] > 0) {
 
                                                    plot.eventHandlers = {
                                                         click: function() {
-                                                                ajaxFormCall(list)
+                                                                ajaxFormCall('listCarrierNeeds')
                                                         }
                                                    };
 
@@ -732,12 +817,243 @@ if ($_SESSION['entityid'] > 0) {
                                                }
                                            });
 
+                                    } else if(string == 'Commitments') {
+
+                                           $.each(response.customer_needs_commit, function (index, value) {
+
+                                               var availableDate = value.pickupDate;
+                                               var expirationDate = value.deliveryDate;
+                                               var expirationDateStatus = 'Closed';
+
+                                               // Check if we have the GPS position of the element
+                                               if (value.originationLat) {
+                                                   // Setup Availability Date
+                                                   if (value.availableDate > '') {
+                                                       var availableDate = 'Availability Date: ' + formatDate(new Date(availableDate));
+                                                   } else {
+                                                       var availableDate = 'Availability Date: ' + expirationDateStatus;
+                                                   }
+                                                   if (value.expirationDate > '') {
+                                                       var expirationDate = formatDate(new Date(expirationDate));
+                                                   } else {
+                                                       var expirationDate = expirationDateStatus;
+                                                   }
+                                                   // Will hold the plot information
+                                                   var plot = {};
+                                                   var link = {};
+                                                   // Assign position
+                                                   plot.latitude = parseFloat(value.originationLat);
+                                                   plot.longitude = parseFloat(value.originationLng);
+                                                   plot.size = 10;
+                                                   plot.type = "circle";
+                                                   plot.value = "H";
+                                                   // Assign some information inside the tooltip
+                                                   plot.tooltip = {
+                                                       content: "<span style='font-weight:bold;'>" +
+                                                                   "Origin: " + value.originationCity + ", " + value.originationState +
+                                                                   "<br />" +
+                                                                   "Dest: " + value.destinationCity + ", " + value.destinationState +
+                                                                   "<br /># of Trailers: " +
+                                                                   value.qty +
+                                                                   "<br />" +
+                                                                   availableDate +
+                                                                   "<br />Click for more details" +
+                                                                "</span>"
+                                                   };
+
+                                                   plot.text = {
+                                                        //content: qty,
+                                                        position: "inner",
+                                                        attrs: {
+                                                            "font-size": 16,
+                                                            "font-weight": "bold",
+                                                            "fill": "#fff"
+                                                        }
+                                                   };
+
+                                                   plot.eventHandlers = {
+                                                        click: function() {
+                                                                ajaxFormCall('listCommitments')
+                                                        }
+                                                   };
+
+                                                   // Assign the background color randomize from a scale
+                                                   plot.attrs = {
+                                                       fill: originationPlotColor,
+                                                       cursor: "pointer"
+                                                   };
+
+                                                   // Set plot element to array
+                                                   plots[value.id+'-'+value.originationCity] = plot;
+
+                                                   // Now plot the destination
+                                                   var plot = {};
+                                                   // Assign position
+                                                   plot.latitude = parseFloat(value.destinationLat);
+                                                   plot.longitude = parseFloat(value.destinationLng);
+                                                   plot.size = 3;
+                                                   plot.type = "";
+                                                   // Assign some information inside the tooltip
+                                                   plot.tooltip = {
+                                                       content: "<span style='font-weight:bold;'>" +
+                                                                   value.destinationCity +
+                                                                "</span>"
+                                                   };
+
+                                                   plot.text = {
+                                                        //content: value.qty,
+                                                        position: "inner",
+                                                        attrs: {
+                                                            "font-size": 16,
+                                                            "font-weight": "bold",
+                                                            "fill": "#fff"
+                                                        }
+                                                   };
+
+                                                   // Assign the background color randomize from a scale
+                                                   plot.attrs = {
+                                                       //fill: plotsColors(Math.random())
+                                                       fill: "#fff"
+                                                   };
+
+                                                   // Set plot element to array
+                                                   plots[value.id+'-'+value.destinationCity] = plot;
+
+                                                   linktitle = value.originationCity+'-'+value.destinationCity;
+                                                   linkobjecttitle = value.originationCity+value.destinationCity;
+                                                   link.factor = 0.2;
+                                                   //link.between = [{"latitude": value.originationLat, "longitude": value.originationLng}, {"latitude": value.destinationLat, "longitude": value.destinationLng}];
+                                                   link.between = [value.id+'-'+value.originationCity, value.id+'-'+value.destinationCity];
+                                                   link.attrs = {
+                                                                "stroke": "#a4e100",
+                                                                "stroke-width": 2,
+                                                                "stroke-linecap": "round",
+                                                                "opacity": 0.6,
+                                                                "arrow-end": "classic-wide-long"
+                                                            };
+                                                   link.tooltip = {"content": linktitle};
+                                                   links[linkobjecttitle] = link;
+                                               } else {
+                                                   console.warn("Ignored element " + id + " without GPS position");
+                                               }
+                                           });
+
+                                    } else if(string == 'Orders') {
+
+                                           $.each(response.orders, function (index, value) {
+                                               // Setup Pickup Date
+                                               //alert(formatDate(new Date(value.order_details[0].pickupDate)));
+                                               var pickupDate = formatDate(new Date(value.order_details[0].pickupDate));
+                                               var deliveryDate = formatDate(new Date(value.order_details[0].deliveryDate));
+                                               // Check if we have the GPS position of the element
+                                               if (value.originationLat) {
+                                                   // Will hold the plot information
+                                                   var plot = {};
+                                                   var link = {};
+                                                   // Assign position
+                                                   plot.latitude = parseFloat(value.originationLat);
+                                                   plot.longitude = parseFloat(value.originationLng);
+                                                   plot.size = 10;
+                                                   plot.type = "circle";
+                                                   // Assign some information inside the tooltip
+                                                   plot.tooltip = {
+                                                       content: "<span style='font-weight:bold;'>" +
+                                                               value.originationCity + ", " + value.originationState +
+                                                               "<br />" +
+                                                               value.destinationCity + ", " + value.destinationState +
+                                                               "<br /># of Trailers: " +
+                                                               value.qty +
+                                                               "<br />" +
+                                                               "Pickup: " + pickupDate +
+                                                               "<br />Click for more details" +
+                                                            "</span>"
+                                                   };
+
+                                                   plot.text = {
+                                                        //content: value.qty,
+                                                        position: "inner",
+                                                        attrs: {
+                                                            "font-size": 16,
+                                                            "font-weight": "bold",
+                                                            "fill": "#fff"
+                                                        }
+                                                   };
+
+                                                   // Assign the background color randomize from a scale
+                                                   plot.attrs = {
+                                                       //fill: plotsColors(Math.random())
+                                                       fill: originationPlotColor,
+                                                       cursor: "pointer"
+                                                   };
+
+                                                   plot.eventHandlers = {
+                                                        click: function() {
+                                                                ajaxFormCall('listOrders')
+                                                        }
+                                                   };
+
+                                                   // Set plot element to array
+                                                   plots[value.id+'-'+value.originationCity] = plot;
+
+                                                   // Now plot the destination
+                                                   var plot = {};
+                                                   // Assign position
+                                                   plot.latitude = parseFloat(value.destinationLat);
+                                                   plot.longitude = parseFloat(value.destinationLng);
+                                                   plot.size = 3;
+                                                   plot.type = "";
+                                                   // Assign some information inside the tooltip
+                                                   plot.tooltip = {
+                                                       content: "<span style='font-weight:bold;'>" +
+                                                                   value.destinationCity +
+                                                                "</span>"
+                                                   };
+
+                                                   plot.text = {
+                                                        //content: value.qty,
+                                                        position: "inner",
+                                                        attrs: {
+                                                            "font-size": 16,
+                                                            "font-weight": "bold",
+                                                            "fill": "#fff"
+                                                        }
+                                                   };
+
+                                                   // Assign the background color randomize from a scale
+                                                   plot.attrs = {
+                                                       //fill: plotsColors(Math.random())
+                                                       fill: "#fff"
+                                                   };
+
+                                                   // Set plot element to array
+                                                   plots[value.id+'-'+value.destinationCity] = plot;
+
+                                                   linktitle = value.originationCity+'-'+value.destinationCity;
+                                                   linkobjecttitle = value.originationCity+value.destinationCity;
+                                                   link.factor = 0.2;
+                                                   link.between = [value.id+'-'+value.originationCity, value.id+'-'+value.destinationCity];
+                                                   link.attrs = {
+                                                                "stroke": "#ffffff",
+                                                                "stroke-width": 2,
+                                                                "stroke-linecap": "round",
+                                                                "opacity": 0.6,
+                                                                "arrow-end": "classic-wide-long"
+                                                            };
+                                                   link.tooltip = {"content": linktitle};
+                                                   links[linkobjecttitle] = link;
+                                               } else {
+                                                   console.warn("Ignored element " + id + " without GPS position");
+                                               }
+                                           });
 
                                     } else {
+
                                         // Do nothing at this time
+
                                     }
 
                                     //$('#orderCount').html(orderCount);
+
                                },
                                error: function() {
                                   //alert("There Was An Error Getting Data!");
@@ -988,7 +1304,7 @@ if ($_SESSION['entityid'] > 0) {
                     <i class="toggle fa fa-angle-down"></i>
                 </a>
                 <ul id="sidebar-forms" class="collapse">
-                    
+
                     <?php
                     if ( in_array($_SESSION['usertypeid'], $profilesMenuAccessList) ) { // Determine is user type id has access to this menu item
                         if ($_SESSION['entityid'] == 0) {
@@ -999,8 +1315,8 @@ if ($_SESSION['entityid'] > 0) {
                         ?>
                             <li><a href="#" onclick="ajaxFormCall('businessProfile');">Business</a></li>
                         <?php
-                        }                   
-                        
+                        }
+
                     }
                     ?>
                     <?php
@@ -1008,7 +1324,7 @@ if ($_SESSION['entityid'] > 0) {
                           echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listUsers');\">Users</a></li>";
                         }
                     ?>
-                        
+
                     <li><a href="#" onclick="ajaxFormCall('listContacts');">Contacts</a></li>
                     <li><a class="collapsed" href="#sidebar-sub-levels" data-toggle="collapse" data-parent="#sidebar-levels">
                               Location
@@ -1031,7 +1347,7 @@ if ($_SESSION['entityid'] > 0) {
 
                     <?php
                     if ( in_array($_SESSION['usertypeid'], $profilesMenuAccessList) ) { // Determine is user type id has access to this menu item
-                    
+
                         if ($_SESSION['entitytype'] == 1) {
                           //echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listTrailers');\">Trailers</a></li>";
                         } else if ($_SESSION['entitytype'] == 2) {
@@ -1737,10 +2053,23 @@ if ($_SESSION['entitytype'] == 0) {
 
                                 <br /><br />
 
+                                <label for="stateFilter">Location Status:</label>
+                                <br/>
+                                <div class="btn-group" data-toggle="buttons">
+                                    <label class="btn btn-default active">
+                                        <input type="radio" name="locationStatus" id="locationStatus" value="Origination" checked>
+                                    Origination </label>
+                                    <label class="btn btn-default">
+                                        <input type="radio" name="locationStatus" id="locationStatus" value="Destination">
+                                    Destination </label>
+                                </div>
+
+                                <br /><br />
+
                                 <label for="stateFilter">State(s):</label>
                                 <br/>
                                   <select id="stateFilter" name="stateFilter" multiple style="width: 100%">
-                                      <option value="" selected>ALL</option>
+                                      <!--option value="">ALL</option-->
 
 
 <?php
@@ -1751,22 +2080,25 @@ if ($_SESSION['entitytype'] == 0) {
 
                                 </select>
 
-                                                            <br /><br />
+                                <br /><br />
 
-                                <label for="cityFilter">Cities:</label>
+                                <label for="cityFilter">Cities: (Separate cities by comma to filter on multiple cities)</label>
                                 <br/>
-                                  <select id="cityFilter" name="cityFilter" multiple style="width: 100%">
-                                      <option value="" selected>ALL</option>
+                                <div class="form-group" width="100%">
+                                  <input type="text" class="form-control" id="cityFilter" name="cityFilter" placeholder="City to Search For" value="" />
+                                </div>
+                                  <!--select id="cityFilter" name="cityFilter" multiple style="width: 100%"-->
+                                      <!--option value="">ALL</option-->
 
 
 <?php
-                                    foreach($cityresult['customer_needs']['records'] as $value) {
-                                       echo "<option value=" .$value[0] . ">" . $value[0] . "</option>\n";
-                                       echo "<option value=" .$value[1] . ">" . $value[1] . "</option>\n";
-                                    }
+//                                    foreach($cityresult['customer_needs']['records'] as $value) {
+//                                       echo "<option value=" .$value[0] . ">" . $value[0] . "</option>\n";
+//                                       echo "<option value=" .$value[1] . ">" . $value[1] . "</option>\n";
+//                                    }
  ?>
 
-                                </select>
+                                <!--/select-->
 
                             </div>
                         </div>
@@ -1883,9 +2215,31 @@ if ($_SESSION['entitytype'] == 0) {
             getOrdersByFilters();
     });
 
-    $("#stateFilter").select2();
+    $("#stateFilter").select2().on('change', function(e) {
+            //$("#cityFilter").each(function() {
+            //    $(this).select2('val', '');
+            //});
+            $("#cityFilter").val('');
+            getOrdersByFilters();
+    });
 
-    $("#cityFilter").select2();
+    //$("#cityFilter").select2().on('change', function(e) {
+    //        $("#stateFilter").each(function() {
+    //            $(this).select2('val', '');
+    //        });
+    //        getOrdersByFilters();
+    //});
+
+    $("#cityFilter").on('change', function(e) {
+            $("#stateFilter").each(function() {
+                $(this).select2('val', '');
+            });
+            getOrdersByFilters();
+    });
+
+    $('input[name="locationStatus"]').on('click change', function(e) {
+        getOrdersByFilters();
+    });
 
 $(function() {
 
