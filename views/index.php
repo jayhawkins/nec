@@ -543,10 +543,10 @@ if ($_SESSION['entityid'] > 0) {
                                     originationPlotColor = "green";
                                     break;
                                 case 'Orders':
-                                    url += "/orders?";
-                                    url += "include=order_details";
+                                    url += "/order_details?";
+                                    url += "include=orders";
                                     filter += '&filter[]=status,eq,Open';
-                                    filter += '&filter[]=order_details.deliveryDate,ge,'+dateTime;
+                                    filter += '&filter[]=deliveryDate,ge,'+dateTime;
                                     if (statearray) {
                                         if ($('input[name=locationStatus]:checked').val() == "Origination") {
                                             filter += '&filter[]=orders.originationState,in,'+statearray;
