@@ -2266,16 +2266,16 @@ $(function() {
        var originationPlotColor = "blue";
        var list = "listCarrierNeeds";
    } else {
-       if (orders) {
+       if (orders.length > 0) {
             //cnresult = orders['orders'];
-            cnresult = orders['order_details'];
+            cnresult = orders;
        } else {
            cnresult = [];
        }
        var originationPlotColor = "green";
        var list = "listOrders";
    }
-console.log(orders);
+
    // We need a setTimeout (~200ms) in order to allow the UI to be refreshed for the message to be shown
    setTimeout(function(){
 
