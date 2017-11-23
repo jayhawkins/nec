@@ -944,11 +944,11 @@ console.log(url);
 
                                     } else if(string == 'Orders') {
 
-                                           $.each(response.orders, function (index, value) {
+                                           $.each(response.order_details, function (index, value) {
                                                // Setup Pickup Date
-                                               //alert(formatDate(new Date(value.order_details[0].pickupDate)));
-                                               var pickupDate = formatDate(new Date(value.order_details[0].pickupDate));
-                                               var deliveryDate = formatDate(new Date(value.order_details[0].deliveryDate));
+                                               //alert(formatDate(new Date(value.pickupDate)));
+                                               var pickupDate = formatDate(new Date(value.pickupDate));
+                                               var deliveryDate = formatDate(new Date(value.deliveryDate));
                                                // Check if we have the GPS position of the element
                                                if (value.originationLat) {
                                                    // Will hold the plot information
