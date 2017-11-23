@@ -333,7 +333,7 @@ if ($_SESSION['entityid'] > 0) {
             }
 
             url += '&filter[]=orders.status,eq,Open&filter[]=order_details.pickupDate,ge,'+theDate+'&satisfy=all&transform=1';
-alert(url);
+console.log(url);
             $.ajax({
                //url: '<?php echo API_HOST_URL . "/orders" ?>?transform=1',
                url: url,
