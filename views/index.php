@@ -2275,7 +2275,7 @@ $(function() {
        var originationPlotColor = "green";
        var list = "listOrders";
    }
-
+console.log(cnresult);
    // We need a setTimeout (~200ms) in order to allow the UI to be refreshed for the message to be shown
    setTimeout(function(){
 
