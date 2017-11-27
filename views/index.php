@@ -570,7 +570,7 @@ if ($_SESSION['entityid'] > 0) {
                             }
 
                             url += filter+satisfy+'&transform=1';
-console.log(url);
+//console.log(url);
                             $.ajax({
                                  url: url,
                                  type: 'GET',
