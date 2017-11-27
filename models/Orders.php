@@ -2,14 +2,14 @@
 
 class Orders
 {
-    
+
     /**
      * The table name
      *
      * @var string
      */
     public $table = "orders";
-    
+
     /*
     private $rateType;
     private $transportationMode;
@@ -26,12 +26,12 @@ class Orders
     private $orderNumber;
     private $customerID;
     private $podList;
-     * 
+     *
      */
-    
+
     public function sendEmailNotification($rateType, $transportationMode, $originationAddress, $originationCity, $originationState, $originationZip,
             $destinationAddress, $destinationCity, $destinationState, $destinationZip, $distance, $updatedAt, $orderNumber, $customerID, $podList){
-        
+
             // Customer Entity
             $customerargs = array(
                 "transform"=>1
@@ -91,7 +91,7 @@ class Orders
             // Setting up Email
             $subject = "Update To Order #" . $orderNumber;
             $from = array("operations@nationwide-equipment.com" => "Nationwide Operations Control Manager");
-            
+
             $changeList = "Rate Type: " . $rateType . "<br />";
             $changeList .= "Transportation Mode: " . $transportationMode . "<br />";
             $changeList .= "Origination Address: " . $originationAddress . "<br />";
@@ -112,13 +112,13 @@ class Orders
                 }
                 $changeList .= "</ul>";
             }
-            
+
             $this->sendEmailToCustomer($subject, $from, $adminresult, $contactresult, $changeList, $orderNumber);
             $this->sendEmailToAdmin($subject, $from, $adminresult, $customerresult, $changeList, $updatedAt);
-            
+
             return "Your order has been updated and Nationwide Equipment Control will be notified.";
     }
-    
+
     private function sendEmailToAdmin($subject, $from, $adminresult, $customerresult, $changeList, $updatedAt){
         try {
                     $to = array($adminresult['emailAddress'] => $adminresult['firstName'] . " " . $adminresult['lastName']);
@@ -127,8 +127,8 @@ class Orders
                     $body .= "Date of Changes: " . $updatedAt . "<br /><br />";
                     $body .= "Change List: <br/>";
                     $body .= $changeList . "<br/><br/>";
-                    
-                    $returnObject = sendmail($to, $subject, $body, $from);                            
+
+                    $returnObject = sendmail($to, $subject, $body, $from);
 
                     // Are there any failed emails?
                     if(sizeof($returnObject["failedRecipients"]) > 0){
@@ -169,7 +169,7 @@ class Orders
                 return $mailex;
               }
     }
-    
+
     private function sendEmailToCustomer($subject, $from, $adminresult, $contactresult, $changeList, $orderNumber){
         try {
                     $to = array($contactresult['emailAddress'] => $contactresult['firstName'] . " " . $contactresult['lastName']);
@@ -181,8 +181,8 @@ class Orders
                     $body .= "Thank you for your order,<br/>";
                     $body .= $adminresult['firstName'] . " " . $adminresult['lastName'] . "<br/>";
                     $body .= "Nationwide Equipment Control<br/>";
-                    
-                    $returnObject = sendmail($to, $subject, $body, $from);                            
+
+                    $returnObject = sendmail($to, $subject, $body, $from);
 
                     // Are there any failed emails?
                     if(sizeof($returnObject["failedRecipients"]) > 0){
@@ -223,13 +223,13 @@ class Orders
                 return $mailex;
               }
     }
-    
+
     public function sendOrderStatusNotification($orderNumber, $carrierID, $customerID){
-        
+
         $carrierContact = $this->getContactInformation($carrierID);
         $customerContact = $this->getContactInformation($customerID);
         $adminContact = $this->getContactInformation(0);
-                
+
         // Setting up Email
         $subject = "Status update To Order #" . $orderNumber;
         $from = array("operations@nationwide-equipment.com" => "Nationwide Operations Control Manager");
@@ -237,20 +237,20 @@ class Orders
         $adminBody = "An order status has changed for Order #" . $orderNumber . " with Nationwide Equipment Control has a status change. "
                 . "To view the status of this order please visit the Nationwide Equipment Control website " . HTTP_HOST . "/login.  "
                 . "Login to the website to view the order status. ";
-        
+
         $body = "Order #" . $orderNumber . " with Nationwide Equipment Control has a status change. "
                 . "To view the status of this order please visit the Nationwide Equipment Control website " . HTTP_HOST . "/login.  "
                 . "Login to the website to view the order status. <br /><br />"
                 . "Thank you,<br />"
                 . $adminContact['firstName'] . " " . $adminContact['lastName'] . "<br />"
                 . "Nationwide Equipment Control";
-        
+
         // Send to Admin
         try {
             $to = array($adminContact['emailAddress'] => $adminContact['firstName'] . " " . $adminContact['lastName']);
-            
-            $returnObject = sendmail($to, $subject, $body, $from); 
-            
+
+            $returnObject = sendmail($to, $subject, $body, $from);
+
             // Are there any failed emails?
             if(sizeof($returnObject["failedRecipients"]) > 0){
                // Send the list to the admin
@@ -268,8 +268,8 @@ class Orders
                   $contactcontext  = stream_context_create($contactoptions);
                   $contactresult = json_decode(file_get_contents($contacturl,false,$contactcontext),true);
 
-                  $contactList = $contactresult["contacts"];                  
-                      
+                  $contactList = $contactresult["contacts"];
+
                   for($i=0; $i<sizeof($contactList); $i++){
 
                       $adminTo = array($contactList[$i]['emailAddress'] => $contactList[$i]['firstName'] . " " . $contactList[$i]['lastName']);
@@ -285,17 +285,17 @@ class Orders
                   }
             }
 
-        } 
+        }
         catch (Exception $mailex) {
           return $mailex;
         }
-        
+
         /*
         // Send to Carrier
         try {
             $to = array($carrierContact['emailAddress'] => $carrierContact['firstName'] . " " . $carrierContact['lastName']);
 
-            $returnObject = sendmail($to, $subject, $body, $from);                            
+            $returnObject = sendmail($to, $subject, $body, $from);
 
             // Are there any failed emails?
             if(sizeof($returnObject["failedRecipients"]) > 0){
@@ -332,17 +332,17 @@ class Orders
 
             }
 
-        } 
+        }
         catch (Exception $mailex) {
           return $mailex;
         }
-        
-        
+
+
         // Send to Customer
         try {
             $to = array($customerContact['emailAddress'] => $customerContact['firstName'] . " " . $customerContact['lastName']);
 
-            $returnObject = sendmail($to, $subject, $body, $from);                            
+            $returnObject = sendmail($to, $subject, $body, $from);
 
             // Are there any failed emails?
             if(sizeof($returnObject["failedRecipients"]) > 0){
@@ -379,17 +379,17 @@ class Orders
 
             }
 
-        } 
+        }
         catch (Exception $mailex) {
           return $mailex;
         }
         */
-        
+
         return "The order status has been successfully updated.";
     }
-    
+
     private function getContactInformation($entityID){
-        
+
             // Entity
             $entityargs = array(
                 "transform"=>1
@@ -403,7 +403,7 @@ class Orders
             );
             $entitycontext  = stream_context_create($entityoptions);
             $entityresult = json_decode(file_get_contents($entityurl,false,$entitycontext),true);
-            
+
             // Contact
             $contactargs = array(
                 "transform"=>1
@@ -420,5 +420,47 @@ class Orders
 
             return $contactresult;
     }
+
+    public function indexgetorders(&$db,$locationStatus,$stateFilter,$cityFilter) {
+
+        try {
+
+              $query = " select * from order_details
+                         left join orders on orders.id = order_details.orderID
+                         where order_details.status = 'Open'
+                         and order_details.deliveryDate >= '" . date('Y-m-d') . "'";
+
+              if (!empty($stateFilter)) {
+                    if ($locationStatus == "Origination") {
+                        $query .= " and orders.originationState in ('" . $stateFilter . "')";
+                    } else {
+                        $query .= " and orders.destinationState in ('" . $stateFilter . "')";
+                    }
+              }
+              if (!empty($cityFilter)) {
+                    if ($locationStatus == "Origination") {
+                        $query .= " and orders.originationCity in ('" . $cityFilter . "')";
+                    } else {
+                        $query .= " and orders.destinationCity in ('" . $cityFilter . "')";
+                    }
+              }
+
+              $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
+
+              $result = $dbhandle->query($query);
+
+              if (count($result) > 0) {
+                  return $result;
+              } else {
+                  return false;
+              }
+        } catch (Exception $e) { // The indexgetorders query failed verification
+              header('HTTP/1.1 404 Not Found');
+              header('Content-Type: text/plain; charset=utf8');
+              echo $e->getMessage();
+              exit();
+        }
+    }
+
 }
 

@@ -442,6 +442,7 @@ if ($_SESSION['entityid'] > 0) {
             var linktitle = "";
             var linkobjecttitle = "";
             var originationPlotColor = "";
+            var urlType = "GET";
 
             var entityid = <?php echo $_SESSION['entityid']; ?>;
             var orderCount = 0;
@@ -449,6 +450,8 @@ if ($_SESSION['entityid'] > 0) {
             var strarray = "";
             var statearray = "";
             var cityarray = "";
+
+            var params = "";
 
             if ($("#activityFilter").val() > '') {
                 var str = $("#activityFilter").val().toString();
@@ -472,6 +475,7 @@ if ($_SESSION['entityid'] > 0) {
                             var satisfy = '';
                             switch ( string ) {
                                 case 'Availability':
+                                    urlType = "GET";
                                     url += "/customer_needs?";
                                     filter += '&filter[]=rootCustomerNeedsID,eq,0';
                                     filter += '&filter[]=status,eq,Available';
@@ -495,9 +499,11 @@ if ($_SESSION['entityid'] > 0) {
                                         }
                                         satisfy = '&satisfy=all';
                                     }
+                                    url += filter+satisfy+'&transform=1';
                                     originationPlotColor = "red";
                                     break;
                                 case 'Needs':
+                                    urlType = "GET";
                                     url += "/carrier_needs?";
                                     filter += '&filter[]=status,eq,Available';
                                     filter += '&filter[]=expirationDate,ge,'+dateTime;
@@ -517,9 +523,11 @@ if ($_SESSION['entityid'] > 0) {
                                         }
                                         satisfy = '&satisfy=all';
                                     }
+                                    url += filter+satisfy+'&transform=1';
                                     originationPlotColor = "blue";
                                     break;
                                 case 'Commitments':
+                                    urlType = "GET";
                                     url += "/customer_needs_commit?";
                                     //url += "include=customer_needs";
                                     filter += '&filter[]=status,eq,Available';
@@ -540,9 +548,11 @@ if ($_SESSION['entityid'] > 0) {
                                         }
                                         satisfy = '&satisfy=all';
                                     }
+                                    url += filter+satisfy+'&transform=1';
                                     originationPlotColor = "green";
                                     break;
                                 case 'Orders':
+                                    urlType = "GET";
                                     url += "/order_details?";
                                     url += "include=orders";
                                     filter += '&filter[]=status,eq,Open';
@@ -563,20 +573,32 @@ if ($_SESSION['entityid'] > 0) {
                                         }
                                         satisfy = '&satisfy=all';
                                     }
+/*
+                                    url = '<?php echo HTTP_HOST; ?>'+'/indexgetorders';
+                                    params = {"locationStatus": $("#locationStatus").val(),
+                                              "stateFilter": $("#stateFilter").val(),
+                                              "cityFilter": $("#cityFilter").val()
+                                             };
+                                    //console.log(url);
+                                    //console.log(params);
+*/
+                                    url += filter+satisfy+'&transform=1';
                                     originationPlotColor = "orange";
                                     break;
                                 default:
 
+
                             }
 
-                            url += filter+satisfy+'&transform=1';
-console.log(url);
                             $.ajax({
                                  url: url,
-                                 type: 'GET',
+                                 type: urlType,
                                  contentType: "application/json",
+                                 //data: JSON.stringify(params),
                                  async: false,
                                  success: function(response){
+                                    //console.log(url);
+                                    //console.log(params);
                                     //console.log(response);
                                     if(string == "Availability") {
 

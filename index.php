@@ -633,6 +633,18 @@ $app->route('POST /sendorderstatusnotification', function() {
     print_r($result);
 });
 
+$app->route('POST /indexgetorders', function() {
+	$locationStatus = Flight::request()->data->locationStatus;
+	$stateFilter = Flight::request()->data->stateFilter;
+    $cityFilter = Flight::request()->data->cityFilter;
+	$orders = Flight::orders();
+	$db = Flight::db();
+    $return = $orders->indexgetorders($db,$locationStatus,$stateFilter,$cityFilter);
+    echo($return);
+    //echo("Here: " . $locationStatus . " - " . $cityFilter . " - " . $stateFilter);
+    die();
+});
+
 /*****************************************************************************/
 // POD API Process
 /*****************************************************************************/
@@ -790,7 +802,7 @@ $app->route('POST /pod_form_api', function() {
             $fileName = "hyundai-release-form-report-" . str_replace(" ", "-", strtolower($podFormType)) . "-" . $vinNumber . ".pdf";
             $pdf->Output(TEMP_LOCATION . "/" . $fileName, 'F');
 
-        } 
+        }
         catch(Exception $e) {
             throw $e;
         }
@@ -970,7 +982,7 @@ $app->route('POST /pod_form_api', function() {
             $fileName = "nationwide-pod-form-" . str_replace(' ', '-', strtolower($podFormType)) . "-" . $vinNumber . ".pdf";
             $pdf->Output(TEMP_LOCATION . '/' . $fileName, 'F');
 
-        } 
+        }
         catch(Exception $e) {
             throw $e;
         }
