@@ -432,7 +432,7 @@ class Orders
 
               if (!empty($stateFilter)) {
                     if (count($stateFilter) == 1) {
-                        $sfilter = "'" . $stateFilter . "'";
+                        $sfilter = "'" . $stateFilter[0] . "'";
                     } else {
                         $numStates = $stateFilter;
                         $sfilter = "";
@@ -451,7 +451,7 @@ class Orders
               }
               if (!empty($cityFilter)) {
                     if (count($cityFilter) == 1) {
-                        $cfilter = "'" . $cityFilter . "'";
+                        $cfilter = "'" . $cityFilter[0] . "'";
                     } else {
                         //$numCities = explode(",",$cityFilter);
                         $numCities = $cityFilter;
