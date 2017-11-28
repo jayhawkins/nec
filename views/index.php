@@ -333,7 +333,7 @@ if ($_SESSION['entityid'] > 0) {
             }
 
             url += '&filter[]=status,eq,Open&filter[]=deliveryDate,ge,'+theDate+'&satisfy=all&transform=1';
-//console.log(url);
+
             $.ajax({
                //url: '<?php echo API_HOST_URL . "/orders" ?>?transform=1',
                url: url,
@@ -552,7 +552,7 @@ if ($_SESSION['entityid'] > 0) {
                                     originationPlotColor = "green";
                                     break;
                                 case 'Orders':
-                                    urlType = "GET";
+                                    urlType = "POST";
                                     url += "/order_details?";
                                     url += "include=orders";
                                     filter += '&filter[]=status,eq,Open';
@@ -573,17 +573,31 @@ if ($_SESSION['entityid'] > 0) {
                                         }
                                         satisfy = '&satisfy=all';
                                     }
-/*
-                                    url = '<?php echo HTTP_HOST; ?>'+'/indexgetorders';
-                                    params = {"locationStatus": $("#locationStatus").val(),
-                                              "stateFilter": $("#stateFilter").val(),
-                                              "cityFilter": $("#cityFilter").val()
-                                             };
-                                    //console.log(url);
-                                    //console.log(params);
-*/
-                                    url += filter+satisfy+'&transform=1';
+
+                                    //url += filter+satisfy+'&transform=1';
                                     originationPlotColor = "orange";
+/*
+                                    if ($("#stateFilter").val() > '') {
+                                        var statearray = $("#stateFilter").val().toString();
+                                    } else {
+                                        var statearray = '';
+                                    }
+
+                                    if ($("#cityFilter").val() > '') {
+                                        var cityarray = $("#cityFilter").val().toString();
+                                    } else {
+                                        var cityarray = '';
+                                    }
+*/
+                                    console.log('States: ' + statearray);
+                                    console.log('Cities: ' + cityarray);
+                                    url = '<?php echo HTTP_HOST; ?>'+'/indexgetorders';
+                                    params = {"locationStatus": $('input[name=locationStatus]:checked').val(),
+                                              "stateFilter": statearray,
+                                              "cityFilter": cityarray
+                                             };
+                                    params = JSON.stringify(params);
+                                    console.log(params);
                                     break;
                                 default:
 
@@ -594,12 +608,11 @@ if ($_SESSION['entityid'] > 0) {
                                  url: url,
                                  type: urlType,
                                  contentType: "application/json",
-                                 //data: JSON.stringify(params),
+                                 dataType: "json",
+                                 data: params,
                                  async: false,
                                  success: function(response){
-                                    //console.log(url);
-                                    //console.log(params);
-                                    //console.log(response);
+
                                     if(string == "Availability") {
 
                                            $.each(response.customer_needs, function (index, value) {
@@ -965,7 +978,7 @@ if ($_SESSION['entityid'] > 0) {
                                            });
 
                                     } else if(string == 'Orders') {
-
+                                            console.log(response);
                                            $.each(response.order_details, function (index, value) {
                                                // Setup Pickup Date
                                                //alert(formatDate(new Date(value.pickupDate)));
