@@ -640,9 +640,7 @@ $app->route('POST /indexgetorders', function() {
 	$orders = Flight::orders();
 	$db = Flight::db();
     $return = $orders->indexgetorders($db,$locationStatus,$stateFilter,$cityFilter);
-    echo($return);
-    //echo("Here: " . $locationStatus . " - " . $cityFilter . " - " . $stateFilter);
-    die();
+    echo $return;
 });
 
 /*****************************************************************************/

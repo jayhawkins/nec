@@ -431,26 +431,49 @@ class Orders
                          and order_details.deliveryDate >= '" . date('Y-m-d') . "'";
 
               if (!empty($stateFilter)) {
-                    if ($locationStatus == "Origination") {
-                        $query .= " and orders.originationState in ('" . $stateFilter . "')";
+                    if (count($stateFilter) == 1) {
+                        $sfilter = "'" . $stateFilter . "'";
                     } else {
-                        $query .= " and orders.destinationState in ('" . $stateFilter . "')";
+                        $numStates = $stateFilter;
+                        $sfilter = "";
+                        for ($s=0;$s<count($numStates);$s++) {
+                            $sfilter .= "'" . $numStates[$s] . "'";
+                            if ($s < count($numStates) - 1) {
+                                $sfilter .= ",";
+                            }
+                        }
+                    }
+                    if ($locationStatus == "Origination") {
+                        $query .= " and orders.originationState in (" . $sfilter . ")";
+                    } else {
+                        $query .= " and orders.destinationState in (" . $sfilter . ")";
                     }
               }
               if (!empty($cityFilter)) {
-                    if ($locationStatus == "Origination") {
-                        $query .= " and orders.originationCity in ('" . $cityFilter . "')";
+                    if (count($cityFilter) == 1) {
+                        $cfilter = "'" . $cityFilter . "'";
                     } else {
-                        $query .= " and orders.destinationCity in ('" . $cityFilter . "')";
+                        //$numCities = explode(",",$cityFilter);
+                        $numCities = $cityFilter;
+                        $cfilter = "";
+                        for ($c=0;$c<count($numCities);$c++) {
+                            $cfilter .= "'" . $numCities[$c] . "'";
+                            if ($c < count($numCities) - 1) {
+                                $cfilter .= ",";
+                            }
+                        }
+                    }
+                    if ($locationStatus == "Origination") {
+                        $query .= " and orders.originationCity in (" . $cfilter . ")";
+                    } else {
+                        $query .= " and orders.destinationCity in (" . $cfilter . ")";
                     }
               }
 
-              $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
-
-              $result = $dbhandle->query($query);
+              $result = $db->query($query);
 
               if (count($result) > 0) {
-                  return $result;
+                  echo "{ \"order_details\":".json_encode($result->fetchAll()) . "}";
               } else {
                   return false;
               }
