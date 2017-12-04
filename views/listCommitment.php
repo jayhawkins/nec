@@ -2270,7 +2270,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         var selectedTable = $('#selected-customer-need').DataTable();
         var selectedCustomerNeed = selectedTable.ajax.json().customer_needs[0];
 
-        console.log(JSON.stringify(selectedCustomerNeed));
+        //console.log(JSON.stringify(selectedCustomerNeed));
 
         var commitTable = $('#customer-needs-commit-table').DataTable();
         var customer_needs = commitTable.ajax.json().customer_needs;
@@ -2461,7 +2461,162 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             });
         }
         else{
-            alert('You must Upload the Customer\'s Purchase Order to Complete the Order.');
+            var documentID = 0;
+
+            var orderQty = 0;
+            var differenceQty = 0;
+
+            if(selectedCustomerNeed.qty > carrierQty) {
+                orderQty = carrierQty;
+                differenceQty = selectedCustomerNeed.qty - carrierQty;
+                createNewAvailability(selectedCustomerNeed.id, differenceQty, today);
+            }
+            else {
+                orderQty = selectedCustomerNeed.qty;
+            }
+
+            var url = '<?php echo API_HOST_URL ?>' + '/orders/';
+            var orderData = {customerID: $("#entityID").val(), carrierIDs: carrierIDs, documentID: documentID, orderID: orderID,
+                    originationAddress: selectedCustomerNeed.originationAddress1, originationCity: selectedCustomerNeed.originationCity,
+                    originationState: selectedCustomerNeed.originationState, originationZip: selectedCustomerNeed.originationZip,
+                    originationLng: selectedCustomerNeed.originationLng, originationLat: selectedCustomerNeed.originationLat,
+                    destinationAddress: selectedCustomerNeed.destinationAddress1, destinationCity: selectedCustomerNeed.destinationCity,
+                    destinationState: selectedCustomerNeed.destinationState, destinationZip: selectedCustomerNeed.destinationZip,
+                    destinationLng: selectedCustomerNeed.destinationLng, destinationLat: selectedCustomerNeed.destinationLat,
+                    distance: selectedCustomerNeed.distance, needsDataPoints: selectedCustomerNeed.needsDataPoints,
+                    status: "Open", transportationMode: selectedCustomerNeed.transportationMode, qty: orderQty,
+                    rateType: selectedCustomerNeed.rateType, customerRate: $('#customerRate').val(), carrierTotalRate: $('#carrierTotalRate').val(),
+                    totalRevenue: $('#totalRevenue').val(), createdAt: today, updatedAt: today};
+
+                var customerName = "";
+                allEntities.entities.forEach(function(entity){
+                    if(selectedCustomerNeed.entityID == entity.id){
+                                customerName = entity.name;
+                    }
+                });
+
+               var originationCity = selectedCustomerNeed.originationCity;
+               var originationState = selectedCustomerNeed.originationState;
+               var destinationCity = selectedCustomerNeed.destinationCity;
+               var destinationState = selectedCustomerNeed.destinationState;
+               var customerRate = $('#customerRate').val();
+               var customerID = $("#entityID").val();
+               var customerAddress = '';
+               var customerCity = '';
+               var customerState = '';
+               var customerZip = '';
+               var customerNotes = originationCity + ', ' + originationState + ' to ' + destinationCity + ', ' + destinationState;
+
+               var customerBillingAddress = getBillingAddress(customerID);
+
+               // Here is empty data for Customer Billing Address
+               customerAddress = customerBillingAddress.address1;
+               customerCity = customerBillingAddress.city;
+               customerState = customerBillingAddress.state;
+               customerZip = customerBillingAddress.zip;
+
+               var customerData = customerBillingAddress;
+               customerData.customerName = customerName;
+
+               // We are not calling this yet.
+               // We will wait until we have the carrier info as well.
+               //var retCustomerID = addCustomerInfo(customerName,customerAddress,customerCity,customerState,customerZip,customerRate,customerNotes);
+               //alert(retCustomerID);
+
+                var needsCommitTable = $("#customer-needs-commit-table").DataTable();
+                var needsCommitJSON = needsCommitTable.ajax.json();
+
+                var customer_needs_commit = needsCommitJSON.customer_needs;
+                var carrier_detail_list = new Array();
+                var carrier = "";
+
+                customer_needs_commit.forEach(function(customer_need){
+
+                    if(customer_need.customer_needs_commit.length > 0 &&
+                            customer_need.customer_needs_commit[0].status == "Close"){
+
+                        var entityName = "";
+                        var entityID = customer_need.customer_needs_commit[0].entityID;
+
+
+                        allEntities.entities.forEach(function(entity){
+
+                            if(entityID == entity.id){
+
+                                entityName = entity.name;
+                            }
+                        });
+
+                        var carrierBillingAddress = getBillingAddress(entityID);
+
+                        var carrier_detail = {
+                            carrierName: entityName,                // This is the carrier's Name
+                            carrierRate: customer_need.customer_needs_commit[0].rate,    // This is that carrier's rate.
+                            billingAddress: carrierBillingAddress.address1,
+                            billingCity: carrierBillingAddress.city,
+                            billingState: carrierBillingAddress.state,
+                            billingZip: carrierBillingAddress.zip
+                        };
+
+                        carrier = carrier_detail.carrierName;
+                        var carrierNotes = customerNotes;
+
+                        // We will not be calling addVendorInfo yet. This will be nested inside addCustomerInfo
+                        //addVendorInfo(carrier_detail.carrierName,carrier_detail.billingAddress,carrier_detail.billingCity,carrier_detail.billingState,carrier_detail.billingZip,carrier_detail.carrierRate,carrierNotes,retCustomerID);
+                        carrier_detail_list.push(carrier_detail);
+                    }
+                });
+
+                // This is a list of all the carriers accepted and associated with the commit.
+                //console.log(JSON.stringify(carrier_detail_list));
+
+               // You need the total Carrier...
+               var carrierTotalRate = $('#carrierTotalRate').val();
+
+               // Now that we have all of the carriers.
+               // We will now call addCustomerInfo.
+               // We do not need to wait for a return.
+               addCustomerInfo(customerName,customerAddress,customerCity,customerState,customerZip,customerRate,customerNotes, carrier_detail_list);
+
+               var notes = 'From ' + originationCity + ',' + originationState + ' to ' + destinationCity + ',' + destinationState;
+
+
+
+            $.ajax({
+                url: url,
+                type: type,
+                data: JSON.stringify(orderData),
+                contentType: "application/json",
+                async: false,
+                success: function(response){
+                    console.log(JSON.stringify(response));
+                    saveOrderDetails(response);
+                    closeCustomerCommitLegs(selectedCustomerNeed.id);
+                    if (differenceQty > 0) createNewAvailability(selectedCustomerNeed.id, differenceQty, today);
+
+                    $.ajax({
+                        url: '<?php echo API_HOST_URL ?>' + '/customer_needs/' + selectedCustomerNeed.id,
+                        type: "PUT",
+                        data: JSON.stringify({status: "Closed"}),
+                        contentType: "application/json",
+                        async: false,
+                        success: function(){
+
+                            countUserOrders();
+                            countCommitments();
+                            closeCommitTransport();
+                        },
+                        error: function(){
+                            alert("Could not Close Customer Needs.");
+                            closeCommitTransport();
+                        }
+                    });
+                },
+                error: function(){
+                    alert("Purchase Order Uploaded. Unable to Complete the Order. ");
+                }
+
+            });
         }
 
         return false;
