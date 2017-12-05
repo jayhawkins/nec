@@ -142,6 +142,19 @@ $app->route('POST /resetpassword', function() {
     }
 });
 
+$app->route('POST /driverresetpassword', function() {
+    $username = Flight::request()->data['username'];
+    $password = Flight::request()->data['password'];
+    $user = Flight::users();
+    $return = $user->driverresetpasswordapi($username,$password);
+    if ($return) {
+      Flight::redirect('login');
+    } else {
+      $invalidUsername = (isset($_SESSION['invalidUsername'])) ? $_SESSION['invalidUsername']:''; // Just use the invalidPassword session var since it's just an error
+      Flight::render('resetpassword', array('invalidUsername'=> $invalidUsername));
+    }
+});
+
 $app->route('GET /setpassword/@username', function($username) {
     $user = Flight::users();
     $return = $user->getUserValidateById($username);
