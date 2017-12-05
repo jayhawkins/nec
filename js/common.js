@@ -49,6 +49,13 @@ function rad(x) {
   return x * Math.PI / 180;
 };
 
+// Camelcase - capitalize the first letter of each word
+function toTitleCase(str) {
+    return str.replace(/(?:^|\s)\w/g, function(match) {
+        return match.toUpperCase();
+    });
+}
+
 function formatDate(date) {
   var monthNames = [
     "January", "February", "March",
