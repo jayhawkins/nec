@@ -274,6 +274,17 @@ if ($_SESSION['entityid'] > 0) {
             color: #343434;
         }
 
+        // For the map legend
+        /* basic positioning */
+        .legend { list-style:none }
+        .legend li { float: left; margin-right: 10px; }
+        .legend span { border: 1px solid #ccc; float: left; width: 12px; height: 12px; margin: 2px; }
+        /* your colors */
+        .legend .orders { background-color: #FFA500; }
+        .legend .availability { background-color: #0000FF; }
+        .legend .needs { background-color: #FF0000; }
+        .legend .commitments { background-color: #008000; }
+
     </style>
 
     <script>
@@ -646,9 +657,9 @@ if ($_SESSION['entityid'] > 0) {
                                                    // Assign some information inside the tooltip
                                                    plot.tooltip = {
                                                        content: "<span style='font-weight:bold;'>" +
-                                                                   "Origin: " + value.originationCity + ", " + value.originationState +
+                                                                   "Origin: " + toTitleCase(value.originationCity) + ", " + value.originationState +
                                                                    "<br />" +
-                                                                   "Dest: " + value.destinationCity + ", " + value.destinationState +
+                                                                   "Dest: " + toTitleCase(value.destinationCity) + ", " + value.destinationState +
                                                                    "<br /># of Trailers: " +
                                                                    value.qty +
                                                                    "<br />" +
@@ -680,7 +691,7 @@ if ($_SESSION['entityid'] > 0) {
                                                    };
 
                                                    // Set plot element to array
-                                                   plots[value.id+'-'+value.originationCity] = plot;
+                                                   plots[value.id+'-'+toTitleCase(value.originationCity)] = plot;
 
                                                    // Now plot the destination
                                                    var plot = {};
@@ -692,7 +703,7 @@ if ($_SESSION['entityid'] > 0) {
                                                    // Assign some information inside the tooltip
                                                    plot.tooltip = {
                                                        content: "<span style='font-weight:bold;'>" +
-                                                                   value.destinationCity +
+                                                                   toTitleCase(value.destinationCity) +
                                                                 "</span>"
                                                    };
 
@@ -713,15 +724,16 @@ if ($_SESSION['entityid'] > 0) {
                                                    };
 
                                                    // Set plot element to array
-                                                   plots[value.id+'-'+value.destinationCity] = plot;
+                                                   plots[value.id+'-'+toTitleCase(value.destinationCity)] = plot;
 
-                                                   linktitle = value.originationCity+'-'+value.destinationCity;
-                                                   linkobjecttitle = value.originationCity+value.destinationCity;
+                                                   linktitle = toTitleCase(value.originationCity)+'-'+toTitleCase(value.destinationCity);
+                                                   linkobjecttitle = toTitleCase(value.originationCity)+toTitleCase(value.destinationCity);
                                                    link.factor = 0.2;
                                                    //link.between = [{"latitude": value.originationLat, "longitude": value.originationLng}, {"latitude": value.destinationLat, "longitude": value.destinationLng}];
-                                                   link.between = [value.id+'-'+value.originationCity, value.id+'-'+value.destinationCity];
+                                                   link.between = [value.id+'-'+toTitleCase(value.originationCity), value.id+'-'+toTitleCase(value.destinationCity)];
                                                    link.attrs = {
-                                                                "stroke": "#a4e100",
+                                                                //"stroke": "#a4e100",
+                                                                "stroke": originationPlotColor,
                                                                 "stroke-width": 2,
                                                                 "stroke-linecap": "round",
                                                                 "opacity": 0.6,
@@ -768,9 +780,9 @@ if ($_SESSION['entityid'] > 0) {
                                                    // Assign some information inside the tooltip
                                                    plot.tooltip = {
                                                        content: "<span style='font-weight:bold;'>" +
-                                                                   "Origin: " + value.originationCity + ", " + value.originationState +
+                                                                   "Origin: " + toTitleCase(value.originationCity) + ", " + value.originationState +
                                                                    "<br />" +
-                                                                   "Dest: " + value.destinationCity + ", " + value.destinationState +
+                                                                   "Dest: " + toTitleCase(value.destinationCity) + ", " + value.destinationState +
                                                                    "<br /># of Trailers: " +
                                                                    value.qty +
                                                                    "<br />" +
@@ -802,7 +814,7 @@ if ($_SESSION['entityid'] > 0) {
                                                    };
 
                                                    // Set plot element to array
-                                                   plots[value.id+'-'+value.originationCity] = plot;
+                                                   plots[value.id+'-'+toTitleCase(value.originationCity)] = plot;
 
                                                    // Now plot the destination
                                                    var plot = {};
@@ -814,7 +826,7 @@ if ($_SESSION['entityid'] > 0) {
                                                    // Assign some information inside the tooltip
                                                    plot.tooltip = {
                                                        content: "<span style='font-weight:bold;'>" +
-                                                                   value.destinationCity +
+                                                                   toTitleCase(value.destinationCity) +
                                                                 "</span>"
                                                    };
 
@@ -835,15 +847,16 @@ if ($_SESSION['entityid'] > 0) {
                                                    };
 
                                                    // Set plot element to array
-                                                   plots[value.id+'-'+value.destinationCity] = plot;
+                                                   plots[value.id+'-'+toTitleCase(value.destinationCity)] = plot;
 
-                                                   linktitle = value.originationCity+'-'+value.destinationCity;
-                                                   linkobjecttitle = value.originationCity+value.destinationCity;
+                                                   linktitle = toTitleCase(value.originationCity)+'-'+toTitleCase(value.destinationCity);
+                                                   linkobjecttitle = toTitleCase(value.originationCity)+toTitleCase(value.destinationCity);
                                                    link.factor = 0.2;
                                                    //link.between = [{"latitude": value.originationLat, "longitude": value.originationLng}, {"latitude": value.destinationLat, "longitude": value.destinationLng}];
-                                                   link.between = [value.id+'-'+value.originationCity, value.id+'-'+value.destinationCity];
+                                                   link.between = [value.id+'-'+toTitleCase(value.originationCity), value.id+'-'+toTitleCase(value.destinationCity)];
                                                    link.attrs = {
-                                                                "stroke": "#a4e100",
+                                                                //"stroke": "#a4e100",
+                                                                "stroke": originationPlotColor,
                                                                 "stroke-width": 2,
                                                                 "stroke-linecap": "round",
                                                                 "opacity": 0.6,
@@ -889,9 +902,9 @@ if ($_SESSION['entityid'] > 0) {
                                                    // Assign some information inside the tooltip
                                                    plot.tooltip = {
                                                        content: "<span style='font-weight:bold;'>" +
-                                                                   "Origin: " + value.originationCity + ", " + value.originationState +
+                                                                   "Origin: " + toTitleCase(value.originationCity) + ", " + value.originationState +
                                                                    "<br />" +
-                                                                   "Dest: " + value.destinationCity + ", " + value.destinationState +
+                                                                   "Dest: " + toTitleCase(value.destinationCity) + ", " + value.destinationState +
                                                                    "<br /># of Trailers: " +
                                                                    value.qty +
                                                                    "<br />" +
@@ -923,7 +936,7 @@ if ($_SESSION['entityid'] > 0) {
                                                    };
 
                                                    // Set plot element to array
-                                                   plots[value.id+'-'+value.originationCity] = plot;
+                                                   plots[value.id+'-'+toTitleCase(value.originationCity)] = plot;
 
                                                    // Now plot the destination
                                                    var plot = {};
@@ -935,7 +948,7 @@ if ($_SESSION['entityid'] > 0) {
                                                    // Assign some information inside the tooltip
                                                    plot.tooltip = {
                                                        content: "<span style='font-weight:bold;'>" +
-                                                                   value.destinationCity +
+                                                                   toTitleCase(value.destinationCity) +
                                                                 "</span>"
                                                    };
 
@@ -956,15 +969,16 @@ if ($_SESSION['entityid'] > 0) {
                                                    };
 
                                                    // Set plot element to array
-                                                   plots[value.id+'-'+value.destinationCity] = plot;
+                                                   plots[value.id+'-'+toTitleCase(value.destinationCity)] = plot;
 
-                                                   linktitle = value.originationCity+'-'+value.destinationCity;
-                                                   linkobjecttitle = value.originationCity+value.destinationCity;
+                                                   linktitle = toTitleCase(value.originationCity)+'-'+toTitleCase(value.destinationCity);
+                                                   linkobjecttitle = toTitleCase(value.originationCity)+toTitleCase(value.destinationCity);
                                                    link.factor = 0.2;
                                                    //link.between = [{"latitude": value.originationLat, "longitude": value.originationLng}, {"latitude": value.destinationLat, "longitude": value.destinationLng}];
-                                                   link.between = [value.id+'-'+value.originationCity, value.id+'-'+value.destinationCity];
+                                                   link.between = [value.id+'-'+toTitleCase(value.originationCity), value.id+'-'+toTitleCase(value.destinationCity)];
                                                    link.attrs = {
-                                                                "stroke": "#a4e100",
+                                                                //"stroke": "#a4e100",
+                                                                "stroke": originationPlotColor,
                                                                 "stroke-width": 2,
                                                                 "stroke-linecap": "round",
                                                                 "opacity": 0.6,
@@ -997,9 +1011,9 @@ if ($_SESSION['entityid'] > 0) {
                                                    // Assign some information inside the tooltip
                                                    plot.tooltip = {
                                                        content: "<span style='font-weight:bold;'>" +
-                                                               value.originationCity + ", " + value.originationState +
+                                                               toTitleCase(value.originationCity) + ", " + value.originationState +
                                                                "<br />" +
-                                                               value.destinationCity + ", " + value.destinationState +
+                                                               toTitleCase(value.destinationCity) + ", " + value.destinationState +
                                                                "<br /># of Trailers: " +
                                                                value.qty +
                                                                "<br />" +
@@ -1032,7 +1046,7 @@ if ($_SESSION['entityid'] > 0) {
                                                    };
 
                                                    // Set plot element to array
-                                                   plots[value.id+'-'+value.originationCity] = plot;
+                                                   plots[value.id+'-'+toTitleCase(value.originationCity)] = plot;
 
                                                    // Now plot the destination
                                                    var plot = {};
@@ -1044,7 +1058,7 @@ if ($_SESSION['entityid'] > 0) {
                                                    // Assign some information inside the tooltip
                                                    plot.tooltip = {
                                                        content: "<span style='font-weight:bold;'>" +
-                                                                   value.destinationCity +
+                                                                   toTitleCase(value.destinationCity) +
                                                                 "</span>"
                                                    };
 
@@ -1065,14 +1079,15 @@ if ($_SESSION['entityid'] > 0) {
                                                    };
 
                                                    // Set plot element to array
-                                                   plots[value.id+'-'+value.destinationCity] = plot;
+                                                   plots[value.id+'-'+toTitleCase(value.destinationCity)] = plot;
 
-                                                   linktitle = value.originationCity+'-'+value.destinationCity;
-                                                   linkobjecttitle = value.originationCity+value.destinationCity;
+                                                   linktitle = toTitleCase(value.originationCity)+'-'+toTitleCase(value.destinationCity);
+                                                   linkobjecttitle = toTitleCase(value.originationCity)+toTitleCase(value.destinationCity);
                                                    link.factor = 0.2;
-                                                   link.between = [value.id+'-'+value.originationCity, value.id+'-'+value.destinationCity];
+                                                   link.between = [value.id+'-'+toTitleCase(value.originationCity), value.id+'-'+toTitleCase(value.destinationCity)];
                                                    link.attrs = {
-                                                                "stroke": "#ffffff",
+                                                                //"stroke": "#ffffff",
+                                                                "stroke": originationPlotColor,
                                                                 "stroke-width": 2,
                                                                 "stroke-linecap": "round",
                                                                 "opacity": 0.6,
@@ -1985,6 +2000,16 @@ if ($_SESSION['entityid'] > 0) {
                         </div>
                     </div>
                 </section>
+                <div class="row">
+                    <div class="col-md-8 col-md-offset-3">
+                        <ul class="legend">
+                            <li><span class="orders"></span> Orders</li>
+                            <li><span class="availability"></span> Availability</li>
+                            <li><span class="needs"></span> Needs</li>
+                            <li><span class="commitments"></span> Commitments</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
 
             <div class="col-lg-4">
@@ -2056,7 +2081,10 @@ if ($_SESSION['entityid'] > 0) {
                         </div>
 
                         <div>
-                            <h5 class="fw-semi-bold mt">Filters</h5>
+                            <div>
+                                <button class="btn btn-primary btn-sm pull-right" role="button"><i class="glyphicon glyphicon-remove-sign text"></i> <span class="text">Clear</span></button>
+                                <h5 class="fw-semi-bold mt">Filters</h5>
+                            </div>
                             <div class="input-group mt" style="width: 100%">
                                 <label for="activityFilter">Type:</label>
                                 <br/>
@@ -2101,6 +2129,9 @@ if ($_SESSION['entitytype'] == 0) {
                                     <label class="btn btn-default">
                                         <input type="radio" name="locationStatus" id="locationStatus" value="Destination">
                                     Destination </label>
+                                    <label class="btn btn-default">
+                                        <input type="radio" name="locationStatus" id="locationStatus" value="Both">
+                                    Either/Or </label>
                                 </div>
 
                                 <br /><br />
@@ -2330,6 +2361,13 @@ $(function() {
            var linkobjecttitle = "";
 
            if (entityTypeID > 0) {
+                   if (entityTypeID == 1) {
+                       var originationPlotColor = "Red";
+                   } else if (entityTypeID == 2) {
+                       var originationPlotColor = "Red";
+                   } else {
+                       var originationPlotColor = "Green";
+                   }
                    var plotsColors = chroma.scale("Blues");
                    $.each(data, function (index, value) {
 
@@ -2368,9 +2406,9 @@ $(function() {
                            // Assign some information inside the tooltip
                            plot.tooltip = {
                                content: "<span style='font-weight:bold;'>" +
-                                           "Origin: " + value.originationCity + ", " + value.originationState +
+                                           "Origin: " + toTitleCase(value.originationCity) + ", " + value.originationState +
                                            "<br />" +
-                                           "Dest: " + value.destinationCity + ", " + value.destinationState +
+                                           "Dest: " + toTitleCase(value.destinationCity) + ", " + value.destinationState +
                                            "<br /># of Trailers: " +
                                            value.qty +
                                            "<br />" +
@@ -2415,7 +2453,7 @@ $(function() {
                            // Assign some information inside the tooltip
                            plot.tooltip = {
                                content: "<span style='font-weight:bold;'>" +
-                                           value.destinationCity +
+                                           toTitleCase(value.destinationCity) +
                                         "</span>"
                            };
 
@@ -2438,11 +2476,11 @@ $(function() {
                            // Set plot element to array
                            plots[value.id+'-'+value.destinationCity] = plot;
 
-                           linktitle = value.originationCity+'-'+value.destinationCity;
-                           linkobjecttitle = value.originationCity+value.destinationCity;
+                           linktitle = toTitleCase(value.originationCity)+'-'+toTitleCase(value.destinationCity);
+                           linkobjecttitle = toTitleCase(value.originationCity)+toTitleCase(value.destinationCity);
                            link.factor = 0.2;
                            //link.between = [{"latitude": value.originationLat, "longitude": value.originationLng}, {"latitude": value.destinationLat, "longitude": value.destinationLng}];
-                           link.between = [value.id+'-'+value.originationCity, value.id+'-'+value.destinationCity];
+                           link.between = [value.id+'-'+toTitleCase(value.originationCity), value.id+'-'+toTitleCase(value.destinationCity)];
                            link.attrs = {
                                         "stroke": "#a4e100",
                                         "stroke-width": 2,
@@ -2460,7 +2498,7 @@ $(function() {
                    // Parse location elements
                    // This variable will hold all the plots of our map - ALREADY INIT ABOVE
                    //var plots = {};
-/* Don't show Locations for now. Map is already too busy.
+
                    var plotsColors = chroma.scale("Yellows");
                    //console.log(locations);
                    $.each(locations, function (index, values) {
@@ -2484,7 +2522,7 @@ $(function() {
                                    // Assign some information inside the tooltip
                                    plot.tooltip = {
                                        content: "<span style='font-weight:bold;'>" +
-                                                   value.city + ', ' + value.state +
+                                                   toTitleCase(value.city) + ', ' + value.state +
                                                 "</span>"
                                    };
 
@@ -2499,9 +2537,10 @@ $(function() {
                                    };
 
                                    // Assign the background color randomize from a scale
-                                   //plot.attrs = {
-                                   //    fill: plotsColors(Math.random())
-                                   //};
+                                   plot.attrs = {
+                                       //fill: plotsColors(Math.random())
+                                       fill: "Yellow"
+                                   };
 
                                    // Set plot element to array
                                    plots[value.id+'-'+value.city] = plot;
@@ -2511,7 +2550,7 @@ $(function() {
 
                        });
                    });
-*/
+
            } else {
 
                    // Setup Orders plots
@@ -2534,9 +2573,9 @@ $(function() {
                                // Assign some information inside the tooltip
                                plot.tooltip = {
                                    content: "<span style='font-weight:bold;'>" +
-                                           value.originationCity + ", " + value.originationState +
+                                           toTitleCase(value.originationCity) + ", " + value.originationState +
                                            "<br />" +
-                                           value.destinationCity + ", " + value.destinationState +
+                                           toTitleCase(value.destinationCity) + ", " + value.destinationState +
                                            "<br /># of Trailers: " +
                                            value.qty +
                                            "<br />" +
@@ -2569,7 +2608,7 @@ $(function() {
                                };
 
                                // Set plot element to array
-                               plots[value.id+'-'+value.originationCity] = plot;
+                               plots[value.id+'-'+toTitleCase(value.originationCity)] = plot;
 
                                // Now plot the destination
                                var plot = {};
@@ -2581,7 +2620,7 @@ $(function() {
                                // Assign some information inside the tooltip
                                plot.tooltip = {
                                    content: "<span style='font-weight:bold;'>" +
-                                               value.destinationCity +
+                                               toTitleCase(value.destinationCity) +
                                             "</span>"
                                };
 
@@ -2601,14 +2640,15 @@ $(function() {
                                };
 
                                // Set plot element to array
-                               plots[value.id+'-'+value.destinationCity] = plot;
+                               plots[value.id+'-'+toTitleCase(value.destinationCity)] = plot;
 
-                               linktitle = value.originationCity+'-'+value.destinationCity;
-                               linkobjecttitle = value.originationCity+value.destinationCity;
+                               linktitle = toTitleCase(value.originationCity)+'-'+toTitleCase(value.destinationCity);
+                               linkobjecttitle = toTitleCase(value.originationCity)+toTitleCase(value.destinationCity);
                                link.factor = 0.2;
-                               link.between = [value.id+'-'+value.originationCity, value.id+'-'+value.destinationCity];
+                               link.between = [value.id+'-'+toTitleCase(value.originationCity), value.id+'-'+toTitleCase(value.destinationCity)];
                                link.attrs = {
-                                            "stroke": "#ffffff",
+                                            //"stroke": "#ffffff",
+                                            "stroke": "orange",
                                             "stroke-width": 2,
                                             "stroke-linecap": "round",
                                             "opacity": 0.6,

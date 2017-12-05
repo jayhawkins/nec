@@ -261,7 +261,7 @@ $contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?col
 
       function loadBusinessTableAJAX(){
           myApp.showPleaseWait();
-        var url = '<?php echo API_HOST_URL; ?>' + '/entities?include=locations&filter[0]=status,eq,Active&filter[1]=locations.status,eq,Active&filter[2]=locations.name,eq,Headquarters&transform=1';
+        var url = '<?php echo API_HOST_URL; ?>' + '/entities?include=entity_types,locations&filter[0]=status,eq,Active&filter[1]=locations.status,eq,Active&filter[2]=locations.name,eq,Headquarters&transform=1';
         var example_table = $('#business-datatable-table').DataTable({
             retrieve: true,
             processing: true,
@@ -284,6 +284,7 @@ $contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?col
 
                             var business = {
                                 id: entity.id,
+                                typeID: entity.entityTypeID,
                                 name: entity.name,
                                 addressid: entity.locations[0].id,
                                 address1: entity.locations[0].address1,
@@ -302,6 +303,18 @@ $contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?col
             columns: [
                 { data: "id", visible: false },
                 { data: "name" },
+                { data: null,
+                    "bSortable": true,
+                    "mRender": function(p) {
+                        if (p.typeID == 1) {
+                            return "Customer";
+                        } else if (p.typeID == 2){
+                            return "Carrier";
+                        } else {
+                            return "NEC Admin";
+                        }
+                    }
+                },
                 { data: "addressid", visible: false },
                 { data: "address1" },
                 { data: "address2" },
@@ -482,6 +495,7 @@ $contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?col
                  <tr>
                      <th>ID</th>
                      <th class="hidden-sm-down">Name</th>
+                     <th class="hidden-sm-down">Type</th>
                      <th class="hidden-sm-down">Location ID</th>
                      <th class="hidden-sm-down">Address 1</th>
                      <th class="hidden-sm-down">Address 2</th>

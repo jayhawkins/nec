@@ -445,8 +445,10 @@ class Orders
                     }
                     if ($locationStatus == "Origination") {
                         $query .= " and orders.originationState in (" . $sfilter . ")";
-                    } else {
+                    } else if ($locationStatus == "Destination") {
                         $query .= " and orders.destinationState in (" . $sfilter . ")";
+                    } else {
+                        $query .= " and (orders.originationState in (" . $sfilter . ") or orders.destinationState in (" . $sfilter . "))";
                     }
               }
               if (!empty($cityFilter)) {
@@ -465,8 +467,10 @@ class Orders
                     }
                     if ($locationStatus == "Origination") {
                         $query .= " and orders.originationCity in (" . $cfilter . ")";
-                    } else {
+                    } else if ($locationStatus == "Destination") {
                         $query .= " and orders.destinationCity in (" . $cfilter . ")";
+                    } else {
+                        $query .= " and (orders.originationCity in (" . $sfilter . ") or orders.destinationCity in (" . $sfilter . "))";
                     }
               }
 
