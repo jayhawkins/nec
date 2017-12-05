@@ -266,6 +266,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                   item[obj[i].id] = obj[i].value;
                                   needsarray.push(item);
                               }
+                                                        
+                                var decal = {};
+                                decal['decals'] = $("#decals").val();
+                                needsarray.push(decal);
+                          
                               var needsdatapoints = needsarray;
 
                               var pickupInformation = {
@@ -2816,22 +2821,32 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                           })
                         });
 
-                        dpli += '<li>' + dataPoints.object_type_data_points[i].title +
-                                ' <select class="form-control mb-sm" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '" disabled>';
-                        for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
+                        
+                        if(dataPoints.object_type_data_points[i].title == "Decals"){
+                            dpli += '<li>' +
+                                    'Decals'+
+                                    '<input id="decals" name="decals" class="form-control mb-sm" value="'+value+'" disabled>\n'+
+                                    '</li>\n';
+                          }
+                          else{
+                            dpli += '<li>' + dataPoints.object_type_data_points[i].title +
+                                    ' <select class="form-control mb-sm" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '" disabled>';
+                            for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
 
-                            if (dataPoints.object_type_data_points[i].object_type_data_point_values[v].value === value) {
-                                selected = ' selected ';
-                            } else {
-                                selected = '';
+                                if (dataPoints.object_type_data_points[i].object_type_data_point_values[v].value === value) {
+                                    selected = ' selected ';
+                                } else {
+                                    selected = '';
+                                }
+
+                                dpli += '<option' + selected + '>' + dataPoints.object_type_data_points[i].object_type_data_point_values[v].value + '</option>\n';
+
                             }
 
-                            dpli += '<option' + selected + '>' + dataPoints.object_type_data_points[i].object_type_data_point_values[v].value + '</option>\n';
+                            dpli += '</select>' +
+                                    '</li>\n';
+                          }
 
-                        }
-
-                        dpli += '</select>' +
-                                '</li>\n';
                     }
                     $("#dp-check-list-box").html(dpli);
                     //formatListBox();
