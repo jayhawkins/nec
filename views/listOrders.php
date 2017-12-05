@@ -73,6 +73,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
     var carrierEntities = <?php echo json_encode($carrierEntities); ?>;
     var vinNumbersList = [];
+    var existingPODList = [];
 
     var myApp;
     myApp = myApp || (function () {
@@ -108,6 +109,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         $("#input-list-box").append(li);
 
     }
+    
       function post() {
 
           var result = true;
@@ -166,7 +168,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 alert('Failed Searching for Origination Location! - Notify NEC of this failure.');
              }
           });
-
+          
           if (result) {
             verifyAndPost(function(data) {
                 $("#load").html("Save Changes");
@@ -234,10 +236,24 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                               var obj = $("#input-list-box li");
                               var item = {};
                               for (var i = 0; i < obj.length; i++) {
-
-                                  if (obj[i].firstChild.value != ""){
-                                    item = {vinNumber: obj[i].firstChild.value, deliveryDate: "", notes: "", fileName: "", carrier: ""};
-                                    podArray.push(item);
+                                  var blnMatch = false;
+                                  var newVinNumber = obj[i].firstChild.value.trim();
+                                  
+                                  if (newVinNumber != ""){ 
+                                      
+                                      for(var j=0; j < existingPODList.length; j++){
+                                          if(existingPODList[j].vinNumber == newVinNumber){
+                                              blnMatch = true;
+                                              podArray.push(existingPODList[j]);
+                                              break;
+                                          }
+                                      }
+                                      
+                                      if(!blnMatch){
+                                        item = {vinNumber: newVinNumber, deliveryDate: "", notes: "", fileName: "", carrier: ""};
+                                        podArray.push(item);
+                                      }
+                                      
                                   }
                               }
 
@@ -731,6 +747,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             data = [];
                         }
                         else{
+                            existingPODList = podList;
                             podList.forEach(function(pod){
 
                                 if (deliveryInformation === null){
