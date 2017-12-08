@@ -650,9 +650,10 @@ $app->route('POST /indexgetorders', function() {
 	$locationStatus = Flight::request()->data->locationStatus;
 	$stateFilter = Flight::request()->data->stateFilter;
     $cityFilter = Flight::request()->data->cityFilter;
+    $entityid = Flight::request()->data->entityid;
 	$orders = Flight::orders();
 	$db = Flight::db();
-    $return = $orders->indexgetorders($db,$locationStatus,$stateFilter,$cityFilter);
+    $return = $orders->indexgetorders($db,$locationStatus,$stateFilter,$cityFilter,$entityid);
     echo $return;
 });
 

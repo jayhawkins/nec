@@ -353,7 +353,7 @@ if ($_SESSION['entityid'] > 0) {
                async: false,
                success: function(json){
 
-                    //orders = json.order;
+                    //orders = json.orders;
                     orders = json.order_details;
                     //console.log(orders);
 
@@ -605,7 +605,8 @@ if ($_SESSION['entityid'] > 0) {
                                     url = '<?php echo HTTP_HOST; ?>'+'/indexgetorders';
                                     params = {"locationStatus": $('input[name=locationStatus]:checked').val(),
                                               "stateFilter": statearray,
-                                              "cityFilter": cityarray
+                                              "cityFilter": cityarray,
+                                              "entityid": entityid
                                              };
                                     params = JSON.stringify(params);
                                     console.log(params);
@@ -2361,13 +2362,15 @@ $(function() {
            var linkobjecttitle = "";
 
            if (entityTypeID > 0) {
+
                    if (entityTypeID == 1) {
-                       var originationPlotColor = "Red";
+                       var originationPlotColor = "Blue";
                    } else if (entityTypeID == 2) {
                        var originationPlotColor = "Red";
                    } else {
                        var originationPlotColor = "Green";
                    }
+
                    var plotsColors = chroma.scale("Blues");
                    $.each(data, function (index, value) {
 

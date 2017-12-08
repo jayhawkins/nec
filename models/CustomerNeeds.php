@@ -9,7 +9,7 @@ class CustomerNeeds
      * @var string
      */
     public $table = "customer_needs";
-    
+
     private $id;
     private $rootCustomerNeedsID;
     private $entityID;
@@ -31,6 +31,7 @@ class CustomerNeeds
     private $distance;
     private $qty;
     private $availableDate;
+    private $expirationDate;
     private $contactEmails;
     private $createdAt;
     private $updatedAt;
@@ -80,6 +81,7 @@ class CustomerNeeds
                 "needsDataPoints"=>$this->needsDataPoints,
                 "status"=>$this->status,
                 "availableDate"=>$this->availableDate,
+                "expirationDate"=>$this->expirationDate,
                 "contactEmails"=>$this->contactEmails,
                 "createdAt" => date('Y-m-d H:i:s'),
                 "updatedAt" => date('Y-m-d H:i:s')
@@ -163,7 +165,7 @@ class CustomerNeeds
 
                         $data = array(
                             //"rootCustomerNeedsID"=>$rootCustomerNeedsID,
-                            "rootCustomerNeedsID"=>$id,
+                            //"rootCustomerNeedsID"=>$id,
                             "qty"=>$qty,
                             //"originationAddress1"=>$this->originationAddress1,
                             "originationCity"=>$this->originationCity,
@@ -183,6 +185,7 @@ class CustomerNeeds
                             "needsDataPoints"=>$this->needsDataPoints,
                             "status"=>$this->status,
                             "availableDate"=>$deliveryDate,
+                            "expirationDate"=>$this->expirationDate,
                             "contactEmails"=>$this->contactEmails,
                             "createdAt" => date('Y-m-d H:i:s'),
                             "updatedAt" => date('Y-m-d H:i:s')
@@ -216,7 +219,7 @@ class CustomerNeeds
 
                         $data = array(
                             //"rootCustomerNeedsID"=>$rootCustomerNeedsID,
-                            "rootCustomerNeedsID"=>$id,
+                            //"rootCustomerNeedsID"=>$id,
                             "qty"=>$qty,
                             //"originationAddress1"=>$this->originationAddress1,
                             "originationCity"=>$destinationCity,
@@ -236,6 +239,7 @@ class CustomerNeeds
                             "needsDataPoints"=>$this->needsDataPoints,
                             "status"=>$this->status,
                             "availableDate"=>$deliveryDate,
+                            "expirationDate"=>$this->expirationDate,
                             "contactEmails"=>$this->contactEmails,
                             "createdAt" => date('Y-m-d H:i:s'),
                             "updatedAt" => date('Y-m-d H:i:s')
@@ -283,6 +287,7 @@ class CustomerNeeds
                             "needsDataPoints"=>$this->needsDataPoints,
                             "status"=>$this->status,
                             "availableDate"=>$this->availableDate,
+                            "expirationDate"=>$this->expirationDate,
                             "contactEmails"=>$this->contactEmails,
                             "createdAt" => date('Y-m-d H:i:s'),
                             "updatedAt" => date('Y-m-d H:i:s')
@@ -352,6 +357,7 @@ class CustomerNeeds
       $this->status = $result["status"];
       $this->qty = $result["qty"];
       $this->availableDate = $result["availableDate"];
+      $this->expirationDate = $result["expirationDate"];
       $this->contactEmails = $result["contactEmails"];
       $this->createdAt = $result["createdAt"];
       $this->updatedAt = $result["updatedAt"];
@@ -374,9 +380,9 @@ class CustomerNeeds
 
     // Not Used Yet - just wanted to keep the code so we know how to loop through the carrier needs contacts
     public function sendToContacts() {
-        
+
         $from = array("operations@nationwide-equipment.com" => "Nationwide Operations Control Manager");
-        
+
         foreach ($this->contactEmails[0] as $key => $value) {
             $contactargs = array(
                   "transform"=>1,
@@ -398,11 +404,11 @@ class CustomerNeeds
 
             $body = "Hello " . $contactresult['contacts'][0]['firstName'] . ",<br /><br />";
             $body .= $templateresult['email_templates'][0]['body'];
-            
+
                 $subject = $templateresult['email_templates'][0]['subject'];
             if (count($templateresult) > 0) {
               try {
-                $returnObject = sendmail($to, $subject, $body, $from);                
+                $returnObject = sendmail($to, $subject, $body, $from);
 
                 // Are there any failed emails?
                 if(sizeof($returnObject["failedRecipients"]) > 0){
@@ -420,19 +426,19 @@ class CustomerNeeds
                       );
                       $contactcontext  = stream_context_create($contactoptions);
                       $contactresult = json_decode(file_get_contents($contacturl,false,$contactcontext),true);
-                      
+
                       $contactList = $contactresult["contacts"];
-                      
+
                       for($i=0; $i<sizeof($contactList); $i++){
-                          
+
                           $adminTo = array($contactList[$i]['emailAddress'] => $contactList[$i]['firstName'] . " " . $contactList[$i]['lastName']);
-                          
+
                             $body = "Hello " . $contactList[$i]['firstName'] . ",<br /><br />";
                             $body .= "The following emails were returned as failures: <br />";
-                          
+
                             $body .= implode("<br/>", $returnObject["failedRecipients"]);
                       }
-                      
+
                 }
 
               } catch (Exception $mailex) {
@@ -485,7 +491,7 @@ class CustomerNeeds
 
 
             $from = array("operations@nationwide-equipment.com" => "Nationwide Operations Control Manager");
-            
+
             $returnObject = array();
 
 
@@ -497,8 +503,8 @@ class CustomerNeeds
 
                       $body = "Hello " . $entitycontactresult['contacts'][$ec]['firstName'] . ",<br /><br />";
                       $body .= $templateresult['email_templates'][0]['body'];
-                      
-                      $returnObject = sendmail($to, $subject, $body, $from);                      
+
+                      $returnObject = sendmail($to, $subject, $body, $from);
 
                     // Are there any failed emails?
                     if(sizeof($returnObject["failedRecipients"]) > 0){
@@ -527,15 +533,15 @@ class CustomerNeeds
                                 $adminBody .= "The following emails were returned as failures: <br />";
 
                                 $adminBody .= implode("<br/>", $returnObject["failedRecipients"]);
-                                
+
                                 $adminSubject = "Rejected Email Addresses";
-                                
+
                                 $adminReturnObject = sendmail($adminTo, $adminSubject, $adminBody, $from);
                           }
 
                     }
 
-                            
+
                   }
               } catch (Exception $mailex) {
                 return $mailex;
@@ -591,15 +597,15 @@ class CustomerNeeds
                         $contactresult = json_decode(file_get_contents($contacturl,false,$contactcontext),true);
                         //return $contactresult;
                         $to = array($contactresult['contacts'][0]['emailAddress'] => $contactresult['contacts'][0]['firstName'] . " " . $contactresult['contacts'][0]['lastName']);
-                        
+
                         $returnObject = array();
 
                         $body = "Hello " . $contactresult['contacts'][0]['firstName'] . ",<br /><br />";
                         $body .= $templateresult['email_templates'][0]['body'];
                         if (count($templateresult) > 0) {
                           try {
-                            $returnObject = sendmail($to, $subject, $body, $from);                            
-                            
+                            $returnObject = sendmail($to, $subject, $body, $from);
+
                             // Are there any failed emails?
                             if(sizeof($returnObject["failedRecipients"]) > 0){
                                // Send the list to the admin
@@ -634,7 +640,7 @@ class CustomerNeeds
                                   }
 
                             }
-                            
+
                           } catch (Exception $mailex) {
                             return $mailex;
                           }
@@ -861,11 +867,11 @@ class CustomerNeeds
 
                         $matchcontext  = stream_context_create($matchoptions);
                         $matchresult = json_decode(file_get_contents($matchurl,false,$matchcontext),true);
-                        
+
                         // Are there any failed emails?
                         if(sizeof($returnObject["failedRecipients"]) > 0){
-                            
-                            
+
+
                         $adminFrom = array("operations@nationwide-equipment.com" => "Nationwide Operations Control Manager");
                             // Send the list to the admin
                             $contactargs = array(
@@ -899,7 +905,7 @@ class CustomerNeeds
                               }
 
                         }
-                        
+
                   } catch (Exception $mailex) {
                     return $mailex;
                   }

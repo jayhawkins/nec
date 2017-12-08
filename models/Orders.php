@@ -421,14 +421,25 @@ class Orders
             return $contactresult;
     }
 
-    public function indexgetorders(&$db,$locationStatus,$stateFilter,$cityFilter) {
+    public function indexgetorders(&$db,$locationStatus,$stateFilter,$cityFilter,$entityid = 0) {
 
         try {
 
-              $query = " select * from order_details
+              $query = " select *";
+
+              if ($entityid > 0) {
+                  $query .= ", orders.originationCity, orders.originationState, orders.originationLat, orders.originationLng,
+                               orders.destinationCity, orders.destinationState, orders.destinationLat, orders.destinationLng";
+              }
+
+              $query .= " from order_details
                          left join orders on orders.id = order_details.orderID
                          where order_details.status = 'Open'
                          and order_details.deliveryDate >= '" . date('Y-m-d') . "'";
+
+              if ($entityid > 0) {
+                  $query .= " and orders.customerID = '" . $entityid . "'";
+              }
 
               if (!empty($stateFilter)) {
                     if (count($stateFilter) == 1) {
