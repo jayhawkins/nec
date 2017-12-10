@@ -665,6 +665,19 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             
             $('#relayTabs').append(relayTabs);
             $('#selectedRelayTabs').append(selectedRelayTabs);
+            
+            
+            $('#relayTabs > li > a').bind('click',function(){
+
+                var relayToShow = $(this).attr('href');
+                $('#relayTabs > li').removeClass('active');
+                $(this).parent().addClass('active');
+                $('#selectedRelayTabs > div').removeClass('active');
+                $('#selectedRelayTabs > div' + relayToShow).addClass('active');
+
+                console.log(relayToShow);
+            });
+    
         });
         
         $("#customer-needs-commit").css("display", "block");
@@ -2310,17 +2323,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         }
     }
     
-    $('#relayTabs > li > a').unbind('click').bind('click', function(){
-    
-        var relayToShow = $(this).attr('href');
-        $('#relayTabs > li').removeClass('active');
-        $(this).parent().addClass('active');
-        $('#selectedRelayTabs > div').removeClass('active');
-        $('#selectedRelayTabs > div' + relayToShow).addClass('active');
-        
-        console.log(relayToShow);
-    });
-    
     //Yaw,
     // While I was investigating, I realized that the javascript was not waiting for a return from the addCustomerInfo function.
     // So, instead I thought it would be best to grab all of the Customer and Vendor information and push it into the addCustomerInfo function.
@@ -2912,7 +2914,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
     function closeCommitTransport(){
 
-
+        $('#relayTabs > li > a').unbind('click');
         $('#relayTabs').empty();
         $('#selectedRelayTabs').empty();
         $('#pickupAddress').empty();
