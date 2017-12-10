@@ -2318,6 +2318,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         $('#selectedRelayTabs > div').removeClass('active');
         $('#selectedRelayTabs > div' + relayToShow).addClass('active');
         
+        console.log(relayToShow);
     });
     
     //Yaw,
