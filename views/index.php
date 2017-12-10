@@ -237,6 +237,7 @@ if ($_SESSION['entityid'] > 0) {
         <link href="css/application-ie9-part2.css" rel="stylesheet">
     <![endif]-->
 
+    <link href="css/new-styles.css" rel="stylesheet">
 <?php if(ENVIRONMENT == 'development') { ?>
 	<link rel="stylesheet" type="text/css" href="vendor/datatables/media/css/dataTables-r-2_2_0.min.css"/>
 <?php } else { ?>
@@ -274,7 +275,7 @@ if ($_SESSION['entityid'] > 0) {
             color: #343434;
         }
 
-        // For the map legend
+        /* For the map legend */
         /* basic positioning */
         .legend { list-style:none }
         .legend li { float: left; margin-right: 10px; }
@@ -1125,7 +1126,7 @@ if ($_SESSION['entityid'] > 0) {
 </head>
 <body>
 <!--
-  Main sidebar seen on the left. may be static or collapsing depending on selected state.
+  Main side bar seen on the left. may be static or collapsing depending on selected state.
 
     * Collapsing - navigation automatically collapse when mouse leaves it and expand when enters.
     * Static - stays always open.
