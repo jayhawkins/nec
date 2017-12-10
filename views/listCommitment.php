@@ -586,6 +586,91 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
       }
 
+    function loadNewCustomerNeedsCommit(id){
+    
+        var baseUrl = '<?php echo API_HOST_URL; ?>' + '/customer_needs/' + id + '?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationNotes,destinationNotes,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transportation_mode,entities.name,entities.rateType,entities.negotiatedRate';
+
+        var url = baseUrl + '&satisfy=any&order[]=entityID&order[]=rootCustomerNeedsID&order[]=availableDate,desc&transform=1';
+
+        var relayURL = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,transportationMode,rate,originationAddress1,originationCity,originationState,originationZip,originationNotes,destinationNotes,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.entityID,customer_needs_commit.status,customer_needs_commit.pickupDate,customer_needs_commit.deliveryDate,customer_needs_commit.rate,customer_needs_commit.transportation_mode,entities.name,entities.rateType,entities.negotiatedRate&filter=rootCustomerNeedsID,eq,' + id + '&satisfy=all&order[]=entityID&order[]=rootCustomerNeedsID&order[]=availableDate,desc&transform=1';
+        
+        $.get(url, function(data){
+            
+            var customer_needs = data;
+            var needsDataPoints = customer_needs.needsDataPoints;
+            
+            if(customer_needs.originationAddress1 == null) customer_needs.originationAddress1 = "";
+            if(customer_needs.destinationAddress1 == null) customer_needs.destinationAddress1 = "";
+            if(customer_needs.originationZip == null) customer_needs.originationZip = "";
+            if(customer_needs.destinationZip == null) customer_needs.destinationZip = "";
+            
+            var pickupAddress = customer_needs.originationAddress1 + "<br>" +
+                    customer_needs.originationCity + ", " + customer_needs.originationState + " " + customer_needs.originationZip + "<br><br>" +
+                                "Notes:<br>" + 
+                                customer_needs.originationNotes + "<br>";
+            var deliveryAddress = customer_needs.destinationAddress1 + "<br>" +
+                    customer_needs.destinationCity + ", " + customer_needs.destinationState + " " + customer_needs.destinationZip + "<br><br>" +
+                                "Notes:<br>" + 
+                                customer_needs.destinationNotes + "<br>";
+                        
+            var trailerData = "Quantity: " + customer_needs.qty + "<br>" +
+                                "Type: " + needsDataPoints[0].type + "<br>" +
+                                "Length: " + needsDataPoints[1].length + "<br>" +
+                                "Width: " + needsDataPoints[2].width + "<br>" +
+                                "Height: " + needsDataPoints[3].height + "<br>" +
+                                "Carb: " + needsDataPoints[4].carb + "<br>" +
+                                "Decals: " + needsDataPoints[5].decals + "<br>" +
+                                "Door: " + needsDataPoints[6].door + "<br>" +
+                                "Floor: " + needsDataPoints[7].floor + "<br>" +
+                                "King Pin: " + needsDataPoints[8].king_pin + "<br>" +
+                                "Lift Pads: " + needsDataPoints[9].lift_pads + "<br>" +
+                                "Number Of Axles: " + needsDataPoints[10].num_axles + "<br>" +
+                                "Railable: " + needsDataPoints[11].railable + "<br>" +
+                                "Side Skirts: " + needsDataPoints[12].side_skirts + "<br>" +
+                                "Suspension: " + needsDataPoints[13].suspension + "<br>";
+            
+            $('#pickupAddress').append(pickupAddress);
+            $('#deliveryAddress').append(deliveryAddress);
+            $('#trailerData').append(trailerData);
+            
+        });
+        
+        $.get(relayURL, function(data){
+            var relays = data.customer_needs;
+            var relayTabs = "";
+            var selectedRelayTabs = "";
+            
+            $.each(relays, function(key, customer_needs){                
+                if(customer_needs.destinationAddress1 == null) customer_needs.destinationAddress1 = "";
+                if(customer_needs.destinationZip == null) customer_needs.destinationZip = "";
+
+                var deliveryAddress = customer_needs.destinationAddress1 + "<br>" +
+                                customer_needs.destinationCity + ", " + customer_needs.destinationState + " " + customer_needs.destinationZip + "<br><br>" +
+                                "Notes:<br>" + 
+                                customer_needs.destinationNotes + "<br>";
+                        
+                var relayNumber = key + 1;
+                if(key == 0){
+                    relayTabs += "<li class=\"nav-link active\" aria-expanded=\"false\"><a href=\"#" + key + "\" data-toggle=\"tab\" class=\"active\" aria-expanded=\"true\">Relay Address " + relayNumber + "</a></li>";
+                    
+                    selectedRelayTabs += "<div class=\"tab-pane active\" id=\"" + key + "\" aria-expanded=\"false\">" + deliveryAddress + "</div>";
+                }
+                else{
+                    relayTabs += "<li class=\"nav-link\" aria-expanded=\"false\"><a href=\"#" + key + "\" data-toggle=\"tab\" class=\"active\" aria-expanded=\"true\">Relay Address " + relayNumber + "</a></li>";
+                    
+                    selectedRelayTabs += "<div class=\"tab-pane\" id=\"" + key + "\" aria-expanded=\"false\">" + deliveryAddress + "</div>";
+                }
+                
+            });
+            
+            $('#relayTabs').append(relayTabs);
+            $('#selectedRelayTabs').append(selectedRelayTabs);
+        });
+        
+        $("#customer-needs-commit").css("display", "block");
+        $("#customer-needs").css("display", "none");
+    }
+
     function loadCustomerNeedsCommitAJAX (id){
 
         var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,transportationMode,rate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.entityID,customer_needs_commit.status,customer_needs_commit.pickupDate,customer_needs_commit.deliveryDate,customer_needs_commit.rate,customer_needs_commit.transportation_mode,entities.name,entities.rateType,entities.negotiatedRate&filter=rootCustomerNeedsID,eq,' + id + '&satisfy=all&order[]=entityID&order[]=rootCustomerNeedsID&order[]=availableDate,desc&transform=1';
@@ -1106,9 +1191,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
      <header>
          <h4><span class="fw-semi-bold">Available Transport</span></h4>
          <div class="widget-controls">
-             <a data-widgster="expand" title="Expand" href="#"><i class="glyphicon glyphicon-chevron-up"></i></a>
+             <!--<a data-widgster="expand" title="Expand" href="#"><i class="glyphicon glyphicon-chevron-up"></i></a>
              <a data-widgster="collapse" title="Collapse" href="#"><i class="glyphicon glyphicon-chevron-down"></i></a>
-             <a data-widgster="close" title="Close" href="#"><i class="glyphicon glyphicon-remove"></i></a>
+             <a data-widgster="close" title="Close" href="#"><i class="glyphicon glyphicon-remove"></i></a>-->
          </div>
      </header>
      <div class="widget-body">
@@ -1158,10 +1243,16 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
          </div>
      </div>
  </section>
-
+ 
+<!-- Old Commit View 
 <section class="widget"  id="customer-needs-commit" style="display: none;">
      <header>
          <h4><span class="fw-semi-bold">Committed Transport</span></h4>
+         <div class="widget-controls">
+             <a data-widgster="save" title="Save" href="#"><i class="glyphicon glyphicon-floppy-disk" style="font-size: 20px;"></i></a>
+             <a data-widgster="edit" title="Edit" href="#"><i class="glyphicon glyphicon-pencil" style="font-size: 20px;"></i></a>
+             <a data-widgster="close" title="Close" href="#"><i class="glyphicon glyphicon-remove" style="font-size: 20px;"></i></a>
+         </div>
      </header>
      <br />
      <div class="widget-body">
@@ -1198,7 +1289,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                  </tr>
                  </thead>
                  <tbody>
-                      <!-- loadTableAJAX() is what populates this area -->
                  </tbody>
              </table>
         </div>
@@ -1216,7 +1306,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- loadTableAJAX() is what populates this area -->
                 </tbody>
             </table>
         </div>
@@ -1266,7 +1355,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 </tr>
                 </thead>
                 <tbody>
-                    <!-- loadTableAJAX() is what populates this area -->
+
                 </tbody>
             </table>
         </div>
@@ -1323,6 +1412,377 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
     </div>
 
  </section>
+-->
+
+<!-- New Commit View -->
+<section class="widget"  id="customer-needs-commit" style="display: none;">
+     <header>
+         <h4><span class="fw-semi-bold">Committed Transport</span></h4>
+         <div class="widget-controls">
+             <a data-widgster="save" title="Save" href="#" onclick="saveCommitDetails()"><i class="glyphicon glyphicon-floppy-disk" style="font-size: 20px;"></i></a>
+             <a data-widgster="edit" title="Edit" href="#" onclick="editCommitTransport()"><i class="glyphicon glyphicon-pencil" style="font-size: 20px;"></i></a>
+             <a data-widgster="close" title="Close" href="#" onclick="closeCommitTransport()"><i class="glyphicon glyphicon-remove" style="font-size: 20px;"></i></a>
+         </div>
+     </header>
+     <br />
+     <div class="row">
+         <div class="col-md-8">
+             <div class="row">
+                <div class="col-sm-12 col-md-6">
+                        <div class="panel-bkg">
+                                <div class="panel-title">Pickup Address</div>
+                                <div class="panel-content" id="pickupAddress">
+                                    
+                                </div>
+                        </div>
+                </div>
+
+                <div class="col-sm-12 col-md-6">
+                        <div class="panel-bkg">
+                                <div class="panel-title">Delivery Address</div>
+                                <div class="panel-content" id="deliveryAddress">
+                                    
+                                </div>
+                        </div>
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel-bkg">
+                    <!-- tabs-left -- use util.js for functionality -->
+                    <div class="tabbable tabs-left">
+                            <ul class="nav nav-tabs" id="relayTabs">
+                                    
+                            </ul>
+                            <div class="tab-content" id="selectedRelayTabs">
+                                
+                            </div>
+                    </div>
+                    <!-- /tabs -->
+
+                    </div>
+                </div>
+            </div>
+         </div>
+         <div class="col-md-4">
+             
+		<div class="row">
+			<div class="col-md-12">
+				<div class="panel-bkg">
+					<div class="panel-title">Trailer Data</div>
+					<div class="panel-content" id="trailerData">
+                                            
+					</div>
+				</div>
+			</div>
+		</div>
+	
+         </div>
+     </div>
+     <br>
+     <div class="row">
+         <div class="col-md-12">
+             <div class="panel-bkg">
+                <div class="panel-title">Unit Data</div>
+                <div class="panel-content">
+                    <table id="new-unit-data-table" class="table table-striped table-hover" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Unit #</th>
+                                <th>VIN #</th>
+                                <th>Truck/Pro#</th>
+                                <th>P.O. #</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>OT467</td>
+                                <td>DS434396145C64</td>
+                                <td>G49SD9</td>
+                                <td>123456</td>
+                            </tr>
+                            <tr>
+                                <td>OT468</td>
+                                <td>XZ59WS56564DF</td>
+                                <td>VE5S4D</td>
+                                <td>123479</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                </div>
+             </div>
+         </div>
+     </div>
+ </section>
+
+<!-- Edit Commit Modal -->
+  <div class="modal fade" id="editCommitModal" tabindex="-1" aria-hidden="true" aria-label="exampleModalCommitLabel">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h1 class="modal-title fw-semi-bold" id="exampleModalCommitLabel">Edit Commitment</h1>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                    <div class="col-md-12">
+                    <h2>Pickup Address</h2>
+                    <form>
+                            <div class="form-group row">
+                                    <label for="originationAddress1" class="col-sm-3 col-form-label">Address 1</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="originationAddress1" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="originationAddress2" class="col-sm-3 col-form-label">Address 2</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="originationAddress2" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="originationCity" class="col-sm-3 col-form-label">City</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="originationCity" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="originationState" class="col-sm-3 col-form-label">State</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="originationState" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="originationZip" class="col-sm-3 col-form-label">Zip</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="originationZip" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="notes_pickup_address" class="col-sm-3 col-form-label">Notes</label>
+                                    <div class="col-sm-9">
+                                            <textarea class="form-control" id="notes_pickup_address" rows="3"></textarea>
+                                    </div>
+                             </div>
+                    </form>
+                    </div>
+            </div>
+            
+            <hr>
+            
+            <div class="row">
+                <div class="col-md-12">
+                    <h2>Delivery Address</h2>
+                    <form>
+                            <div class="form-group row">
+                                    <label for="destinationAddress1" class="col-sm-3 col-form-label">Address 1</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="destinationAddress1" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="destinationAddress2" class="col-sm-3 col-form-label">Address 2</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="destinationAddress2" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="destinationCity" class="col-sm-3 col-form-label">City</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="destinationCity" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="destinationState" class="col-sm-3 col-form-label">State</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="destinationState" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="destinationZip" class="col-sm-3 col-form-label">Zip</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="destinationZip" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="notes_delivery_address" class="col-sm-3 col-form-label">Notes</label>
+                                    <div class="col-sm-9">
+                                            <textarea class="form-control" id="notes_delivery_address" rows="3"></textarea>
+                                    </div>
+                             </div>
+                    </form>
+                </div>
+            </div>
+            
+            <hr>
+            
+            <div class="row">
+                    <div class="col-md-12">
+                    <h2>Trailer Data</h2>
+                    <form>
+                            <div class="form-group row">
+                                    <label for="type" class="col-sm-3 col-form-label">Type</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="type" placeholder="" type="type">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="height" class="col-sm-3 col-form-label">Height</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="height" placeholder="Height of trailer door" type="height">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="door" class="col-sm-3 col-form-label">Door</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="door" placeholder="Trailer door type" type="door">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="test_data1" class="col-sm-3 col-form-label">Test Data</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="test_data1" placeholder="" type="test_data1">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="test_data2" class="col-sm-3 col-form-label">Test Data</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="test_data2" placeholder="" type="test_data2">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="test_data3" class="col-sm-3 col-form-label">Test Data</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="test_data3" placeholder="" type="test_data3">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="test_data4" class="col-sm-3 col-form-label">Test Data</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="test_data4" placeholder="" type="test_data4">
+                                    </div>
+                            </div>
+                    </form>
+                    </div>
+            </div>
+            
+            <hr>
+            
+            <div class="row">
+                    <div class="col-md-12">
+                            <h2>Relay Addresses</h2>
+                    </div>
+            </div>
+            <br>
+            <div class="row">
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                        <h4>Relay Address 1</h4>
+                            <div class="form-group">
+                                    <label for="address_relay1">Address</label>
+                                    <input class="form-control" id="address_relay1" placeholder="" type="address_relay1">
+                            </div>
+                            <div class="form-group">
+                                    <label for="city_relay1">City</label>
+                                    <input class="form-control" id="city_relay1" placeholder="" type="city_relay1">
+                            </div>
+                            <div class="form-group">
+                                    <label for="state_relay1">State</label>
+                                    <input class="form-control" id="state_relay1" placeholder="" type="state_relay1">
+                            </div>
+                            <div class="form-group">
+                                    <label for="zip_relay1">Zip</label>
+                                    <input class="form-control" id="zip_relay1" placeholder="" type="zip_relay1">
+                            </div>
+                            <div class="form-group">
+                                    <label for="notes_relay1">Notes</label>
+                                    <textarea class="form-control" id="notes_relay1" rows="3"></textarea>
+                             </div>
+                    </div>
+
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                        <h4>Relay Address 2</h4>
+                            <div class="form-group">
+                                    <label for="address_relay1">Address</label>
+                                    <input class="form-control" id="address_relay1" placeholder="" type="address_relay1">
+                            </div>
+                            <div class="form-group">
+                                    <label for="city_relay1">City</label>
+                                    <input class="form-control" id="city_relay1" placeholder="" type="city_relay1">
+                            </div>
+                            <div class="form-group">
+                                    <label for="state_relay1">State</label>
+                                    <input class="form-control" id="state_relay1" placeholder="" type="state_relay1">
+                            </div>
+                            <div class="form-group">
+                                    <label for="zip_relay1">Zip</label>
+                                    <input class="form-control" id="zip_relay1" placeholder="" type="zip_relay1">
+                            </div>
+                            <div class="form-group">
+                                    <label for="notes_relay1">Notes</label>
+                                    <textarea class="form-control" id="notes_relay1" rows="3"></textarea>
+                             </div>
+                    </div>
+
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                        <h4>Relay Address 3</h4>
+                            <div class="form-group">
+                                    <label for="address_relay1">Address</label>
+                                    <input class="form-control" id="address_relay1" placeholder="" type="address_relay1">
+                            </div>
+                            <div class="form-group">
+                                    <label for="city_relay1">City</label>
+                                    <input class="form-control" id="city_relay1" placeholder="" type="city_relay1">
+                            </div>
+                            <div class="form-group">
+                                    <label for="state_relay1">State</label>
+                                    <input class="form-control" id="state_relay1" placeholder="" type="state_relay1">
+                            </div>
+                            <div class="form-group">
+                                    <label for="zip_relay1">Zip</label>
+                                    <input class="form-control" id="zip_relay1" placeholder="" type="zip_relay1">
+                            </div>
+                            <div class="form-group">
+                                    <label for="notes_relay1">Notes</label>
+                                    <textarea class="form-control" id="notes_relay1" rows="3"></textarea>
+                             </div>
+                    </div>
+
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                        <h4>Relay Address 4</h4>
+                            <div class="form-group">
+                                    <label for="address_relay1">Address</label>
+                                    <input class="form-control" id="address_relay1" placeholder="" type="address_relay1">
+                            </div>
+                            <div class="form-group">
+                                    <label for="city_relay1">City</label>
+                                    <input class="form-control" id="city_relay1" placeholder="" type="city_relay1">
+                            </div>
+                            <div class="form-group">
+                                    <label for="state_relay1">State</label>
+                                    <input class="form-control" id="state_relay1" placeholder="" type="state_relay1">
+                            </div>
+                            <div class="form-group">
+                                    <label for="zip_relay1">Zip</label>
+                                    <input class="form-control" id="zip_relay1" placeholder="" type="zip_relay1">
+                            </div>
+                            <div class="form-group">
+                                    <label for="notes_relay1">Notes</label>
+                                    <textarea class="form-control" id="notes_relay1" rows="3"></textarea>
+                             </div>
+                    </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+           <button type="button" class="btn btn-primary btn-md" onclick="saveCommit();" id="saveCommit" disabled>Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 <!-- Modal -->
   <div class="modal fade" id="addNote" tabindex="-1" aria-hidden="true" aria-label="exampleModalCommitLabel">
@@ -1849,7 +2309,17 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
         }
     }
-
+    
+    $('#relayTabs > li > a').unbind('click').bind('click', function(){
+    
+        var relayToShow = $(this).attr('href');
+        $('#relayTabs > li').removeClass('active');
+        $(this).parent().addClass('active');
+        $('#selectedRelayTabs > div').removeClass('active');
+        $('#selectedRelayTabs > div' + relayToShow).addClass('active');
+        
+    });
+    
     //Yaw,
     // While I was investigating, I realized that the javascript was not waiting for a return from the addCustomerInfo function.
     // So, instead I thought it would be best to grab all of the Customer and Vendor information and push it into the addCustomerInfo function.
@@ -2430,14 +2900,23 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             $("#entityID").val(entityID);
             $("#customerRate").val(rate.toFixed(2));
 
+            loadNewCustomerNeedsCommit(id);
+        /*
             loadSelectedCustomer(id)
             loadCustomerNeedsCommitAJAX(id);
             loadCustomerNeedsNotesAJAX(id);
+        */
         }
     });
 
     function closeCommitTransport(){
 
+
+        $('#relayTabs').empty();
+        $('#selectedRelayTabs').empty();
+        $('#pickupAddress').empty();
+        $('#deliveryAddress').empty();
+        $('#trailerData').empty();
         $("#customer-needs-commit").css("display", "none");
         $("#customer-needs").css("display", "block");
         var table = $("#datatable-table").DataTable();
@@ -2535,4 +3014,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
     } );
 
+    function editCommitTransport(){
+        
+        $("#editCommitModal").modal('show');
+    }
  </script>

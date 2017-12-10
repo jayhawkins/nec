@@ -506,7 +506,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
             var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=entities&columns=id,rootCustomerNeedsID,entityID,qty,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,entities.name,entities.rateType,entities.negotiatedRate&filter[0]=rootCustomerNeedsID,eq,0&filter[1]=expirationDate,ge,' + today + '&filter[2]=status,eq,Available&order[]=createdAt,desc&transform=1';
             var show = false;
         } else {
-            var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=entities&columns=id,rootCustomerNeedsID,entityID,qty,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate&satisfy=all&filter[]=status,eq,Available&filter[1]=expirationDate,ge,' + today + '&order[0]=entityID&order[1]=rootCustomerNeedsID&order[2]=createdAt,desc&transform=1';
+            var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=entities&columns=id,rootCustomerNeedsID,entityID,qty,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate&satisfy=all&filter[0]=rootCustomerNeedsID,eq,0&filter[1]=status,eq,Available&filter[2]=expirationDate,ge,' + today + '&order[0]=entityID&order[1]=rootCustomerNeedsID&order[2]=createdAt,desc&transform=1';
             var show = true;
         }
 
@@ -1666,7 +1666,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                contentType: "application/json",
                async: false,
                success: function(response){
-                    if (response.customer_needs.length == 2 && !admin) {
+                    if (response.customer_needs.length == 3 && !admin) {
                         $("#divMaxRelayMessage").show();
                         $("#originationCity").prop("disabled", true);
                         $("#originationState").prop("disabled", true);
@@ -1908,7 +1908,9 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
             .addClass( 'loading' )
             .text( 'Loading...' );
         //var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,availableDate,expirationDate,transportationMode,customer_needs_commit.originationAddress1,customer_needs_commit.originationCity,customer_needs_commit.originationState,customer_needs_commit.originationZip,customer_needs_commit.originationLat,customer_needs_commit.originationLng,customer_needs_commit.destinationAddress1,customer_needs_commit.destinationCity,customer_needs_commit.destinationState,customer_needs_commit.destinationZip,customer_needs_commit.destinationLat,customer_needs_commit.destinationLng,customer_needs_commit.distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transporation_mode,customer_needs_commit.pickupDate,customer_needs_commit.deliveryDate,customer_needs_commit.qty,entities.name,entities.rateType,entities.negotiatedRate&filter[]=rootCustomerNeedsID,eq,' + d.id + '&order[]=createdAt,desc&transform=1';
-        var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs_commit?include=entities&columns=entityID,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,id,status,rate,transporation_mode,pickupDate,deliveryDate,qty,entities.name,entities.rateType,entities.negotiatedRate&filter[]=customer_needs.rootCustomerNeedsID,eq,' + d.id + '&order[]=createdAt,desc&transform=1';
+        //var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs_commit?include=entities&columns=entityID,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,id,status,rate,transporation_mode,pickupDate,deliveryDate,qty,entities.name,entities.rateType,entities.negotiatedRate&filter[]=customer_needs.rootCustomerNeedsID,eq,' + d.id + '&order[]=createdAt,desc&transform=1';
+        //var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs_commit?include=entities,customer_needs&columns=entityID,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,id,status,rate,transporation_mode,pickupDate,deliveryDate,qty,entities.name,entities.rateType,entities.negotiatedRate&filter[]=customer_needs.rootCustomerNeedsID,eq,' + d.id + '&order[]=createdAt,desc&transform=1';
+        var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=customer_needs_commit,entities&filter[]=rootCustomerNeedsID,eq,'+d.id+'&transform=1';
         var params = {id: d.id};
         $.ajax({
            url: url,
@@ -1917,11 +1919,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
            contentType: "application/json",
            async: false,
            success: function(response){
+                response = response.customer_needs[0];
                 var table = '<table  class="col-sm-12" cellpadding="5" cellspacing="0" border="0">';
                     table += '<tr><th>Carrier</th><th>Qty</th><th>Pickup Date</th><th>Delivery Date</th><th>Orig. City</th><th>Orig. State</th><th>Dest. City</th><th>Dest. State</th><th>Mileage</th><th></th></tr>';
 
                 // `d` is the original data object for the row
-                if (response.customer_needs_commit.length > 0) {
+                if (response && response.customer_needs_commit.length > 0) {
 
                     for (var i = 0; i < response.customer_needs_commit.length; i++) {
                         table += '</tr>\n';
