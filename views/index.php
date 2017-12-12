@@ -2031,71 +2031,8 @@ if ($_SESSION['entityid'] > 0) {
 
             <div class="col-lg-4">
                 <section class="widget bg-transparent">
-                    <header>
-                        <h5>
-                            Map
-                            <span class="fw-semi-bold">Statistics</span>
-                        </h5>
-                        <div class="widget-controls widget-controls-hover">
-                            <a href="#"><i class="glyphicon glyphicon-cog"></i></a>
-                            <a href="#"><i class="fa fa-refresh"></i></a>
-                            <a href="#" data-widgster="close"><i class="glyphicon glyphicon-remove"></i></a>
-                        </div>
-                    </header>
-                    <div class="widget-body">
-                        <p>Status: <strong>Live</strong></p>
-                        <p>
-                            <span class="circle bg-warning"><i class="fa fa-map-marker"></i></span>
-                            146 Active Locations
-                        </p>
-                        <div class="row progress-stats">
-                            <div class="col-md-9">
-                                <h6 class="name m-t-1">Needs</h6>
-                                <p class="description deemphasize">open needs</p>
-                                <div class="bg-white progress-bar">
-                                    <progress class="progress progress-primary progress-sm js-progress-animate" value="100" max="100" style="width: 0%" data-width="60%"></progress>
-                                </div>
-                            </div>
-                            <div class="col-md-3 text-xs-center">
-                                <!--span class="status rounded rounded-lg bg-body-light"-->
-                                <span class="label label-pill label-primary">
-                                    <small><span id="percent-1">63</span></small>
-                                </span>
-                            </div>
-                        </div>
-                        <div class="row progress-stats">
-                            <div class="col-md-9">
-                                <h6 class="name m-t-1">Orders</h6>
-                                <p class="description deemphasize">current open orders</p>
-                                <div class="bg-white progress-bar">
-                                    <progress class="progress progress-sm progress-success js-progress-animate" value="100" max="100" style="width: 0%" data-width="12%"></progress>
-                                </div>
-                            </div>
-                            <div class="col-md-3 text-xs-center">
-                                <!--span class="status rounded rounded-lg bg-body-light"-->
-                                <span class="label label-pill label-success">
-                                    <small><span  id="percent-2">12</span></small>
-                                </span>
-                            </div>
-                        </div>
-                        <div class="row progress-stats">
-                            <div class="col-md-9">
-                                <h6 class="name m-t-1">Availablity</h6>
-                                <p class="description deemphasize">available trailers</p>
-                                <div class="bg-white progress-bar">
-                                    <progress class="progress progress-sm progress-warning js-progress-animate" value="100" max="100" style="width: 0%" data-width="50%"></progress>
-                                </div>
-                            </div>
-                            <div class="col-md-3 text-xs-center">
-                                <!--span class="status rounded rounded-lg bg-body-light"-->
-                                <span class="label label-pill label-warning">
-                                    <small><span id="percent-3">37</span></small>
-                                </span>
-                            </div>
-                        </div>
-                        <div>
-                            <hr>
-                        </div>
+
+
 
                         <div>
                             <div>
@@ -2189,6 +2126,77 @@ if ($_SESSION['entitytype'] == 0) {
 
                             </div>
                         </div>
+
+
+                        <div>
+                            <hr>
+                        </div>
+
+
+                        <header>
+                            <h5>
+                                Map
+                                <span class="fw-semi-bold">Statistics</span>
+                            </h5>
+                            <div class="widget-controls widget-controls-hover">
+                                <a href="#"><i class="glyphicon glyphicon-cog"></i></a>
+                                <a href="#"><i class="fa fa-refresh"></i></a>
+                                <a href="#" data-widgster="close"><i class="glyphicon glyphicon-remove"></i></a>
+                            </div>
+                        </header>
+                        <div class="widget-body">
+                            <p>Status: <strong>Live</strong></p>
+                            <p>
+                                <span class="circle bg-warning"><i class="fa fa-map-marker"></i></span>
+                                146 Active Locations
+                            </p>
+                            <div class="row progress-stats">
+                                <div class="col-md-9">
+                                    <h6 class="name m-t-1">Needs</h6>
+                                    <p class="description deemphasize">open needs</p>
+                                    <div class="bg-white progress-bar">
+                                        <progress class="progress progress-primary progress-sm js-progress-animate" value="100" max="100" style="width: 0%" data-width="60%"></progress>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 text-xs-center">
+                                    <!--span class="status rounded rounded-lg bg-body-light"-->
+                                    <span class="label label-pill label-primary">
+                                        <small><span id="percent-1">63</span></small>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="row progress-stats">
+                                <div class="col-md-9">
+                                    <h6 class="name m-t-1">Orders</h6>
+                                    <p class="description deemphasize">current open orders</p>
+                                    <div class="bg-white progress-bar">
+                                        <progress class="progress progress-sm progress-success js-progress-animate" value="100" max="100" style="width: 0%" data-width="12%"></progress>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 text-xs-center">
+                                    <!--span class="status rounded rounded-lg bg-body-light"-->
+                                    <span class="label label-pill label-success">
+                                        <small><span  id="percent-2">12</span></small>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="row progress-stats">
+                                <div class="col-md-9">
+                                    <h6 class="name m-t-1">Availablity</h6>
+                                    <p class="description deemphasize">available trailers</p>
+                                    <div class="bg-white progress-bar">
+                                        <progress class="progress progress-sm progress-warning js-progress-animate" value="100" max="100" style="width: 0%" data-width="50%"></progress>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 text-xs-center">
+                                    <!--span class="status rounded rounded-lg bg-body-light"-->
+                                    <span class="label label-pill label-warning">
+                                        <small><span id="percent-3">37</span></small>
+                                    </span>
+                                </div>
+                            </div>
+
+
 <!--
                         <h6 class="fw-semi-bold mt">Map Distributions</h6>
                         <p>Tracking: <strong>Active</strong></p>
@@ -2336,6 +2344,7 @@ if ($_SESSION['entitytype'] == 0) {
                 $(this).select2('val', '');
             });
             $("#cityFilter").val('');
+            getOrdersByFilters();
     });
 
 $(function() {
