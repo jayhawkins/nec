@@ -354,25 +354,32 @@ if ($_SESSION['entityid'] > 0) {
                async: false,
                success: function(json){
 
-                    //orders = json.orders;
-                    orders = json.order_details;
-                    //console.log(orders);
-
-                    if(entityType == 2) {
-
-                        orders.forEach(function(order){
-                            var carrierIDs = order.orders[0].carrierIDs;
-
-                            for(var i = 0; i < carrierIDs.length; i++){
-                                if(carrierIDs[i].carrierID == entityid){
-                                    orderCount++;
-                                    break;
-                                }
-                            }
-                        });
+                    if (entityType > 0) {
+                      orders = json.orders;
+                    } else {
+                      orders = json.order_details;
                     }
-                    else {
-                        orderCount = orders.length;
+                    console.log(orders);
+
+                    if (orders.length > 0) {
+                        if(entityType == 2) {
+
+                            orders.forEach(function(order){
+                                var carrierIDs = order.orders[0].carrierIDs;
+
+                                for(var i = 0; i < carrierIDs.length; i++){
+                                    if(carrierIDs[i].carrierID == entityid){
+                                        orderCount++;
+                                        break;
+                                    }
+                                }
+                            });
+                        }
+                        else {
+                            orderCount = orders.length;
+                        }
+                    } else {
+                      orderCount = 0;
                     }
 
                     $('#orderCount').html(orderCount);
@@ -458,6 +465,7 @@ if ($_SESSION['entityid'] > 0) {
 
             var entityid = <?php echo $_SESSION['entityid']; ?>;
             var orderCount = 0;
+            var entitytype = <?php echo $_SESSION['entitytype']; ?>;
 
             var strarray = "";
             var statearray = "";
@@ -492,7 +500,7 @@ if ($_SESSION['entityid'] > 0) {
                                     filter += '&filter[]=rootCustomerNeedsID,eq,0';
                                     filter += '&filter[]=status,eq,Available';
                                     filter += '&filter[]=expirationDate,ge,'+dateTime;
-                                    if (entityid > 0) {
+                                    if (entityid > 0 && entitytype == 1) {
                                         filter += '&filter[]=entityID,eq,'+entityid;
                                     }
                                     if (statearray) {
@@ -519,6 +527,9 @@ if ($_SESSION['entityid'] > 0) {
                                     url += "/carrier_needs?";
                                     filter += '&filter[]=status,eq,Available';
                                     filter += '&filter[]=expirationDate,ge,'+dateTime;
+                                    if (entityid > 0 && entitytype == 2) {
+                                        filter += '&filter[]=entityID,eq,'+entityid;
+                                    }
                                     if (statearray) {
                                         if ($('input[name=locationStatus]:checked').val() == "Origination") {
                                             filter += '&filter[]=originationState,in,'+statearray;
@@ -693,7 +704,7 @@ if ($_SESSION['entityid'] > 0) {
                                                    };
 
                                                    // Set plot element to array
-                                                   plots[value.id+'-'+toTitleCase(value.originationCity)] = plot;
+                                                   plots[value.id+'-'+value.originationCity] = plot;
 
                                                    // Now plot the destination
                                                    var plot = {};
@@ -726,13 +737,13 @@ if ($_SESSION['entityid'] > 0) {
                                                    };
 
                                                    // Set plot element to array
-                                                   plots[value.id+'-'+toTitleCase(value.destinationCity)] = plot;
+                                                   plots[value.id+'-'+value.destinationCity] = plot;
 
                                                    linktitle = toTitleCase(value.originationCity)+'-'+toTitleCase(value.destinationCity);
                                                    linkobjecttitle = toTitleCase(value.originationCity)+toTitleCase(value.destinationCity);
                                                    link.factor = 0.2;
                                                    //link.between = [{"latitude": value.originationLat, "longitude": value.originationLng}, {"latitude": value.destinationLat, "longitude": value.destinationLng}];
-                                                   link.between = [value.id+'-'+toTitleCase(value.originationCity), value.id+'-'+toTitleCase(value.destinationCity)];
+                                                   link.between = [value.id+'-'+value.originationCity, value.id+'-'+value.destinationCity];
                                                    link.attrs = {
                                                                 //"stroke": "#a4e100",
                                                                 "stroke": originationPlotColor,
@@ -816,7 +827,7 @@ if ($_SESSION['entityid'] > 0) {
                                                    };
 
                                                    // Set plot element to array
-                                                   plots[value.id+'-'+toTitleCase(value.originationCity)] = plot;
+                                                   plots[value.id+'-'+value.originationCity] = plot;
 
                                                    // Now plot the destination
                                                    var plot = {};
@@ -849,13 +860,13 @@ if ($_SESSION['entityid'] > 0) {
                                                    };
 
                                                    // Set plot element to array
-                                                   plots[value.id+'-'+toTitleCase(value.destinationCity)] = plot;
+                                                   plots[value.id+'-'+value.destinationCity] = plot;
 
                                                    linktitle = toTitleCase(value.originationCity)+'-'+toTitleCase(value.destinationCity);
                                                    linkobjecttitle = toTitleCase(value.originationCity)+toTitleCase(value.destinationCity);
                                                    link.factor = 0.2;
                                                    //link.between = [{"latitude": value.originationLat, "longitude": value.originationLng}, {"latitude": value.destinationLat, "longitude": value.destinationLng}];
-                                                   link.between = [value.id+'-'+toTitleCase(value.originationCity), value.id+'-'+toTitleCase(value.destinationCity)];
+                                                   link.between = [value.id+'-'+value.originationCity, value.id+'-'+value.destinationCity];
                                                    link.attrs = {
                                                                 //"stroke": "#a4e100",
                                                                 "stroke": originationPlotColor,
@@ -938,7 +949,7 @@ if ($_SESSION['entityid'] > 0) {
                                                    };
 
                                                    // Set plot element to array
-                                                   plots[value.id+'-'+toTitleCase(value.originationCity)] = plot;
+                                                   plots[value.id+'-'+value.originationCity] = plot;
 
                                                    // Now plot the destination
                                                    var plot = {};
@@ -971,13 +982,13 @@ if ($_SESSION['entityid'] > 0) {
                                                    };
 
                                                    // Set plot element to array
-                                                   plots[value.id+'-'+toTitleCase(value.destinationCity)] = plot;
+                                                   plots[value.id+'-'+value.destinationCity] = plot;
 
                                                    linktitle = toTitleCase(value.originationCity)+'-'+toTitleCase(value.destinationCity);
                                                    linkobjecttitle = toTitleCase(value.originationCity)+toTitleCase(value.destinationCity);
                                                    link.factor = 0.2;
                                                    //link.between = [{"latitude": value.originationLat, "longitude": value.originationLng}, {"latitude": value.destinationLat, "longitude": value.destinationLng}];
-                                                   link.between = [value.id+'-'+toTitleCase(value.originationCity), value.id+'-'+toTitleCase(value.destinationCity)];
+                                                   link.between = [value.id+'-'+value.originationCity, value.id+'-'+value.destinationCity];
                                                    link.attrs = {
                                                                 //"stroke": "#a4e100",
                                                                 "stroke": originationPlotColor,
@@ -1048,7 +1059,7 @@ if ($_SESSION['entityid'] > 0) {
                                                    };
 
                                                    // Set plot element to array
-                                                   plots[value.id+'-'+toTitleCase(value.originationCity)] = plot;
+                                                   plots[value.id+'-'+value.originationCity] = plot;
 
                                                    // Now plot the destination
                                                    var plot = {};
@@ -1081,12 +1092,12 @@ if ($_SESSION['entityid'] > 0) {
                                                    };
 
                                                    // Set plot element to array
-                                                   plots[value.id+'-'+toTitleCase(value.destinationCity)] = plot;
+                                                   plots[value.id+'-'+value.destinationCity] = plot;
 
                                                    linktitle = toTitleCase(value.originationCity)+'-'+toTitleCase(value.destinationCity);
                                                    linkobjecttitle = toTitleCase(value.originationCity)+toTitleCase(value.destinationCity);
                                                    link.factor = 0.2;
-                                                   link.between = [value.id+'-'+toTitleCase(value.originationCity), value.id+'-'+toTitleCase(value.destinationCity)];
+                                                   link.between = [value.id+'-'+value.originationCity, value.id+'-'+value.destinationCity];
                                                    link.attrs = {
                                                                 //"stroke": "#ffffff",
                                                                 "stroke": originationPlotColor,
@@ -1119,6 +1130,10 @@ if ($_SESSION['entityid'] > 0) {
             }
             // Clear and reload the map plots and links based on latest filters
             $(".mapcontainer").trigger('update', [{newPlots: plots, newLinks: links, deletePlotKeys: "all", deleteLinkKeys: "all"}]);
+
+        }
+
+        function initMap() {
 
         }
 
@@ -2084,7 +2099,7 @@ if ($_SESSION['entityid'] > 0) {
 
                         <div>
                             <div>
-                                <button class="btn btn-primary btn-sm pull-right" role="button"><i class="glyphicon glyphicon-remove-sign text"></i> <span class="text">Clear</span></button>
+                                <button class="btn btn-primary btn-sm pull-right" id="btnClear" role="button"><i class="glyphicon glyphicon-remove-sign text"></i> <span class="text">Clear</span></button>
                                 <h5 class="fw-semi-bold mt">Filters</h5>
                             </div>
                             <div class="input-group mt" style="width: 100%">
@@ -2313,6 +2328,16 @@ if ($_SESSION['entitytype'] == 0) {
         getOrdersByFilters();
     });
 
+    $("#btnClear").on('click', function(e) {
+            $("#activityFilter").each(function() {
+                $(this).select2('val', '');
+            });
+            $("#stateFilter").each(function() {
+                $(this).select2('val', '');
+            });
+            $("#cityFilter").val('');
+    });
+
 $(function() {
 
    // Show loading message
@@ -2343,6 +2368,8 @@ $(function() {
        var originationPlotColor = "green";
        var list = "listOrders";
    }
+
+   //console.log(cnresult);
 
    // We need a setTimeout (~200ms) in order to allow the UI to be refreshed for the message to be shown
    setTimeout(function(){
@@ -2484,7 +2511,7 @@ $(function() {
                            linkobjecttitle = toTitleCase(value.originationCity)+toTitleCase(value.destinationCity);
                            link.factor = 0.2;
                            //link.between = [{"latitude": value.originationLat, "longitude": value.originationLng}, {"latitude": value.destinationLat, "longitude": value.destinationLng}];
-                           link.between = [value.id+'-'+toTitleCase(value.originationCity), value.id+'-'+toTitleCase(value.destinationCity)];
+                           link.between = [value.id+'-'+value.originationCity, value.id+'-'+value.destinationCity];
                            link.attrs = {
                                         "stroke": "#a4e100",
                                         "stroke-width": 2,
@@ -2612,7 +2639,7 @@ $(function() {
                                };
 
                                // Set plot element to array
-                               plots[value.id+'-'+toTitleCase(value.originationCity)] = plot;
+                               plots[value.id+'-'+value.originationCity] = plot;
 
                                // Now plot the destination
                                var plot = {};
@@ -2644,12 +2671,12 @@ $(function() {
                                };
 
                                // Set plot element to array
-                               plots[value.id+'-'+toTitleCase(value.destinationCity)] = plot;
+                               plots[value.id+'-'+value.destinationCity] = plot;
 
                                linktitle = toTitleCase(value.originationCity)+'-'+toTitleCase(value.destinationCity);
                                linkobjecttitle = toTitleCase(value.originationCity)+toTitleCase(value.destinationCity);
                                link.factor = 0.2;
-                               link.between = [value.id+'-'+toTitleCase(value.originationCity), value.id+'-'+toTitleCase(value.destinationCity)];
+                               link.between = [value.id+'-'+value.originationCity, value.id+'-'+value.destinationCity];
                                link.attrs = {
                                             //"stroke": "#ffffff",
                                             "stroke": "orange",
