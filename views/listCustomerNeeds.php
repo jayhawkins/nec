@@ -95,7 +95,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
           return new Date(parts[0], parts[1]-1, parts[2]); // months are 0-based
         }
 
-        function formatDate(date) {
+        function formatFormDates(date) {
             var d = date,
                 month = '' + (d.getMonth() + 1),
                 day = '' + d.getDate(),
@@ -258,11 +258,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                               item[obj[i].id] = obj[i].value;
                               needsarray.push(item);
                           }
-                          
+
                           var decal = {};
                           decal['decals'] = $("#decals").val();
                           needsarray.push(decal);
-                          
+
                           var needsdatapoints = needsarray;
 
                           var availableDateString = $("#availableDate").val();
@@ -273,10 +273,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
 
                           if (expirationDateString == ""){
                               expirationDate.setDate(availableDate.getDate() + 30);
-                              expirationDateString = formatDate(expirationDate);
+                              expirationDateString = formatFormDates(expirationDate);
                           } else {
                               expirationDate = new Date(parseDate(expirationDateString));
-                              expirationDateString = formatDate(expirationDate);
+                              expirationDateString = formatFormDates(expirationDate);
                           }
                           //console.log("Expiration Date String:" + expirationDateString);
 
@@ -327,10 +327,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                                 }
                                             });
                                         },
-                                        error: function() {
+                                        error: function(error) {
                                             $("#load").html("Save Changes");
                                             $("#load").prop("disabled", false);
-	                                        	alert('Failed Sending Notifications! - Notify NEC of this failure.');
+	                                        	alert('Failed Sending Notifications! - Notify NEC of this failure.<br />' + error);
                                         }
                                      });
                                   }
@@ -424,7 +424,17 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                 { data: "rateType" },
                 { data: "transportationMode", visible: false },
                 { data: "availableDate", visible: false },
-                { data: "expirationDate", visible: false },
+                {
+                    data: null,
+                    "bSortable": true,
+                    "mRender": function(o) {
+                      if (o.expirationDate == "0000-00-00") {
+                          return '';
+                      } else {
+                          return formatDate(new Date(o.expirationDate)); // Use the formatDate from common.js to display Month, Day Year on listing
+                      }
+                    }
+                },
                 { data: "originationAddress1", visible: false },
                 { data: "originationCity" },
                 { data: "originationState" },
@@ -515,7 +525,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
 				dpli += '</select>\n' +
 				'</li>\n';
 			}
-                        
+
 			$("#dp-check-list-box").html(dpli);
 			formatListBox();
 			formatListBoxDP();
@@ -1537,10 +1547,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
             }
             dpli += '</select>' +
                     '</li>\n';
-              
+
           }
       }
-      
+
 
       $("#dp-check-list-box").html(dpli);
 
@@ -1659,7 +1669,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                     }
                   })
                 });
-                
+
                 if(dataPoints.object_type_data_points[i].title == "Decals"){
                     dpli += '<li>' +
                             'Decals'+
@@ -1667,7 +1677,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                             '</li>\n';
                   }
                   else{
-                      
+
                     dpli += '<li>' + dataPoints.object_type_data_points[i].title +
                             ' <select class="form-control mb-sm" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '">' +
                             ' <option value="">-Select From List-</option>\n';

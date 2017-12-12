@@ -91,7 +91,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
           return new Date(parts[0], parts[1]-1, parts[2]); // months are 0-based
         }
 
-        function formatDate(date) {
+        function formatFormDates(date) {
             var d = date,
                 month = '' + (d.getMonth() + 1),
                 day = '' + d.getDate(),
@@ -284,11 +284,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
 
                                 if (expirationDateString == ""){
                                     expirationDate.setDate(availableDate.getDate() + 30);
-                                    expirationDateString = formatDate(expirationDate);
+                                    expirationDateString = formatFormDates(expirationDate);
                                 }
                                 else{
                                     expirationDate = new Date(parseDate(expirationDateString));
-                                    expirationDateString = formatDate(expirationDate);
+                                    expirationDateString = formatFormDates(expirationDate);
                                 }
 
                               if (type == "PUT") {

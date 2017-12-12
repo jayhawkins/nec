@@ -354,25 +354,32 @@ if ($_SESSION['entityid'] > 0) {
                async: false,
                success: function(json){
 
-                    //orders = json.orders;
-                    orders = json.order_details;
-                    //console.log(orders);
-
-                    if(entityType == 2) {
-
-                        orders.forEach(function(order){
-                            var carrierIDs = order.orders[0].carrierIDs;
-
-                            for(var i = 0; i < carrierIDs.length; i++){
-                                if(carrierIDs[i].carrierID == entityid){
-                                    orderCount++;
-                                    break;
-                                }
-                            }
-                        });
+                    if (entityType > 0) {
+                      orders = json.orders;
+                    } else {
+                      orders = json.order_details;
                     }
-                    else {
-                        orderCount = orders.length;
+                    console.log(orders);
+
+                    if (orders.length > 0) {
+                        if(entityType == 2) {
+
+                            orders.forEach(function(order){
+                                var carrierIDs = order.orders[0].carrierIDs;
+
+                                for(var i = 0; i < carrierIDs.length; i++){
+                                    if(carrierIDs[i].carrierID == entityid){
+                                        orderCount++;
+                                        break;
+                                    }
+                                }
+                            });
+                        }
+                        else {
+                            orderCount = orders.length;
+                        }
+                    } else {
+                      orderCount = 0;
                     }
 
                     $('#orderCount').html(orderCount);
@@ -458,6 +465,7 @@ if ($_SESSION['entityid'] > 0) {
 
             var entityid = <?php echo $_SESSION['entityid']; ?>;
             var orderCount = 0;
+            var entitytype = <?php echo $_SESSION['entitytype']; ?>;
 
             var strarray = "";
             var statearray = "";
@@ -492,7 +500,7 @@ if ($_SESSION['entityid'] > 0) {
                                     filter += '&filter[]=rootCustomerNeedsID,eq,0';
                                     filter += '&filter[]=status,eq,Available';
                                     filter += '&filter[]=expirationDate,ge,'+dateTime;
-                                    if (entityid > 0) {
+                                    if (entityid > 0 && entitytype == 1) {
                                         filter += '&filter[]=entityID,eq,'+entityid;
                                     }
                                     if (statearray) {
@@ -519,6 +527,9 @@ if ($_SESSION['entityid'] > 0) {
                                     url += "/carrier_needs?";
                                     filter += '&filter[]=status,eq,Available';
                                     filter += '&filter[]=expirationDate,ge,'+dateTime;
+                                    if (entityid > 0 && entitytype == 2) {
+                                        filter += '&filter[]=entityID,eq,'+entityid;
+                                    }
                                     if (statearray) {
                                         if ($('input[name=locationStatus]:checked').val() == "Origination") {
                                             filter += '&filter[]=originationState,in,'+statearray;
@@ -1119,6 +1130,10 @@ if ($_SESSION['entityid'] > 0) {
             }
             // Clear and reload the map plots and links based on latest filters
             $(".mapcontainer").trigger('update', [{newPlots: plots, newLinks: links, deletePlotKeys: "all", deleteLinkKeys: "all"}]);
+
+        }
+
+        function initMap() {
 
         }
 
