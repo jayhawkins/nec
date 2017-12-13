@@ -92,6 +92,8 @@ if ($_SESSION['entityid'] > 0) {
               "filter[]"=>"expirationDate,ge," . date("Y-m-d 00:00:00"),
               "filter[]"=>"entityID,eq," . $_SESSION['entityid']
         );
+        $entityname = $eresult['entities'][0]['name'] . " - (Customer)";
+        $cnurl = API_HOST_URL . "/customer_needs?".http_build_query($cnargs);
     } elseif ( $eresult['entities'][0]['entityTypeID'] == 2 ) { // Carrier
         $cnargs = array(
               "transform"=>"1",
@@ -100,13 +102,6 @@ if ($_SESSION['entityid'] > 0) {
               "filter[]"=>"expirationDate,ge," . date("Y-m-d 00:00:00"),
               "filter[]"=>"entityID,eq," . $_SESSION['entityid']
         );
-    }
-
-
-    if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
-        $entityname = $eresult['entities'][0]['name'] . " - (Customer)";
-        $cnurl = API_HOST_URL . "/customer_needs?".http_build_query($cnargs);
-    } elseif ( $eresult['entities'][0]['entityTypeID'] == 2 ) { // Carrier
         $entityname = $eresult['entities'][0]['name'] . " - (Carrier)";
         $cnurl = API_HOST_URL . "/carrier_needs?".http_build_query($cnargs);
     }
@@ -2072,7 +2067,7 @@ if ($_SESSION['entitytype'] == 0) {
 
                                 </select>
 
-                                <br /><br />
+                                <br />
 
                                 <label for="stateFilter">Location Status:</label>
                                 <br/>
@@ -2088,7 +2083,7 @@ if ($_SESSION['entitytype'] == 0) {
                                     Either/Or </label>
                                 </div>
 
-                                <br /><br />
+                                <br />
 
                                 <label for="stateFilter">State(s):</label>
                                 <br/>
@@ -2104,7 +2099,7 @@ if ($_SESSION['entitytype'] == 0) {
 
                                 </select>
 
-                                <br /><br />
+                                <br />
 
                                 <label for="cityFilter">Cities: (Separate cities by comma to filter on multiple cities)</label>
                                 <br/>
@@ -2145,11 +2140,13 @@ if ($_SESSION['entitytype'] == 0) {
                             </div>
                         </header>
                         <div class="widget-body">
+                            <!--
                             <p>Status: <strong>Live</strong></p>
                             <p>
                                 <span class="circle bg-warning"><i class="fa fa-map-marker"></i></span>
                                 146 Active Locations
                             </p>
+                            -->
                             <div class="row progress-stats">
                                 <div class="col-md-9">
                                     <h6 class="name m-t-1">Needs</h6>

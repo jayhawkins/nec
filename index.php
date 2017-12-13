@@ -838,155 +838,197 @@ $app->route('POST /pod_form_api', function() {
 
                 $pdf->useTemplate($templateId);
 
+                // Column Headers
+                // Trailer Description:
+                $pdf->SetFont('Helvetica', 'B', 11);
+                $pdf->SetXY(60, 15);
+                $pdf->Write(0, "Trailer Description");
+
+                // Pickup Location:
+                $pdf->SetFont('Helvetica', 'B', 11);
+                $pdf->SetXY(113, 15);
+                $pdf->Write(0, "Pickup Location");
+
+                // Delivery Location:
+                $pdf->SetFont('Helvetica', 'B', 11);
+                $pdf->SetXY(165, 15);
+                $pdf->Write(0, "Delivery Location");
+
+
+
                 // 1st Column
                 // Unit #:
+                $pdf->SetFont('Helvetica', '', 8);
+                $pdf->SetXY(60, 20);
+                $pdf->Write(0, "Unit #");
                 $pdf->SetFont('Helvetica', '', 9);
-                $pdf->SetXY(79, 35);
+                $pdf->SetXY(70, 20);
                 $pdf->Write(0, $unitNumber);
 
                 // Vin #:
+                $pdf->SetFont('Helvetica', '', 8);
+                $pdf->SetXY(60, 24);
+                $pdf->Write(0, "VIN #");
                 $pdf->SetFont('Helvetica', '', 9);
-                $pdf->SetXY(79, 38);
+                $pdf->SetXY(70, 24);
                 $pdf->Write(0, $vinNumber);
 
                 // Sec. Unit #:
+                $pdf->SetFont('Helvetica', '', 8);
+                $pdf->SetXY(60, 28);
+                $pdf->Write(0, "Sec. Unit #");
                 $pdf->SetFont('Helvetica', '', 9);
-                $pdf->SetXY(85, 41.3);
+                $pdf->SetXY(79, 28);
                 $pdf->Write(0, $trailerProNumber);
 
                 // Year:
+                $pdf->SetFont('Helvetica', '', 8);
+                $pdf->SetXY(60, 32);
+                $pdf->Write(0, "Year");
                 $pdf->SetFont('Helvetica', '', 9);
-                $pdf->SetXY(80, 45);
+                $pdf->SetXY(70, 32);
                 $pdf->Write(0, $year);
 
                 // Size:
+                $pdf->SetFont('Helvetica', '', 8);
+                $pdf->SetXY(60, 36);
+                $pdf->Write(0, "Size");
                 $pdf->SetFont('Helvetica', '', 9);
-                $pdf->SetXY(80, 48.3);
+                $pdf->SetXY(70, 36);
                 $pdf->Write(0, $size);
 
                 // Type:
+                $pdf->SetFont('Helvetica', '', 8);
+                $pdf->SetXY(60, 40);
+                $pdf->Write(0, "Type");
                 $pdf->SetFont('Helvetica', '', 9);
-                $pdf->SetXY(80, 51.5);
+                $pdf->SetXY(70, 40);
                 $pdf->Write(0, $type);
 
                 // Door:
+                $pdf->SetFont('Helvetica', '', 8);
+                $pdf->SetXY(60, 44);
+                $pdf->Write(0, "Door");
                 $pdf->SetFont('Helvetica', '', 9);
-                $pdf->SetXY(80, 54.6);
+                $pdf->SetXY(70, 44);
                 $pdf->Write(0, $door);
 
                 // Decals:
+                $pdf->SetFont('Helvetica', '', 8);
+                $pdf->SetXY(60, 48);
+                $pdf->Write(0, "Decals");
                 $pdf->SetFont('Helvetica', '', 9);
-                $pdf->SetXY(80, 58);
+                $pdf->SetXY(70, 48);
                 $pdf->Write(0, $decals);
 
                 // 2nd Column
 
                 // Company :
                 $pdf->SetFont('Helvetica', '', 9);
-                $pdf->SetXY(113, 35);
+                $pdf->SetXY(113, 20);
                 $pdf->Write(0, $pickupLocation);
 
                 if (strlen($originationCity) > 10 || strlen($originationZipcode) > 5) {
 
                     // Street Address:
                     $pdf->SetFont('Helvetica', '', 9);
-                    $pdf->SetXY(113, 38);
+                    $pdf->SetXY(113, 24);
                     $pdf->Write(0, $originationAddress);
 
                     // City:
                     $pdf->SetFont('Helvetica', '', 9);
-                    $pdf->SetXY(113, 41.3);
+                    $pdf->SetXY(113, 28);
                     $pdf->Write(0, $originationCity);
 
                     // State Abbr, Zipcode:
                     $pdf->SetFont('Helvetica', '', 9);
-                    $pdf->SetXY(113, 45);
+                    $pdf->SetXY(113, 32);
                     $pdf->Write(0, $originationState . ' ' . $originationZipcode);
 
                 } else {
 
                     // Street Address:
                     $pdf->SetFont('Helvetica', '', 9);
-                    $pdf->SetXY(113, 41.3);
+                    $pdf->SetXY(113, 24);
                     $pdf->Write(0, $originationAddress);
 
                     $cityAddress = $originationCity . ', ' .  $originationState . ' ' . $originationZipcode;
 
                     // City, State Abbr, Zipcode:
                     $pdf->SetFont('Helvetica', '', 9);
-                    $pdf->SetXY(113, 45);
+                    $pdf->SetXY(113, 28);
                     $pdf->Write(0, $cityAddress);
 
                 }
 
                 // pickupPhoneNumber:
                 $pdf->SetFont('Helvetica', '', 9);
-                $pdf->SetXY(113, 51.5);
+                $pdf->SetXY(113, 40);
                 $pdf->Write(0, $pickupPhoneNumber);
 
                 // pickupContact:
                 $pdf->SetFont('Helvetica', '', 9);
-                $pdf->SetXY(113, 54.6);
+                $pdf->SetXY(113, 44);
                 $pdf->Write(0, $pickupContact);
 
                 // pickupHours:
                 $pdf->SetFont('Helvetica', '', 9);
-                $pdf->SetXY(113, 58);
+                $pdf->SetXY(113, 48);
                 $pdf->Write(0, $pickupHours);
 
                 // 3rd Column
 
                 // Company :
                 $pdf->SetFont('Helvetica', '', 9);
-                $pdf->SetXY(150, 35);
+                $pdf->SetXY(165, 20);
                 $pdf->Write(0, $deliveryLocation);
 
                 if (strlen($destinationCity) > 10 || strlen($destinationZipcode) > 5) {
 
                     // Street Address:
                     $pdf->SetFont('Helvetica', '', 9);
-                    $pdf->SetXY(150, 38);
+                    $pdf->SetXY(165, 24);
                     $pdf->Write(0, $destinationAddress);
 
                     // City:
                     $pdf->SetFont('Helvetica', '', 9);
-                    $pdf->SetXY(150, 41.3);
+                    $pdf->SetXY(165, 28);
                     $pdf->Write(0, $destinationCity);
 
                     // State Abbr, Zipcode:
                     $pdf->SetFont('Helvetica', '', 9);
-                    $pdf->SetXY(150, 45);
+                    $pdf->SetXY(165, 32);
                     $pdf->Write(0, $destinationState . ' ' . $destinationZipcode);
 
                 } else {
 
                     // Street Address:
                     $pdf->SetFont('Helvetica', '', 9);
-                    $pdf->SetXY(150, 41.3);
+                    $pdf->SetXY(165, 24);
                     $pdf->Write(0, $destinationAddress);
 
                     $cityAddress = $destinationCity . ', ' .  $destinationState . ' ' . $destinationZipcode;
 
                     // City, State Abbr, Zipcode:
                     $pdf->SetFont('Helvetica', '', 9);
-                    $pdf->SetXY(150, 45);
+                    $pdf->SetXY(165, 28);
                     $pdf->Write(0, $cityAddress);
 
                 }
 
                 // destinationPhoneNumber:
                 $pdf->SetFont('Helvetica', '', 9);
-                $pdf->SetXY(150, 51.5);
+                $pdf->SetXY(165, 40);
                 $pdf->Write(0, $deliveryPhoneNumber);
 
                 // destinationContact:
                 $pdf->SetFont('Helvetica', '', 9);
-                $pdf->SetXY(150, 54.6);
+                $pdf->SetXY(165, 44);
                 $pdf->Write(0, $deliveryContact);
 
                 // destinationHours:
                 $pdf->SetFont('Helvetica', '', 9);
-                $pdf->SetXY(150, 58);
+                $pdf->SetXY(165, 48);
                 $pdf->Write(0, $deliveryHours);
 
             }
