@@ -550,6 +550,9 @@ if ($_SESSION['entityid'] > 0) {
                                     //url += "include=customer_needs";
                                     filter += '&filter[]=status,eq,Available';
                                     filter += '&filter[]=deliveryDate,ge,'+dateTime;
+                                    if (entityid > 0 && entitytype == 2) {
+                                        filter += '&filter[]=entityID,eq,'+entityid;
+                                    }
                                     if (statearray) {
                                         if ($('input[name=locationStatus]:checked').val() == "Origination") {
                                             filter += '&filter[]=originationState,in,'+statearray;
@@ -575,6 +578,9 @@ if ($_SESSION['entityid'] > 0) {
                                     url += "include=orders";
                                     filter += '&filter[]=status,eq,Open';
                                     filter += '&filter[]=deliveryDate,ge,'+dateTime;
+                                    if (entityid > 0 && entitytype == 2) {
+                                        filter += '&filter[]=carrierID,eq,'+entityid;
+                                    }
                                     if (statearray) {
                                         if ($('input[name=locationStatus]:checked').val() == "Origination") {
                                             filter += '&filter[]=orders.originationState,in,'+statearray;
@@ -592,28 +598,13 @@ if ($_SESSION['entityid'] > 0) {
                                         satisfy = '&satisfy=all';
                                     }
 
-                                    //url += filter+satisfy+'&transform=1';
                                     originationPlotColor = "orange";
-/*
-                                    if ($("#stateFilter").val() > '') {
-                                        var statearray = $("#stateFilter").val().toString();
-                                    } else {
-                                        var statearray = '';
-                                    }
-
-                                    if ($("#cityFilter").val() > '') {
-                                        var cityarray = $("#cityFilter").val().toString();
-                                    } else {
-                                        var cityarray = '';
-                                    }
-*/
-                                    console.log('States: ' + statearray);
-                                    console.log('Cities: ' + cityarray);
                                     url = '<?php echo HTTP_HOST; ?>'+'/indexgetorders';
                                     params = {"locationStatus": $('input[name=locationStatus]:checked').val(),
                                               "stateFilter": statearray,
                                               "cityFilter": cityarray,
-                                              "entityid": entityid
+                                              "entityid": entityid,
+                                              "entitytype": entitytype
                                              };
                                     params = JSON.stringify(params);
                                     console.log(params);
@@ -1000,7 +991,7 @@ if ($_SESSION['entityid'] > 0) {
                                            });
 
                                     } else if(string == 'Orders') {
-                                            console.log(response);
+                                           //console.log(response);
                                            $.each(response.order_details, function (index, value) {
                                                // Setup Pickup Date
                                                //alert(formatDate(new Date(value.pickupDate)));

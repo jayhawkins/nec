@@ -147,11 +147,10 @@ $app->route('POST /driverresetpassword', function() {
     $password = Flight::request()->data['password'];
     $user = Flight::users();
     $return = $user->driverresetpasswordapi($username,$password);
-    if ($return) {
-      Flight::redirect('login');
+    if ($return == "success") {
+      echo json_encode(array("status"=>204));
     } else {
-      $invalidUsername = (isset($_SESSION['invalidUsername'])) ? $_SESSION['invalidUsername']:''; // Just use the invalidPassword session var since it's just an error
-      Flight::render('resetpassword', array('invalidUsername'=> $invalidUsername));
+      echo json_encode(array("status"=>400));
     }
 });
 
@@ -198,8 +197,8 @@ $app->route('POST /mobilelogin', function() {
     $username = Flight::request()->data['username'];
     $password = Flight::request()->data['password'];
     $user = Flight::users();
-    $return = $user->loginapi($username,$password);
-
+    $db = Flight::db();
+    $return = $user->mobileloginapi2($db,$username,$password);
     echo $return;
 });
 
@@ -651,9 +650,10 @@ $app->route('POST /indexgetorders', function() {
 	$stateFilter = Flight::request()->data->stateFilter;
     $cityFilter = Flight::request()->data->cityFilter;
     $entityid = Flight::request()->data->entityid;
+    $entitytype = Flight::request()->data->entitytype;
 	$orders = Flight::orders();
 	$db = Flight::db();
-    $return = $orders->indexgetorders($db,$locationStatus,$stateFilter,$cityFilter,$entityid);
+    $return = $orders->indexgetorders($db,$locationStatus,$stateFilter,$cityFilter,$entityid,$entitytype);
     echo $return;
 });
 
