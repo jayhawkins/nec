@@ -421,24 +421,35 @@ class Orders
             return $contactresult;
     }
 
-    public function indexgetorders(&$db,$locationStatus,$stateFilter,$cityFilter,$entityid = 0) {
+    public function indexgetorders(&$db,$locationStatus,$stateFilter,$cityFilter,$entityid = 0,$entitytype = 0) {
 
         try {
 
               $query = " select *";
 
-              if ($entityid > 0) {
+              if ($entityid > 0 && $entitytype == 1) {
                   $query .= ", orders.originationCity, orders.originationState, orders.originationLat, orders.originationLng,
                                orders.destinationCity, orders.destinationState, orders.destinationLat, orders.destinationLng";
               }
+
+              if ($entityid > 0 && $entitytype == 2) {
+                  $query .= ", order_details.originationCity, order_details.originationState, order_details.originationLat, order_details.originationLng,
+                               order_details.destinationCity, order_details.destinationState, order_details.destinationLat, order_details.destinationLng";
+              }
+
+
 
               $query .= " from order_details
                          left join orders on orders.id = order_details.orderID
                          where order_details.status = 'Open'
                          and order_details.deliveryDate >= '" . date('Y-m-d') . "'";
 
-              if ($entityid > 0) {
+              if ($entityid > 0 && $entitytype == 1) {
                   $query .= " and orders.customerID = '" . $entityid . "'";
+              }
+
+              if ($entityid > 0 && $entitytype == 2) {
+                  $query .= " and order_details.carrierID = '" . $entityid . "'";
               }
 
               if (!empty($stateFilter)) {
@@ -455,11 +466,11 @@ class Orders
                         }
                     }
                     if ($locationStatus == "Origination") {
-                        $query .= " and orders.originationState in (" . $sfilter . ")";
+                        $query .= " and originationState in (" . $sfilter . ")";
                     } else if ($locationStatus == "Destination") {
-                        $query .= " and orders.destinationState in (" . $sfilter . ")";
+                        $query .= " and destinationState in (" . $sfilter . ")";
                     } else {
-                        $query .= " and (orders.originationState in (" . $sfilter . ") or orders.destinationState in (" . $sfilter . "))";
+                        $query .= " and (originationState in (" . $sfilter . ") or destinationState in (" . $sfilter . "))";
                     }
               }
               if (!empty($cityFilter)) {
@@ -477,11 +488,11 @@ class Orders
                         }
                     }
                     if ($locationStatus == "Origination") {
-                        $query .= " and orders.originationCity in (" . $cfilter . ")";
+                        $query .= " and originationCity in (" . $cfilter . ")";
                     } else if ($locationStatus == "Destination") {
-                        $query .= " and orders.destinationCity in (" . $cfilter . ")";
+                        $query .= " and destinationCity in (" . $cfilter . ")";
                     } else {
-                        $query .= " and (orders.originationCity in (" . $sfilter . ") or orders.destinationCity in (" . $sfilter . "))";
+                        $query .= " and (originationCity in (" . $sfilter . ") or destinationCity in (" . $sfilter . "))";
                     }
               }
 
