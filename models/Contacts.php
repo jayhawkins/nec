@@ -2,14 +2,14 @@
 
 class Contacts
 {
-    
+
     /**
      * The table name
      *
      * @var string
      */
     public $table = "contacts";
- 
+
     public function post() {
 
     }
@@ -18,7 +18,7 @@ class Contacts
 
     }
 
-    public function put($contactid,$firstName,$lastName,$title,$phone,$fax,$email) {
+    public function put($contactid,$firstName,$lastName,$title,$phone,$phoneExt,$fax,$email) {
         try {
             $contacturl = API_HOST_URL . '/contacts/'.$contactid;
               $contactdata = array(
@@ -26,6 +26,7 @@ class Contacts
                           "lastName" => $lastName,
                           "title" => $title,
                           "primaryPhone" => $phone,
+                          "secondaryPhone" => $phoneExt,
                           "fax" => $fax,
                           "emailAddress" => $email,
                           "updatedAt" => date('Y-m-d H:i:s')

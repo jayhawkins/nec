@@ -239,7 +239,7 @@ $app->route('GET /verifyaccount/@id/@code', function($id,$code) {
 
 $app->route('POST /entities', function() {
     $locationid = 0;
-    $locationresult = json_decode(file_get_contents(API_HOST_URL . '/api/locations?filter=entityID,eq,' . $_SESSION['entityid']));
+    $locationresult = json_decode(file_get_contents(API_HOST_URL . '/locations?filter=entityID,eq,' . $_SESSION['entityid']));
     for ($l=0; $l < count($locationresult->locations->records); $l++) {
         if ($locationresult->locations->records[$l][2] == 1) { // Get the main location information from the locations table locationTypeID = 1
             $locationid = $locationresult->locations->records[$l][0];
@@ -290,6 +290,7 @@ $app->route('POST /entities', function() {
     $latitude = $lati;
     $longitude = $longi;
     $phone = Flight::request()->data['phone'];
+    $phoneExt = Flight::request()->data['phoneExt'];
     $fax = Flight::request()->data['fax'];
     $email = Flight::request()->data['email'];
     $entityName = Flight::request()->data['entityName'];
@@ -299,7 +300,7 @@ $app->route('POST /entities', function() {
     $contact = Flight::contacts();
     $returnentity = $entity->put($entityName);
     $returnlocation = $location->put($locationid,$address1,$address2,$city,$state,$zip,$latitude,$longitude);
-    $returncontact = $contact->put($contactid,$firstName,$lastName,$title,$phone,$fax,$email);
+    $returncontact = $contact->put($contactid,$firstName,$lastName,$title,$phone,$phoneExt,$fax,$email);
     if ($returnentity && $returnlocation && $returncontact) {
       Flight::redirect('/');
     } else {
