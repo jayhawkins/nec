@@ -376,41 +376,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 });
       }
 
-    function getCustomerNeedRoot(){
-
-        var customerNeedsRootIDs = new Array();
-
-        var url = '<?php echo API_HOST_URL ?>' + '/customer_needs?columns=rootCustomerNeedsID&transform=1';
-        var type = "GET";
-        $.ajax({
-            url: '<?php echo API_HOST_URL ?>' + '/customer_needs?columns=rootCustomerNeedsID&transform=1',
-            type: "GET",
-            contentType: "application/json",
-            success: function(data){
-
-                var customerNeeds = data.customer_needs;
-
-                customerNeeds.forEach(function(customerNeed){
-
-                    var id = customerNeed.rootCustomerNeedsID;
-
-                    if(customerNeedsRootIDs.indexOf(id) === -1){
-                        customerNeedsRootIDs.push(id);
-                    }
-                });
-
-
-            },
-            error: function(error){
-                console.log("Error: " + error);
-            }
-
-        });
-
-          return customerNeedsRootIDs;
-    }
-
-
     function getCommitted(){
 
         var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?columns=id,rootCustomerNeedsID&filter[]=rootCustomerNeedsID,neq,0&filter[]=status,eq,Available&transform=1';
@@ -588,11 +553,23 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
     function loadNewCustomerNeedsCommit(id){
     
-        var baseUrl = '<?php echo API_HOST_URL; ?>' + '/customer_needs/' + id + '?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationNotes,destinationNotes,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transportation_mode,entities.name,entities.rateType,entities.negotiatedRate';
+        $('#relayTabs > li > a').unbind('click');
+        $('#unitDataBody').empty();
+        $('#relayTabs').empty();
+        $('#selectedRelayTabs').empty();
+        $('#pickupAddress').empty();
+        $('#deliveryAddress').empty();
+        $('#trailerData').empty();
+        
+        $('#addTrailer').empty();
+        $("#dp-check-list-box").empty();
+        $('#customerNeedsID').val(id);
+            
+        var baseUrl = '<?php echo API_HOST_URL; ?>' + '/customer_needs/' + id + '?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,transportationMode,originationAddress1,originationAddress2,originationCity,originationState,originationZip,originationNotes,destinationNotes,originationLat,originationLng,destinationAddress1,destinationAddress2,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,unitData,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transportation_mode,entities.name,entities.rateType,entities.negotiatedRate';
 
         var url = baseUrl + '&satisfy=any&order[]=entityID&order[]=rootCustomerNeedsID&order[]=availableDate,desc&transform=1';
 
-        var relayURL = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,transportationMode,rate,originationAddress1,originationCity,originationState,originationZip,originationNotes,destinationNotes,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.entityID,customer_needs_commit.status,customer_needs_commit.pickupDate,customer_needs_commit.deliveryDate,customer_needs_commit.rate,customer_needs_commit.transportation_mode,entities.name,entities.rateType,entities.negotiatedRate&filter=rootCustomerNeedsID,eq,' + id + '&satisfy=all&order[]=entityID&order[]=rootCustomerNeedsID&order[]=availableDate,desc&transform=1';
+        var relayURL = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,transportationMode,rate,originationAddress1,originationCity,originationState,originationZip,originationNotes,destinationNotes,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,unitData,status,customer_needs_commit.id,customer_needs_commit.entityID,customer_needs_commit.status,customer_needs_commit.pickupDate,customer_needs_commit.deliveryDate,customer_needs_commit.rate,customer_needs_commit.transportation_mode,entities.name,entities.rateType,entities.negotiatedRate&filter[]=rootCustomerNeedsID,eq,' + id + '&filter[]=status,eq,Available&satisfy=all&order[]=id&transform=1';
         
         $.get(url, function(data){
             
@@ -601,34 +578,135 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             
             if(customer_needs.originationAddress1 == null) customer_needs.originationAddress1 = "";
             if(customer_needs.destinationAddress1 == null) customer_needs.destinationAddress1 = "";
+            if(customer_needs.originationAddress2 == null) customer_needs.originationAddress2 = "";
+            if(customer_needs.destinationAddress2 == null) customer_needs.destinationAddress2 = "";
             if(customer_needs.originationZip == null) customer_needs.originationZip = "";
             if(customer_needs.destinationZip == null) customer_needs.destinationZip = "";
+            if(customer_needs.unitData == null) customer_needs.unitData = [];
             
+            $('#customerID').val(customer_needs.entityID);
+            
+            // Populate Edit form
+            $('#originationAddress1').val(customer_needs.originationAddress1);
+            $('#originationAddress2').val(customer_needs.originationAddress2);
+            $('#originationCity').val(customer_needs.originationCity);
+            $('#originationState').val(customer_needs.originationState);
+            $('#originationZip').val(customer_needs.originationZip);
+            $('#originationNotes').val(customer_needs.originationNotes);
+            
+            
+            $('#destinationAddress1').val(customer_needs.destinationAddress1);
+            $('#destinationAddress2').val(customer_needs.destinationAddress2);
+            $('#destinationCity').val(customer_needs.destinationCity);
+            $('#destinationState').val(customer_needs.destinationState);
+            $('#destinationZip').val(customer_needs.destinationZip);
+            $('#destinationNotes').val(customer_needs.destinationNotes);
+            
+            // Populate view
             var pickupAddress = customer_needs.originationAddress1 + "<br>" +
                     customer_needs.originationCity + ", " + customer_needs.originationState + " " + customer_needs.originationZip + "<br><br>" +
                                 "Notes:<br>" + 
                                 customer_needs.originationNotes + "<br>";
+                        
             var deliveryAddress = customer_needs.destinationAddress1 + "<br>" +
                     customer_needs.destinationCity + ", " + customer_needs.destinationState + " " + customer_needs.destinationZip + "<br><br>" +
                                 "Notes:<br>" + 
                                 customer_needs.destinationNotes + "<br>";
                         
-            var trailerData = "Quantity: " + customer_needs.qty + "<br>" +
-                                "Type: " + needsDataPoints[0].type + "<br>" +
-                                "Length: " + needsDataPoints[1].length + "<br>" +
-                                "Width: " + needsDataPoints[2].width + "<br>" +
-                                "Height: " + needsDataPoints[3].height + "<br>" +
-                                "Carb: " + needsDataPoints[4].carb + "<br>" +
-                                "Decals: " + needsDataPoints[5].decals + "<br>" +
-                                "Door: " + needsDataPoints[6].door + "<br>" +
-                                "Floor: " + needsDataPoints[7].floor + "<br>" +
-                                "King Pin: " + needsDataPoints[8].king_pin + "<br>" +
-                                "Lift Pads: " + needsDataPoints[9].lift_pads + "<br>" +
-                                "Number Of Axles: " + needsDataPoints[10].num_axles + "<br>" +
-                                "Railable: " + needsDataPoints[11].railable + "<br>" +
-                                "Side Skirts: " + needsDataPoints[12].side_skirts + "<br>" +
-                                "Suspension: " + needsDataPoints[13].suspension + "<br>";
+            var trailerData = "Quantity: " + customer_needs.qty + "<br>";
             
+            var unitData = "";
+            var unitEdit = "";
+            
+            $.each(customer_needs.unitData, function(key, unit){
+                unitData += "<tr>" + 
+                        "<td>"+ unit.unitNumber +"</td>" + 
+                        "<td>"+ unit.vinNumber +"</td>" + 
+                        "<td>"+ unit.truckProNumber +"</td>" + 
+                        "<td>"+ unit.poNumber +"</td>" + 
+                        "</tr>";
+                
+                unitEdit += ' <div class="row"><div class="col-md-3">\n\
+                            <div class="form-group">\n\
+                                    <label for="unitNumber' + (key + 1) + '">Unit #</label>\n\
+                                    <input class="form-control" id="unitNumber' + (key + 1) + '" placeholder="" type="text" value="'+unit.unitNumber+'">\n\
+                            </div>\n\
+                        </div>\n\
+                <div class="col-md-3">\n\
+                            <div class="form-group">\n\
+                                    <label for="vinNumber' + (key + 1) + '">VIN #</label>\n\
+                                    <input class="form-control" id="vinNumber' + (key + 1) + '" placeholder="" type="text" value="'+unit.vinNumber+'">\n\
+                            </div>\n\</div>\n\
+                <div class="col-md-3">\n\
+                            <div class="form-group">\n\
+                                    <label for="truckProNumber' + (key + 1) + '">Truck/Pro #</label>\n\
+                                    <input class="form-control" id="truckProNumber' + (key + 1) + '" placeholder="" type="text" value="'+unit.truckProNumber+'">\n\
+                            </div>\n\</div>\n\
+                <div class="col-md-3">\n\
+                            <div class="form-group">\n\
+                                    <label for="poNumber' + (key + 1) + '">P.O. #</label>\n\
+                                    <input class="form-control" id="poNumber' + (key + 1) + '" placeholder="" type="text" value="'+unit.poNumber+'">\n\
+                            </div>\n\</div></div>';
+            });
+            
+            var dpli = '<div class="form-group row">' +
+                            '<label for="qty" class="col-sm-3 col-form-label">Quantity</label>'+
+                            '<div class="col-sm-9">' +
+                            '<input id="qty" name="qty" class="form-control" value="'+customer_needs.qty+'">'+
+                            '</div>'+
+                            '</div>';
+                    
+            for (var i = 0; i < dataPoints.object_type_data_points.length; i++) {
+                var selected = '';
+                var value = '';
+
+                $.each(needsDataPoints, function(idx, obj) {
+                  $.each(obj, function(key, val) {
+                    if (dataPoints.object_type_data_points[i].columnName == key) {
+                        value = val; // Get the value from the JSON data in the record to use to set the selected option in the dropdown
+                        
+                        trailerData += dataPoints.object_type_data_points[i].title + ": " + val + "<br>";
+                    }
+                  })
+                });
+                
+                if(dataPoints.object_type_data_points[i].title == "Decals"){
+                    dpli += '<div class="form-group row">' +
+                            '<label for="decals" class="col-sm-3 col-form-label">Decals</label>'+
+                            '<div class="col-sm-9">' +
+                            '<input id="decals" name="decals" class="form-control" value="'+value+'">'+
+                            '</div>'+
+                            '</div>';
+                  }
+                  else{
+                      
+                    dpli += '<div class="form-group row">' +
+                            '<label for="' + dataPoints.object_type_data_points[i].columnName + '" class="col-sm-3 col-form-label">' + dataPoints.object_type_data_points[i].title + '</label>' +
+                            '<div class="col-sm-9"> <select class="form-control" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '">' +
+                            ' <option value="">-Select From List-</option>\n';
+
+                    for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
+
+                        if (dataPoints.object_type_data_points[i].object_type_data_point_values[v].value === value) {
+                            selected = ' selected ';
+                        } else {
+                            selected = '';
+                        }
+
+                        dpli += '<option' + selected + '>' + dataPoints.object_type_data_points[i].object_type_data_point_values[v].value + '</option>\n';
+
+                    }
+
+                    dpli += '</select>' +
+                            '</div></div>';
+                  }
+            }
+            $("#dp-check-list-box").append(dpli);
+        
+            
+            
+            $('#addTrailer').append(unitEdit);
+            $('#unitDataBody').append(unitData);
             $('#pickupAddress').append(pickupAddress);
             $('#deliveryAddress').append(deliveryAddress);
             $('#trailerData').append(trailerData);
@@ -661,11 +739,20 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     selectedRelayTabs += "<div class=\"tab-pane\" id=\"" + key + "\" aria-expanded=\"false\">" + deliveryAddress + "</div>";
                 }
                 
+                $('#relay_id' + relayNumber).val(customer_needs.id);
+                $('#commit_id' + relayNumber).val(customer_needs.customer_needs_commit.id);
+                $('#address_relay' + relayNumber).val(customer_needs.destinationAddress1);
+                $('#city_relay' + relayNumber).val(customer_needs.destinationCity);
+                $('#state_relay' + relayNumber).val(customer_needs.destinationState);
+                $('#zip_relay' + relayNumber).val(customer_needs.destinationZip);     
+                $('#notes_relay' + relayNumber).val(customer_needs.destinationNotes);                
+                
+                if(relayNumber == 4) return false;
+                
             });
             
             $('#relayTabs').append(relayTabs);
             $('#selectedRelayTabs').append(selectedRelayTabs);
-            
             
             $('#relayTabs > li > a').bind('click',function(){
 
@@ -675,7 +762,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 $('#selectedRelayTabs > div').removeClass('active');
                 $('#selectedRelayTabs > div' + relayToShow).addClass('active');
 
-                console.log(relayToShow);
             });
     
         });
@@ -683,7 +769,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         $("#customer-needs-commit").css("display", "block");
         $("#customer-needs").css("display", "none");
     }
-
+    
+/*
     function loadCustomerNeedsCommitAJAX (id){
 
         var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,transportationMode,rate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.entityID,customer_needs_commit.status,customer_needs_commit.pickupDate,customer_needs_commit.deliveryDate,customer_needs_commit.rate,customer_needs_commit.transportation_mode,entities.name,entities.rateType,entities.negotiatedRate&filter=rootCustomerNeedsID,eq,' + id + '&satisfy=all&order[]=entityID&order[]=rootCustomerNeedsID&order[]=availableDate,desc&transform=1';
@@ -700,18 +787,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 dataSrc: function ( json ) {
 
                     var customer_needs = json.customer_needs;
-                    /*
-                    var customer_needs_commit = new Array();
-
-                    customer_needs.forEach(function(customer_need){
-
-                        if(customer_need.length > 0){
-                            customer_needs_commit.push(customer_need);
-                        }
-                    });
-                    //console.log(customer_needs_commit);
-                    return customer_needs_commit;
-                    */
                     return customer_needs;
                 }
             },
@@ -1142,7 +1217,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
            }
         });
     }
-
+*/
  </script>
 
  <style>
@@ -1204,9 +1279,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
      <header>
          <h4><span class="fw-semi-bold">Available Transport</span></h4>
          <div class="widget-controls">
-             <!--<a data-widgster="expand" title="Expand" href="#"><i class="glyphicon glyphicon-chevron-up"></i></a>
-             <a data-widgster="collapse" title="Collapse" href="#"><i class="glyphicon glyphicon-chevron-down"></i></a>
-             <a data-widgster="close" title="Close" href="#"><i class="glyphicon glyphicon-remove"></i></a>-->
+             
          </div>
      </header>
      <div class="widget-body">
@@ -1257,187 +1330,18 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
      </div>
  </section>
  
-<!-- Old Commit View 
-<section class="widget"  id="customer-needs-commit" style="display: none;">
-     <header>
-         <h4><span class="fw-semi-bold">Committed Transport</span></h4>
-         <div class="widget-controls">
-             <a data-widgster="save" title="Save" href="#"><i class="glyphicon glyphicon-floppy-disk" style="font-size: 20px;"></i></a>
-             <a data-widgster="edit" title="Edit" href="#"><i class="glyphicon glyphicon-pencil" style="font-size: 20px;"></i></a>
-             <a data-widgster="close" title="Close" href="#"><i class="glyphicon glyphicon-remove" style="font-size: 20px;"></i></a>
-         </div>
-     </header>
-     <br />
-     <div class="widget-body">
-        <div id="dataTable-1" class="mt">
-            <h5><span class="fw-semi-bold">Selected Customer Transport</span></h5>
-            <table id="selected-customer-need" class="table table-striped table-hover" width="100%">
-                 <thead>
-                 <tr>
-                     <th>Company</th>
-                     <th>ID</th>
-                     <th>Root Customer Needs ID</th>
-                     <th>Entity ID</th>
-                     <th>Qty</th>
-                     <th>Available</th>
-                     <th>Expires</th>
-                     <th>Transport Mode</th>
-                     <th class="hidden-sm-down">Orig. City</th>
-                     <th class="hidden-sm-down">Orig. State</th>
-                     <th class="hidden-sm-down">Orig. Lat.</th>
-                     <th class="hidden-sm-down">Orig. Long.</th>
-                     <th class="hidden-sm-down">Dest. City</th>
-                     <th class="hidden-sm-down">Dest. State</th>
-                     <th class="hidden-sm-down">Dest. Lat.</th>
-                     <th class="hidden-sm-down">Dest. Long.</th>
-                     <th class="hidden-sm-down">Mileage</th>
-                     <th class="hidden-sm-down">Data Points</th>
-                     <th>Status</th>
-                     <th>Commit ID</th>
-                     <th>Commit Status</th>
-                     <th>Commit Rate</th>
-                     <th>Transportation Mode</th>
-                     <th>Rate Type</th>
-                     <th>Negotiated Rate</th>
-                 </tr>
-                 </thead>
-                 <tbody>
-                 </tbody>
-             </table>
-        </div>
-    </div>
-    <br>
-    <div class="widget-body">
-        <div id="dataTable-2" class="mt">
-            <h5><span class="fw-semi-bold">Notes</span></h5>
-            <table id="customer-needs-note-table" class="table table-striped table-hover" width="100%">
-                <thead>
-                    <tr>
-                        <th>View Access</th>
-                        <th>Date</th>
-                        <th>Note</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-
-        <div class="row">
-            <div class="col-sm-4">
-                <a data-widgster="addNote" title="Add" href="Javascript:addNewNote();"><i class="fa fa-plus-square-o"></i> Add Note</a>
-            </div>
-        </div>
-    </div>
-    <br>
-    <div class="widget-body">
-        <div id="dataTable-3" class="mt">
-            <h5><span class="fw-semi-bold">Carrier Committed Transport</span></h5>
-            <table id="customer-needs-commit-table" class="table table-striped table-hover" width="100%">
-                <thead>
-                <tr>
-                    <th>Carrier Name</th>
-                    <th>ID</th>
-                    <th>Root Customer Needs ID</th>
-                    <th>Entity ID</th>
-                    <th>Qty</th>
-                    <th>Rate</th>
-                    <th>Pick Up</th>
-                    <th>Delivery</th>
-                    <th>Transport Mode</th>
-                    <th>Carrier Rate</th>
-                    <th class="hidden-sm-down">Orig. City</th>
-                    <th class="hidden-sm-down">Orig. State</th>
-                    <th class="hidden-sm-down">Orig. Lat.</th>
-                    <th class="hidden-sm-down">Orig. Long.</th>
-                    <th class="hidden-sm-down">Dest. City</th>
-                    <th class="hidden-sm-down">Dest. State</th>
-                    <th class="hidden-sm-down">Dest. Lat.</th>
-                    <th class="hidden-sm-down">Dest. Long.</th>
-                    <th class="hidden-sm-down">Mileage</th>
-                    <th class="hidden-sm-down">Data Points</th>
-                    <th>Status</th>
-                    <th>Commit ID</th>
-                    <th>Commit Status</th>
-                    <th>Commit Rate</th>
-                    <th>Transportation Mode</th>
-                    <th>Name</th>
-                    <th>Rate Type</th>
-                    <th>Negotiated Rate</th>
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody>
-
-                </tbody>
-            </table>
-        </div>
-
-        <div class="row">
-            <div class="col-sm-4">
-                <a data-widgster="addCommit" title="Add" href="Javascript:addNewCommit();"><i class="fa fa-plus-square-o"></i> Add Carrier Commitment</a>
-            </div>
-        </div>
-    </div>
-    <br>
-    <div class="widget-body">
-        <div class="row">
-            <div class="col-sm-4">
-                <label for="customerRate">Customer Rate</label>
-                <div class="form-group">
-                  <input type="hidden" id="customerNeedsID" name="customerNeedsID" />
-                  <input type="hidden" id="entityID" name="entityID" />
-                  <input type="text" id="customerRate" name="customerRate" class="form-control mb-sm" placeholder="Customer Rate" />
-                </div>
-            </div>
-            <div class="col-sm-4 col-sm-offset-4">
-                <label for="filePurchaseOrder">Upload the Customer's purchase order</label>
-                <div class="form-group">
-                    <input type="file" id="filePurchaseOrder" name="filePurchaseOrder" class="form-control-file mb-sm"
-                           accept=".pdf, .doc, .docx"/>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-sm-4">
-                <label for="carrierTotalRate">Carrier Total Rate</label>
-                <div class="form-group">
-                  <input type="text" id="carrierTotalRate" name="carrierTotalRate" class="form-control mb-sm" placeholder="Customer Rate" readonly/>
-                </div>
-            </div>
-            <div class="col-sm-4 col-sm-offset-4">
-                <div class="form-group">
-                    <button id="completeOrder" class="btn btn-primary btn-block" role="button"><i class="fa fa-check-square-o text"></i> <span class="text">Submit for Order</span></button>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-sm-4">
-                <label for="totalRevenue">Total Revenue</label>
-                <div class="form-group">
-                  <input type="text" id="totalRevenue" name="totalRevenue" class="form-control mb-sm" placeholder="Total Revenue" readonly/>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
- </section>
--->
-
 <!-- New Commit View -->
 <section class="widget"  id="customer-needs-commit" style="display: none;">
      <header>
          <h4><span class="fw-semi-bold">Committed Transport</span></h4>
          <div class="widget-controls">
-             <a data-widgster="save" title="Save" href="#" onclick="saveCommitDetails()"><i class="glyphicon glyphicon-floppy-disk" style="font-size: 20px;"></i></a>
+             <a data-widgster="save" title="Save" href="#" onclick="saveCommitAsOrder()"><i class="glyphicon glyphicon-floppy-disk" style="font-size: 20px;"></i></a>
              <a data-widgster="edit" title="Edit" href="#" onclick="editCommitTransport()"><i class="glyphicon glyphicon-pencil" style="font-size: 20px;"></i></a>
              <a data-widgster="close" title="Close" href="#" onclick="closeCommitTransport()"><i class="glyphicon glyphicon-remove" style="font-size: 20px;"></i></a>
          </div>
      </header>
      <br />
+     <input type="hidden" id="customerID">
      <div class="row">
          <div class="col-md-8">
              <div class="row">
@@ -1508,19 +1412,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 <th>P.O. #</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>OT467</td>
-                                <td>DS434396145C64</td>
-                                <td>G49SD9</td>
-                                <td>123456</td>
-                            </tr>
-                            <tr>
-                                <td>OT468</td>
-                                <td>XZ59WS56564DF</td>
-                                <td>VE5S4D</td>
-                                <td>123479</td>
-                            </tr>
+                        <tbody id="unitDataBody">
+                            
                         </tbody>
                     </table>
                 </div>
@@ -1545,6 +1438,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     <div class="col-md-12">
                     <h2>Pickup Address</h2>
                     <form>
+                        <input type="hidden" id="customerNeedsID" name="customerNeedsID" value="" />
                             <div class="form-group row">
                                     <label for="originationAddress1" class="col-sm-3 col-form-label">Address 1</label>
                                     <div class="col-sm-9">
@@ -1576,9 +1470,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     </div>
                             </div>
                             <div class="form-group row">
-                                    <label for="notes_pickup_address" class="col-sm-3 col-form-label">Notes</label>
+                                    <label for="originationNotes" class="col-sm-3 col-form-label">Notes</label>
                                     <div class="col-sm-9">
-                                            <textarea class="form-control" id="notes_pickup_address" rows="3"></textarea>
+                                            <textarea class="form-control" id="originationNotes" rows="3"></textarea>
                                     </div>
                              </div>
                     </form>
@@ -1622,9 +1516,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     </div>
                             </div>
                             <div class="form-group row">
-                                    <label for="notes_delivery_address" class="col-sm-3 col-form-label">Notes</label>
+                                    <label for="destinationNotes" class="col-sm-3 col-form-label">Notes</label>
                                     <div class="col-sm-9">
-                                            <textarea class="form-control" id="notes_delivery_address" rows="3"></textarea>
+                                            <textarea class="form-control" id="destinationNotes" rows="3"></textarea>
                                     </div>
                              </div>
                     </form>
@@ -1636,7 +1530,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             <div class="row">
                     <div class="col-md-12">
                     <h2>Trailer Data</h2>
-                    <form>
+                    <form id="dp-check-list-box">
                             <div class="form-group row">
                                     <label for="type" class="col-sm-3 col-form-label">Type</label>
                                     <div class="col-sm-9">
@@ -1694,21 +1588,23 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             <div class="row">
                     <div class="col-sm-12 col-md-6 col-lg-3">
                         <h4>Relay Address 1</h4>
+                            <input class="form-control" id="relay_id1" placeholder="" type="hidden">
+                            <input class="form-control" id="commit_id1" placeholder="" type="hidden">
                             <div class="form-group">
                                     <label for="address_relay1">Address</label>
-                                    <input class="form-control" id="address_relay1" placeholder="" type="address_relay1">
+                                    <input class="form-control" id="address_relay1" placeholder="" type="text">
                             </div>
                             <div class="form-group">
                                     <label for="city_relay1">City</label>
-                                    <input class="form-control" id="city_relay1" placeholder="" type="city_relay1">
+                                    <input class="form-control" id="city_relay1" placeholder="" type="text">
                             </div>
                             <div class="form-group">
                                     <label for="state_relay1">State</label>
-                                    <input class="form-control" id="state_relay1" placeholder="" type="state_relay1">
+                                    <input class="form-control" id="state_relay1" placeholder="" type="text">
                             </div>
                             <div class="form-group">
                                     <label for="zip_relay1">Zip</label>
-                                    <input class="form-control" id="zip_relay1" placeholder="" type="zip_relay1">
+                                    <input class="form-control" id="zip_relay1" placeholder="" type="text">
                             </div>
                             <div class="form-group">
                                     <label for="notes_relay1">Notes</label>
@@ -1718,320 +1614,108 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                     <div class="col-sm-12 col-md-6 col-lg-3">
                         <h4>Relay Address 2</h4>
+                            <input class="form-control" id="relay_id2" placeholder="" type="hidden">
+                            <input class="form-control" id="commit_id2" placeholder="" type="hidden">
                             <div class="form-group">
-                                    <label for="address_relay1">Address</label>
-                                    <input class="form-control" id="address_relay1" placeholder="" type="address_relay1">
+                                    <label for="address_relay2">Address</label>
+                                    <input class="form-control" id="address_relay2" placeholder="" type="text">
                             </div>
                             <div class="form-group">
-                                    <label for="city_relay1">City</label>
-                                    <input class="form-control" id="city_relay1" placeholder="" type="city_relay1">
+                                    <label for="city_relay2">City</label>
+                                    <input class="form-control" id="city_relay2" placeholder="" type="text">
                             </div>
                             <div class="form-group">
-                                    <label for="state_relay1">State</label>
-                                    <input class="form-control" id="state_relay1" placeholder="" type="state_relay1">
+                                    <label for="state_relay2">State</label>
+                                    <input class="form-control" id="state_relay2" placeholder="" type="text">
                             </div>
                             <div class="form-group">
-                                    <label for="zip_relay1">Zip</label>
-                                    <input class="form-control" id="zip_relay1" placeholder="" type="zip_relay1">
+                                    <label for="zip_relay2">Zip</label>
+                                    <input class="form-control" id="zip_relay2" placeholder="" type="text">
                             </div>
                             <div class="form-group">
-                                    <label for="notes_relay1">Notes</label>
-                                    <textarea class="form-control" id="notes_relay1" rows="3"></textarea>
+                                    <label for="notes_relay2">Notes</label>
+                                    <textarea class="form-control" id="notes_relay2" rows="3"></textarea>
                              </div>
                     </div>
 
                     <div class="col-sm-12 col-md-6 col-lg-3">
                         <h4>Relay Address 3</h4>
+                            <input class="form-control" id="relay_id3" placeholder="" type="hidden">
+                            <input class="form-control" id="commit_id3" placeholder="" type="hidden">
                             <div class="form-group">
-                                    <label for="address_relay1">Address</label>
-                                    <input class="form-control" id="address_relay1" placeholder="" type="address_relay1">
+                                    <label for="address_relay3">Address</label>
+                                    <input class="form-control" id="address_relay3" placeholder="" type="text">
                             </div>
                             <div class="form-group">
-                                    <label for="city_relay1">City</label>
-                                    <input class="form-control" id="city_relay1" placeholder="" type="city_relay1">
+                                    <label for="city_relay3">City</label>
+                                    <input class="form-control" id="city_relay3" placeholder="" type="text">
                             </div>
                             <div class="form-group">
-                                    <label for="state_relay1">State</label>
-                                    <input class="form-control" id="state_relay1" placeholder="" type="state_relay1">
+                                    <label for="state_relay3">State</label>
+                                    <input class="form-control" id="state_relay3" placeholder="" type="text">
                             </div>
                             <div class="form-group">
-                                    <label for="zip_relay1">Zip</label>
-                                    <input class="form-control" id="zip_relay1" placeholder="" type="zip_relay1">
+                                    <label for="zip_relay3">Zip</label>
+                                    <input class="form-control" id="zip_relay3" placeholder="" type="text">
                             </div>
                             <div class="form-group">
-                                    <label for="notes_relay1">Notes</label>
-                                    <textarea class="form-control" id="notes_relay1" rows="3"></textarea>
+                                    <label for="notes_relay3">Notes</label>
+                                    <textarea class="form-control" id="notes_relay3" rows="3"></textarea>
                              </div>
                     </div>
 
                     <div class="col-sm-12 col-md-6 col-lg-3">
                         <h4>Relay Address 4</h4>
+                            <input class="form-control" id="relay_id4" placeholder="" type="hidden">
+                            <input class="form-control" id="commit_id4" placeholder="" type="hidden">
                             <div class="form-group">
-                                    <label for="address_relay1">Address</label>
-                                    <input class="form-control" id="address_relay1" placeholder="" type="address_relay1">
+                                    <label for="address_relay4">Address</label>
+                                    <input class="form-control" id="address_relay4" placeholder="" type="text">
                             </div>
                             <div class="form-group">
-                                    <label for="city_relay1">City</label>
-                                    <input class="form-control" id="city_relay1" placeholder="" type="city_relay1">
+                                    <label for="city_relay4">City</label>
+                                    <input class="form-control" id="city_relay4" placeholder="" type="text">
                             </div>
                             <div class="form-group">
-                                    <label for="state_relay1">State</label>
-                                    <input class="form-control" id="state_relay1" placeholder="" type="state_relay1">
+                                    <label for="state_relay4">State</label>
+                                    <input class="form-control" id="state_relay4" placeholder="" type="text">
                             </div>
                             <div class="form-group">
-                                    <label for="zip_relay1">Zip</label>
-                                    <input class="form-control" id="zip_relay1" placeholder="" type="zip_relay1">
+                                    <label for="zip_relay4">Zip</label>
+                                    <input class="form-control" id="zip_relay4" placeholder="" type="text">
                             </div>
                             <div class="form-group">
-                                    <label for="notes_relay1">Notes</label>
-                                    <textarea class="form-control" id="notes_relay1" rows="3"></textarea>
+                                    <label for="notes_relay4">Notes</label>
+                                    <textarea class="form-control" id="notes_relay4" rows="3"></textarea>
                              </div>
                     </div>
             </div>
+            
+            <hr>
+            
+            <div class="row">
+                    <div class="col-md-12">
+                            <h2>Unit Data</h2>
+                    </div>
+            </div>
+            
+            <br>
+            
+            <div class="row">
+                <div id="addTrailer" class="col-md-12">
+                    
+                </div>
+            </div>
+            
         </div>
         <div class="modal-footer">
            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-           <button type="button" class="btn btn-primary btn-md" onclick="saveCommit();" id="saveCommit" disabled>Save</button>
+           <button type="button" class="btn btn-primary btn-md" onclick="addTrailer();" id="addTrailer">AddTrailer</button>
+           <button type="button" class="btn btn-primary btn-md" onclick="saveCommit();" id="saveCommit">Save</button>
         </div>
       </div>
     </div>
   </div>
-
-<!-- Modal -->
-  <div class="modal fade" id="addNote" tabindex="-1" aria-hidden="true" aria-label="exampleModalCommitLabel">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalCommitLabel"><strong>Add Note</strong></h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-                <form id="formAddNote" class="register-form mt-lg">
-                  <input type="hidden" id="customerNeedsID" name="customerNeedsID" value="" />
-                  <div class="row">
-
-                      <div class="col-sm-12">
-                          <div class="form-group">
-
-                              <label for="viewAccess">View Access</label>
-                              <select id="viewAccess" name="viewAccess" data-placeholder="View Access" class="form-control chzn-select" required="required">
-                                <option value="0">NEC Admin Only</option>
-                                <option value="0,1">Customer and NEC Admin</option>
-                                <option value="0,2">Carrier and NEC Admin</option>
-                                <option value="0,1,2">All</option>
-                              </select>
-                          </div>
-                      </div>
-                  </div>
-                  <hr/>
-                  <div class="row">
-                      <div class="col-sm-12">
-                        <label for="commitmentNote">Note</label>
-                        <div class="form-group">
-                            <textarea id="commitmentNote" rows="4" cols="50" class="form-control mb-sm" maxlength="600"></textarea>
-                        </div>
-                      </div>
-                  </div>
-        </div>
-        <div class="modal-footer">
-           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-           <button type="button" class="btn btn-primary btn-md" onclick="saveNote();" id="saveNote">Save</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal -->
-  <div class="modal fade" id="myModalCommit" tabindex="-1" aria-hidden="true" aria-label="exampleModalCommitLabel">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalCommitLabel"><strong>Add Carrier Commmit</strong></h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-                <form id="formNeed" class="register-form mt-lg">
-                  <input type="hidden" id="id" name="id" value="" />
-                  <input type="hidden" id="rootCustomerNeedsID" name="rootCustomerNeedsID" value="" />
-                  <input type="hidden" id="originToMatch" name="originToMatch" value="" />
-                  <input type="hidden" id="destToMatch" name="destToMatch" value="" />
-                  <input type="hidden" id="oaddress1" name="oaddress1" value="" />
-                  <input type="hidden" id="ocity" name="ocity" value="" />
-                  <input type="hidden" id="ostate" name="ostate" value="" />
-                  <input type="hidden" id="ozip" name="ozip" value="" />
-                  <input type="hidden" id="daddress1" name="daddress1" value="" />
-                  <input type="hidden" id="dcity" name="dcity" value="" />
-                  <input type="hidden" id="dstate" name=""dstate value="" />
-                  <input type="hidden" id="dzip" name="dzip" value="" />
-                  <div class="row">
-                      <div class="col-sm-2">
-                          <label for="qtyDiv"># of Trailers</label>
-                          <div id="qtyDiv" class="form-group">
-                          </div>
-                      </div>
-                      <div class="col-sm-3">
-                          <label for="availableDate">Pick-Up Date</label>
-                          <div class="form-group">
-                            <div id="sandbox-container" class="input-group date  datepicker">
-                               <input type="text" id="pickupDate" name="pickupDate" class="form-control" placeholder="Pickup Date" required="required"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
-                            </div>
-                          </div>
-                      </div>
-                      <div class="col-sm-3">
-                          <label for="expirationDate">Delivery Date</label>
-                          <div class="form-group">
-                            <div id="sandbox-container" class="input-group date  datepicker">
-                               <input type="text" id="deliveryDate" name="deliveryDate" class="form-control" placeholder="Delivery Date" required="required"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
-                            </div>
-                          </div>
-                      </div>
-                      <div class="col-sm-4">
-                          <div class="form-group">
-              <?php if ($_SESSION['entityid'] > 0) { ?>
-                             <input type="hidden" id="carrierID" name="carrierID" value="<?php echo $_SESSION['entityid']; ?>" />
-              <?php } else { ?>
-                              <label for="carrierID">Carrier</label>
-                              <select id="carrierID" name="carrierID" data-placeholder="Carrier" class="form-control chzn-select" required="required">
-                                <option value="">*Select Carrier...</option>
-               <?php
-                                foreach($entities->entities->records as $value) {
-                                    $selected = ($value[0] == $entity) ? 'selected=selected':'';
-                                    echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
-                                }
-               ?>
-                              </select>
-               <?php } ?>
-                          </div>
-                      </div>
-                  </div>
-                  <div class="row">
-                      <div class="col-sm-3">
-                          <label for="originationCity">Origination City</label>
-                          <div class="form-group">
-                            <input type="hidden" id="originationLocationID" name="originationLocationID" />
-                            <input type="text" id="originationCity" name="originationCity" class="form-control mb-sm" placeholder="Origin City"
-                            required="required" />
-                          </div>
-                          <div id="org-suggesstion-box" class="frmSearch"></div>
-                      </div>
-                      <!--
-                      <div class="col-sm-4">
-                          <label for="originationAddress1">Origination Address</label>
-                          <div class="form-group">
-                            <input type="text" id="originationAddress1" name="originationAddress1" class="form-control mb-sm" placeholder="Origin Address"
-                            required="required" />
-                          </div>
-                      </div>
-                      -->
-                      <div class="col-sm-3">
-                          <label for="originationState">Origination State</label>
-                          <div class="form-group">
-                            <select id="originationState" name="origitnaionState" data-placeholder="Origin State" class="form-control chzn-select" data-ui-jq="select2" required="required">
-                              <option value="">*Select State...</option>
-             <?php
-                              foreach($states->states->records as $value) {
-                                  $selected = ($value[0] == $state) ? 'selected=selected':'';
-                                  echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
-                              }
-             ?>
-                            </select>
-                          </div>
-                      </div>
-                      <!--
-                      <div class="col-sm-2">
-                          <label for="originationZip">Origination Zip</label>
-                          <div class="form-group">
-                            <input type="text" id="originationZip" name="originationZip" class="form-control mb-sm" placeholder="Origin Zip"
-                            required="required" />
-                          </div>
-                      </div>
-                      -->
-                      <div class="col-sm-4">
-                      </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-sm-3">
-                        <label for="DestinationCity">Destination City</label>
-                        <div class="form-group">
-                          <input type="text" id="destinationCity" name="destinationCity" class="form-control mb-sm" placeholder="Dest. City"
-                          required="required" />
-                        </div>
-                        <div id="dest-suggesstion-box" class="frmSearch"></div>
-                    </div>
-                    <!--
-                    <div class="col-sm-4">
-                        <label for="destinationAddress1">Destination Address</label>
-                        <div class="form-group">
-                          <input type="text" id="destinationAddress1" name="destinationAddress1" class="form-control mb-sm" placeholder="Destination Address"
-                          required="required" />
-                        </div>
-                    </div>
-                    -->
-                    <div class="col-sm-3">
-                        <label for="destinationState">Destination State</label>
-                        <div class="form-group">
-                          <select id="destinationState" name="destinationState" data-placeholder="Dest. State" class="form-control chzn-select" data-ui-jq="select2" required="required">
-                            <option value="">*Select State...</option>
-           <?php
-                            foreach($states->states->records as $value) {
-                                $selected = ($value[0] == $state) ? 'selected=selected':'';
-                                echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
-                            }
-           ?>
-                          </select>
-                        </div>
-                    </div>
-                    <!--
-                    <div class="col-sm-2">
-                        <label for="destinationZip">Destination Zip</label>
-                        <div class="form-group">
-                          <input type="text" id="destinationZip" name="destinationZip" class="form-control mb-sm" placeholder="Dest. Zip"
-                          required="required" />
-                        </div>
-                    </div>
-                    -->
-                    <div class="col-sm-4">
-                    </div>
-                  </div>
-                  <hr/>
-                  <div class="row">
-                      <!--
-                      <div class="col-sm-3">
-                          <label for="rate">Rate to Transport</label>
-                          <div class="form-group">
-                            <input type="text" id="rate" name="rate" class="form-control mb-sm" placeholder="$ Rate to Transport"
-                            required="required" />
-                          </div>
-                      </div>
-                      <div class="col-sm-3">
-                          <label for="rate">Rate Type</label>
-                          <div class="form-group">
-                            <div class="d-inline-block"><input type="radio" id="transportionType" name="transportationType" value="Flat Rate" /> Flat Rate
-                            &nbsp;&nbsp;<input type="radio" id="transportionType" name="transportationType" value="Mileage" /> Mileage</div>
-                          </div>
-                      </div>
-                      -->
-                      <div class="col-sm-3">
-                        <label for="transportationModeDiv">Transportation Mode</label>
-                        <div id="transportationModeDiv" class="form-group">
-                        </div>
-                      </div>
-                      <div class="col-sm-9">
-                      </div>
-                  </div>
-        </div>
-        <div class="modal-footer">
-           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-           <button type="button" class="btn btn-primary btn-md" onclick="return post();" id="load">Commit</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
 
  <script>
 
@@ -2044,6 +1728,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         format: "yyyy-mm-dd"
     });
 
+/*
     function addNewCommit(){
 
         var selectedTable = $("#selected-customer-need").DataTable();
@@ -2136,7 +1821,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
         $("#addNote").modal('show');
     }
-
+*/
     function closeCustomerCommitLegs(customerNeedID){
 
         $.ajax({
@@ -2168,7 +1853,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         });
 
     }
-
+/*
     function createNewAvailability(customerNeedID, differenceQty, today){
 
         $.ajax({
@@ -2237,7 +1922,37 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
         });
     }
-
+*/
+   
+   function addTrailer(){
+       
+       var unitID = $('#addTrailer > div').length;
+       
+       var unitData = ' <div class="row"><div class="col-md-3">\n\
+                            <div class="form-group">\n\
+                                    <label for="unitNumber' + (unitID + 1) + '">Unit #</label>\n\
+                                    <input class="form-control" id="unitNumber' + (unitID + 1) + '" placeholder="" type="text">\n\
+                            </div>\n\
+                        </div>\n\
+                <div class="col-md-3">\n\
+                            <div class="form-group">\n\
+                                    <label for="vinNumber' + (unitID + 1) + '">VIN #</label>\n\
+                                    <input class="form-control" id="vinNumber' + (unitID + 1) + '" placeholder="" type="text">\n\
+                            </div>\n\</div>\n\
+                <div class="col-md-3">\n\
+                            <div class="form-group">\n\
+                                    <label for="truckProNumber' + (unitID + 1) + '">Truck/Pro #</label>\n\
+                                    <input class="form-control" id="truckProNumber' + (unitID + 1) + '" placeholder="" type="text">\n\
+                            </div>\n\</div>\n\
+                <div class="col-md-3">\n\
+                            <div class="form-group">\n\
+                                    <label for="poNumber' + (unitID + 1) + '">P.O. #</label>\n\
+                                    <input class="form-control" id="poNumber' + (unitID + 1) + '" placeholder="" type="text">\n\
+                            </div>\n\</div></div>';
+       
+       $('#addTrailer').append(unitData);
+   }
+   
     function addVendorInfo(vendorName,vendorAddress,vendorCity,vendorState,vendorZip,vendorPrice,vendorNotes,customerID){
         <?php $quickbooks_host = "http://nec.dubtel.com";?>
                             $.ajax({
@@ -2257,72 +1972,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
     }
 
-    function saveNote(){
-
-        if ( $('#formAddNote').parsley().validate() ) {
-
-            $("#saveNote").html("<i class='fa fa-spinner fa-spin'></i> Saving Note");
-            $("#saveNote").prop("disabled", true);
-
-            var today = new Date();
-            var dd = today.getDate();
-            var mm = today.getMonth()+1; //January is 0!
-            var yyyy = today.getFullYear();
-            var hours = today.getHours();
-            var min = today.getMinutes();
-            var sec = today.getSeconds();
-
-            if(dd<10) {
-                dd='0'+dd;
-            }
-
-            if(mm<10) {
-                mm='0'+mm;
-            }
-
-            if(hours<10) {
-                hours='0'+hours;
-            }
-
-            if(min<10) {
-                min='0'+min;
-            }
-
-            today = mm+'/'+dd+'/'+yyyy;
-            today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
-
-            var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs_notes'
-            var data = {customerNeedsID: $("#customerNeedsID").val(), note: $("#commitmentNote").val(), permission: $("#viewAccess").val(), createdAt: today, updatedAt:today};
-
-            $.ajax({
-                url: url,
-                type: 'POST',
-                data: JSON.stringify(data),
-                contentType: "application/json",
-                async: false,
-                success: function(data){
-
-                   loadCustomerNeedsNotesAJAX($("#customerNeedsID").val());
-                   $("#saveNote").html("Save");
-                   $("#saveNote").prop("disabled", false);
-                   $("#addNote").modal('hide');
-                },
-                error: function() {
-                   alert('Failed to create note');
-                   $("#saveNote").html("Commit");
-                   $("#saveNote").prop("disabled", false);
-                   $("#addNote").modal('hide');
-                }
-             });
-
-        }
-        else {
-
-            return false;
-
-        }
-    }
-    
     //Yaw,
     // While I was investigating, I realized that the javascript was not waiting for a return from the addCustomerInfo function.
     // So, instead I thought it would be best to grab all of the Customer and Vendor information and push it into the addCustomerInfo function.
@@ -2867,27 +2516,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
     $("#customer-needs-commit").css("display", "none");
 
-    $('#customer-needs-commit-table tbody').on( 'click', 'button', function () {
-        var commitTable = $("#customer-needs-commit-table").DataTable();
-
-        var data = commitTable.row( $(this).parents('tr') ).data();
-
-        var rootCustomerNeedsID = data["rootCustomerNeedsID"];
-
-        //console.log(JSON.stringify(data.customer_needs_commit[0]));
-
-        var commitID = data.customer_needs_commit[0].id;
-        var customerNeedsID = data.id;
-        //var entityID = data.customer_needs_commit[0].entityID;
-        var carrierRate = $("#carrierRate-" + customerNeedsID).val();
-
-        //console.log("rootCustomerNeedsID:", rootCustomerNeedsID);
-        //console.log("commitID:", commitID);
-        //console.log("carrierRate:", carrierRate);
-
-        approveCommit(rootCustomerNeedsID, commitID, carrierRate);
-    });
-
     $('#datatable-table tbody').unbind('click').on( 'click', 'button', function () {
 
         var table = $("#datatable-table").DataTable();
@@ -2904,17 +2532,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             $("#customerRate").val(rate.toFixed(2));
 
             loadNewCustomerNeedsCommit(id);
-        /*
-            loadSelectedCustomer(id)
-            loadCustomerNeedsCommitAJAX(id);
-            loadCustomerNeedsNotesAJAX(id);
-        */
+        
         }
     });
 
     function closeCommitTransport(){
 
         $('#relayTabs > li > a').unbind('click');
+        $('#unitDataBody').empty();
         $('#relayTabs').empty();
         $('#selectedRelayTabs').empty();
         $('#pickupAddress').empty();
@@ -2924,33 +2549,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         $("#customer-needs").css("display", "block");
         var table = $("#datatable-table").DataTable();
         table.ajax.reload();
-    }
-
-    $('#customerRate').keyup(function () {
-
-        $.ajax({
-            url: '<?php echo API_HOST_URL ?>' + '/customer_needs/' + $("#customerNeedsID").val(),
-            type: "PUT",
-            data: JSON.stringify({rate: $("#customerRate").val()}),
-            contentType: "application/json",
-            async: false,
-            success: function(){
-                getTotalRevenue();
-            },
-            error: function(){}
-        });
-
-    });
-
-    $('#carrierTotalRate').on( 'change', function () {
-        getTotalRevenue();
-    });
-
-    function getTotalRevenue(){
-        var customerRate = $("#customerRate").val();
-        var carrierTotalRate = $("#carrierTotalRate").val();
-        var totalRevenue = customerRate - carrierTotalRate;
-        $("#totalRevenue").val(totalRevenue.toFixed(2));
     }
 
     /* Formatting function for row details - modify as you need */
@@ -3020,5 +2618,384 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
     function editCommitTransport(){
         
         $("#editCommitModal").modal('show');
+    }
+    
+    function saveCommit(){
+        
+        var unitDataList = [];
+        
+        $('#addTrailer > div').each(function(index, value){
+            var unitID = index + 1;
+            var unitNumber = $('#unitNumber' + unitID).val().trim();
+            var vinNumber = $('#vinNumber' + unitID).val().trim();
+            var truckProNumber = $('#truckProNumber' + unitID).val().trim();
+            var poNumber = $('#poNumber' + unitID).val().trim();
+           
+            if(vinNumber != "" && unitNumber != "" && truckProNumber != "" && poNumber != ""){
+                var unitData = {unitNumber: unitNumber, vinNumber: vinNumber, truckProNumber: truckProNumber, poNumber: poNumber}; 
+                
+                unitDataList.push(unitData);
+            }
+        });
+        
+        
+          $("#saveCommit").html("<i class='fa fa-spinner fa-spin'></i> Updating Commit");
+          $("#saveCommit").prop("disabled", true);
+
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth()+1; //January is 0!
+        var yyyy = today.getFullYear();
+        var hours = today.getHours();
+        var min = today.getMinutes();
+        var sec = today.getSeconds();
+
+        if(dd<10) {
+            dd='0'+dd;
+        }
+
+        if(mm<10) {
+            mm='0'+mm;
+        }
+
+        if(hours<10) {
+            hours='0'+hours;
+        }
+
+        if(min<10) {
+            min='0'+min;
+        }
+
+        today = mm+'/'+dd+'/'+yyyy;
+        today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+
+        var id = $('#customerNeedsID').val();
+        
+        var originationAddress1 = $('#originationAddress1').val().trim();
+        var originationAddress2 = $('#originationAddress2').val().trim();
+        var originationCity = $('#originationCity').val().trim();
+        var originationState = $('#originationState').val().trim();
+        var originationZip = $('#originationZip').val().trim();
+        var originationNotes = $('#originationNotes').val().trim();
+        
+        var destinationAddress1 = $('#destinationAddress1').val().trim();
+        var destinationAddress2 = $('#destinationAddress2').val().trim();
+        var destinationCity = $('#destinationCity').val().trim();
+        var destinationState = $('#destinationState').val().trim();
+        var destinationZip = $('#destinationZip').val().trim();
+        var destinationNotes = $('#destinationNotes').val().trim();
+        
+        
+        // Build the needsDataPoints
+        var needsarray = [];
+        var obj = $("#dp-check-list-box div div select");
+        
+        for (var i = 0; i < obj.length; i++) {
+            var item = {};
+            item[obj[i].id] = obj[i].value;
+            needsarray.push(item);
+        }
+
+        var decal = {};
+        decal['decals'] = $("#decals").val().trim();
+        needsarray.push(decal);
+        
+        var needsdatapoints = needsarray;
+        
+        var qty = $("#qty").val().trim();
+        
+        console.log(unitDataList);
+        
+        var data = {originationAddress1: originationAddress1, originationAddress2: originationAddress2, originationCity: originationCity, originationState: originationState, originationZip: originationZip, originationNotes: originationNotes,
+                    destinationAddress1: destinationAddress1, destinationAddress2: destinationAddress2, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, destinationNotes: destinationNotes,
+                    qty: qty, updatedAt: today, needsDataPoints: needsdatapoints, unitData: unitDataList};
+        
+        var url = '<?php echo API_HOST_URL . "/customer_needs" ?>/' + id;
+        
+        $.ajax({
+            url: url,
+            type: "PUT",
+            data: JSON.stringify(data),
+            contentType: "application/json",
+            async: false,
+            success: function(data){
+                if(data > 0){
+                    
+                    var relayNumber = 0;
+                    for(relayNumber = 1; relayNumber < 5; relayNumber++){                        
+                        
+                        var relayData = {};
+                        var url = "";
+                        var type = ""; 
+                        
+                        var relayID = $('#relay_id' + relayNumber).val().trim();
+                        var commitID = $('#commit_id' + relayNumber).val().trim();
+                        var destinationAddress1 = $('#address_relay' + relayNumber).val().trim();
+                        var destinationCity = $('#city_relay' + relayNumber).val().trim();
+                        var destinationState = $('#state_relay' + relayNumber).val().trim();
+                        var destinationZip = $('#zip_relay' + relayNumber).val().trim();
+                        var destinationNotes = $('#notes_relay' + relayNumber).val().trim();
+                        
+                        if(destinationCity != "" && destinationState != ""){
+                            
+                            if(relayID == ""){
+                                url = '<?php echo API_HOST_URL . "/customer_needs" ?>/';
+                                type = "POST";
+                                relayData = {rootCustomerNeedsID: id, originationAddress1: originationAddress1, originationAddress2: originationAddress2, originationCity: originationCity, originationState: originationState, originationZip: originationZip, originationNotes: originationNotes,
+                                    destinationAddress1: destinationAddress1, destinationAddress2: destinationAddress2, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, destinationNotes: destinationNotes,
+                                    qty: qty, createdAt: today, updatedAt: today, needsDataPoints: needsdatapoints};
+                            }
+                            else{ 
+                                url = '<?php echo API_HOST_URL . "/customer_needs" ?>/' + relayID;
+                                type = "PUT";
+                                relayData = {rootCustomerNeedsID: id, originationAddress1: originationAddress1, originationCity: originationCity, originationState: originationState, originationZip: originationZip, originationNotes: originationNotes,
+                                    destinationAddress1: destinationAddress1, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, destinationNotes: destinationNotes,
+                                    qty: qty, updatedAt: today, needsDataPoints: needsdatapoints};
+                            }
+                            
+                            $.ajax({
+                                url: url,
+                                type: type,
+                                data: JSON.stringify(relayData),
+                                contentType: "application/json",
+                                async: false,
+                                success: function(data){
+                                    if(data > 0){
+                                        
+                                        url = '<?php echo API_HOST_URL . "/customer_needs_commit" ?>/';
+                                        
+                                        if(type == "POST") relayID = data;
+                                        else url += commitID;
+                                        
+                                        var commitData = {customerNeedsID: relayID, originationAddress1: originationAddress1, originationCity: originationCity, originationState: originationState, originationZip: originationZip,
+                                                        destinationAddress1: destinationAddress1, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, status: "Available",
+                                                        originationLng: "", originationLat: "", destinationLng: "", destinationLat: "", distance: 0, qty: qty, transportation_mode: "", transportation_type: "", updatedAt: today};
+                                        
+                                        $.ajax({
+                                            url: url,
+                                            type: type,
+                                            data: JSON.stringify(commitData),
+                                            success: function(data){
+                                                if(data > 0){                                                    
+                                                    originationAddress1 = destinationAddress1;
+                                                    originationCity = destinationCity;
+                                                    originationState = destinationState;
+                                                    originationZip = destinationZip;
+                                                    originationNotes = destinationNotes;
+                                                }
+                                            },
+                                            error: function(){
+                                                alert("Unable to save to customer_needs_commit");
+                                            }
+                                        });
+                                        
+                                    }
+                                },
+                                error: function(){
+                                    alert("unable to save relay.");
+                                }
+                            });
+                        }
+                        else if(relayID != ""){
+                        
+                            console.log(relayID);
+
+                            url = '<?php echo API_HOST_URL . "/customer_needs" ?>/' + relayID;
+                            var statusChange = {status: "Close"};
+                            
+                            $.ajax({
+                            url: url,
+                            type: "PUT",
+                            data: JSON.stringify(statusChange),
+                            success: function(data){
+                                if(data > 0){                           
+                                    alert("customer need closed.");
+                                }
+                                else{
+                                    
+                                }
+                            },
+                            error: function(){
+                                alert("Unable to save to customer_needs_commit");
+                            }
+                        });
+                            
+                        }
+                    }    
+                    
+                    $("#saveCommit").html("Save");
+                    $("#saveCommit").prop("disabled", false);
+                    $("#editCommitModal").modal('hide');
+                    loadNewCustomerNeedsCommit(id);
+                    alert("Commit Updated");
+                }
+            },
+            error: function(data){
+                alert("There Was An Error Updating Commit");
+            }
+        });
+    }
+    
+    
+    function saveCommitAsOrder(){
+        
+        $(document.body).css("cursor", "wait");
+        
+        var unitDataList = [];
+        
+        $('#addTrailer > div').each(function(index, value){
+            var unitID = index + 1;
+            var unitNumber = $('#unitNumber' + unitID).val().trim();
+            var vinNumber = $('#vinNumber' + unitID).val().trim();
+            var truckProNumber = $('#truckProNumber' + unitID).val().trim();
+            var poNumber = $('#poNumber' + unitID).val().trim();
+           
+            if(vinNumber != "" && unitNumber != "" && truckProNumber != "" && poNumber != ""){
+                var unitData = {unitNumber: unitNumber, vinNumber: vinNumber, truckProNumber: truckProNumber, poNumber: poNumber}; 
+                
+                unitDataList.push(unitData);
+            }
+        });
+        
+        var today = new Date();
+        var orderID = today.getTime().toString();
+        var dd = today.getDate();
+        var mm = today.getMonth()+1; //January is 0!
+        var yyyy = today.getFullYear();
+        var hours = today.getHours();
+        var min = today.getMinutes();
+        var sec = today.getSeconds();
+
+        if(dd<10) {
+            dd='0'+dd;
+        }
+
+        if(mm<10) {
+            mm='0'+mm;
+        }
+
+        if(hours<10) {
+            hours='0'+hours;
+        }
+
+        if(min<10) {
+            min='0'+min;
+        }
+
+        today = mm+'/'+dd+'/'+yyyy;
+        today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+
+        var id = $('#customerNeedsID').val();
+        
+        var originationAddress1 = $('#originationAddress1').val().trim();
+        var originationAddress2 = $('#originationAddress2').val().trim();
+        var originationCity = $('#originationCity').val().trim();
+        var originationState = $('#originationState').val().trim();
+        var originationZip = $('#originationZip').val().trim();
+        var originationNotes = $('#originationNotes').val().trim();
+        
+        var destinationAddress1 = $('#destinationAddress1').val().trim();
+        var destinationAddress2 = $('#destinationAddress2').val().trim();
+        var destinationCity = $('#destinationCity').val().trim();
+        var destinationState = $('#destinationState').val().trim();
+        var destinationZip = $('#destinationZip').val().trim();
+        var destinationNotes = $('#destinationNotes').val().trim();
+        
+        
+        // Build the needsDataPoints
+        var needsarray = [];
+        var obj = $("#dp-check-list-box div div select");
+        
+        for (var i = 0; i < obj.length; i++) {
+            var item = {};
+            item[obj[i].id] = obj[i].value;
+            needsarray.push(item);
+        }
+
+        var decal = {};
+        decal['decals'] = $("#decals").val().trim();
+        needsarray.push(decal);
+        
+        var needsdatapoints = needsarray;
+        
+        var qty = $("#qty").val().trim();
+        var customerID = $('#customerID').val();
+        
+        var orderData = {customerID: customerID, carrierIDs: [], documentID: 0, orderID: orderID, deliveryInformation: [], pickupInformation: [], originationAddress: originationAddress1, originationCity: originationCity, originationState: originationState, originationZip: originationZip,
+                    destinationAddress: destinationAddress1,  destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, originationLng: "", originationLat: "", destinationLng: "", destinationLat: "", distance: 0, needsDataPoints: needsdatapoints, podList: unitDataList, 
+                    status: "Open", comments: "", createdAt: today, updatedAt: today, qty: qty};
+        
+        var url = '<?php echo API_HOST_URL . "/orders" ?>/';
+        
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: JSON.stringify(orderData),
+            contentType: "application/json",
+            async: false,
+            success: function(data){
+                if(data > 0){
+                    
+                    var relayNumber = 0;
+                    for(relayNumber = 1; relayNumber < 5; relayNumber++){                        
+                        
+                        var relayData = {};
+                        var url = "";
+                        var type = ""; 
+                        
+                        var relayID = $('#relay_id' + relayNumber).val().trim();
+                        var commitID = $('#commit_id' + relayNumber).val().trim();
+                        var destinationAddress1 = $('#address_relay' + relayNumber).val().trim();
+                        var destinationCity = $('#city_relay' + relayNumber).val().trim();
+                        var destinationState = $('#state_relay' + relayNumber).val().trim();
+                        var destinationZip = $('#zip_relay' + relayNumber).val().trim();
+                        var destinationNotes = $('#notes_relay' + relayNumber).val().trim();
+                        
+                        if(destinationCity != "" && destinationState != ""){
+                            
+                                url = '<?php echo API_HOST_URL . "/order_details" ?>/';
+                                type = "POST";
+                                relayData = {carrierID: 0, orderID: data, originationCity: originationCity, originationState: originationState, 
+                                    destinationCity: destinationCity, destinationState: destinationState, carrierRate: 0.00, transportationMode: "",
+                                    qty: qty, createdAt: today, updatedAt: today, needsDataPoints: needsdatapoints, status: "Open"};
+                            
+                            $.ajax({
+                                url: url,
+                                type: type,
+                                data: JSON.stringify(relayData),
+                                contentType: "application/json",
+                                async: false,
+                                success: function(data){
+                                    if(data > 0){
+                                        
+                                        originationCity = destinationCity;
+                                        originationState = destinationState;
+                                    }
+                                },
+                                error: function(){
+                                    alert("unable to save relay.");
+                                }
+                            });
+                        }
+                    }    
+                    
+                    
+                    closeCustomerCommitLegs(id);
+                    closeCommitTransport();
+                    $(document.body).css("cursor", "default");
+                    alert("Order Saved.");
+                }
+                else{
+                    $(document.body).css("cursor", "default");
+                    
+                }
+            },
+            error: function(data){
+            
+                                                    originationCity = destinationCity;
+                                                    originationState = destinationState;
+                alert("There Was An Error Saving Order");
+            }
+        });
     }
  </script>
