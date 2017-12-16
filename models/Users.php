@@ -115,10 +115,69 @@ class Users
                 return false;
               }
         } catch (Exception $e) { // The authorization query failed verification
-              header('HTTP/1.1 404 Not Found');
-              header('Content-Type: text/plain; charset=utf8');
-              echo $e->getMessage();
-              exit();
+              //header('HTTP/1.1 404 Not Found');
+              //header('Content-Type: text/plain; charset=utf8');
+              //echo $e->getMessage();
+              //exit();
+              $_SESSION['invalidPassword'] = 'Username Not Found!';
+              return false;
+        }
+    }
+
+    public function mobileloginapi2(&$db,$username,$password) {
+
+        try {
+
+              $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
+              $result = $dbhandle->query("select users.id, users.username, users.password, users.status, users.userTypeID,
+                                          members.id as memberID, members.entityID,
+                                          entities.entityTypeID,
+                                          user_types.name
+                                         from users
+                                         left join members on users.id = members.userID
+                                         left join entities on entities.id = members.entityID
+                                         left join user_types on user_types.id = users.userTypeID
+                                         where users.id = '" . $username . "'");
+
+              if (count($result) > 0) {
+                  $row = $result->FetchAll();
+                  if ($row[0]['status'] == "Active") {
+                      if (password_verify($password, $row[0]['password'])) {
+                        $_SESSION['userid'] = $row[0]['id'];
+                        $_SESSION['user'] = $row[0]['id']; // Setup for api authentication
+                        $_SESSION['usertypeid'] = $row[0]['userTypeID'];
+                        $_SESSION['memberid'] = $row[0]['memberID'];
+                        $_SESSION['entityid'] = $row[0]['entityID'];
+                        $_SESSION['entitytype'] = $row[0]['entityTypeID'];
+                        $_SESSION['usertypename'] = $row[0]['name'];
+                        unset($_SESSION['invalidPassword']);
+                        return true;
+                      } else {
+                        unset($_SESSION['userid']);
+                        unset($_SESSION['user']);
+                        unset($_SESSION['usertypeid']);
+                        unset($_SESSION['memberid']);
+                        unset($_SESSION['entityid']);
+                        unset($_SESSION['entitytype']);
+                        unset($_SESSION['usertypename']);
+                        $_SESSION['invalidPassword'] = 'Password is invalid!';
+                        return false;
+                      }
+                  } else {
+                    $_SESSION['invalidPassword'] = 'Account Has Not Been Activated!';
+                    return false;
+                  }
+              } else {
+                $_SESSION['invalidPassword'] = 'Username Not Found!';
+                return false;
+              }
+        } catch (Exception $e) { // The authorization query failed verification
+              //header('HTTP/1.1 404 Not Found');
+              //header('Content-Type: text/plain; charset=utf8');
+              //echo $e->getMessage();
+              //exit();
+              $_SESSION['invalidPassword'] = 'Username Not Found!';
+              return false;
         }
     }
 
@@ -555,8 +614,13 @@ class Users
             );
             $usercontext  = stream_context_create($useroptions);
             $userresult = file_get_contents($userurl, false, $usercontext);
-            return true;
-        } catch (Exception $e) { // The authorization query failed verification
+
+            if ($userresult > 0) {
+                    return "success";
+            } else {
+                    return "Failed";
+            }
+        } catch (Exception $e) { // The query failed!
             header('HTTP/1.1 404 Not Found');
             header('Content-Type: text/plain; charset=utf8');
             echo $e->getMessage();

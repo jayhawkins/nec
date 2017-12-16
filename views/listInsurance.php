@@ -356,7 +356,7 @@
 					<th class="hidden-sm-down">Policy Number</th>
 					<th class="hidden-sm-down">Policy Expiration Date</th>
 					<th class="hidden-sm-down">Policy File</th>
-					<th class="no-sort pull-right">&nbsp;</th>
+					<th>&nbsp;</th>
 					</tr>
 				</thead>
 				<tbody>

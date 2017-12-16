@@ -92,6 +92,8 @@ if ($_SESSION['entityid'] > 0) {
               "filter[]"=>"expirationDate,ge," . date("Y-m-d 00:00:00"),
               "filter[]"=>"entityID,eq," . $_SESSION['entityid']
         );
+        $entityname = $eresult['entities'][0]['name'] . " - (Customer)";
+        $cnurl = API_HOST_URL . "/customer_needs?".http_build_query($cnargs);
     } elseif ( $eresult['entities'][0]['entityTypeID'] == 2 ) { // Carrier
         $cnargs = array(
               "transform"=>"1",
@@ -100,13 +102,6 @@ if ($_SESSION['entityid'] > 0) {
               "filter[]"=>"expirationDate,ge," . date("Y-m-d 00:00:00"),
               "filter[]"=>"entityID,eq," . $_SESSION['entityid']
         );
-    }
-
-
-    if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
-        $entityname = $eresult['entities'][0]['name'] . " - (Customer)";
-        $cnurl = API_HOST_URL . "/customer_needs?".http_build_query($cnargs);
-    } elseif ( $eresult['entities'][0]['entityTypeID'] == 2 ) { // Carrier
         $entityname = $eresult['entities'][0]['name'] . " - (Carrier)";
         $cnurl = API_HOST_URL . "/carrier_needs?".http_build_query($cnargs);
     }
@@ -354,25 +349,32 @@ if ($_SESSION['entityid'] > 0) {
                async: false,
                success: function(json){
 
-                    //orders = json.orders;
-                    orders = json.order_details;
-                    //console.log(orders);
-
-                    if(entityType == 2) {
-
-                        orders.forEach(function(order){
-                            var carrierIDs = order.orders[0].carrierIDs;
-
-                            for(var i = 0; i < carrierIDs.length; i++){
-                                if(carrierIDs[i].carrierID == entityid){
-                                    orderCount++;
-                                    break;
-                                }
-                            }
-                        });
+                    if (entityType > 0) {
+                      orders = json.orders;
+                    } else {
+                      orders = json.order_details;
                     }
-                    else {
-                        orderCount = orders.length;
+                    console.log(orders);
+
+                    if (orders.length > 0) {
+                        if(entityType == 2) {
+
+                            orders.forEach(function(order){
+                                var carrierIDs = order.orders[0].carrierIDs;
+
+                                for(var i = 0; i < carrierIDs.length; i++){
+                                    if(carrierIDs[i].carrierID == entityid){
+                                        orderCount++;
+                                        break;
+                                    }
+                                }
+                            });
+                        }
+                        else {
+                            orderCount = orders.length;
+                        }
+                    } else {
+                      orderCount = 0;
                     }
 
                     $('#orderCount').html(orderCount);
@@ -458,6 +460,7 @@ if ($_SESSION['entityid'] > 0) {
 
             var entityid = <?php echo $_SESSION['entityid']; ?>;
             var orderCount = 0;
+            var entitytype = <?php echo $_SESSION['entitytype']; ?>;
 
             var strarray = "";
             var statearray = "";
@@ -492,7 +495,7 @@ if ($_SESSION['entityid'] > 0) {
                                     filter += '&filter[]=rootCustomerNeedsID,eq,0';
                                     filter += '&filter[]=status,eq,Available';
                                     filter += '&filter[]=expirationDate,ge,'+dateTime;
-                                    if (entityid > 0) {
+                                    if (entityid > 0 && entitytype == 1) {
                                         filter += '&filter[]=entityID,eq,'+entityid;
                                     }
                                     if (statearray) {
@@ -519,6 +522,9 @@ if ($_SESSION['entityid'] > 0) {
                                     url += "/carrier_needs?";
                                     filter += '&filter[]=status,eq,Available';
                                     filter += '&filter[]=expirationDate,ge,'+dateTime;
+                                    if (entityid > 0 && entitytype == 2) {
+                                        filter += '&filter[]=entityID,eq,'+entityid;
+                                    }
                                     if (statearray) {
                                         if ($('input[name=locationStatus]:checked').val() == "Origination") {
                                             filter += '&filter[]=originationState,in,'+statearray;
@@ -544,6 +550,9 @@ if ($_SESSION['entityid'] > 0) {
                                     //url += "include=customer_needs";
                                     filter += '&filter[]=status,eq,Available';
                                     filter += '&filter[]=deliveryDate,ge,'+dateTime;
+                                    if (entityid > 0 && entitytype == 2) {
+                                        filter += '&filter[]=entityID,eq,'+entityid;
+                                    }
                                     if (statearray) {
                                         if ($('input[name=locationStatus]:checked').val() == "Origination") {
                                             filter += '&filter[]=originationState,in,'+statearray;
@@ -569,6 +578,9 @@ if ($_SESSION['entityid'] > 0) {
                                     url += "include=orders";
                                     filter += '&filter[]=status,eq,Open';
                                     filter += '&filter[]=deliveryDate,ge,'+dateTime;
+                                    if (entityid > 0 && entitytype == 2) {
+                                        filter += '&filter[]=carrierID,eq,'+entityid;
+                                    }
                                     if (statearray) {
                                         if ($('input[name=locationStatus]:checked').val() == "Origination") {
                                             filter += '&filter[]=orders.originationState,in,'+statearray;
@@ -586,28 +598,13 @@ if ($_SESSION['entityid'] > 0) {
                                         satisfy = '&satisfy=all';
                                     }
 
-                                    //url += filter+satisfy+'&transform=1';
                                     originationPlotColor = "orange";
-/*
-                                    if ($("#stateFilter").val() > '') {
-                                        var statearray = $("#stateFilter").val().toString();
-                                    } else {
-                                        var statearray = '';
-                                    }
-
-                                    if ($("#cityFilter").val() > '') {
-                                        var cityarray = $("#cityFilter").val().toString();
-                                    } else {
-                                        var cityarray = '';
-                                    }
-*/
-                                    console.log('States: ' + statearray);
-                                    console.log('Cities: ' + cityarray);
                                     url = '<?php echo HTTP_HOST; ?>'+'/indexgetorders';
                                     params = {"locationStatus": $('input[name=locationStatus]:checked').val(),
                                               "stateFilter": statearray,
                                               "cityFilter": cityarray,
-                                              "entityid": entityid
+                                              "entityid": entityid,
+                                              "entitytype": entitytype
                                              };
                                     params = JSON.stringify(params);
                                     console.log(params);
@@ -693,7 +690,7 @@ if ($_SESSION['entityid'] > 0) {
                                                    };
 
                                                    // Set plot element to array
-                                                   plots[value.id+'-'+toTitleCase(value.originationCity)] = plot;
+                                                   plots[value.id+'-'+value.originationCity] = plot;
 
                                                    // Now plot the destination
                                                    var plot = {};
@@ -726,13 +723,13 @@ if ($_SESSION['entityid'] > 0) {
                                                    };
 
                                                    // Set plot element to array
-                                                   plots[value.id+'-'+toTitleCase(value.destinationCity)] = plot;
+                                                   plots[value.id+'-'+value.destinationCity] = plot;
 
                                                    linktitle = toTitleCase(value.originationCity)+'-'+toTitleCase(value.destinationCity);
                                                    linkobjecttitle = toTitleCase(value.originationCity)+toTitleCase(value.destinationCity);
                                                    link.factor = 0.2;
                                                    //link.between = [{"latitude": value.originationLat, "longitude": value.originationLng}, {"latitude": value.destinationLat, "longitude": value.destinationLng}];
-                                                   link.between = [value.id+'-'+toTitleCase(value.originationCity), value.id+'-'+toTitleCase(value.destinationCity)];
+                                                   link.between = [value.id+'-'+value.originationCity, value.id+'-'+value.destinationCity];
                                                    link.attrs = {
                                                                 //"stroke": "#a4e100",
                                                                 "stroke": originationPlotColor,
@@ -816,7 +813,7 @@ if ($_SESSION['entityid'] > 0) {
                                                    };
 
                                                    // Set plot element to array
-                                                   plots[value.id+'-'+toTitleCase(value.originationCity)] = plot;
+                                                   plots[value.id+'-'+value.originationCity] = plot;
 
                                                    // Now plot the destination
                                                    var plot = {};
@@ -849,13 +846,13 @@ if ($_SESSION['entityid'] > 0) {
                                                    };
 
                                                    // Set plot element to array
-                                                   plots[value.id+'-'+toTitleCase(value.destinationCity)] = plot;
+                                                   plots[value.id+'-'+value.destinationCity] = plot;
 
                                                    linktitle = toTitleCase(value.originationCity)+'-'+toTitleCase(value.destinationCity);
                                                    linkobjecttitle = toTitleCase(value.originationCity)+toTitleCase(value.destinationCity);
                                                    link.factor = 0.2;
                                                    //link.between = [{"latitude": value.originationLat, "longitude": value.originationLng}, {"latitude": value.destinationLat, "longitude": value.destinationLng}];
-                                                   link.between = [value.id+'-'+toTitleCase(value.originationCity), value.id+'-'+toTitleCase(value.destinationCity)];
+                                                   link.between = [value.id+'-'+value.originationCity, value.id+'-'+value.destinationCity];
                                                    link.attrs = {
                                                                 //"stroke": "#a4e100",
                                                                 "stroke": originationPlotColor,
@@ -938,7 +935,7 @@ if ($_SESSION['entityid'] > 0) {
                                                    };
 
                                                    // Set plot element to array
-                                                   plots[value.id+'-'+toTitleCase(value.originationCity)] = plot;
+                                                   plots[value.id+'-'+value.originationCity] = plot;
 
                                                    // Now plot the destination
                                                    var plot = {};
@@ -971,13 +968,13 @@ if ($_SESSION['entityid'] > 0) {
                                                    };
 
                                                    // Set plot element to array
-                                                   plots[value.id+'-'+toTitleCase(value.destinationCity)] = plot;
+                                                   plots[value.id+'-'+value.destinationCity] = plot;
 
                                                    linktitle = toTitleCase(value.originationCity)+'-'+toTitleCase(value.destinationCity);
                                                    linkobjecttitle = toTitleCase(value.originationCity)+toTitleCase(value.destinationCity);
                                                    link.factor = 0.2;
                                                    //link.between = [{"latitude": value.originationLat, "longitude": value.originationLng}, {"latitude": value.destinationLat, "longitude": value.destinationLng}];
-                                                   link.between = [value.id+'-'+toTitleCase(value.originationCity), value.id+'-'+toTitleCase(value.destinationCity)];
+                                                   link.between = [value.id+'-'+value.originationCity, value.id+'-'+value.destinationCity];
                                                    link.attrs = {
                                                                 //"stroke": "#a4e100",
                                                                 "stroke": originationPlotColor,
@@ -994,7 +991,7 @@ if ($_SESSION['entityid'] > 0) {
                                            });
 
                                     } else if(string == 'Orders') {
-                                            console.log(response);
+                                           //console.log(response);
                                            $.each(response.order_details, function (index, value) {
                                                // Setup Pickup Date
                                                //alert(formatDate(new Date(value.pickupDate)));
@@ -1048,7 +1045,7 @@ if ($_SESSION['entityid'] > 0) {
                                                    };
 
                                                    // Set plot element to array
-                                                   plots[value.id+'-'+toTitleCase(value.originationCity)] = plot;
+                                                   plots[value.id+'-'+value.originationCity] = plot;
 
                                                    // Now plot the destination
                                                    var plot = {};
@@ -1081,12 +1078,12 @@ if ($_SESSION['entityid'] > 0) {
                                                    };
 
                                                    // Set plot element to array
-                                                   plots[value.id+'-'+toTitleCase(value.destinationCity)] = plot;
+                                                   plots[value.id+'-'+value.destinationCity] = plot;
 
                                                    linktitle = toTitleCase(value.originationCity)+'-'+toTitleCase(value.destinationCity);
                                                    linkobjecttitle = toTitleCase(value.originationCity)+toTitleCase(value.destinationCity);
                                                    link.factor = 0.2;
-                                                   link.between = [value.id+'-'+toTitleCase(value.originationCity), value.id+'-'+toTitleCase(value.destinationCity)];
+                                                   link.between = [value.id+'-'+value.originationCity, value.id+'-'+value.destinationCity];
                                                    link.attrs = {
                                                                 //"stroke": "#ffffff",
                                                                 "stroke": originationPlotColor,
@@ -1119,6 +1116,10 @@ if ($_SESSION['entityid'] > 0) {
             }
             // Clear and reload the map plots and links based on latest filters
             $(".mapcontainer").trigger('update', [{newPlots: plots, newLinks: links, deletePlotKeys: "all", deleteLinkKeys: "all"}]);
+
+        }
+
+        function initMap() {
 
         }
 
@@ -2016,75 +2017,12 @@ if ($_SESSION['entityid'] > 0) {
 
             <div class="col-lg-4">
                 <section class="widget bg-transparent">
-                    <header>
-                        <h5>
-                            Map
-                            <span class="fw-semi-bold">Statistics</span>
-                        </h5>
-                        <div class="widget-controls widget-controls-hover">
-                            <a href="#"><i class="glyphicon glyphicon-cog"></i></a>
-                            <a href="#"><i class="fa fa-refresh"></i></a>
-                            <a href="#" data-widgster="close"><i class="glyphicon glyphicon-remove"></i></a>
-                        </div>
-                    </header>
-                    <div class="widget-body">
-                        <p>Status: <strong>Live</strong></p>
-                        <p>
-                            <span class="circle bg-warning"><i class="fa fa-map-marker"></i></span>
-                            146 Active Locations
-                        </p>
-                        <div class="row progress-stats">
-                            <div class="col-md-9">
-                                <h6 class="name m-t-1">Needs</h6>
-                                <p class="description deemphasize">open needs</p>
-                                <div class="bg-white progress-bar">
-                                    <progress class="progress progress-primary progress-sm js-progress-animate" value="100" max="100" style="width: 0%" data-width="60%"></progress>
-                                </div>
-                            </div>
-                            <div class="col-md-3 text-xs-center">
-                                <!--span class="status rounded rounded-lg bg-body-light"-->
-                                <span class="label label-pill label-primary">
-                                    <small><span id="percent-1">63</span></small>
-                                </span>
-                            </div>
-                        </div>
-                        <div class="row progress-stats">
-                            <div class="col-md-9">
-                                <h6 class="name m-t-1">Orders</h6>
-                                <p class="description deemphasize">current open orders</p>
-                                <div class="bg-white progress-bar">
-                                    <progress class="progress progress-sm progress-success js-progress-animate" value="100" max="100" style="width: 0%" data-width="12%"></progress>
-                                </div>
-                            </div>
-                            <div class="col-md-3 text-xs-center">
-                                <!--span class="status rounded rounded-lg bg-body-light"-->
-                                <span class="label label-pill label-success">
-                                    <small><span  id="percent-2">12</span></small>
-                                </span>
-                            </div>
-                        </div>
-                        <div class="row progress-stats">
-                            <div class="col-md-9">
-                                <h6 class="name m-t-1">Availablity</h6>
-                                <p class="description deemphasize">available trailers</p>
-                                <div class="bg-white progress-bar">
-                                    <progress class="progress progress-sm progress-warning js-progress-animate" value="100" max="100" style="width: 0%" data-width="50%"></progress>
-                                </div>
-                            </div>
-                            <div class="col-md-3 text-xs-center">
-                                <!--span class="status rounded rounded-lg bg-body-light"-->
-                                <span class="label label-pill label-warning">
-                                    <small><span id="percent-3">37</span></small>
-                                </span>
-                            </div>
-                        </div>
-                        <div>
-                            <hr>
-                        </div>
+
+
 
                         <div>
                             <div>
-                                <button class="btn btn-primary btn-sm pull-right" role="button"><i class="glyphicon glyphicon-remove-sign text"></i> <span class="text">Clear</span></button>
+                                <button class="btn btn-primary btn-sm pull-right" id="btnClear" role="button"><i class="glyphicon glyphicon-remove-sign text"></i> <span class="text">Clear</span></button>
                                 <h5 class="fw-semi-bold mt">Filters</h5>
                             </div>
                             <div class="input-group mt" style="width: 100%">
@@ -2120,7 +2058,7 @@ if ($_SESSION['entitytype'] == 0) {
 
                                 </select>
 
-                                <br /><br />
+                                <br />
 
                                 <label for="stateFilter">Location Status:</label>
                                 <br/>
@@ -2136,7 +2074,7 @@ if ($_SESSION['entitytype'] == 0) {
                                     Either/Or </label>
                                 </div>
 
-                                <br /><br />
+                                <br />
 
                                 <label for="stateFilter">State(s):</label>
                                 <br/>
@@ -2152,7 +2090,7 @@ if ($_SESSION['entitytype'] == 0) {
 
                                 </select>
 
-                                <br /><br />
+                                <br />
 
                                 <label for="cityFilter">Cities: (Separate cities by comma to filter on multiple cities)</label>
                                 <br/>
@@ -2174,6 +2112,79 @@ if ($_SESSION['entitytype'] == 0) {
 
                             </div>
                         </div>
+
+
+                        <div>
+                            <hr>
+                        </div>
+
+
+                        <header>
+                            <h5>
+                                Map
+                                <span class="fw-semi-bold">Statistics</span>
+                            </h5>
+                            <div class="widget-controls widget-controls-hover">
+                                <a href="#"><i class="glyphicon glyphicon-cog"></i></a>
+                                <a href="#"><i class="fa fa-refresh"></i></a>
+                                <a href="#" data-widgster="close"><i class="glyphicon glyphicon-remove"></i></a>
+                            </div>
+                        </header>
+                        <div class="widget-body">
+                            <!--
+                            <p>Status: <strong>Live</strong></p>
+                            <p>
+                                <span class="circle bg-warning"><i class="fa fa-map-marker"></i></span>
+                                146 Active Locations
+                            </p>
+                            -->
+                            <div class="row progress-stats">
+                                <div class="col-md-9">
+                                    <h6 class="name m-t-1">Needs</h6>
+                                    <p class="description deemphasize">open needs</p>
+                                    <div class="bg-white progress-bar">
+                                        <progress class="progress progress-primary progress-sm js-progress-animate" value="100" max="100" style="width: 0%" data-width="60%"></progress>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 text-xs-center">
+                                    <!--span class="status rounded rounded-lg bg-body-light"-->
+                                    <span class="label label-pill label-primary">
+                                        <small><span id="percent-1">63</span></small>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="row progress-stats">
+                                <div class="col-md-9">
+                                    <h6 class="name m-t-1">Orders</h6>
+                                    <p class="description deemphasize">current open orders</p>
+                                    <div class="bg-white progress-bar">
+                                        <progress class="progress progress-sm progress-success js-progress-animate" value="100" max="100" style="width: 0%" data-width="12%"></progress>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 text-xs-center">
+                                    <!--span class="status rounded rounded-lg bg-body-light"-->
+                                    <span class="label label-pill label-success">
+                                        <small><span  id="percent-2">12</span></small>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="row progress-stats">
+                                <div class="col-md-9">
+                                    <h6 class="name m-t-1">Availablity</h6>
+                                    <p class="description deemphasize">available trailers</p>
+                                    <div class="bg-white progress-bar">
+                                        <progress class="progress progress-sm progress-warning js-progress-animate" value="100" max="100" style="width: 0%" data-width="50%"></progress>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 text-xs-center">
+                                    <!--span class="status rounded rounded-lg bg-body-light"-->
+                                    <span class="label label-pill label-warning">
+                                        <small><span id="percent-3">37</span></small>
+                                    </span>
+                                </div>
+                            </div>
+
+
 <!--
                         <h6 class="fw-semi-bold mt">Map Distributions</h6>
                         <p>Tracking: <strong>Active</strong></p>
@@ -2313,6 +2324,17 @@ if ($_SESSION['entitytype'] == 0) {
         getOrdersByFilters();
     });
 
+    $("#btnClear").on('click', function(e) {
+            $("#activityFilter").each(function() {
+                $(this).select2('val', '');
+            });
+            $("#stateFilter").each(function() {
+                $(this).select2('val', '');
+            });
+            $("#cityFilter").val('');
+            getOrdersByFilters();
+    });
+
 $(function() {
 
    // Show loading message
@@ -2343,6 +2365,8 @@ $(function() {
        var originationPlotColor = "green";
        var list = "listOrders";
    }
+
+   //console.log(cnresult);
 
    // We need a setTimeout (~200ms) in order to allow the UI to be refreshed for the message to be shown
    setTimeout(function(){
@@ -2484,7 +2508,7 @@ $(function() {
                            linkobjecttitle = toTitleCase(value.originationCity)+toTitleCase(value.destinationCity);
                            link.factor = 0.2;
                            //link.between = [{"latitude": value.originationLat, "longitude": value.originationLng}, {"latitude": value.destinationLat, "longitude": value.destinationLng}];
-                           link.between = [value.id+'-'+toTitleCase(value.originationCity), value.id+'-'+toTitleCase(value.destinationCity)];
+                           link.between = [value.id+'-'+value.originationCity, value.id+'-'+value.destinationCity];
                            link.attrs = {
                                         "stroke": "#a4e100",
                                         "stroke-width": 2,
@@ -2612,7 +2636,7 @@ $(function() {
                                };
 
                                // Set plot element to array
-                               plots[value.id+'-'+toTitleCase(value.originationCity)] = plot;
+                               plots[value.id+'-'+value.originationCity] = plot;
 
                                // Now plot the destination
                                var plot = {};
@@ -2644,12 +2668,12 @@ $(function() {
                                };
 
                                // Set plot element to array
-                               plots[value.id+'-'+toTitleCase(value.destinationCity)] = plot;
+                               plots[value.id+'-'+value.destinationCity] = plot;
 
                                linktitle = toTitleCase(value.originationCity)+'-'+toTitleCase(value.destinationCity);
                                linkobjecttitle = toTitleCase(value.originationCity)+toTitleCase(value.destinationCity);
                                link.factor = 0.2;
-                               link.between = [value.id+'-'+toTitleCase(value.originationCity), value.id+'-'+toTitleCase(value.destinationCity)];
+                               link.between = [value.id+'-'+value.originationCity, value.id+'-'+value.destinationCity];
                                link.attrs = {
                                             //"stroke": "#ffffff",
                                             "stroke": "orange",
