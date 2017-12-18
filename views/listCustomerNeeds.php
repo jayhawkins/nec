@@ -28,6 +28,21 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
     $loccon[$locations_contacts->locations_contacts->records[$lc][0]] = $locations_contacts->locations_contacts->records[$lc][1];
 }
 
+
+//Get entity configuration_settings
+$configuration_settings = json_decode($entity->entities[0]->configuration_settings,true);
+
+$availability_expire_days = 30; // This is the default for how many days until expired if entity has not set one
+for ($cs=0;$cs<count($configuration_settings);$cs++) {
+    while (list($key, $val) = each($configuration_settings[$cs])) {
+        //echo "$key => $val\n";
+        if ($key == "availability_expire_days") {
+            $availability_expire_days = $val;
+        }
+    }
+}
+
+
 $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_points?include=object_type_data_point_values&transform=1&columns=id,columnName,title,status,object_type_data_point_values.value&filter[]=entityID,in,(0," . $_SESSION['entityid'] . ")&filter[]=status,eq,Active&order[]=sort_order" ));
 
 
@@ -45,11 +60,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
 
  <script>
 
+     var availability_expire_days = <?php echo $availability_expire_days; ?>;
+
      var contacts = <?php echo json_encode($contacts); ?>;
      var entities = <?php echo json_encode($entities); ?>;
      var entity = <?php echo json_encode($entity); ?>;
      var entityID = <?php echo $_SESSION['entityid']; ?>;
-     //console.log(contacts);
+     //console.log(entity);
 
      var locations_contacts = <?php echo json_encode($locations_contacts); ?>;
      //console.log(locations_contacts);
@@ -272,7 +289,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                           var expirationDate = new Date();
 
                           if (expirationDateString == ""){
-                              expirationDate.setDate(availableDate.getDate() + 30);
+                              //expirationDate.setDate(availableDate.getDate() + 30); - No longer using a hardcoded 30 days. Comes from entities->configuration_settings
+                              expirationDate.setDate(availableDate.getDate() + availability_expire_days);
                               expirationDateString = formatFormDates(expirationDate);
                           } else {
                               expirationDate = new Date(parseDate(expirationDateString));

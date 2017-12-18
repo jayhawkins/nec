@@ -2526,7 +2526,7 @@ $(function() {
                    // Parse location elements
                    // This variable will hold all the plots of our map - ALREADY INIT ABOVE
                    //var plots = {};
-
+/*
                    var plotsColors = chroma.scale("Yellows");
                    //console.log(locations);
                    $.each(locations, function (index, values) {
@@ -2578,7 +2578,7 @@ $(function() {
 
                        });
                    });
-
+*/
            } else {
 
                    // Setup Orders plots

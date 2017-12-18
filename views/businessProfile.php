@@ -10,12 +10,12 @@ $states = json_decode(file_get_contents(API_HOST_URL . '/states?columns=abbrevia
 try {
     $result = json_decode(file_get_contents(API_HOST_URL . '/entities?include=members,users,locations,contacts&filter=id,eq,'.$_SESSION['entityid']),true);
       $result = php_crud_api_transform($result);
-      //$result = json_encode($result);
-      //print_r($result);
-      //die();
+
       if (count($result) > 0) {
 
         $entityName = $result['entities'][0]['name'];
+
+        $configuration_settings = json_decode($result['entities'][0]['configuration_settings'],true);
 
         foreach($result['entities'][0]['locations'] as $location) {
                 if ($location['locationTypeID'] == 1) {
@@ -48,18 +48,57 @@ try {
       exit();
 }
 
+// Get Configuration Settings for Availability or Needs
+$cdpvargs = array(
+    "include"=>"configuration_data_point_values",
+    "filter[0]"=>"id,eq,".$_SESSION['entitytype'],
+    "filter[1]"=>"configuration_data_point_values.status,eq,Active",
+    "transform"=>1
+);
+$cdpvurl = API_HOST_URL . "/configuration_data_points?".http_build_query($cdpvargs);
+$cdpvoptions = array(
+  'http' => array(
+      'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+      'method'  => 'GET'
+  )
+);
+$cdpvcontext  = stream_context_create($cdpvoptions);
+$cdpvresult = json_decode(file_get_contents($cdpvurl,false,$cdpvcontext),true);
 
+$cdpvList = $cdpvresult["configuration_data_points"];
 
 ?>
+
+<script>
+
+function verifyInput() {
+
+      // Build the configuration_settings data
+      var settingsarray = [];
+      var obj = $("#dp-check-list-box li select");
+      for (var i = 0; i < obj.length; i++) {
+          item = {};
+          item[obj[i].id] = obj[i].value;
+          settingsarray.push(item);
+      }
+
+      $("#configuration_settings").val(JSON.stringify(settingsarray));
+
+      return true;
+}
+
+</script>
+
 <ol class="breadcrumb">
     <li>ADMIN</li>
     <li class="active">Business Maintenance</li>
 </ol>
 <div class="row">
-    <div class="col-lg-12 col-md-offset-0">
+    <div class="col-md-12 col-md-offset-0">
         <section class="widget">
             <div class="widget-body">
               <form id="formRegister" class="register-form mt-lg" method="POST" action="/entities" onsubmit="return verifyInput();">
+                <input type="hidden" id="configuration_settings" name="configuration_settings" />
                 <div class="row">
                     <div class="col-sm-4">
                         <label for="firstName">First Name</label>
@@ -83,24 +122,20 @@ try {
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-sm-8">
+                    <div class="col-sm-4">
                         <label for="entityName">Company Name</label>
                         <div class="form-group">
                           <input type="text" id="entityName" name="entityName" class="form-control" placeholder="*Company Name" value="<?php echo $entityName; ?>"
                                  required="required" />
                         </div>
                     </div>
-                    <div class="col-sm-2">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-6">
+                    <div class="col-sm-4">
                         <label for="address1">Address 1</label>
                         <div class="form-group">
                           <input type="text" id="address1" name="address1" class="form-control mb-sm" placeholder="Company Address" value="<?php echo $address1; ?>" />
                         </div>
                     </div>
-                    <div class="col-sm-6">
+                    <div class="col-sm-4">
                         <label for="address2">Suite # / Apt #</label>
                         <div class="form-group">
                           <input type="text" id="address2" name="address2" class="form-control mb-sm" placeholder="Bldg. Number/Suite" value="<?php echo $address2; ?>" />
@@ -163,6 +198,46 @@ try {
                         </div>
                     </div>
                 </div>
+                <hr />
+                <!--div class="container" style="margin-top:20px;"-->
+                     <div class="row">
+                       <div class="col-xs-2">
+                            <h5 class="text-center"><strong>Configuration Settings</strong></h5>
+                            <div class="well" style="max-height: 200px;overflow: auto;">
+                                <ul id="dp-check-list-box" class="list-group">
+<?php
+                                for ($i = 0; $i < count($cdpvList); $i++) {
+
+                                    // Get the saved value for the configuration setting column name
+                                    $selectedValue = "";
+                                    for ($cs = 0; $cs < count($configuration_settings); $cs++) {
+                                        while (list($key, $val) = each($configuration_settings[$cs])) {
+                                            //echo "$key => $val\n";
+                                            if ($key == $cdpvList[$i]['columnName']) {
+                                                $selectedValue = $val;
+                                            }
+                                        }
+                                    }
+
+                                    echo "<li>". $cdpvList[$i]['title'] . "\n";
+                                    echo "<select class=\"form-control mb-sm\" id=\"" . $cdpvList[$i]['columnName'] . "\" name=\"" . $cdpvList[$i]['columnName'] . "\">\n
+                                            <option value=\"\" selected=selected>-Select From List-</option>\n";
+
+                                    foreach($cdpvList[$i]['configuration_data_point_values'] as $value) {
+                                        $selected = ($value['value'] == $selectedValue) ? 'selected=selected':'';
+                                        echo "<option value=" .$value['value']. " " . $selected . ">" . $value['title'] . "</option>\n";
+                                    }
+
+                                    echo "</select>\n
+                                          </li>\n";
+
+                                }
+?>
+                                </ul>
+                            </div>
+                       </div>
+                     </div>
+                <!--/div-->
                 <div class="clearfix">
                     <div class="btn-toolbar pull-left">
                       &nbsp;

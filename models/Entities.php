@@ -2,14 +2,14 @@
 
 class Entities
 {
- 
+
     /**
      * The table name
      *
      * @var string
      */
     public $table = "entities";
- 
+
     public function post() {
 
     }
@@ -18,11 +18,12 @@ class Entities
 
     }
 
-    public function put($entityName) {
+    public function put($entityName,$configurationSettings) {
         try {
             $entityurl = API_HOST_URL . '/entities/'.$_SESSION['entityid'];
               $entitydata = array(
                           "name" => $entityName,
+                          "configuration_settings"=>$configurationSettings,
                           "updatedAt" => date('Y-m-d H:i:s')
               );
               // use key 'http' even if you send the request to https://...
