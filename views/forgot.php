@@ -31,7 +31,7 @@
                     async: false,
                     success: function(data){
                        if (data.users.length <= 0) {
-                         alert('Username Does Not Exist!');
+                         //alert('Username Does Not Exist!');
                          return false;
                        } else {
                          passValidation = true;

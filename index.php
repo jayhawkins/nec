@@ -238,6 +238,7 @@ $app->route('GET /verifyaccount/@id/@code', function($id,$code) {
 });
 
 $app->route('POST /entities', function() {
+
     $locationid = 0;
     $locationresult = json_decode(file_get_contents(API_HOST_URL . '/locations?filter=entityID,eq,' . $_SESSION['entityid']));
     for ($l=0; $l < count($locationresult->locations->records); $l++) {
@@ -258,7 +259,7 @@ $app->route('POST /entities', function() {
     $address = urlencode(Flight::request()->data['address1'].", ".Flight::request()->data['city'].", ".Flight::request()->data['state'].", ".Flight::request()->data['zip']);
 
     // google map geocode api url
-    $url = "http://maps.google.com/maps/api/geocode/json?address={$address}";
+    $url = "https://maps.google.com/maps/api/geocode/json?key=".GOOGLE_MAPS_API."&address={$address}";
 
     // get the json response
     $resp_json = file_get_contents($url);
@@ -295,10 +296,11 @@ $app->route('POST /entities', function() {
     $email = Flight::request()->data['email'];
     $entityName = Flight::request()->data['entityName'];
     $entityTypeID = Flight::request()->data['entityTypeID'];
+    $configurationSettings = Flight::request()->data['configuration_settings'];
     $entity = Flight::entities();
     $location = Flight::locations();
     $contact = Flight::contacts();
-    $returnentity = $entity->put($entityName);
+    $returnentity = $entity->put($entityName,$configurationSettings);
     $returnlocation = $location->put($locationid,$address1,$address2,$city,$state,$zip,$latitude,$longitude);
     $returncontact = $contact->put($contactid,$firstName,$lastName,$title,$phone,$phoneExt,$fax,$email);
     if ($returnentity && $returnlocation && $returncontact) {

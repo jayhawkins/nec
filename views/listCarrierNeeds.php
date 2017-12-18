@@ -11,6 +11,8 @@ $states = json_decode(file_get_contents(API_HOST_URL . '/states?columns=abbrevia
 $entities = '';
 $entities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=id,name&order=name&filter[]=id,gt,0&filter[]=entityTypeID,eq,2'));
 
+$entity = '';
+$entity = json_decode(file_get_contents(API_HOST_URL . '/entities?filter[]=id,eq,' . $_SESSION['entityid'] . '&transform=1'));
 
 $locationTypeID = '';
 $locationTypes = json_decode(file_get_contents(API_HOST_URL . "/location_types?columns=id,name,status&filter[]=entityID,eq," . $_SESSION['entityid'] . "&filter[]=id,gt,0&satisfy=all&order=name"));
@@ -24,6 +26,19 @@ $locations_contacts = json_decode(file_get_contents(API_HOST_URL . "/locations_c
 $loccon = array();
 for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
     $loccon[$locations_contacts->locations_contacts->records[$lc][0]] = $locations_contacts->locations_contacts->records[$lc][1];
+}
+
+//Get entity configuration_settings
+$configuration_settings = json_decode($entity->entities[0]->configuration_settings,true);
+
+$need_expire_days = 30; // This is the default for how many days until expired if entity has not set one
+for ($cs=0;$cs<count($configuration_settings);$cs++) {
+    while (list($key, $val) = each($configuration_settings[$cs])) {
+        //echo "$key => $val\n";
+        if ($key == "need_expire_days") {
+            $need_expire_days = $val;
+        }
+    }
 }
 
 $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_points?include=object_type_data_point_values&transform=1&columns=id,columnName,title,status,object_type_data_point_values.value&filter[]=entityID,in,(0," . $_SESSION['entityid'] . ")&filter[]=status,eq,Active&order=sort_order" ));
@@ -40,6 +55,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
  <script type="text/javascript" src="https://maps.google.com/maps/api/js?key=<?php echo GOOGLE_MAPS_API; ?>"></script>
 
  <script>
+
+     var need_expire_days = <?php echo $need_expire_days; ?>;
 
      var contacts = <?php echo json_encode($contacts); ?>;
      var entities = <?php echo json_encode($entities); ?>;
@@ -283,7 +300,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                 var expirationDate = new Date();
 
                                 if (expirationDateString == ""){
-                                    expirationDate.setDate(availableDate.getDate() + 30);
+                                    //expirationDate.setDate(availableDate.getDate() + 30); - No longer using a hardcoded 30 days. Comes from entities->configuration_settings
+                                    expirationDate.setDate(availableDate.getDate() + need_expire_days);
                                     expirationDateString = formatFormDates(expirationDate);
                                 }
                                 else{
