@@ -2829,6 +2829,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     loadNewCustomerNeedsCommit(id);
                     alert("Commit Updated");
                 }
+                else{
+                    console.log(data);
+                }
             },
             error: function(data){
                 alert("There Was An Error Updating Commit");
