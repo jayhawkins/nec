@@ -2704,12 +2704,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         
         var qty = $("#qty").val().trim();
         
-        console.log(unitDataList);
-        
         var data = {originationAddress1: originationAddress1, originationAddress2: originationAddress2, originationCity: originationCity, originationState: originationState, originationZip: originationZip, originationNotes: originationNotes,
                     destinationAddress1: destinationAddress1, destinationAddress2: destinationAddress2, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, destinationNotes: destinationNotes,
                     qty: qty, updatedAt: today, needsDataPoints: needsdatapoints, unitData: unitDataList};
         
+        console.log(data);
         var url = '<?php echo API_HOST_URL . "/customer_needs" ?>/' + id;
         
         $.ajax({
