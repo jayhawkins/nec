@@ -8,7 +8,7 @@ require '../lib/common.php';
 $states = json_decode(file_get_contents(API_HOST_URL . '/states?columns=abbreviation,name&order=name'));
 
 try {
-    $result = json_decode(file_get_contents(API_HOST_URL . '/entities?include=members,users,locations,contacts&filter=id,eq,'.$_SESSION['entityid']),true);
+      $result = json_decode(file_get_contents(API_HOST_URL . '/entities?include=members,users,locations,contacts&filter=id,eq,'.$_SESSION['entityid']),true);
       $result = php_crud_api_transform($result);
 
       if (count($result) > 0) {
@@ -48,6 +48,7 @@ try {
       exit();
 }
 
+/*
 // Get Configuration Settings for Availability or Needs
 $cdpvargs = array(
     "include"=>"configuration_data_point_values",
@@ -66,24 +67,28 @@ $cdpvcontext  = stream_context_create($cdpvoptions);
 $cdpvresult = json_decode(file_get_contents($cdpvurl,false,$cdpvcontext),true);
 
 $cdpvList = $cdpvresult["configuration_data_points"];
+*/
 
 ?>
 
 <script>
 
 function verifyInput() {
-
+/*
       // Build the configuration_settings data
       var settingsarray = [];
+
+      // Add Expire Days configuration setting to the array
       var obj = $("#dp-check-list-box li select");
       for (var i = 0; i < obj.length; i++) {
-          item = {};
-          item[obj[i].id] = obj[i].value;
+          var item = '{"' + [obj[i].id] + '":"' + obj[i].value + '"}';
+          //item[obj[i].id] = obj[i].value;
           settingsarray.push(item);
       }
 
-      $("#configuration_settings").val(JSON.stringify(settingsarray));
-
+      $("#configuration_settings").val([settingsarray]);
+      console.log($("#configuration_settings").val());
+*/
       return true;
 }
 
@@ -198,14 +203,18 @@ function verifyInput() {
                         </div>
                     </div>
                 </div>
+ <!--
                 <hr />
-                <!--div class="container" style="margin-top:20px;"-->
                      <div class="row">
                        <div class="col-xs-2">
                             <h5 class="text-center"><strong>Configuration Settings</strong></h5>
                             <div class="well" style="max-height: 200px;overflow: auto;">
                                 <ul id="dp-check-list-box" class="list-group">
+-->
+
 <?php
+
+/*
                                 for ($i = 0; $i < count($cdpvList); $i++) {
 
                                     // Get the saved value for the configuration setting column name
@@ -232,12 +241,16 @@ function verifyInput() {
                                           </li>\n";
 
                                 }
+*/
+
 ?>
+
+<!--
                                 </ul>
                             </div>
                        </div>
                      </div>
-                <!--/div-->
+-->
                 <div class="clearfix">
                     <div class="btn-toolbar pull-left">
                       &nbsp;
