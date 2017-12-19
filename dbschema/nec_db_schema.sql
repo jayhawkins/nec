@@ -68,6 +68,39 @@ AUTO_INCREMENT = 1;
 -- -------------------------------------------------------------
 -- ---------------------------------------------------------
 
+-- CREATE TABLE "configuration_data_point_values" --------------
+CREATE TABLE `configuration_data_point_values` (
+	`id` Int( 11 ) UNSIGNED AUTO_INCREMENT NOT NULL,
+	`configuration_data_point_id` Int( 11 ) UNSIGNED NOT NULL,
+	`title` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	`value` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	`createdAt` DateTime NOT NULL,
+	`updatedAt` DateTime NOT NULL,
+	`status` VarChar( 24 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'Active',
+	CONSTRAINT `unique_id` UNIQUE( `id` ) )
+CHARACTER SET = utf8
+COLLATE = utf8_general_ci
+ENGINE = InnoDB;
+-- -------------------------------------------------------------
+
+-- CREATE TABLE "configuration_data_points" --------------------
+CREATE TABLE `configuration_data_points` (
+	`id` Int( 11 ) UNSIGNED AUTO_INCREMENT NOT NULL,
+	`columnName` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	`title` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	`status` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'Active',
+	`sort_order` TinyInt( 3 ) UNSIGNED NULL DEFAULT '0',
+	`createdAt` DateTime NOT NULL,
+	`updatedAt` DateTime NOT NULL,
+	`description` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
+	CONSTRAINT `unique_id` UNIQUE( `id` ) )
+CHARACTER SET = utf8
+COLLATE = utf8_general_ci
+ENGINE = InnoDB;
+-- -------------------------------------------------------------
+ALTER TABLE configuration_data_points ADD COLUMN `entityTypeID` INT(11) UNSIGNED DEFAULT 0 after id;
+-- -------------------------------------------------------------
+
 
 -- CREATE TABLE "contacts" ---------------------------------
 -- CREATE TABLE "contacts" -------------------------------------
@@ -238,6 +271,7 @@ ALTER TABLE entities ADD COLUMN towAwayRateType VARCHAR(64) DEFAULT 'Flat Rate' 
 ALTER TABLE entities ADD COLUMN loadOutRateMin Float(7,2) DEFAULT '0.00' AFTER towAwayRateType;
 ALTER TABLE entities ADD COLUMN loadOutRateMax Float(7,2) DEFAULT '0.00' AFTER loadOutRateMin;
 ALTER TABLE entities ADD COLUMN loadOutRateType VARCHAR(64) DEFAULT 'Flat Rate' AFTER loadOutRateMax;
+ALTER TABLE entities ADD COLUMN configuration_settings JSON NULL AFTER updatedAt;
 -- ---------------------------------------------------------
 
 
@@ -1005,6 +1039,10 @@ CREATE INDEX `lnk_entities_customer_needs` USING BTREE ON `customer_needs`( `ent
 CREATE INDEX `lnk_entities_customer_needs_commit` USING BTREE ON `customer_needs_commit`( `entityID` );
 -- -------------------------------------------------------------
 
+-- CREATE INDEX "lnk_configuration_data_points_configuration_data_point_values"
+CREATE INDEX `lnk_configuration_data_points_configuration_data_point_values` USING BTREE ON `configuration_data_point_values`( `configuration_data_point_id` );
+-- -------------------------------------------------------------
+
 -- Link/Foreign Key Relationships for utilizing PHP REST API script
 -- After Everything has been checked --
 ALTER TABLE `locations`
@@ -1094,6 +1132,12 @@ ALTER TABLE `needs_match`
 ALTER TABLE `users`
 	ADD CONSTRAINT `lnk_user_types_users` FOREIGN KEY ( `userTypeID` )
 	REFERENCES `user_types`( `id` )
+	ON DELETE No Action
+	ON UPDATE No Action;
+
+ALTER TABLE `configuration_data_point_values`
+	ADD CONSTRAINT `lnk_configuration_data_points_configuration_data_point_values` FOREIGN KEY ( `configuration_data_point_id` )
+	REFERENCES `configuration_data_points`( `id` )
 	ON DELETE No Action
 	ON UPDATE No Action;
 

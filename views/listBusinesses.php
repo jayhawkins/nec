@@ -7,13 +7,33 @@ require '../lib/common.php';
 
 $contacts = file_get_contents(API_HOST_URL . '/contacts?columns=id,firstName,lastName,title&filter=entityID,eq,0&order=lastName&transform=1');
 
+// Get Configuration Settings for Availability or Needs
+$cdpvargs = array(
+    "include"=>"configuration_data_point_values",
+    "filter[]"=>"configuration_data_point_values.status,eq,Active",
+    "transform"=>1
+);
+
+$cdpvurl = API_HOST_URL . "/configuration_data_points?".http_build_query($cdpvargs);
+$cdpvoptions = array(
+  'http' => array(
+      'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+      'method'  => 'GET'
+  )
+);
+$cdpvcontext  = stream_context_create($cdpvoptions);
+$cdpvresult = json_decode(file_get_contents($cdpvurl,false,$cdpvcontext),true);
+
+$cdpvList = $cdpvresult["configuration_data_points"];
+
  ?>
 
  <script>
 
      var contacts = <?php echo $contacts; ?>;
+     var cdpvList = <?php echo json_encode($cdpvList); ?>;
 
-
+/*
      var myApp;
       myApp = myApp || (function () {
        var pleaseWaitDiv = $('<div class="modal hide" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false"><div class="modal-header"><h1>Processing...</h1></div><div class="modal-body"><div class="progress progress-striped active"><div class="bar" style="width: 100%;"></div></div></div></div>');
@@ -27,7 +47,7 @@ $contacts = file_get_contents(API_HOST_URL . '/contacts?columns=id,firstName,las
 
        };
       })();
-
+*/
       function verifyAndPost() {
 
         if ( $('#formBusiness').parsley().validate() ) {
@@ -68,9 +88,18 @@ $contacts = file_get_contents(API_HOST_URL . '/contacts?columns=id,firstName,las
                     type = "POST";
                 }
 
+                // Build the configuration_settings
+                var configurationSettings = [];
+                var obj = $("#dp-check-list-box li select");
+                for (var i = 0; i < obj.length; i++) {
+                    item = {};
+                    item[obj[i].id] = obj[i].value;
+                    configurationSettings.push(item);
+                }
+
                 if (type == "PUT") {
                     var date = today;
-                    var data = {contactID: $("#contactID").val(), entityRating: $("#entityRating").val(), rateType: $("input[name='rateType']:checked").val(), negotiatedRate: $("#negotiatedRate").val(), towAwayRateMin: $("#towAwayRateMin").val(), towAwayRateMax: $("#towAwayRateMax").val(), towAwayRateType: $("input[name='towAwayRateType']:checked").val(), loadOutRateMin: $("#loadOutRateMin").val(), loadOutRateMax: $("#loadOutRateMax").val(), loadOutRateType: $("input[name='loadOutRateType']:checked").val(), updatedAt: date};
+                    var data = {contactID: $("#contactID").val(), entityRating: $("#entityRating").val(), rateType: $("input[name='rateType']:checked").val(), negotiatedRate: $("#negotiatedRate").val(), towAwayRateMin: $("#towAwayRateMin").val(), towAwayRateMax: $("#towAwayRateMax").val(), towAwayRateType: $("input[name='towAwayRateType']:checked").val(), loadOutRateMin: $("#loadOutRateMin").val(), loadOutRateMax: $("#loadOutRateMax").val(), loadOutRateType: $("input[name='loadOutRateType']:checked").val(), configuration_settings: configurationSettings, updatedAt: date};
                 } else {
                     // Should never do this at this point
                     //var date = today;
@@ -121,7 +150,6 @@ $contacts = file_get_contents(API_HOST_URL . '/contacts?columns=id,firstName,las
       }
 
       function loadTableAJAX() {
-        //myApp.showPleaseWait();
         var url = '<?php echo API_HOST_URL; ?>' + '/entities?columns=id,entityTypeID,name,entityRating,contactID,status,rateType,negotiatedRate,towAwayRateMin,towAwayRateMax,towAwayRateType,loadOutRateMin,loadOutRateMax,loadOutRateType&filter[]=id,gt,0&order=name&transform=1';
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
@@ -169,7 +197,6 @@ $contacts = file_get_contents(API_HOST_URL . '/contacts?columns=id,firstName,las
           //To Reload The Ajax
           //See DataTables.net for more information about the reload method
           example_table.ajax.reload();
-          myApp.hidePleaseWait();
 
       }
 
@@ -368,6 +395,29 @@ $contacts = file_get_contents(API_HOST_URL . '/contacts?columns=id,firstName,las
                    </div>
                </div>
            </div>
+           <hr />
+           <div class="row">
+                 <div class="container" style="margin-top:20px;">
+                     <div class="row">
+                       <div class="col-xs-6">
+                            <h5 class="text-center"><strong>Configuration Settings</strong></h5>
+                            <div class="well" style="max-height: 200px;overflow: auto;">
+                                <ul id="dp-check-list-box" class="list-group">
+
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                             <h5 class="text-center" id="customerContactTitle"><strong></strong></h5>
+                             <div class="well" style="max-height: 200px;overflow: auto;">
+                                 <ul id="check-list-box" class="list-group checked-list-box">
+
+                                 </ul>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+           </div>
            <div class="modal-footer">
              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
              <button type="button" class="btn btn-primary" onclick="return verifyAndPost();">Save Changes</button>
@@ -443,15 +493,15 @@ $contacts = file_get_contents(API_HOST_URL . '/contacts?columns=id,firstName,las
 
  <script>
 
-    var contacts = <?php echo $contacts; ?>;
+    //var contacts = <?php echo $contacts; ?>;
 
     loadTableAJAX();
 
     var table = $("#datatable-table").DataTable();
 
     $("#addBusiness").click(function(){
-      $("#id").val('');
-      $("#name").val('');
+        $("#id").val('');
+        $("#name").val('');
   		$("#myModal").modal('show');
   	});
 
@@ -480,6 +530,62 @@ $contacts = file_get_contents(API_HOST_URL . '/contacts?columns=id,firstName,las
           }
           contactdropdown += '</select>\n';
           $("#contact-list-box").html(contactdropdown);
+
+          var params = {
+              entityID: $("#id").val()
+          };
+
+          $.ajax({
+               url: '<?php echo API_HOST_URL . "/entities"; ?>/' + $("#id").val(),
+               type: 'GET',
+               contentType: "application/json",
+               async: false,
+               success: function(response){
+                 var entityTypeID = response.entityTypeID;
+                 var cs = JSON.parse(response.configuration_settings);
+                 var li = '';
+                 var dpli = '';
+                 for (var i = 0; i < cdpvList.length; i++) {
+                     if ( entityTypeID == cdpvList[i].entityTypeID ) {
+                            var selected = '';
+                            var value = '';
+
+                            $.each(cs, function(idx, obj) {
+                              $.each(obj, function(key, val) {
+                                if (cdpvList[i].columnName == key) {
+                                    value = val; // Get the value from the JSON data in the record to use to set the selected option in the dropdown
+                                }
+                              })
+                            });
+
+                            dpli += '<li>' + cdpvList[i].title +
+                                    ' <select class="form-control mb-sm" id="' + cdpvList[i].columnName + '" name="' + cdpvList[i].columnName + '">' +
+                                    ' <option value="">-Select From List-</option>\n';
+
+                            for (var v = 0; v < cdpvList[i].configuration_data_point_values.length; v++) {
+
+                                if (cdpvList[i].configuration_data_point_values[v].value === value) {
+                                    selected = ' selected ';
+                                } else {
+                                    selected = '';
+                                }
+
+                                dpli += '<option value="' + cdpvList[i].configuration_data_point_values[v].value + '" ' + selected + '>' + cdpvList[i].configuration_data_point_values[v].title + '</option>\n';
+
+                            }
+
+                            dpli += '</select>' +
+                                  '</li>\n';
+                     }
+
+                 }
+                 $("#dp-check-list-box").html(dpli);
+               },
+               error: function() {
+                  alert('Failed Getting Configuration Settings!');
+               }
+          });
+
           $("#myModal").modal('show');
         } else {
             $("#id").val(data["id"]);
