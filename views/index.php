@@ -2299,19 +2299,9 @@ if ($_SESSION['entitytype'] == 0) {
     });
 
     $("#stateFilter").select2().on('change', function(e) {
-            //$("#cityFilter").each(function() {
-            //    $(this).select2('val', '');
-            //});
             $("#cityFilter").val('');
             getOrdersByFilters();
     });
-
-    //$("#cityFilter").select2().on('change', function(e) {
-    //        $("#stateFilter").each(function() {
-    //            $(this).select2('val', '');
-    //        });
-    //        getOrdersByFilters();
-    //});
 
     $("#cityFilter").on('change', function(e) {
             $("#stateFilter").each(function() {
@@ -2396,7 +2386,7 @@ $(function() {
                        var originationPlotColor = "Green";
                    }
 
-                   var plotsColors = chroma.scale("Blues");
+                   //var plotsColors = chroma.scale("Blues");
                    $.each(data, function (index, value) {
 
                        if (entityTypeID > 0) {
@@ -2582,7 +2572,7 @@ $(function() {
            } else {
 
                    // Setup Orders plots
-                   var plotsColors = chroma.scale("Oranges");
+                   //var plotsColors = chroma.scale("Oranges");
                    $.each(data, function (index, value) {
                            // Setup Pickup Date
                            //alert(formatDate(new Date(value.order_details[0].pickupDate)));
@@ -2664,7 +2654,8 @@ $(function() {
 
                                // Assign the background color randomize from a scale
                                plot.attrs = {
-                                   fill: plotsColors(Math.random())
+                                   //fill: plotsColors(Math.random())
+                                   fill: "orange",
                                };
 
                                // Set plot element to array
