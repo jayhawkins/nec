@@ -129,6 +129,7 @@ class Users
         try {
 
               $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
+
               $result = $dbhandle->query("select users.id, users.username, users.password, users.status, users.userTypeID,
                                           members.id as memberID, members.entityID,
                                           entities.entityTypeID,

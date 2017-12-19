@@ -543,20 +543,22 @@ $cdpvList = $cdpvresult["configuration_data_points"];
                success: function(response){
                  var entityTypeID = response.entityTypeID;
                  var cs = JSON.parse(response.configuration_settings);
+                 console.log('length: ' + cs);
                  var li = '';
                  var dpli = '';
                  for (var i = 0; i < cdpvList.length; i++) {
                      if ( entityTypeID == cdpvList[i].entityTypeID ) {
                             var selected = '';
                             var value = '';
-
-                            $.each(cs, function(idx, obj) {
-                              $.each(obj, function(key, val) {
-                                if (cdpvList[i].columnName == key) {
-                                    value = val; // Get the value from the JSON data in the record to use to set the selected option in the dropdown
-                                }
-                              })
-                            });
+                            if (cs) {
+                                $.each(cs, function(idx, obj) {
+                                  $.each(obj, function(key, val) {
+                                    if (cdpvList[i].columnName == key) {
+                                        value = val; // Get the value from the JSON data in the record to use to set the selected option in the dropdown
+                                    }
+                                  })
+                                });
+                            }
 
                             dpli += '<li>' + cdpvList[i].title +
                                     ' <select class="form-control mb-sm" id="' + cdpvList[i].columnName + '" name="' + cdpvList[i].columnName + '">' +
