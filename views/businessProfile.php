@@ -15,7 +15,7 @@ try {
 
         $entityName = $result['entities'][0]['name'];
 
-        $configuration_settings = json_decode($result['entities'][0]['configuration_settings'],true);
+        //$configuration_settings = json_decode($result['entities'][0]['configuration_settings'],true);
 
         foreach($result['entities'][0]['locations'] as $location) {
                 if ($location['locationTypeID'] == 1) {
