@@ -9,11 +9,11 @@ class Documents
      * @var string
      */
     public $table = "documents";
-    
+
     public function post($api_host,$id) {
 
     }
-    
+
     public function viewdocument($entityID,$file_location,$filename) {
 		$dir = $file_location . "/users/".floor($entityID / 65535)."/".$entityID;
 		$file = $dir . "/" . $filename;
@@ -22,7 +22,7 @@ class Documents
 		if(@is_array(getimagesize($mediapath))){
 			$mime_type = "image/jpeg, image/png, image/bmp, image/gif";
 		} else {
-			$mime_type = "application/".$fileType;
+			$mime_type = "application/".strtolower($fileType);
 		}
 		if(file_exists($file)){
 			// Try and open the remote stream
