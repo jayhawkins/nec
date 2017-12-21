@@ -1141,6 +1141,22 @@ ALTER TABLE `configuration_data_point_values`
 	ON DELETE No Action
 	ON UPDATE No Action;
 
+ALTER TABLE orders 
+DROP FOREIGN KEY lnk_documents_orders;
+
+ALTER TABLE customer_needs ADD COLUMN originationNotes VarChar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT "" AFTER originationZip;
+ALTER TABLE customer_needs ADD COLUMN destinationNotes VarChar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT "" AFTER destinationZip;
+ALTER TABLE customer_needs ADD COLUMN unitData JSON AFTER needsDataPoints;
+ALTER TABLE customer_needs ADD COLUMN pickupInformation JSON AFTER entityID;
+ALTER TABLE customer_needs ADD COLUMN deliveryInformation JSON AFTER originationNotes;
+
+ALTER TABLE order_details ADD COLUMN pickupInformation JSON AFTER orderID;
+ALTER TABLE order_details ADD COLUMN originationAddress VarChar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT ""  AFTER pickupInformation;
+ALTER TABLE order_details ADD COLUMN originationZip VarChar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT ""  AFTER originationState;
+
+ALTER TABLE order_details ADD COLUMN deliveryInformation JSON AFTER originationZip;
+ALTER TABLE order_details ADD COLUMN destinationAddress VarChar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT ""  AFTER deliveryInformation;
+ALTER TABLE order_details ADD COLUMN destinationZip VarChar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT ""  AFTER destinationState;
 
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
