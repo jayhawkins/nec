@@ -29,7 +29,7 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
 }
 
 //Get entity configuration_settings
-$configuration_settings = json_decode($entity->entities[0]->configuration_settings,true);
+$configuration_settings = $entity->entities[0]->configuration_settings;
 
 $need_expire_days = 30; // This is the default for how many days until expired if entity has not set one
 for ($cs=0;$cs<count($configuration_settings);$cs++) {
@@ -219,7 +219,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
           $("#load").html("<i class='fa fa-spinner fa-spin'></i> Adding Needs");
           $("#load").prop("disabled", true);
 
-    	  			var passValidation = false;
+                var passValidation = false;
                 var type = "";
                 var today = new Date();
                 var dd = today.getDate();
@@ -293,21 +293,20 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                               }
                               var needsdatapoints = needsarray;
 
-                                var availableDateString = $("#availableDate").val();
-                                var expirationDateString = $("#expirationDate").val();
+                              var availableDateString = $("#availableDate").val();
+                              var expirationDateString = $("#expirationDate").val();
 
-                                var availableDate = new Date(parseDate(availableDateString));
-                                var expirationDate = new Date();
+                              var availableDate = new Date(parseDate(availableDateString));
 
-                                if (expirationDateString == ""){
-                                    //expirationDate.setDate(availableDate.getDate() + 30); - No longer using a hardcoded 30 days. Comes from entities->configuration_settings
-                                    expirationDate.setDate(availableDate.getDate() + need_expire_days);
-                                    expirationDateString = formatFormDates(expirationDate);
-                                }
-                                else{
-                                    expirationDate = new Date(parseDate(expirationDateString));
-                                    expirationDateString = formatFormDates(expirationDate);
-                                }
+                              if (expirationDateString == ""){
+                                  var expirationDate = new Date(parseDate(availableDateString));
+                                  //expirationDate.setDate(availableDate.getDate() + 30); - No longer using a hardcoded 30 days. Comes from entities->configuration_settings
+                                  expirationDate.setDate(availableDate.getDate() + parseInt(need_expire_days));
+                                  expirationDateString = formatFormDates(expirationDate);
+                              } else{
+                                  var expirationDate = new Date(parseDate(expirationDateString));
+                                  expirationDateString = formatFormDates(expirationDate);
+                              }
 
                               if (type == "PUT") {
                                   var date = today;
@@ -426,7 +425,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
 
         //myApp.showPleaseWait();
         if (<?php echo $_SESSION['entityid']; ?> > 0) {
-            var url = '<?php echo API_HOST_URL; ?>' + '/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,transportationMode,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&filter[0]=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&filter[1]=expirationDate,ge,' + today + '&satisfy=all&order[]=availableDate,desc&transform=1';
+
+            var pastNeedsDate = new Date();
+            var pastNeedsDateString = new Date(pastNeedsDate.getFullYear(), pastNeedsDate.getMonth()+1, pastNeedsDate.getDate()-need_expire_days);
+            pastNeedsDateString = pastNeedsDateString.getFullYear() + '-' + pastNeedsDateString.getMonth() + '-' + pastNeedsDateString.getDate();
+
+            var url = '<?php echo API_HOST_URL; ?>' + '/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,transportationMode,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&filter[0]=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&filter[1]=expirationDate,ge,' + pastNeedsDateString + '&satisfy=all&order[]=availableDate,desc&transform=1';
             var example_table = $('#datatable-table').DataTable({
                 retrieve: true,
                 processing: true,
@@ -473,8 +477,14 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                     }
                 ]
               });
+
         } else {
-            var url = '<?php echo API_HOST_URL; ?>' + '/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,transportationMode,availableDate,expirationDate,originationCity,originationState,originationZip,originationLat,originationLng,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&filter[0]=expirationDate,ge,' + today + '&satisfy=all&order[]=entityID&order[]=createdAt,desc&transform=1';
+
+            var pastNeedsDate = new Date();
+            var pastNeedsDateString = new Date(pastNeedsDate.getFullYear(), pastNeedsDate.getMonth()+1, pastNeedsDate.getDate()-180);
+            pastNeedsDateString = pastNeedsDateString.getFullYear() + '-' + pastNeedsDateString.getMonth() + '-' + pastNeedsDateString.getDate();
+
+            var url = '<?php echo API_HOST_URL; ?>' + '/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,transportationMode,availableDate,expirationDate,originationCity,originationState,originationZip,originationLat,originationLng,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&filter[0]=expirationDate,ge,' + pastNeedsDateString + '&satisfy=all&order[]=entityID&order[]=createdAt,desc&transform=1';
             var example_table = $('#datatable-table').DataTable({
                 retrieve: true,
                 processing: true,
@@ -1582,6 +1592,33 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
             transMode += '</select>';
             $("#divTransportationMode").html(transMode);
 
+            // Get configuration_settings for data manipulation
+            $.ajax({
+               url: '<?php echo API_HOST_URL . "/entities"; ?>/' + $("#entityID").val(),
+               type: 'GET',
+               contentType: "application/json",
+               async: false,
+               success: function(response){
+                 var entityTypeID = response.entityTypeID;
+                 var cs = response.configuration_settings;
+                 if (cs) {
+                    $.each(cs, function(idx, obj) {
+                      $.each(obj, function(key, val) {
+                        switch (key) {
+                            case 'need_expire_days':
+                                   need_expire_days = val; // Get the value from the JSON data in the record to use to set the selected option in the dropdown
+                                   break;
+                            default:
+                        }
+                      })
+                    });
+                 }
+               },
+               error: function() {
+                  alert('Failed Getting Configuration Settings! - Notify NEC of this failure.');
+               }
+            });
+
             var params = {id: $("#entityID").val()};
             getCarrierContactTitle($("#entityID").val());
             $.ajax({
@@ -1700,6 +1737,33 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
            },
            error: function() {
               alert('Failed Getting Contacts! - Notify NEC of this failure.');
+           }
+        });
+
+        // Get configuration_settings for data manipulation
+        $.ajax({
+           url: '<?php echo API_HOST_URL . "/entities"; ?>/' + $("#entityID").val(),
+           type: 'GET',
+           contentType: "application/json",
+           async: false,
+           success: function(response){
+             var entityTypeID = response.entityTypeID;
+             var cs = response.configuration_settings;
+             if (cs) {
+                $.each(cs, function(idx, obj) {
+                  $.each(obj, function(key, val) {
+                    switch (key) {
+                        case 'need_expire_days':
+                               need_expire_days = val; // Get the value from the JSON data in the record to use to set the selected option in the dropdown
+                               break;
+                        default:
+                    }
+                  })
+                });
+             }
+           },
+           error: function() {
+              alert('Failed Getting Configuration Settings! - Notify NEC of this failure.');
            }
         });
     });

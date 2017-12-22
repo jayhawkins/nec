@@ -542,8 +542,8 @@ $cdpvList = $cdpvresult["configuration_data_points"];
                async: false,
                success: function(response){
                  var entityTypeID = response.entityTypeID;
-                 var cs = JSON.parse(response.configuration_settings);
-                 console.log('length: ' + cs);
+                 var cs = response.configuration_settings;
+                 //console.log('length: ' + cs);
                  var li = '';
                  var dpli = '';
                  for (var i = 0; i < cdpvList.length; i++) {

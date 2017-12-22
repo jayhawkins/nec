@@ -795,7 +795,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                      <th class="hidden-sm-down">Data Points</th>
                      <th class="hidden-sm-down">Contact</th>
                      <th>Status</th>
-                     <th class="no-sort pull-right">&nbsp;</th>
+                     <th>&nbsp;</th>
                  </tr>
                  </thead>
                  <tbody>

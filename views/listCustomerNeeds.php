@@ -30,7 +30,7 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
 
 
 //Get entity configuration_settings
-$configuration_settings = json_decode($entity->entities[0]->configuration_settings,true);
+$configuration_settings = $entity->entities[0]->configuration_settings;
 
 $availability_expire_days = 30; // This is the default for how many days until expired if entity has not set one
 for ($cs=0;$cs<count($configuration_settings);$cs++) {
@@ -41,7 +41,6 @@ for ($cs=0;$cs<count($configuration_settings);$cs++) {
         }
     }
 }
-
 
 $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_points?include=object_type_data_point_values&transform=1&columns=id,columnName,title,status,object_type_data_point_values.value&filter[]=entityID,in,(0," . $_SESSION['entityid'] . ")&filter[]=status,eq,Active&order[]=sort_order" ));
 
@@ -286,17 +285,16 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                           var expirationDateString = $("#expirationDate").val();
 
                           var availableDate = new Date(parseDate(availableDateString));
-                          var expirationDate = new Date();
 
                           if (expirationDateString == ""){
+                              var expirationDate = new Date(parseDate(availableDateString));
                               //expirationDate.setDate(availableDate.getDate() + 30); - No longer using a hardcoded 30 days. Comes from entities->configuration_settings
-                              expirationDate.setDate(availableDate.getDate() + availability_expire_days);
+                              expirationDate.setDate(availableDate.getDate() + parseInt(availability_expire_days));
                               expirationDateString = formatFormDates(expirationDate);
                           } else {
-                              expirationDate = new Date(parseDate(expirationDateString));
+                              var expirationDate = new Date(parseDate(expirationDateString));
                               expirationDateString = formatFormDates(expirationDate);
                           }
-                          //console.log("Expiration Date String:" + expirationDateString);
 
                           if (type == "PUT") {
                               var date = today;
@@ -419,13 +417,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
 
 
         if (<?php echo $_SESSION['entityid']; ?> > 0) {
-            var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=entities&columns=entities.name,id,entityID,qty,rate,rateType,transportationMode,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,contactEmails&filter[0]=status,eq,Available&filter[1]=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&filter[2]=expirationDate,ge,' + today + '&satisfy=all&order[0]=createdAt,desc&transform=1';
+            var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=entities&columns=entities.name,id,entityID,qty,rate,rateType,transportationMode,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,contactEmails&filter[0]=status,eq,Available&filter[1]=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&filter[2]=expirationDate,ge,' + today + '&filter[3]=rootCustomerNeedsID,eq,0&satisfy=all&order[0]=createdAt,desc&transform=1';
             var show = false;
         } else {
-            var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=entities&columns=entities.name,id,entityID,qty,rate,rateType,transportationMode,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,contactEmails&filter[0]=status,eq,Available&filter[1]=expirationDate,ge,' + today + '&satisfy=all&order[0]=entityID&order[1]=createdAt,desc&transform=1';
+            var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=entities&columns=entities.name,id,entityID,qty,rate,rateType,transportationMode,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,contactEmails&filter[0]=status,eq,Available&filter[1]=expirationDate,ge,' + today + '&filter[2]=rootCustomerNeedsID,eq,0&satisfy=all&order[0]=entityID&order[1]=createdAt,desc&transform=1';
             var show = true;
         }
-
+console.log(url);
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
             processing: true,
@@ -1642,6 +1640,32 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
             $("#divLoadOutRateType").html(entity.entities[0].loadOutRateType);
             $("#divPossibleCharges").show();
 
+            // Get configuration_settings for data manipulation
+            $.ajax({
+               url: '<?php echo API_HOST_URL . "/entities"; ?>/' + $("#entityID").val(),
+               type: 'GET',
+               contentType: "application/json",
+               async: false,
+               success: function(response){
+                 var entityTypeID = response.entityTypeID;
+                 var cs = response.configuration_settings;
+                 if (cs) {
+                    $.each(cs, function(idx, obj) {
+                      $.each(obj, function(key, val) {
+                        switch (key) {
+                            case 'availability_expire_days':
+                                   availability_expire_days = val; // Get the value from the JSON data in the record to use to set the selected option in the dropdown
+                                   break;
+                            default:
+                        }
+                      })
+                    });
+                 }
+               },
+               error: function() {
+                  alert('Failed Getting Configuration Settings! - Notify NEC of this failure.');
+               }
+            });
 
             var params = {id: $("#entityID").val()};
 
@@ -1770,6 +1794,33 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
            },
            error: function() {
               alert('Failed Getting Contacts! - Notify NEC of this failure.');
+           }
+        });
+
+        // Get configuration_settings for data manipulation
+        $.ajax({
+           url: '<?php echo API_HOST_URL . "/entities"; ?>/' + $("#entityID").val(),
+           type: 'GET',
+           contentType: "application/json",
+           async: false,
+           success: function(response){
+             var entityTypeID = response.entityTypeID;
+             var cs = response.configuration_settings;
+             if (cs) {
+                $.each(cs, function(idx, obj) {
+                  $.each(obj, function(key, val) {
+                    switch (key) {
+                        case 'availability_expire_days':
+                               availability_expire_days = val; // Get the value from the JSON data in the record to use to set the selected option in the dropdown
+                               break;
+                        default:
+                    }
+                  })
+                });
+             }
+           },
+           error: function() {
+              alert('Failed Getting Configuration Settings! - Notify NEC of this failure.');
            }
         });
     });
