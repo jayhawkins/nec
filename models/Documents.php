@@ -554,6 +554,21 @@ class Documents
 		$target_file = $target_directory.$filename;
 		$uploadOk = 1;
 
+		//Get entity configuration_settings
+		$entity = '';
+        $entity = json_decode(file_get_contents(API_HOST_URL . '/entities?filter[]=id,eq,' . $entityID . '&transform=1'));
+        $configuration_settings = $entity->entities[0]->configuration_settings;
+
+        $need_expire_days = 30; // This is the default for how many days until expired if entity has not set one
+        for ($cs=0;$cs<count($configuration_settings);$cs++) {
+            while (list($key, $val) = each($configuration_settings[$cs])) {
+                //echo "$key => $val\n";
+                if ($key == "need_expire_days") {
+                    $need_expire_days = $val;
+                }
+            }
+        }
+
 		// Check file size
 		if ($fileupload["size"] > 20000000) {
 			// File Too Large
@@ -621,7 +636,7 @@ class Documents
                             $address = urlencode($line[4].", ".$line[3].", ".$line[5].", ".$line[6]);
 
                             // google map geocode api url
-                            $url = "http://maps.google.com/maps/api/geocode/json?address={$address}";
+                            $url = "https://maps.google.com/maps/api/geocode/json?address={$address}&key=".GOOGLE_MAPS_API;
 
                             // get the json response
                             $resp_json = file_get_contents($url);
@@ -661,7 +676,7 @@ class Documents
                                     $address = urlencode($line[8].", ".$line[7].", ".$line[9].", ".$line[10]);
 
                                     // google map geocode api url
-                                    $url = "http://maps.google.com/maps/api/geocode/json?address={$address}";
+                                    $url = "https://maps.google.com/maps/api/geocode/json?address={$address}&key=".GOOGLE_MAPS_API;
 
                                     // get the json response
                                     $resp_json = file_get_contents($url);
@@ -728,6 +743,14 @@ class Documents
 
                                         $contacts = json_decode($line[26]);
 
+                                        if ($line[2] == "") {
+                                            $expirationDate = new DateTime($line[1]);
+                                            $expirationDate->add(new DateInterval('P'.$need_expire_days.'D'));
+                                            $expirationDate = $expirationDate->format('Y-m-d');
+                                        } else {
+                                            $expirationDate = $line[2]; // Use the expiration date from the uploaded file
+                                        }
+
                                         $dttime = date('Y-m-d H:i:s');
                                         if ($type == "PUT") {
                                             $data = array(
@@ -750,7 +773,7 @@ class Documents
                                                 "status"=>'Available',
                                                 "contactEmails"=>$contacts,
                                                 "availableDate"=>$line[1],
-                                                "expirationDate"=>$line[2],
+                                                "expirationDate"=>$expirationDate,
                                                 "createdAt"=>$dttime,
                                                 "updatedAt"=>$dttime
                                             );
@@ -775,7 +798,7 @@ class Documents
                                                 "status"=>'Available',
                                                 "contactEmails"=>[$contacts],
                                                 "availableDate"=>$line[1],
-                                                "expirationDate"=>$line[2],
+                                                "expirationDate"=>$expirationDate,
                                                 "createdAt"=>$dttime,
                                                 "updatedAt"=>$dttime
                                             );
@@ -830,6 +853,23 @@ class Documents
 		$target_directory = $file_location . "/users/".floor($entityID / 65535)."/".$entityID."/";
 		$target_file = $target_directory.$filename;
 		$uploadOk = 1;
+
+
+		//Get entity configuration_settings
+		$entity = '';
+        $entity = json_decode(file_get_contents(API_HOST_URL . '/entities?filter[]=id,eq,' . $entityID . '&transform=1'));
+        $configuration_settings = $entity->entities[0]->configuration_settings;
+
+        $availability_expire_days = 30; // This is the default for how many days until expired if entity has not set one
+        for ($cs=0;$cs<count($configuration_settings);$cs++) {
+            while (list($key, $val) = each($configuration_settings[$cs])) {
+                //echo "$key => $val\n";
+                if ($key == "availability_expire_days") {
+                    $availability_expire_days = $val;
+                }
+            }
+        }
+
 
 		// Check file size
 		if ($fileupload["size"] > 20000000) {
@@ -898,7 +938,7 @@ class Documents
                             $address = urlencode($line[4].", ".$line[3].", ".$line[5].", ".$line[6]);
 
                             // google map geocode api url
-                            $url = "http://maps.google.com/maps/api/geocode/json?address={$address}";
+                            $url = "https://maps.google.com/maps/api/geocode/json?address={$address}&key=".GOOGLE_MAPS_API;
 
                             // get the json response
                             $resp_json = file_get_contents($url);
@@ -938,7 +978,7 @@ class Documents
                                     $address = urlencode($line[8].", ".$line[7].", ".$line[9].", ".$line[10]);
 
                                     // google map geocode api url
-                                    $url = "http://maps.google.com/maps/api/geocode/json?address={$address}";
+                                    $url = "https://maps.google.com/maps/api/geocode/json?address={$address}&key=".GOOGLE_MAPS_API;
 
                                     // get the json response
                                     $resp_json = file_get_contents($url);
@@ -975,7 +1015,7 @@ class Documents
                                         $destinationlongitude = $olongi;
                                         $destinationformatted_address = $oformatted_address;
 
-                                        $url = $api_host  . "/" . API_ROOT. "/carrier_needs";
+                                        $url = $api_host  . "/" . API_ROOT. "/customer_needs";
                                         $type = "POST";
 /*
                                         if ((isset($line[0])) && ($line[0] != '')) {
@@ -1005,6 +1045,14 @@ class Documents
 
                                         $contacts = json_decode($line[28]);
 
+                                        if ($line[2] == "") {
+                                            $expirationDate = new DateTime($line[1]);
+                                            $expirationDate->add(new DateInterval('P'.$availability_expire_days.'D'));
+                                            $expirationDate = $expirationDate->format('Y-m-d');
+                                        } else {
+                                            $expirationDate = $line[2]; // Use the expiration date from the uploaded file
+                                        }
+
                                         $dttime = date('Y-m-d H:i:s');
                                         if ($type == "PUT") {
                                             $data = array(
@@ -1029,7 +1077,7 @@ class Documents
                                                 "status"=>'Available',
                                                 "contactEmails"=>[$contacts],
                                                 "availableDate"=>$line[1],
-                                                "expirationDate"=>$line[2],
+                                                "expirationDate"=>$expirationDate,
                                                 "createdAt"=>$dttime,
                                                 "updatedAt"=>$dttime
                                             );
@@ -1056,7 +1104,7 @@ class Documents
                                                 "status"=>'Available',
                                                 "contactEmails"=>[$contacts],
                                                 "availableDate"=>$line[1],
-                                                "expirationDate"=>$line[2],
+                                                "expirationDate"=>$expirationDate,
                                                 "createdAt"=>$dttime,
                                                 "updatedAt"=>$dttime
                                             );
@@ -1112,7 +1160,7 @@ class Documents
 		die();
 
 		// google map geocode api url
-		$url = "http://maps.google.com/maps/api/geocode/json?address={$address}";
+		$url = "https://maps.google.com/maps/api/geocode/json?address={$address}&key=".GOOGLE_MAPS_API;
 
 		// get the json response
 		$resp_json = file_get_contents($url);

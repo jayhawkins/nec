@@ -142,18 +142,6 @@ $app->route('POST /resetpassword', function() {
     }
 });
 
-$app->route('POST /driverresetpassword', function() {
-    $username = Flight::request()->data['username'];
-    $password = Flight::request()->data['password'];
-    $user = Flight::users();
-    $return = $user->driverresetpasswordapi($username,$password);
-    if ($return == "success") {
-      echo json_encode(array("status"=>204));
-    } else {
-      echo json_encode(array("status"=>400));
-    }
-});
-
 $app->route('GET /setpassword/@username', function($username) {
     $user = Flight::users();
     $return = $user->getUserValidateById($username);
@@ -190,15 +178,6 @@ $app->route('POST /checkforusername', function() {
     $user = Flight::users();
     $return = $user->checkforusername($username);
 
-    echo $return;
-});
-
-$app->route('POST /mobilelogin', function() {
-    $username = Flight::request()->data['username'];
-    $password = Flight::request()->data['password'];
-    $user = Flight::users();
-    $db = Flight::db();
-    $return = $user->mobileloginapi2($db,$username,$password);
     echo $return;
 });
 

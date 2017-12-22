@@ -423,10 +423,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
             var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=entities&columns=entities.name,id,entityID,qty,rate,rateType,transportationMode,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,contactEmails&filter[0]=status,eq,Available&filter[1]=expirationDate,ge,' + today + '&filter[2]=rootCustomerNeedsID,eq,0&satisfy=all&order[0]=entityID&order[1]=createdAt,desc&transform=1';
             var show = true;
         }
-console.log(url);
+
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
             processing: true,
+            bSort: false,
             ajax: {
                 url: url,
                 dataSrc: 'customer_needs'

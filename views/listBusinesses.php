@@ -154,6 +154,7 @@ $cdpvList = $cdpvresult["configuration_data_points"];
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
             processing: true,
+            bSort: false,
             ajax: {
                 url: url,
                 dataSrc: 'entities'

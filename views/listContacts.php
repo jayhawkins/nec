@@ -168,6 +168,7 @@ $contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?col
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
             processing: true,
+            bSort: false,
             ajax: {
                 url: url,
                 dataSrc: 'contacts'
@@ -261,10 +262,11 @@ $contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?col
 
       function loadBusinessTableAJAX(){
           myApp.showPleaseWait();
-        var url = '<?php echo API_HOST_URL; ?>' + '/entities?include=entity_types,locations&filter[0]=status,eq,Active&filter[1]=locations.status,eq,Active&filter[2]=locations.name,eq,Headquarters&transform=1';
+        var url = '<?php echo API_HOST_URL; ?>' + '/entities?include=entity_types,locations&filter[0]=status,eq,Active&filter[1]=locations.status,eq,Active&filter[2]=locations.name,eq,Headquarters&order=name&transform=1';
         var example_table = $('#business-datatable-table').DataTable({
             retrieve: true,
             processing: true,
+            bSort: false,
             ajax: {
                 url: url,
                 //dataSrc: 'entities',
