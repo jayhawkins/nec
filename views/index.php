@@ -37,8 +37,6 @@ $cityoptions = array(
 $citycontext  = stream_context_create($cityoptions);
 $cityresult = json_decode(file_get_contents($cityurl,false,$citycontext), true);
 */
-//print_r($cityresult);
-//die();
 
 // Get States
 $stateargs = array(
@@ -55,8 +53,6 @@ $stateoptions = array(
 );
 $statecontext  = stream_context_create($stateoptions);
 $stateresult = json_decode(file_get_contents($stateurl,false,$statecontext), true);
-//print_r($stateresult);
-//die();
 
 $member = json_decode(file_get_contents(API_HOST_URL . '/users?include=members&filter=id,eq,'.$_SESSION['userid']));
 
@@ -97,7 +93,6 @@ if ($_SESSION['entityid'] > 0) {
     } elseif ( $eresult['entities'][0]['entityTypeID'] == 2 ) { // Carrier
         $cnargs = array(
               "transform"=>"1",
-              //"filter[0]"=>"rootCustomerNeedsID,eq,0",
               "filter[]"=>"status,eq,Available",
               "filter[]"=>"expirationDate,ge," . date("Y-m-d 00:00:00"),
               "filter[]"=>"entityID,eq," . $_SESSION['entityid']
@@ -437,6 +432,54 @@ if ($_SESSION['entityid'] > 0) {
                },
                error: function() {
                   alert("There Was An Error Getting Committed Count");
+               }
+            });
+
+        }
+
+        function countCustomerNeeds(){
+
+            var entityid = <?php echo $_SESSION['entityid']; ?>;
+            var entityType = <?php echo $_SESSION['entitytype'];  ?>;
+
+            var today = new Date();
+            var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+            var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+            var dateTime = date+' '+time;
+            var theDate = date;
+
+            var url = '<?php echo API_HOST_URL; ?>';
+            var orderCount = 0;
+            switch(entityType){
+                case 0:     // URL for the Admin. The admin can see ALL Orders.
+                case 2:     // URL for the Carrier. Same as the admin but will be filtered below.
+                    url += '/customer_needs?';
+                    break;
+                case 1:    // URL for Customer. The Customer can only see their orders.
+                    url += '/customer_needs?filter[]=entityID,eq,' + entityid + "&";
+                    break;
+                default:
+                    url += '/customer_needs?';
+                    break;
+            }
+
+            url += 'filter[]=status,eq,Available&filter[]=expirationDate,ge,'+theDate+'&filter[]=rootCustomerNeedsID,eq,0&satisfy=all&transform=1';
+
+            $.ajax({
+               url: url,
+               type: "GET",
+               contentType: "application/json",
+               async: false,
+               success: function(json){
+
+                    var availability = json.customer_needs;
+
+                    console.log('availability count: ' + availability.length);
+
+                    $('#availabilityCount').html(availability.length);
+               },
+               error: function() {
+                  alert("There Was An Error Getting User Orders Count");
                }
             });
 
@@ -1219,10 +1262,8 @@ if ($_SESSION['entityid'] > 0) {
                          <i class="fa fa-users"></i>
                      </span>
                      One Way Trailer Opportunities
-                     <span class="label label-danger">
-                         <?php
-                            echo $customerncount;
-                        ?>
+                     <span id="availabilityCount" class="label label-danger">
+
                      </span>
                  </a>
              </li>
@@ -1237,10 +1278,8 @@ if ($_SESSION['entityid'] > 0) {
                          <i class="fa fa-users"></i>
                      </span>
                      My One Way Opportunities
-                     <span class="label label-danger">
-                         <?php
-                            echo $cncount;
-                        ?>
+                     <span id="availabilityCount" class="label label-danger">
+
                      </span>
                  </a>
              </li>
@@ -2293,6 +2332,7 @@ if ($_SESSION['entitytype'] == 0) {
 
     countUserOrders();
     countCommitments();
+    countCustomerNeeds();
 
     $("#activityFilter").select2().on('change', function(e) {
             getOrdersByFilters();
@@ -2500,7 +2540,7 @@ $(function() {
                            //link.between = [{"latitude": value.originationLat, "longitude": value.originationLng}, {"latitude": value.destinationLat, "longitude": value.destinationLng}];
                            link.between = [value.id+'-'+value.originationCity, value.id+'-'+value.destinationCity];
                            link.attrs = {
-                                        "stroke": "#a4e100",
+                                        "stroke": originationPlotColor,
                                         "stroke-width": 2,
                                         "stroke-linecap": "round",
                                         "opacity": 0.6,
