@@ -64,8 +64,13 @@ $app->route('GET|POST /testroute', function() {
 //echo $_SESSION['userid'];
 
 $app->route('GET /login', function() {
-  $invalidPassword = (isset($_SESSION['invalidPassword'])) ? $_SESSION['invalidPassword']:'';
-  Flight::render('login', array('invalidPassword'=> $invalidPassword));
+    if(isset($_SESSION['userid'])){
+        Flight::redirect('dashboard');
+    }
+    else{
+        $invalidPassword = (isset($_SESSION['invalidPassword'])) ? $_SESSION['invalidPassword']:'';
+        Flight::render('login', array('invalidPassword'=> $invalidPassword));
+    }
 });
 
 $app->route('GET /register', function() {
