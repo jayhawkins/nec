@@ -276,6 +276,40 @@ if ($_SESSION['entityid'] > 0) {
         .legend .needs { background-color: #FF0000; }
         .legend .commitments { background-color: #008000; }
 
+        .statistic-orders { background-color: #FFA500; }
+        .statistic-availability { background-color: #0000FF; }
+        .statistic-needs { background-color: #FF0000; }
+        .statistic-commitments { background-color: #008000; }
+
+        .progress-needs[value]::-webkit-progress-value {
+          background-color: #FF0000;
+        }
+
+        .progress-needs[value]::-moz-progress-bar {
+          background-color: #FF0000;
+        }
+
+        @media screen and (min-width: 0\0) {
+          .progress-needs .progress-bar {
+            background-color: #FF0000;
+          }
+        }
+
+        .progress-availability[value]::-webkit-progress-value {
+          background-color: #0000FF;
+        }
+
+        .progress-availability[value]::-moz-progress-bar {
+          background-color: #0000FF;
+        }
+
+        @media screen and (min-width: 0\0) {
+          .progress-availability .progress-bar {
+            background-color: #0000FF;
+          }
+        }
+
+
     </style>
 
     <script>
@@ -373,6 +407,7 @@ if ($_SESSION['entityid'] > 0) {
                     }
 
                     $('#orderCount').html(orderCount);
+                    $('#percent-orders').html(orderCount);
                },
                error: function() {
                   alert("There Was An Error Getting User Orders Count");
@@ -429,6 +464,7 @@ if ($_SESSION['entityid'] > 0) {
                     var commitmentCount = customer_needs.length;
 
                     $('#commitmentCount').html(commitmentCount);
+                    $('#percent-commitments').html(commitmentCount);
                },
                error: function() {
                   alert("There Was An Error Getting Committed Count");
@@ -474,12 +510,58 @@ if ($_SESSION['entityid'] > 0) {
 
                     var availability = json.customer_needs;
 
-                    console.log('availability count: ' + availability.length);
-
                     $('#availabilityCount').html(availability.length);
+                    $('#percent-availability').html(availability.length);
                },
                error: function() {
-                  alert("There Was An Error Getting User Orders Count");
+                  alert("There Was An Error Getting Customer Availability Count");
+               }
+            });
+
+        }
+
+        function countCarrierNeeds(){
+
+            var entityid = <?php echo $_SESSION['entityid']; ?>;
+            var entityType = <?php echo $_SESSION['entitytype'];  ?>;
+
+            var today = new Date();
+            var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+            var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+            var dateTime = date+' '+time;
+            var theDate = date;
+
+            var url = '<?php echo API_HOST_URL; ?>';
+            var orderCount = 0;
+            switch(entityType){
+                case 0:     // URL for the Admin. The admin can see ALL Orders.
+                case 2:     // URL for the Carrier. Same as the admin but will be filtered below.
+                    url += '/carrier_needs?';
+                    break;
+                case 1:    // URL for Customer. The Customer can only see their orders.
+                    url += '/carrier_needs?filter[]=entityID,eq,' + entityid + "&";
+                    break;
+                default:
+                    url += '/carrier_needs?';
+                    break;
+            }
+
+            url += 'filter[]=status,eq,Available&filter[]=expirationDate,ge,'+theDate+'&satisfy=all&transform=1';
+
+            $.ajax({
+               url: url,
+               type: "GET",
+               contentType: "application/json",
+               async: false,
+               success: function(json){
+
+                    var needs = json.carrier_needs;
+
+                    $('#needsCount').html(needs.length);
+                    $('#percent-needs').html(needs.length);
+               },
+               error: function() {
+                  alert("There Was An Error Getting Carrier Needs Count");
                }
             });
 
@@ -558,7 +640,7 @@ if ($_SESSION['entityid'] > 0) {
                                         satisfy = '&satisfy=all';
                                     }
                                     url += filter+satisfy+'&transform=1';
-                                    originationPlotColor = "red";
+                                    originationPlotColor = "blue";
                                     break;
                                 case 'Needs':
                                     urlType = "GET";
@@ -585,7 +667,7 @@ if ($_SESSION['entityid'] > 0) {
                                         satisfy = '&satisfy=all';
                                     }
                                     url += filter+satisfy+'&transform=1';
-                                    originationPlotColor = "blue";
+                                    originationPlotColor = "red";
                                     break;
                                 case 'Commitments':
                                     urlType = "GET";
@@ -1239,7 +1321,7 @@ if ($_SESSION['entityid'] > 0) {
                     <span class="icon">
                         <i class="fa fa-truck"></i>
                     </span>
-                    Needs
+                    Requested Needs
                     <span class="label label-danger">
                         <?php
                             if ( $_SESSION['entitytype'] == 1 ) {
@@ -1293,7 +1375,7 @@ if ($_SESSION['entityid'] > 0) {
                      <span class="icon">
                          <i class="fa fa-thumbs-up"></i>
                      </span>
-                     Commitment
+                     Commitments
                      <span id="commitmentCount" class="label label-danger">
 
                      </span>
@@ -1467,7 +1549,7 @@ if ($_SESSION['entityid'] > 0) {
                                 <span class="icon">
                                     <i class="fa fa-users"></i>
                                 </span>
-                                Availablity
+                                Manage Availablity
                             </a>
                         </li>
 <?php
@@ -1493,7 +1575,7 @@ if ($_SESSION['entityid'] > 0) {
                                  <span class="icon">
                                      <i class="fa fa-truck"></i>
                                  </span>
-                                 Needs
+                                 Manage Needs
                              </a>
                          </li>
 <?php
@@ -1515,7 +1597,7 @@ if ($_SESSION['entityid'] > 0) {
     if ( ($_SESSION['entityid'] == 0)  && in_array($_SESSION['usertypeid'], $mapsMenuAccessList) ) {
  ?>
 
-
+<!--
             <li>
                 <a class="collapsed" href="#sidebar-maps" data-toggle="collapse" data-parent="#sidebar">
                     <span class="icon">
@@ -1525,12 +1607,13 @@ if ($_SESSION['entityid'] > 0) {
                     <i class="toggle fa fa-angle-down"></i>
                 </a>
                 <ul id="sidebar-maps" class="collapse">
-                    <!-- data-no-pjax turns off pjax loading for this link. Use in case of complicated js loading on the
-                         target page -->
+                    <### data-no-pjax turns off pjax loading for this link. Use in case of complicated js loading on the
+                         target page ##>
                     <li><a href="#" onclick="ajaxFormCall('listGoogleMaps');" data-no-pjax>Google Maps</a></li>
                     <li><a href="maps_vector.html">Vector Maps</a></li>
                 </ul>
             </li>
+-->
 <?php
     }
 
@@ -1549,12 +1632,12 @@ if ($_SESSION['entityid'] > 0) {
                          target page -->
                <?php
                    if ($_SESSION['entitytype'] == 1) {
-                     echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listTrailerSpecs');\">Trailer Specs</a></li>";
+                     //echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listTrailerSpecs');\">Trailer Specs</a></li>";
                    } else if ($_SESSION['entitytype'] == 2) {
-                     echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listTrailerSpecs');\">Trailer Specs</a></li>";
+                     //echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listTrailerSpecs');\">Trailer Specs</a></li>";
                    } else {
                      // Must be NEC Admin So Show it all...
-                     echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listTrailerSpecs');\">Trailer Specs</a></li>";
+                     //echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listTrailerSpecs');\">Trailer Specs</a></li>";
                    }
                ?>
                 </ul>
@@ -1582,9 +1665,12 @@ if ($_SESSION['entityid'] > 0) {
                         <i class="fa fa-bars fa-lg hidden-sm-down"></i>
                     </a>
                 </li>
+                <!--
                 <li class="nav-item hidden-sm-down"><a href="#" class="nav-link"><i class="fa fa-refresh fa-lg"></i></a></li>
                 <li class="nav-item ml-n-xs hidden-sm-down"><a href="#" class="nav-link"><i class="fa fa-times fa-lg"></i></a></li>
+                -->
             </ul>
+
             <ul class="nav navbar-nav navbar-right hidden-md-up">
                 <li>
                     <!-- toggles chat -->
@@ -1593,6 +1679,7 @@ if ($_SESSION['entityid'] > 0) {
                     </a>
                 </li>
             </ul>
+
             <!-- xs & sm screen logo -->
             <a class="navbar-brand hidden-md-up" href="index.html">
                 <i class="fa fa-circle text-gray mr-n-sm"></i>
@@ -1608,6 +1695,8 @@ if ($_SESSION['entityid'] > 0) {
         <!-- this part is hidden for xs screens -->
         <div class="collapse navbar-collapse">
             <!-- search form! link it to your search server -->
+
+            <!--
             <form class="navbar-form pull-xs-left" role="search">
                 <div class="form-group">
                     <div class="input-group input-group-no-border">
@@ -1618,6 +1707,7 @@ if ($_SESSION['entityid'] > 0) {
                     </div>
                 </div>
             </form>
+            -->
 
             <ul class="nav navbar-nav pull-xs-right">
                 <li class="nav navbar-form pull-xs-left">
@@ -1630,14 +1720,15 @@ if ($_SESSION['entityid'] > 0) {
                         </span>
                         &nbsp;
                         <?php echo $firstName; ?> <strong><?php echo $lastName; ?></strong>&nbsp;
-                        <span class="circle bg-warning fw-bold">
+                        <!--span class="circle bg-warning fw-bold">
                             13
-                        </span>
+                        </span-->
                         <b class="caret"></b></a>
                     <!-- ready to use notifications dropdown.  inspired by smartadmin template.
                          consists of three components:
                          notifications, messages, progress. leave or add what's important for you.
                          uses Sing's ajax-load plugin for async content loading. See #load-notifications-btn -->
+                    <!--
                     <div class="dropdown-menu dropdown-menu-right animated fadeInUp" id="notifications-dropdown-menu">
                         <section class="card notifications">
                             <header class="card-header">
@@ -1646,8 +1737,8 @@ if ($_SESSION['entityid'] > 0) {
                                 </div>
                                 <div class="btn-group btn-group-sm btn-group-justified" id="notifications-toggle" data-toggle="buttons">
                                     <label class="btn btn-secondary active">
-                                        <!-- ajax-load plugin in action. setting data-ajax-load & data-ajax-target is the
-                                             only requirement for async reloading -->
+                                        <### ajax-load plugin in action. setting data-ajax-load & data-ajax-target is the
+                                             only requirement for async reloading ##>
                                         <input type="radio" checked
                                                data-ajax-trigger="change"
                                                data-ajax-load="demo/ajax/notifications.html"
@@ -1667,7 +1758,7 @@ if ($_SESSION['entityid'] > 0) {
                                     </label>
                                 </div>
                             </header>
-                            <!-- notification list with .thin-scroll which styles scrollbar for webkit -->
+                            <### notification list with .thin-scroll which styles scrollbar for webkit ##>
                             <div id="notifications-list" class="list-group thin-scroll">
                                 <div class="list-group-item">
                                 <span class="thumb-sm pull-xs-left mr clearfix">
@@ -1753,8 +1844,8 @@ if ($_SESSION['entityid'] > 0) {
                                 </a>
                             </div>
                             <footer class="card-footer text-sm">
-                                <!-- ajax-load button. loads demo/ajax/notifications.php to #notifications-list
-                                     when clicked -->
+                                <### ajax-load button. loads demo/ajax/notifications.php to #notifications-list
+                                     when clicked ##>
                                 <button class="btn-label btn-link pull-xs-right"
                                         id="load-notifications-btn"
                                         data-ajax-load="demo/ajax/notifications.php"
@@ -1766,20 +1857,24 @@ if ($_SESSION['entityid'] > 0) {
                             </footer>
                         </section>
                     </div>
+                    -->
                 </li>
                 <li class="dropdown nav-item">
                     <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
                         <i class="fa fa-cog fa-lg"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-right">
+                        <!--
                         <li><a class="dropdown-item" href="profile.html"><i class="glyphicon glyphicon-user"></i> &nbsp; My Account</a></li>
                         <li class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="calendar.html">Calendar</a></li>
                         <li><a class="dropdown-item" href="inbox.html">Inbox &nbsp;&nbsp;<span class="label label-pill label-danger animated bounceIn">9</span></a></li>
                         <li class="dropdown-divider"></li>
+                        -->
                         <li><a class="dropdown-item" href="/logout"><i class="fa fa-sign-out"></i> &nbsp; Log Out</a></li>
                     </ul>
                 </li>
+                <!--
                 <li class="nav-item">
                     <a href="#" class="nav-link" data-toggle="chat-sidebar">
                         <i class="fa fa-globe fa-lg"></i>
@@ -1796,6 +1891,7 @@ if ($_SESSION['entityid'] > 0) {
                         </div>
                     </div>
                 </li>
+                -->
             </ul>
         </div>
     </div>
@@ -2163,11 +2259,13 @@ if ($_SESSION['entitytype'] == 0) {
                                 Map
                                 <span class="fw-semi-bold">Statistics</span>
                             </h5>
+                            <!--
                             <div class="widget-controls widget-controls-hover">
                                 <a href="#"><i class="glyphicon glyphicon-cog"></i></a>
                                 <a href="#"><i class="fa fa-refresh"></i></a>
                                 <a href="#" data-widgster="close"><i class="glyphicon glyphicon-remove"></i></a>
                             </div>
+                            -->
                         </header>
                         <div class="widget-body">
                             <!--
@@ -2182,13 +2280,43 @@ if ($_SESSION['entitytype'] == 0) {
                                     <h6 class="name m-t-1">Needs</h6>
                                     <p class="description deemphasize">open needs</p>
                                     <div class="bg-white progress-bar">
-                                        <progress class="progress progress-primary progress-sm js-progress-animate" value="100" max="100" style="width: 0%" data-width="60%"></progress>
+                                        <progress class="progress progress-needs progress-sm js-progress-animate" value="100" max="100" style="width: 0%" data-width="60%"></progress>
                                     </div>
                                 </div>
                                 <div class="col-md-3 text-xs-center">
                                     <!--span class="status rounded rounded-lg bg-body-light"-->
-                                    <span class="label label-pill label-primary">
-                                        <small><span id="percent-1">63</span></small>
+                                    <span class="label label-pill statistic-needs">
+                                        <small><span id="percent-needs">63</span></small>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="row progress-stats">
+                                <div class="col-md-9">
+                                    <h6 class="name m-t-1">Availablity</h6>
+                                    <p class="description deemphasize">available trailers</p>
+                                    <div class="bg-white progress-bar">
+                                        <progress class="progress progress-sm progress-availability js-progress-animate" value="100" max="100" style="width: 0%" data-width="50%"></progress>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 text-xs-center">
+                                    <!--span class="status rounded rounded-lg bg-body-light"-->
+                                    <span class="label label-pill statistic-availability">
+                                        <small><span id="percent-availability">37</span></small>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="row progress-stats">
+                                <div class="col-md-9">
+                                    <h6 class="name m-t-1">Commitments</h6>
+                                    <p class="description deemphasize">available trailers</p>
+                                    <div class="bg-white progress-bar">
+                                        <progress class="progress progress-sm progress-warning js-progress-animate" value="100" max="100" style="width: 0%" data-width="50%"></progress>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 text-xs-center">
+                                    <!--span class="status rounded rounded-lg bg-body-light"-->
+                                    <span class="label label-pill statistic-commitments">
+                                        <small><span id="percent-commitments">37</span></small>
                                     </span>
                                 </div>
                             </div>
@@ -2202,23 +2330,8 @@ if ($_SESSION['entitytype'] == 0) {
                                 </div>
                                 <div class="col-md-3 text-xs-center">
                                     <!--span class="status rounded rounded-lg bg-body-light"-->
-                                    <span class="label label-pill label-success">
-                                        <small><span  id="percent-2">12</span></small>
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="row progress-stats">
-                                <div class="col-md-9">
-                                    <h6 class="name m-t-1">Availablity</h6>
-                                    <p class="description deemphasize">available trailers</p>
-                                    <div class="bg-white progress-bar">
-                                        <progress class="progress progress-sm progress-warning js-progress-animate" value="100" max="100" style="width: 0%" data-width="50%"></progress>
-                                    </div>
-                                </div>
-                                <div class="col-md-3 text-xs-center">
-                                    <!--span class="status rounded rounded-lg bg-body-light"-->
-                                    <span class="label label-pill label-warning">
-                                        <small><span id="percent-3">37</span></small>
+                                    <span class="label label-pill statistic-orders">
+                                        <small><span  id="percent-orders">12</span></small>
                                     </span>
                                 </div>
                             </div>
@@ -2333,6 +2446,7 @@ if ($_SESSION['entitytype'] == 0) {
     countUserOrders();
     countCommitments();
     countCustomerNeeds();
+    countCarrierNeeds();
 
     $("#activityFilter").select2().on('change', function(e) {
             getOrdersByFilters();
@@ -2379,11 +2493,11 @@ $(function() {
 
    if ( entityTypeID == 1 ) { // Customer
        cnresult = cnresult['customer_needs'];
-       var originationPlotColor = "red";
+       var originationPlotColor = "blue";
        var list = "listCustomerNeeds";
    } else if ( entityTypeID == 2 ) { // Carrier
        cnresult = cnresult['carrier_needs'];
-       var originationPlotColor = "blue";
+       var originationPlotColor = "red";
        var list = "listCarrierNeeds";
    } else {
        if (orders.length > 0) {
@@ -2392,7 +2506,7 @@ $(function() {
        } else {
            cnresult = [];
        }
-       var originationPlotColor = "green";
+       var originationPlotColor = "orange";
        var list = "listOrders";
    }
 
@@ -2423,7 +2537,7 @@ $(function() {
                    } else if (entityTypeID == 2) {
                        var originationPlotColor = "Red";
                    } else {
-                       var originationPlotColor = "Green";
+                       var originationPlotColor = "Orange";
                    }
 
                    //var plotsColors = chroma.scale("Blues");

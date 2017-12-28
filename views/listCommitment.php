@@ -2845,27 +2845,15 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             var vinNumber = $('#vinNumber' + unitID).val().trim();
             var truckProNumber = $('#truckProNumber' + unitID).val().trim();
             var poNumber = $('#poNumber' + unitID).val().trim();
-<<<<<<< HEAD
 
-            if(vinNumber != "" && unitNumber != "" && truckProNumber != "" && poNumber != ""){
+            if(vinNumber != "" || unitNumber != "" || truckProNumber != "" || poNumber != ""){
                 var unitData = {unitNumber: unitNumber, vinNumber: vinNumber, truckProNumber: truckProNumber, poNumber: poNumber};
 
                 unitDataList.push(unitData);
             }
         });
 
-
-=======
-           
-            if(vinNumber != "" || unitNumber != "" || truckProNumber != "" || poNumber != ""){
-                var unitData = {unitNumber: unitNumber, vinNumber: vinNumber, truckProNumber: truckProNumber, poNumber: poNumber}; 
-                
-                unitDataList.push(unitData);
-            }
-        });
-        
         if(unitDataList.length > 0){
->>>>>>> 03a7d634a22ae1df65f6d041616dcea83ec39e34
           $("#saveCommit").html("<i class='fa fa-spinner fa-spin'></i> Updating Commit");
           $("#saveCommit").prop("disabled", true);
 
@@ -3095,32 +3083,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             var vinNumber = $('#vinNumber' + unitID).val().trim();
             var truckProNumber = $('#truckProNumber' + unitID).val().trim();
             var poNumber = $('#poNumber' + unitID).val().trim();
-<<<<<<< HEAD
 
-            if(vinNumber != "" && unitNumber != "" && truckProNumber != "" && poNumber != ""){
+            if(vinNumber != "" || unitNumber != "" || truckProNumber != "" || poNumber != ""){
                 var unitData = {unitNumber: unitNumber, vinNumber: vinNumber, truckProNumber: truckProNumber, poNumber: poNumber};
 
                 unitDataList.push(unitData);
             }
         });
 
-        var today = new Date();
-        var orderID = today.getTime().toString();
-        var dd = today.getDate();
-        var mm = today.getMonth()+1; //January is 0!
-        var yyyy = today.getFullYear();
-        var hours = today.getHours();
-        var min = today.getMinutes();
-        var sec = today.getSeconds();
-=======
-           
-            if(vinNumber != "" || unitNumber != "" || truckProNumber != "" || poNumber != ""){
-                var unitData = {unitNumber: unitNumber, vinNumber: vinNumber, truckProNumber: truckProNumber, poNumber: poNumber}; 
-                
-                unitDataList.push(unitData);
-            }
-        });
-        
         if(unitDataList.length > 0){
             var today = new Date();
             var orderID = today.getTime().toString();
@@ -3134,7 +3104,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             if(dd<10) {
                 dd='0'+dd;
             }
->>>>>>> 03a7d634a22ae1df65f6d041616dcea83ec39e34
 
             if(mm<10) {
                 mm='0'+mm;
@@ -3153,135 +3122,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
             var id = $('#customerNeedsID').val();
 
-<<<<<<< HEAD
-        var id = $('#customerNeedsID').val();
-
-        var pickupInformation = {pickupLocation: $('#pickupLocation').val().trim(), contactPerson: $('#pickupContactPerson').val().trim(),
-                                phoneNumber: $('#pickupPhoneNumber').val().trim(), hoursOfOperation: $('#pickupHoursOfOperation').val().trim()};
-
-        var deliveryInformation = {deliveryLocation: $('#deliveryLocation').val().trim(), contactPerson: $('#deliveryContactPerson').val().trim(),
-                                phoneNumber: $('#deliveryPhoneNumber').val().trim(), hoursOfOperation: $('#deliveryHoursOfOperation').val().trim()};
-
-        var originationAddress1 = $('#originationAddress1').val().trim();
-        var originationAddress2 = $('#originationAddress2').val().trim();
-        var originationCity = $('#originationCity').val().trim();
-        var originationState = $('#originationState').val().trim();
-        var originationZip = $('#originationZip').val().trim();
-        var originationNotes = $('#originationNotes').val().trim();
-
-        var destinationAddress1 = $('#destinationAddress1').val().trim();
-        var destinationAddress2 = $('#destinationAddress2').val().trim();
-        var destinationCity = $('#destinationCity').val().trim();
-        var destinationState = $('#destinationState').val().trim();
-        var destinationZip = $('#destinationZip').val().trim();
-        var destinationNotes = $('#destinationNotes').val().trim();
-
-
-        // Build the needsDataPoints
-        var needsarray = [];
-        var obj = $("#dp-check-list-box div div select");
-
-        for (var i = 0; i < obj.length; i++) {
-            var item = {};
-            item[obj[i].id] = obj[i].value;
-            needsarray.push(item);
-        }
-
-        var decal = {};
-        decal['decals'] = $("#decals").val().trim();
-        needsarray.push(decal);
-
-        var needsdatapoints = needsarray;
-
-        var qty = $("#qty").val().trim();
-        var customerID = $('#customerID').val();
-
-        var orderData = {customerID: customerID, carrierIDs: [], documentID: 0, orderID: orderID, deliveryInformation: deliveryInformation, pickupInformation: pickupInformation, originationAddress: originationAddress1, originationCity: originationCity, originationState: originationState, originationZip: originationZip,
-                    destinationAddress: destinationAddress1,  destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, originationLng: "", originationLat: "", destinationLng: "", destinationLat: "", distance: 0, needsDataPoints: needsdatapoints, podList: unitDataList,
-                    status: "Open", comments: "", createdAt: today, updatedAt: today, qty: qty};
-
-        var url = '<?php echo API_HOST_URL . "/orders" ?>/';
-
-        $.ajax({
-            url: url,
-            type: "POST",
-            data: JSON.stringify(orderData),
-            contentType: "application/json",
-            async: false,
-            success: function(data){
-                if(data > 0){
-
-                    var relayNumber = 0;
-                    for(relayNumber = 1; relayNumber < 5; relayNumber++){
-
-                        var relayData = {};
-                        var url = "";
-                        var type = "";
-
-                        var relayID = $('#relay_id' + relayNumber).val().trim();
-                        var commitID = $('#commit_id' + relayNumber).val().trim();
-                        var destinationAddress1 = $('#address_relay' + relayNumber).val().trim();
-                        var destinationCity = $('#city_relay' + relayNumber).val().trim();
-                        var destinationState = $('#state_relay' + relayNumber).val().trim();
-                        var destinationZip = $('#zip_relay' + relayNumber).val().trim();
-                        var destinationNotes = $('#notes_relay' + relayNumber).val().trim();
-
-                        var deliveryInformation = {deliveryLocation: $('#deliveryLocation_relay' + relayNumber).val().trim(), contactPerson: $('#contactPerson_relay' + relayNumber).val().trim(),
-                                                phoneNumber: $('#phoneNumber_relay' + relayNumber).val().trim(), hoursOfOperation: $('#hoursOfOperation_relay' + relayNumber).val().trim()};
-
-                        if(destinationCity != "" && destinationState != ""){
-
-                                url = '<?php echo API_HOST_URL . "/order_details" ?>/';
-                                type = "POST";
-                                relayData = {carrierID: 0, orderID: data, pickupInformation: pickupInformation, originationAddress: originationAddress1, originationCity: originationCity, originationState: originationState, originationZip: originationZip,
-                                    deliveryInformation: deliveryInformation, destinationAddress: destinationAddress1, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, carrierRate: 0.00, transportationMode: "",
-                                    qty: qty, createdAt: today, updatedAt: today, needsDataPoints: needsdatapoints, status: "Open"};
-
-                            $.ajax({
-                                url: url,
-                                type: type,
-                                data: JSON.stringify(relayData),
-                                contentType: "application/json",
-                                async: false,
-                                success: function(data){
-                                    if(data > 0){
-                                        originationAddress1 = destinationAddress1;
-                                        originationCity = destinationCity;
-                                        originationState = destinationState;
-                                        originationZip = destinationZip;
-                                        pickupInformation = deliveryInformation;
-                                    }
-                                },
-                                error: function(){
-                                    alert("unable to save relay.");
-                                }
-                            });
-                        }
-                    }
-
-
-                    closeCustomerCommitLegs(id);
-                    closeCommitTransport();
-                    $(document.body).css("cursor", "default");
-                    alert("Order Saved.");
-                }
-                else{
-                    console.log(data);
-                    $(document.body).css("cursor", "default");
-
-                }
-            },
-            error: function(data){
-
-                originationAddress1 = destinationAddress1;
-                originationCity = destinationCity;
-                originationState = destinationState;
-                originationZip = destinationZip;
-                pickupInformation = deliveryInformation;
-                alert("There Was An Error Saving Order");
-            }
-        });
-=======
             var pickupInformation = {pickupLocation: $('#pickupLocation').val().trim(), contactPerson: $('#pickupContactPerson').val().trim(),
                                     phoneNumber: $('#pickupPhoneNumber').val().trim(), hoursOfOperation: $('#pickupHoursOfOperation').val().trim()};
 
@@ -3323,7 +3163,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             var customerID = $('#customerID').val();
 
             var orderData = {customerID: customerID, carrierIDs: [{carrierID: 0}], orderID: orderID, deliveryInformation: deliveryInformation, pickupInformation: pickupInformation, originationAddress: originationAddress1, originationCity: originationCity, originationState: originationState, originationZip: originationZip,
-                        destinationAddress: destinationAddress1,  destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, originationLng: "", originationLat: "", destinationLng: "", destinationLat: "", distance: 0, needsDataPoints: needsdatapoints, podList: unitDataList, 
+                        destinationAddress: destinationAddress1,  destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, originationLng: "", originationLat: "", destinationLng: "", destinationLat: "", distance: 0, needsDataPoints: needsdatapoints, podList: unitDataList,
                         comments: "", createdAt: today, updatedAt: today, qty: qty};
 
             var url = '<?php echo API_HOST_URL . "/orders" ?>';
@@ -3338,11 +3178,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     if(data > 0){
 
                         var relayNumber = 0;
-                        for(relayNumber = 1; relayNumber < 5; relayNumber++){                        
+                        for(relayNumber = 1; relayNumber < 5; relayNumber++){
 
                             var relayData = {};
                             var url = "";
-                            var type = ""; 
+                            var type = "";
 
                             var relayID = $('#relay_id' + relayNumber).val().trim();
                             var commitID = $('#commit_id' + relayNumber).val().trim();
@@ -3383,7 +3223,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     }
                                 });
                             }
-                        }    
+                        }
 
                         closeCustomerCommitLegs(id);
                         $(document.body).css("cursor", "default");
@@ -3404,6 +3244,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         else{
             alert("You must enter at least ONE Trailer.");
         }
->>>>>>> 03a7d634a22ae1df65f6d041616dcea83ec39e34
+
     }
  </script>
