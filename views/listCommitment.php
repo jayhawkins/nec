@@ -406,6 +406,118 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
     }
 
+    function clearCommitForm(){
+        
+        $('#commitModalTitle').empty();
+        $('#dp-check-list-box').empty();
+            $('#customerID').val("");
+            
+            $('#pickupLocation').val("");
+            $('#pickupContactPerson').val("");
+            $('#pickupPhoneNumber').val("");
+            $('#pickupHoursOfOperation').val("");            
+            $('#originationAddress1').val("");
+            $('#originationAddress2').val("");
+            $('#originationCity').val("");
+            $('#originationState').val("");
+            $('#originationZip').val("");
+            $('#originationNotes').val("");            
+            
+            $('#deliveryLocation').val("");
+            $('#deliveryContactPerson').val("");
+            $('#deliveryPhoneNumber').val("");
+            $('#deliveryHoursOfOperation').val("");
+            $('#destinationAddress1').val("");
+            $('#destinationAddress2').val("");
+            $('#destinationCity').val("");
+            $('#destinationState').val("");
+            $('#destinationZip').val("");
+            $('#destinationNotes').val("");
+            $('#unitDataBody').empty();
+            
+        for(var relayNumber = 1; relayNumber <=4 ; relayNumber ++){            
+            $('#relay_id' + relayNumber).val("");
+            $('#commit_id' + relayNumber).val("");
+            $('#address_relay' + relayNumber).val("");
+            $('#city_relay' + relayNumber).val("");
+            $('#state_relay' + relayNumber).val("");
+            $('#zip_relay' + relayNumber).val("");     
+            $('#notes_relay' + relayNumber).val("");  
+
+            $('#deliveryLocation_relay' + relayNumber).val(""); 
+            $('#contactPerson_relay' + relayNumber).val(""); 
+            $('#phoneNumber_relay' + relayNumber).val(""); 
+            $('#hoursOfOperation_relay' + relayNumber).val(""); 
+        }
+        
+        
+            var dpli = '<div class="form-group row">' +
+                            '<label for="qty" class="col-sm-3 col-form-label">Quantity</label>'+
+                            '<div class="col-sm-9">' +
+                            '<input id="qty" name="qty" class="form-control">'+
+                            '</div>'+
+                            '</div>';
+                    
+            for (var i = 0; i < dataPoints.object_type_data_points.length; i++) {
+                
+                if(dataPoints.object_type_data_points[i].title == "Decals"){
+                    dpli += '<div class="form-group row">' +
+                            '<label for="decals" class="col-sm-3 col-form-label">Decals</label>'+
+                            '<div class="col-sm-9">' +
+                            '<input id="decals" name="decals" class="form-control">'+
+                            '</div>'+
+                            '</div>';
+                  }
+                  else{
+                      
+                    dpli += '<div class="form-group row">' +
+                            '<label for="' + dataPoints.object_type_data_points[i].columnName + '" class="col-sm-3 col-form-label">' + dataPoints.object_type_data_points[i].title + '</label>' +
+                            '<div class="col-sm-9"> <select class="form-control" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '">' +
+                            ' <option value="">-Select From List-</option>\n';
+
+                    for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
+
+                        dpli += '<option>' + dataPoints.object_type_data_points[i].object_type_data_point_values[v].value + '</option>\n';
+
+                    }
+
+                    dpli += '</select>' +
+                            '</div></div>';
+                  }
+            }
+            
+
+            dpli += '<div class="form-group row">' +
+                    '   <label for="rate" class="col-sm-3 col-form-label">Rate</label>' +
+                    '   <div class="col-sm-9">' +
+                    '       <input id="rate" name="rate" class="form-control" value="">' +
+                    '   </div>' +
+                    '</div>';
+            
+            dpli += '<div class="form-group row">' +
+                    '   <label for="rateType" class="col-sm-3 col-form-label">Rate Type</label>' +
+                    '   <div class="col-sm-9">' +
+                    '       <input type="radio" id="rateType" name="rateType" value="Flat Rate" /> Flat Rate ' + 
+                    '       <input type="radio" id="rateType" name="rateType" value="Mileage" /> Mileage</div>' +
+                    '   </div>'+
+                    '</div>';
+            
+            dpli += '<div class="form-group row">' +
+                    '   <label for="transportationMode" class="col-sm-3 col-form-label">Transportation Mode</label>' +
+                    '   <div class="col-sm-9">' +
+                    '       <select class="form-control" id="transportationMode" name="transportationMode">' +
+                    '           <option value="">*Select Mode...</option>' +
+                    '           <option value="Empty">Empty</option>' +
+                    '           <option value="Load Out">Load Out</option>' +
+                    '           <option value="Either (Empty or Load Out)">Either (Empty or Load Out)</option>' +
+                    '       </select>' +
+                    '   </div>'+
+                    '</div>';
+            
+            $("#dp-check-list-box").append(dpli);
+        
+    }
+
 
     function loadTableAJAX(committed) {
 
@@ -553,6 +665,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
     function loadNewCustomerNeedsCommit(id){
     
+        $('#commitModalTitle').empty();
         $('#relayTabs > li > a').unbind('click');
         $('#unitDataBody').empty();
         $('#relayTabs').empty();
@@ -570,6 +683,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         var url = baseUrl + '&satisfy=any&order[]=entityID&order[]=rootCustomerNeedsID&order[]=availableDate,desc&transform=1';
 
         var relayURL = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,deliveryInformation,pickupInformation,transportationMode,rate,originationAddress1,originationCity,originationState,originationZip,originationNotes,destinationNotes,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,unitData,status,customer_needs_commit.id,customer_needs_commit.entityID,customer_needs_commit.status,customer_needs_commit.pickupDate,customer_needs_commit.deliveryDate,customer_needs_commit.rate,customer_needs_commit.transportation_mode,entities.name,entities.rateType,entities.negotiatedRate&filter[]=rootCustomerNeedsID,eq,' + id + '&filter[]=status,eq,Available&satisfy=all&order[]=id&transform=1';
+        
+        console.log(url);
+        console.log(relayURL);
         
         $.get(url, function(data){
             
@@ -827,6 +943,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 $('#state_relay' + relayNumber).val(customer_needs.destinationState);
                 $('#zip_relay' + relayNumber).val(customer_needs.destinationZip);     
                 $('#notes_relay' + relayNumber).val(customer_needs.destinationNotes);  
+                $('#pickupDate_relay' + relayNumber).val(customer_needs.customer_needs_commit[0].pickupDate);  
+                $('#deliveryDate_relay' + relayNumber).val(customer_needs.customer_needs_commit[0].deliveryDate);  
                 
                 $('#deliveryLocation_relay' + relayNumber).val(customer_needs.deliveryInformation.deliveryLocation); 
                 $('#contactPerson_relay' + relayNumber).val(customer_needs.deliveryInformation.contactPerson); 
@@ -851,6 +969,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             });
     
         });
+        
+        $('#commitModalTitle').append("Edit Commitment");
         
         $("#customer-needs-commit").css("display", "block");
         $("#customer-needs").css("display", "none");
@@ -1366,6 +1486,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
          <h4><span class="fw-semi-bold">Available Transport</span></h4>
          <div class="widget-controls">
              
+           <button type="button" class="btn btn-primary btn-md" onclick="addNewCommitment();" id="addNewCommitment">Add New Commitment</button>
          </div>
      </header>
      <div class="widget-body">
@@ -1523,7 +1644,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
-          <h1 class="modal-title fw-semi-bold" id="exampleModalCommitLabel">Edit Commitment</h1>
+          <h1 class="modal-title fw-semi-bold" id="commitModalTitle">Edit Commitment</h1>
         </div>
         <div class="modal-body">
             <div class="row">
@@ -1672,48 +1793,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     <div class="col-md-12">
                     <h2>Trailer Data</h2>
                     <form id="dp-check-list-box">
-                            <div class="form-group row">
-                                    <label for="type" class="col-sm-3 col-form-label">Type</label>
-                                    <div class="col-sm-9">
-                                            <input class="form-control" id="type" placeholder="" type="type">
-                                    </div>
-                            </div>
-                            <div class="form-group row">
-                                    <label for="height" class="col-sm-3 col-form-label">Height</label>
-                                    <div class="col-sm-9">
-                                            <input class="form-control" id="height" placeholder="Height of trailer door" type="height">
-                                    </div>
-                            </div>
-                            <div class="form-group row">
-                                    <label for="door" class="col-sm-3 col-form-label">Door</label>
-                                    <div class="col-sm-9">
-                                            <input class="form-control" id="door" placeholder="Trailer door type" type="door">
-                                    </div>
-                            </div>
-                            <div class="form-group row">
-                                    <label for="test_data1" class="col-sm-3 col-form-label">Test Data</label>
-                                    <div class="col-sm-9">
-                                            <input class="form-control" id="test_data1" placeholder="" type="test_data1">
-                                    </div>
-                            </div>
-                            <div class="form-group row">
-                                    <label for="test_data2" class="col-sm-3 col-form-label">Test Data</label>
-                                    <div class="col-sm-9">
-                                            <input class="form-control" id="test_data2" placeholder="" type="test_data2">
-                                    </div>
-                            </div>
-                            <div class="form-group row">
-                                    <label for="test_data3" class="col-sm-3 col-form-label">Test Data</label>
-                                    <div class="col-sm-9">
-                                            <input class="form-control" id="test_data3" placeholder="" type="test_data3">
-                                    </div>
-                            </div>
-                            <div class="form-group row">
-                                    <label for="test_data4" class="col-sm-3 col-form-label">Test Data</label>
-                                    <div class="col-sm-9">
-                                            <input class="form-control" id="test_data4" placeholder="" type="test_data4">
-                                    </div>
-                            </div>
+                        
                     </form>
                     </div>
             </div>
@@ -1747,6 +1827,15 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     <label for="hoursOfOperation_relay1">Hours of Operation</label>
                                     <input class="form-control" id="hoursOfOperation_relay1" placeholder="" type="text">
                             </div>
+                            <div class="form-group">
+                                    <label for="pickupDate_relay1">Pickup Date</label>
+                                    <input class="form-control" id="pickupDate_relay1" placeholder="" type="date">
+                            </div>                            
+                            <div class="form-group">
+                                    <label for="deliveryDate_relay1">Delivery Date</label>
+                                    <input class="form-control" id="deliveryDate_relay1" placeholder="" type="date">
+                            </div>
+                            
                             
                             <div class="form-group">
                                     <label for="address_relay1">Address</label>
@@ -1789,6 +1878,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             <div class="form-group">
                                     <label for="hoursOfOperation_relay2">Hours of Operation</label>
                                     <input class="form-control" id="hoursOfOperation_relay2" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="pickupDate_relay2">Pickup Date</label>
+                                    <input class="form-control" id="pickupDate_relay2" placeholder="" type="date">
+                            </div>                            
+                            <div class="form-group">
+                                    <label for="deliveryDate_relay2">Delivery Date</label>
+                                    <input class="form-control" id="deliveryDate_relay2" placeholder="" type="date">
                             </div>
                             
                             <div class="form-group">
@@ -1833,6 +1930,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     <label for="hoursOfOperation_relay3">Hours of Operation</label>
                                     <input class="form-control" id="hoursOfOperation_relay3" placeholder="" type="text">
                             </div>
+                            <div class="form-group">
+                                    <label for="pickupDate_relay3">Pickup Date</label>
+                                    <input class="form-control" id="pickupDate_relay3" placeholder="" type="date">
+                            </div>                            
+                            <div class="form-group">
+                                    <label for="deliveryDate_relay3">Delivery Date</label>
+                                    <input class="form-control" id="deliveryDate_relay3" placeholder="" type="date">
+                            </div>
                             
                             <div class="form-group">
                                     <label for="address_relay3">Address</label>
@@ -1875,6 +1980,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             <div class="form-group">
                                     <label for="hoursOfOperation_relay4">Hours of Operation</label>
                                     <input class="form-control" id="hoursOfOperation_relay4" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="pickupDate_relay4">Pickup Date</label>
+                                    <input class="form-control" id="pickupDate_relay4" placeholder="" type="date">
+                            </div>                            
+                            <div class="form-group">
+                                    <label for="deliveryDate_relay4">Delivery Date</label>
+                                    <input class="form-control" id="deliveryDate_relay4" placeholder="" type="date">
                             </div>
                             
                             <div class="form-group">
@@ -2831,11 +2944,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
     } );
 
     function editCommitTransport(){
-        
+                
         $("#editCommitModal").modal('show');
     }
     
-    function saveCommit(){
+    function editCommitment(){
         
         var unitDataList = [];
         
@@ -2857,217 +2970,426 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
           $("#saveCommit").html("<i class='fa fa-spinner fa-spin'></i> Updating Commit");
           $("#saveCommit").prop("disabled", true);
 
-        var today = new Date();
-        var dd = today.getDate();
-        var mm = today.getMonth()+1; //January is 0!
-        var yyyy = today.getFullYear();
-        var hours = today.getHours();
-        var min = today.getMinutes();
-        var sec = today.getSeconds();
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth()+1; //January is 0!
+            var yyyy = today.getFullYear();
+            var hours = today.getHours();
+            var min = today.getMinutes();
+            var sec = today.getSeconds();
 
-        if(dd<10) {
-            dd='0'+dd;
-        }
+            if(dd<10) {
+                dd='0'+dd;
+            }
 
-        if(mm<10) {
-            mm='0'+mm;
-        }
+            if(mm<10) {
+                mm='0'+mm;
+            }
 
-        if(hours<10) {
-            hours='0'+hours;
-        }
+            if(hours<10) {
+                hours='0'+hours;
+            }
 
-        if(min<10) {
-            min='0'+min;
-        }
+            if(min<10) {
+                min='0'+min;
+            }
 
-        today = mm+'/'+dd+'/'+yyyy;
-        today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+            today = mm+'/'+dd+'/'+yyyy;
+            today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
 
-        var id = $('#customerNeedsID').val();
-        
-        var pickupInformation = {pickupLocation: $('#pickupLocation').val().trim(), contactPerson: $('#pickupContactPerson').val().trim(),
-                                phoneNumber: $('#pickupPhoneNumber').val().trim(), hoursOfOperation: $('#pickupHoursOfOperation').val().trim()};
-        
-        var deliveryInformation = {deliveryLocation: $('#deliveryLocation').val().trim(), contactPerson: $('#deliveryContactPerson').val().trim(),
-                                phoneNumber: $('#deliveryPhoneNumber').val().trim(), hoursOfOperation: $('#deliveryHoursOfOperation').val().trim()};
-        
-        var originationAddress1 = $('#originationAddress1').val().trim();
-        var originationAddress2 = $('#originationAddress2').val().trim();
-        var originationCity = $('#originationCity').val().trim();
-        var originationState = $('#originationState').val().trim();
-        var originationZip = $('#originationZip').val().trim();
-        var originationNotes = $('#originationNotes').val().trim();
-        
-        var destinationAddress1 = $('#destinationAddress1').val().trim();
-        var destinationAddress2 = $('#destinationAddress2').val().trim();
-        var destinationCity = $('#destinationCity').val().trim();
-        var destinationState = $('#destinationState').val().trim();
-        var destinationZip = $('#destinationZip').val().trim();
-        var destinationNotes = $('#destinationNotes').val().trim();
-        
-        
-        // Build the needsDataPoints
-        var needsarray = [];
-        var obj = $("#dp-check-list-box div div select");
-        
-        for (var i = 0; i < obj.length; i++) {
-            var item = {};
-            item[obj[i].id] = obj[i].value;
-            needsarray.push(item);
-        }
+            var id = $('#customerNeedsID').val();
 
-        var decal = {};
-        decal['decals'] = $("#decals").val().trim();
-        needsarray.push(decal);
-        
-        var needsdatapoints = needsarray;
-        
-        var qty = $("#qty").val().trim();
-        var rate = $("#rate").val().trim();
-        var rateType = $("#rateType").val().trim();
-        var transportationMode = $("#transportationMode").val().trim();
-        
-        var data = {pickupInformation: pickupInformation, originationAddress1: originationAddress1, originationAddress2: originationAddress2, originationCity: originationCity, originationState: originationState, originationZip: originationZip, originationNotes: originationNotes,
-                    deliveryInformation: deliveryInformation, destinationAddress1: destinationAddress1, destinationAddress2: destinationAddress2, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, destinationNotes: destinationNotes,
-                    qty: qty, updatedAt: today, needsDataPoints: needsdatapoints, unitData: unitDataList, rate: rate, rateType: rateType, transportationMode: transportationMode};
-        
-        
-        var url = '<?php echo API_HOST_URL . "/customer_needs" ?>/' + id;
-        
-        $.ajax({
-            url: url,
-            type: "PUT",
-            data: JSON.stringify(data),
-            contentType: "application/json",
-            async: false,
-            success: function(data){
-                if(data > 0){
-                    
-                    var relayNumber = 0;
-                    for(relayNumber = 1; relayNumber < 5; relayNumber++){                        
+            var pickupInformation = {pickupLocation: $('#pickupLocation').val().trim(), contactPerson: $('#pickupContactPerson').val().trim(),
+                                    phoneNumber: $('#pickupPhoneNumber').val().trim(), hoursOfOperation: $('#pickupHoursOfOperation').val().trim()};
+
+            var deliveryInformation = {deliveryLocation: $('#deliveryLocation').val().trim(), contactPerson: $('#deliveryContactPerson').val().trim(),
+                                    phoneNumber: $('#deliveryPhoneNumber').val().trim(), hoursOfOperation: $('#deliveryHoursOfOperation').val().trim()};
+
+            var originationAddress1 = $('#originationAddress1').val().trim();
+            var originationAddress2 = $('#originationAddress2').val().trim();
+            var originationCity = $('#originationCity').val().trim();
+            var originationState = $('#originationState').val().trim();
+            var originationZip = $('#originationZip').val().trim();
+            var originationNotes = $('#originationNotes').val().trim();
+
+            var destinationAddress1 = $('#destinationAddress1').val().trim();
+            var destinationAddress2 = $('#destinationAddress2').val().trim();
+            var destinationCity = $('#destinationCity').val().trim();
+            var destinationState = $('#destinationState').val().trim();
+            var destinationZip = $('#destinationZip').val().trim();
+            var destinationNotes = $('#destinationNotes').val().trim();
+
+
+            // Build the needsDataPoints
+            var needsarray = [];
+            var obj = $("#dp-check-list-box div div select");
+
+            for (var i = 0; i < obj.length; i++) {
+                var item = {};
+                item[obj[i].id] = obj[i].value;
+                needsarray.push(item);
+            }
+
+            var decal = {};
+            decal['decals'] = $("#decals").val().trim();
+            needsarray.push(decal);
+
+            var needsdatapoints = needsarray;
+
+            var qty = $("#qty").val().trim();
+            var rate = $("#rate").val().trim();
+            var rateType = $("#rateType").val().trim();
+            var transportationMode = $("#transportationMode").val().trim();
+
+            var data = {pickupInformation: pickupInformation, originationAddress1: originationAddress1, originationAddress2: originationAddress2, originationCity: originationCity, originationState: originationState, originationZip: originationZip, originationNotes: originationNotes,
+                        deliveryInformation: deliveryInformation, destinationAddress1: destinationAddress1, destinationAddress2: destinationAddress2, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, destinationNotes: destinationNotes,
+                        qty: qty, updatedAt: today, needsDataPoints: needsdatapoints, unitData: unitDataList, rate: rate, rateType: rateType, transportationMode: transportationMode};
+
+                var url = '<?php echo API_HOST_URL . "/customer_needs" ?>/' + id;
+
+            $.ajax({
+                url: url,
+                type: 'PUT',
+                data: JSON.stringify(data),
+                contentType: "application/json",
+                async: false,
+                success: function(data){
+                    if(data > 0){
                         
-                        var relayData = {};
-                        var url = "";
-                        var type = ""; 
-                        
-                        var relayID = $('#relay_id' + relayNumber).val().trim();
-                        var commitID = $('#commit_id' + relayNumber).val().trim();
-                        var destinationAddress1 = $('#address_relay' + relayNumber).val().trim();
-                        var destinationCity = $('#city_relay' + relayNumber).val().trim();
-                        var destinationState = $('#state_relay' + relayNumber).val().trim();
-                        var destinationZip = $('#zip_relay' + relayNumber).val().trim();
-                        var destinationNotes = $('#notes_relay' + relayNumber).val().trim();
+                        var relayNumber = 0;
+                        for(relayNumber = 1; relayNumber < 5; relayNumber++){                        
 
-                        var deliveryInformation = {deliveryLocation: $('#deliveryLocation_relay' + relayNumber).val().trim(), contactPerson: $('#contactPerson_relay' + relayNumber).val().trim(),
-                                                phoneNumber: $('#phoneNumber_relay' + relayNumber).val().trim(), hoursOfOperation: $('#hoursOfOperation_relay' + relayNumber).val().trim()};
+                            var relayData = {};
+                            var url = "";
+                            var type = ""; 
 
-                        if(destinationCity != "" && destinationState != ""){
-                            
-                            if(relayID == ""){
-                                url = '<?php echo API_HOST_URL . "/customer_needs" ?>/';
-                                type = "POST";
-                                relayData = {rootCustomerNeedsID: id, pickupInformation: pickupInformation, originationAddress1: originationAddress1, originationAddress2: originationAddress2, originationCity: originationCity, originationState: originationState, originationZip: originationZip, originationNotes: originationNotes,
-                                    deliveryInformation: deliveryInformation, destinationAddress1: destinationAddress1, destinationAddress2: destinationAddress2, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, destinationNotes: destinationNotes,
-                                    qty: qty, createdAt: today, updatedAt: today, needsDataPoints: needsdatapoints,  unitData: unitDataList, rate: rate, rateType: rateType, transportationMode: transportationMode};
-                            }
-                            else{ 
-                                url = '<?php echo API_HOST_URL . "/customer_needs" ?>/' + relayID;
-                                type = "PUT";
-                                relayData = {rootCustomerNeedsID: id, pickupInformation: pickupInformation,  originationAddress1: originationAddress1, originationCity: originationCity, originationState: originationState, originationZip: originationZip, originationNotes: originationNotes,
-                                    deliveryInformation: deliveryInformation, destinationAddress1: destinationAddress1, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, destinationNotes: destinationNotes,
-                                    qty: qty, updatedAt: today, needsDataPoints: needsdatapoints,  unitData: unitDataList, rate: rate, rateType: rateType, transportationMode: transportationMode};
-                            }
-                            
-                            $.ajax({
-                                url: url,
-                                type: type,
-                                data: JSON.stringify(relayData),
-                                contentType: "application/json",
-                                async: false,
-                                success: function(data){
-                                    if(data > 0){
-                                        
-                                        url = '<?php echo API_HOST_URL . "/customer_needs_commit" ?>/';
-                                        
-                                        if(type == "POST") relayID = data;
-                                        else url += commitID;
-                                        
-                                        var commitData = {customerNeedsID: relayID, originationAddress1: originationAddress1, originationCity: originationCity, originationState: originationState, originationZip: originationZip,
-                                                        destinationAddress1: destinationAddress1, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, status: "Available",
-                                                        originationLng: "", originationLat: "", destinationLng: "", destinationLat: "", distance: 0, qty: qty, transportation_mode: "", transportation_type: "", updatedAt: today};
-                                        
-                                        $.ajax({
-                                            url: url,
-                                            type: type,
-                                            data: JSON.stringify(commitData),
-                                            success: function(data){
-                                                if(data > 0){                                                    
-                                                    originationAddress1 = destinationAddress1;
-                                                    originationCity = destinationCity;
-                                                    originationState = destinationState;
-                                                    originationZip = destinationZip;
-                                                    originationNotes = destinationNotes;
-                                                    pickupInformation = deliveryInformation;
+                            var relayID = $('#relay_id' + relayNumber).val().trim();
+                            var commitID = $('#commit_id' + relayNumber).val().trim();
+                            var destinationAddress1 = $('#address_relay' + relayNumber).val().trim();
+                            var destinationCity = $('#city_relay' + relayNumber).val().trim();
+                            var destinationState = $('#state_relay' + relayNumber).val().trim();
+                            var destinationZip = $('#zip_relay' + relayNumber).val().trim();
+                            var destinationNotes = $('#notes_relay' + relayNumber).val().trim();
+
+                            var deliveryInformation = {deliveryLocation: $('#deliveryLocation_relay' + relayNumber).val().trim(), contactPerson: $('#contactPerson_relay' + relayNumber).val().trim(),
+                                                    phoneNumber: $('#phoneNumber_relay' + relayNumber).val().trim(), hoursOfOperation: $('#hoursOfOperation_relay' + relayNumber).val().trim()};
+
+                            if(destinationCity != "" && destinationState != ""){
+
+                                if(relayID == ""){
+                                    url = '<?php echo API_HOST_URL . "/customer_needs" ?>/';
+                                    type = "POST";
+                                    relayData = {rootCustomerNeedsID: id, pickupInformation: pickupInformation, originationAddress1: originationAddress1, originationAddress2: originationAddress2, originationCity: originationCity, originationState: originationState, originationZip: originationZip, originationNotes: originationNotes,
+                                        deliveryInformation: deliveryInformation, destinationAddress1: destinationAddress1, destinationAddress2: destinationAddress2, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, destinationNotes: destinationNotes,
+                                        qty: qty, createdAt: today, updatedAt: today, needsDataPoints: needsdatapoints,  unitData: unitDataList, rate: rate, rateType: rateType, transportationMode: transportationMode};
+                                }
+                                else{ 
+                                    url = '<?php echo API_HOST_URL . "/customer_needs" ?>/' + relayID;
+                                    type = "PUT";
+                                    relayData = {rootCustomerNeedsID: id, pickupInformation: pickupInformation,  originationAddress1: originationAddress1, originationCity: originationCity, originationState: originationState, originationZip: originationZip, originationNotes: originationNotes,
+                                        deliveryInformation: deliveryInformation, destinationAddress1: destinationAddress1, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, destinationNotes: destinationNotes,
+                                        qty: qty, updatedAt: today, needsDataPoints: needsdatapoints,  unitData: unitDataList, rate: rate, rateType: rateType, transportationMode: transportationMode};
+                                }
+
+                                $.ajax({
+                                    url: url,
+                                    type: type,
+                                    data: JSON.stringify(relayData),
+                                    contentType: "application/json",
+                                    async: false,
+                                    success: function(data){
+                                        if(data > 0){
+
+                                            url = '<?php echo API_HOST_URL . "/customer_needs_commit" ?>/';
+
+                                            if(type == "POST") relayID = data;
+                                            else url += commitID;
+
+                                            var pickupDate = $('#pickupDate_relay' + relayNumber).val();  
+                                            var deliveryDate = $('#deliveryDate_relay' + relayNumber).val(); 
+
+                                            var commitData = {customerNeedsID: relayID, originationAddress1: originationAddress1, originationCity: originationCity, originationState: originationState, originationZip: originationZip,
+                                                            destinationAddress1: destinationAddress1, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, status: "Available",
+                                                            originationLng: "", originationLat: "", destinationLng: "", destinationLat: "", distance: 0, qty: qty, transportation_mode: "", transportation_type: "", updatedAt: today,
+                                                            pickupDate: pickupDate, deliveryDate: deliveryDate };
+
+                                            $.ajax({
+                                                url: url,
+                                                type: type,
+                                                data: JSON.stringify(commitData),
+                                                success: function(data){
+                                                    if(data > 0){                                                    
+                                                        originationAddress1 = destinationAddress1;
+                                                        originationCity = destinationCity;
+                                                        originationState = destinationState;
+                                                        originationZip = destinationZip;
+                                                        originationNotes = destinationNotes;
+                                                        pickupInformation = deliveryInformation;
+                                                    }
+                                                },
+                                                error: function(){
+                                                    alert("Unable to save to customer_needs_commit");
                                                 }
-                                            },
-                                            error: function(){
-                                                alert("Unable to save to customer_needs_commit");
-                                            }
-                                        });
-                                        
+                                            });
+
+                                        }
+                                    },
+                                    error: function(){
+                                        alert("unable to save relay.");
+                                    }
+                                });
+                            }
+                            else if(relayID != ""){
+
+                                url = '<?php echo API_HOST_URL . "/customer_needs" ?>/' + relayID;
+                                var statusChange = {status: "Close"};
+
+                                $.ajax({
+                                url: url,
+                                type: "PUT",
+                                data: JSON.stringify(statusChange),
+                                success: function(data){
+                                    if(data > 0){                           
+                                        alert("customer need closed.");
+                                    }
+                                    else{
+
                                     }
                                 },
                                 error: function(){
-                                    alert("unable to save relay.");
+                                    alert("Unable to save to customer_needs_commit");
                                 }
                             });
-                        }
-                        else if(relayID != ""){
-                        
-                            console.log(relayID);
 
-                            url = '<?php echo API_HOST_URL . "/customer_needs" ?>/' + relayID;
-                            var statusChange = {status: "Close"};
-                            
-                            $.ajax({
-                            url: url,
-                            type: "PUT",
-                            data: JSON.stringify(statusChange),
-                            success: function(data){
-                                if(data > 0){                           
-                                    alert("customer need closed.");
-                                }
-                                else{
-                                    
-                                }
-                            },
-                            error: function(){
-                                alert("Unable to save to customer_needs_commit");
                             }
-                        });
-                            
-                        }
-                    }    
+                        }    
+
+                        $("#saveCommit").html("Save");
+                        $("#saveCommit").prop("disabled", false);
+                        $("#editCommitModal").modal('hide');
+                        loadNewCustomerNeedsCommit(id);
+                        alert("Commit Updated");
+                    }
+                    else{
+                        console.log(data);
+                    }
+                },
+                error: function(data){
+                    alert("There Was An Error Updating Commit");
+                }
+            });
+        }
+        else{
+            alert("You must enter at least ONE Trailer.");
+        }
+    }
+    
+    function addCommitment(){
+    
+        var unitDataList = [];
+        
+        $('#addTrailer > div').each(function(index, value){
+            var unitID = index + 1;
+            var unitNumber = $('#unitNumber' + unitID).val().trim();
+            var vinNumber = $('#vinNumber' + unitID).val().trim();
+            var truckProNumber = $('#truckProNumber' + unitID).val().trim();
+            var poNumber = $('#poNumber' + unitID).val().trim();
+           
+            if(vinNumber != "" || unitNumber != "" || truckProNumber != "" || poNumber != ""){
+                var unitData = {unitNumber: unitNumber, vinNumber: vinNumber, truckProNumber: truckProNumber, poNumber: poNumber}; 
+                
+                unitDataList.push(unitData);
+            }
+        });
+        
+        if(unitDataList.length > 0){
+          $("#saveCommit").html("<i class='fa fa-spinner fa-spin'></i> Saving Commit");
+          $("#saveCommit").prop("disabled", true);
+
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth()+1; //January is 0!
+            var yyyy = today.getFullYear();
+            var hours = today.getHours();
+            var min = today.getMinutes();
+            var sec = today.getSeconds();
+
+            if(dd<10) {
+                dd='0'+dd;
+            }
+
+            if(mm<10) {
+                mm='0'+mm;
+            }
+
+            if(hours<10) {
+                hours='0'+hours;
+            }
+
+            if(min<10) {
+                min='0'+min;
+            }
+
+            today = mm+'/'+dd+'/'+yyyy;
+            today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+
+            var pickupInformation = {pickupLocation: $('#pickupLocation').val().trim(), contactPerson: $('#pickupContactPerson').val().trim(),
+                                    phoneNumber: $('#pickupPhoneNumber').val().trim(), hoursOfOperation: $('#pickupHoursOfOperation').val().trim()};
+
+            var deliveryInformation = {deliveryLocation: $('#deliveryLocation').val().trim(), contactPerson: $('#deliveryContactPerson').val().trim(),
+                                    phoneNumber: $('#deliveryPhoneNumber').val().trim(), hoursOfOperation: $('#deliveryHoursOfOperation').val().trim()};
+
+            var originationAddress1 = $('#originationAddress1').val().trim();
+            var originationAddress2 = $('#originationAddress2').val().trim();
+            var originationCity = $('#originationCity').val().trim();
+            var originationState = $('#originationState').val().trim();
+            var originationZip = $('#originationZip').val().trim();
+            var originationNotes = $('#originationNotes').val().trim();
+
+            var destinationAddress1 = $('#destinationAddress1').val().trim();
+            var destinationAddress2 = $('#destinationAddress2').val().trim();
+            var destinationCity = $('#destinationCity').val().trim();
+            var destinationState = $('#destinationState').val().trim();
+            var destinationZip = $('#destinationZip').val().trim();
+            var destinationNotes = $('#destinationNotes').val().trim();
+
+
+            // Build the needsDataPoints
+            var needsarray = [];
+            var obj = $("#dp-check-list-box div div select");
+
+            for (var i = 0; i < obj.length; i++) {
+                var item = {};
+                item[obj[i].id] = obj[i].value;
+                needsarray.push(item);
+            }
+
+            var decal = {};
+            decal['decals'] = $("#decals").val().trim();
+            needsarray.push(decal);
+
+            var needsdatapoints = needsarray;
+
+            var qty = $("#qty").val().trim();
+            var rate = $("#rate").val().trim();
+            var rateType = $("#rateType").val().trim();
+            var transportationMode = $("#transportationMode").val().trim();
+
+            var data = {pickupInformation: pickupInformation, originationAddress1: originationAddress1, originationAddress2: originationAddress2, originationCity: originationCity, originationState: originationState, originationZip: originationZip, originationNotes: originationNotes,
+                        deliveryInformation: deliveryInformation, destinationAddress1: destinationAddress1, destinationAddress2: destinationAddress2, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, destinationNotes: destinationNotes,
+                        qty: qty, updatedAt: today, needsDataPoints: needsdatapoints, unitData: unitDataList, rate: rate, rateType: rateType, transportationMode: transportationMode, status: "Available"};
+
+            var url = '<?php echo API_HOST_URL . "/customer_needs" ?>';
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: JSON.stringify(data),
+                contentType: "application/json",
+                async: false,
+                success: function(data){
+                    if(data > 0){
+                        
+                        var id = data;
+                        
+                        var relayNumber = 0;
+                        for(relayNumber = 1; relayNumber < 5; relayNumber++){                        
+
+                            var relayData = {};
+
+                            var destinationAddress1 = $('#address_relay' + relayNumber).val().trim();
+                            var destinationCity = $('#city_relay' + relayNumber).val().trim();
+                            var destinationState = $('#state_relay' + relayNumber).val().trim();
+                            var destinationZip = $('#zip_relay' + relayNumber).val().trim();
+                            var destinationNotes = $('#notes_relay' + relayNumber).val().trim();
+
+                            var deliveryInformation = {deliveryLocation: $('#deliveryLocation_relay' + relayNumber).val().trim(), contactPerson: $('#contactPerson_relay' + relayNumber).val().trim(),
+                                                    phoneNumber: $('#phoneNumber_relay' + relayNumber).val().trim(), hoursOfOperation: $('#hoursOfOperation_relay' + relayNumber).val().trim()};
+
+                            if(destinationCity != "" && destinationState != ""){
+
+                                relayData = {rootCustomerNeedsID: id, pickupInformation: pickupInformation, originationAddress1: originationAddress1, originationAddress2: originationAddress2, originationCity: originationCity, originationState: originationState, originationZip: originationZip, originationNotes: originationNotes,
+                                    deliveryInformation: deliveryInformation, destinationAddress1: destinationAddress1, destinationAddress2: destinationAddress2, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, destinationNotes: destinationNotes,
+                                    qty: qty, createdAt: today, updatedAt: today, needsDataPoints: needsdatapoints,  unitData: unitDataList, rate: rate, rateType: rateType, transportationMode: transportationMode, status: "Available"};
+
+                                $.ajax({
+                                    url: '<?php echo API_HOST_URL . "/customer_needs" ?>/',
+                                    type: "POST",
+                                    data: JSON.stringify(relayData),
+                                    contentType: "application/json",
+                                    async: false,
+                                    success: function(data){
+                                        if(data > 0){
+
+                                            var relayID = data;
+                                            
+                                            var pickupDate = $('#pickupDate_relay' + relayNumber).val();  
+                                            var deliveryDate = $('#deliveryDate_relay' + relayNumber).val(); 
+
+                                            var commitData = {customerNeedsID: relayID, originationAddress1: originationAddress1, originationCity: originationCity, originationState: originationState, originationZip: originationZip,
+                                                            destinationAddress1: destinationAddress1, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, status: "Available",
+                                                            originationLng: "", originationLat: "", destinationLng: "", destinationLat: "", distance: 0, qty: qty, transportation_mode: transportationMode, transportation_type: "", createdAt: today, updatedAt: today,
+                                                            pickupDate: pickupDate, deliveryDate: deliveryDate };
+
+                                            $.ajax({
+                                                url: '<?php echo API_HOST_URL . "/customer_needs_commit" ?>/',
+                                                type: "POST",
+                                                data: JSON.stringify(commitData),
+                                                success: function(data){
+                                                    if(data > 0){                                                    
+                                                        originationAddress1 = destinationAddress1;
+                                                        originationCity = destinationCity;
+                                                        originationState = destinationState;
+                                                        originationZip = destinationZip;
+                                                        originationNotes = destinationNotes;
+                                                        pickupInformation = deliveryInformation;
+                                                    }
+                                                },
+                                                error: function(){
+                                                    alert("Unable to save to customer_needs_commit");
+                                                }
+                                            });
+
+                                        }
+                                    },
+                                    error: function(){
+                                        alert("unable to save relay.");
+                                    }
+                                });
+                            }
+                        }    
+                    }
+                    else{
+                        console.log(data);
+                    }
                     
                     $("#saveCommit").html("Save");
                     $("#saveCommit").prop("disabled", false);
                     $("#editCommitModal").modal('hide');
                     loadNewCustomerNeedsCommit(id);
-                    alert("Commit Updated");
+                    alert("Commit Added");
+                },
+                error: function(data){
+                    alert("There Was An Error Updating Commit");
                 }
-                else{
-                    console.log(data);
-                }
-            },
-            error: function(data){
-                alert("There Was An Error Updating Commit");
-            }
-        });
+            });
+            
         }
         else{
             alert("You must enter at least ONE Trailer.");
         }
+    }
+    
+    function saveCommit(){
+        
+            if($('#commitModalTitle').text() == "Edit Commitment"){
+                editCommitment();
+            }
+            else{
+                addCommitment();
+                console.log("This is adding a Commitment.");
+            }
+
     }
     
     
@@ -3199,9 +3521,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                                     url = '<?php echo API_HOST_URL . "/order_details" ?>/';
                                     type = "POST";
+                                    
+                                    
+                                    var pickupDate = $('#pickupDate_relay' + relayNumber).val();  
+                                    var deliveryDate = $('#deliveryDate_relay' + relayNumber).val(); 
+
                                     relayData = {carrierID: 0, orderID: data, pickupInformation: pickupInformation, originationAddress: originationAddress1, originationCity: originationCity, originationState: originationState, originationZip: originationZip,
                                         deliveryInformation: deliveryInformation, destinationAddress: destinationAddress1, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, carrierRate: 0.00, transportationMode: "",
-                                        qty: qty, createdAt: today, updatedAt: today, needsDataPoints: needsdatapoints, status: "Open"};
+                                        qty: qty, createdAt: today, updatedAt: today, needsDataPoints: needsdatapoints, status: "Open", pickupDate: pickupDate, deliveryDate: deliveryDate};
 
                                 $.ajax({
                                     url: url,
@@ -3245,4 +3572,13 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             alert("You must enter at least ONE Trailer.");
         }
     }
+    
+    
+    function addNewCommitment(){
+        clearCommitForm();       
+        
+        $('#commitModalTitle').append("Add Commitment");
+        $("#editCommitModal").modal('show');        
+    }
+
  </script>
