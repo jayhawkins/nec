@@ -427,7 +427,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
         if (<?php echo $_SESSION['entityid']; ?> > 0) {
 
             var pastNeedsDate = new Date();
-            var pastNeedsDateString = new Date(pastNeedsDate.getFullYear(), pastNeedsDate.getMonth()+1, pastNeedsDate.getDate()-need_expire_days);
+            //var pastNeedsDateString = new Date(pastNeedsDate.getFullYear(), pastNeedsDate.getMonth()+1, pastNeedsDate.getDate()-need_expire_days);
+            var pastNeedsDateString = new Date(pastNeedsDate.getFullYear(), pastNeedsDate.getMonth()+1, pastNeedsDate.getDate()-180); // Only go back 6 months to get history
             pastNeedsDateString = pastNeedsDateString.getFullYear() + '-' + pastNeedsDateString.getMonth() + '-' + pastNeedsDateString.getDate();
 
             var url = '<?php echo API_HOST_URL; ?>' + '/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,transportationMode,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&filter[0]=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&filter[1]=expirationDate,ge,' + pastNeedsDateString + '&satisfy=all&order[]=availableDate,desc&transform=1';
