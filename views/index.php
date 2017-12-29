@@ -28,9 +28,9 @@ $settingsMenuAccessList = array(0);
 $cityargs = array(
       //"transform"=>"1",
       "columns"=>"originationCity,destinationCity",
-      "filter[]"=> "entityID,eq,".$_SESSION['entityid'],
-      "filter[]"=>"rootCustomNeedsID,eq,0",
-      "filter[]"=>"expirationDate,ge,".date('Y-m-d')
+      "filter[0]"=> "entityID,eq,".$_SESSION['entityid'],
+      "filter[1]"=>"rootCustomNeedsID,eq,0",
+      "filter[2]"=>"expirationDate,ge,".date('Y-m-d')
 );
 
 
@@ -69,7 +69,7 @@ $lastName = $member->members->records[0][4];
 $eargs = array(
       "transform"=>"1",
       "columns"=>"entityTypeID,name",
-      "filter[]"=> "id,eq,".$_SESSION['entityid']
+      "filter[0]"=> "id,eq,".$_SESSION['entityid']
 );
 
 $eurl = API_HOST_URL . "/entities?".http_build_query($eargs);
@@ -522,11 +522,11 @@ if ($_SESSION['entityid'] > 0) {
             var url = '<?php echo API_HOST_URL; ?>';
             var orderCount = 0;
             switch(entityType){
-                case 0:     // URL for the Admin. The admin can see ALL Orders.
+                case 0:     // URL for the Admin. The admin can see ALL Availability.
                 case 2:     // URL for the Carrier. Same as the admin but will be filtered below.
                     url += '/customer_needs?';
                     break;
-                case 1:    // URL for Customer. The Customer can only see their orders.
+                case 1:    // URL for Customer. The Customer can only see their availability.
                     url += '/customer_needs?filter[]=entityID,eq,' + entityid + "&";
                     break;
                 default:
@@ -569,11 +569,11 @@ if ($_SESSION['entityid'] > 0) {
             var url = '<?php echo API_HOST_URL; ?>';
             var orderCount = 0;
             switch(entityType){
-                case 0:     // URL for the Admin. The admin can see ALL Orders.
-                case 2:     // URL for the Carrier. Same as the admin but will be filtered below.
+                case 0:     // URL for the Admin. The admin can see ALL Needs.
+                case 1:     // URL for the Customer. Same as the admin but will be filtered below.
                     url += '/carrier_needs?';
                     break;
-                case 1:    // URL for Customer. The Customer can only see their orders.
+                case 2:    // URL for Carrier. The Carrier can only see their Needs.
                     url += '/carrier_needs?filter[]=entityID,eq,' + entityid + "&";
                     break;
                 default:
@@ -2314,7 +2314,7 @@ if ($_SESSION['entitytype'] == 0) {
                                     <h6 class="name m-t-1">Needs</h6>
                                     <p class="description deemphasize">open needs</p>
                                     <div class="bg-white progress-bar">
-                                        <progress class="progress progress-needs progress-sm js-progress-animate" value="100" max="100" style="width: 0%" data-width="60%"></progress>
+                                        <progress class="progress progress-needs progress-sm js-progress-animate" value="100" max="100" style="width: 0%" data-width="100%"></progress>
                                     </div>
                                 </div>
                                 <div class="col-md-3 text-xs-center">
@@ -2329,7 +2329,7 @@ if ($_SESSION['entitytype'] == 0) {
                                     <h6 class="name m-t-1">Availability</h6>
                                     <p class="description deemphasize">available trailers</p>
                                     <div class="bg-white progress-bar">
-                                        <progress class="progress progress-sm progress-availability js-progress-animate" value="100" max="100" style="width: 0%" data-width="50%"></progress>
+                                        <progress class="progress progress-sm progress-availability js-progress-animate" value="100" max="100" style="width: 0%" data-width="100%"></progress>
                                     </div>
                                 </div>
                                 <div class="col-md-3 text-xs-center">
@@ -2344,7 +2344,7 @@ if ($_SESSION['entitytype'] == 0) {
                                     <h6 class="name m-t-1">Commitments</h6>
                                     <p class="description deemphasize">available trailers</p>
                                     <div class="bg-white progress-bar">
-                                        <progress class="progress progress-sm progress-commitments js-progress-animate" value="100" max="100" style="width: 0%" data-width="50%"></progress>
+                                        <progress class="progress progress-sm progress-commitments js-progress-animate" value="100" max="100" style="width: 0%" data-width="100%"></progress>
                                     </div>
                                 </div>
                                 <div class="col-md-3 text-xs-center">
@@ -2359,7 +2359,7 @@ if ($_SESSION['entitytype'] == 0) {
                                     <h6 class="name m-t-1">Orders</h6>
                                     <p class="description deemphasize">current open orders</p>
                                     <div class="bg-white progress-bar">
-                                        <progress class="progress progress-sm progress-orders js-progress-animate" value="100" max="100" style="width: 0%" data-width="12%"></progress>
+                                        <progress class="progress progress-sm progress-orders js-progress-animate" value="100" max="100" style="width: 0%" data-width="100%"></progress>
                                     </div>
                                 </div>
                                 <div class="col-md-3 text-xs-center">
