@@ -1411,13 +1411,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                   </div>
                  </form>
         </div>
-         <div class="modal-footer">
+        <div class="modal-footer">
            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
            <button type="button" class="btn btn-primary" onclick="return recordEnableDisable('Make Unavailable');">Make Unavailable</button>
-         </div>
-       </div>
-     </div>
-   </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
    <div class="modal fade" id="myEnableDialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
      <div class="modal-dialog modal-md" role="document">
@@ -1441,13 +1441,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                    </div>
                   </form>
          </div>
-          <div class="modal-footer">
+         <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             <button type="button" class="btn btn-primary" onclick="return recordEnableDisable('Make Available');">Make Available</button>
-          </div>
-        </div>
-      </div>
-    </div>
+         </div>
+       </div>
+     </div>
+   </div>
 
  <script>
 

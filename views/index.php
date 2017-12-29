@@ -8,14 +8,21 @@ if ($_SESSION['userid'] <= 0 || $_SESSION['userid'] == "") {
 $needsMenuAccessList = array(0,1,2,4);
 $availabilityMenuAccessList = array(0,1,2,4);
 $ordersMenuAccessList = array(0,1,2,3,4,5);
-$invoicingMenuAccessList = array(0,1,2,3);
-$claimsMenuAccessList = array(0,1,2,3,4);
-$collectionsMenuAccessList = array(0,1,2,4);
+
+//$invoicingMenuAccessList = array(0,1,2,3);
+//$claimsMenuAccessList = array(0,1,2,3,4);
+//$collectionsMenuAccessList = array(0,1,2,4);
+
+$invoicingMenuAccessList = array(0);
+$claimsMenuAccessList = array(0);
+$collectionsMenuAccessList = array(0);
+
 $profilesMenuAccessList = array(0,1);
 $myneedsMenuAccessList = array(0,1,2,4);
 $myavailabilityMenuAccessList = array(0,1,2,3,4);
 $mapsMenuAccessList = array(0,1,2);
-$settingsMenuAccessList = array(0,1,2);
+//$settingsMenuAccessList = array(0,1,2);
+$settingsMenuAccessList = array(0);
 
 /*
 $cityargs = array(
@@ -309,6 +316,34 @@ if ($_SESSION['entityid'] > 0) {
           }
         }
 
+        .progress-commitments[value]::-webkit-progress-value {
+          background-color: #008000;
+        }
+
+        .progress-commitments[value]::-moz-progress-bar {
+          background-color: #008000;
+        }
+
+        @media screen and (min-width: 0\0) {
+          .progress-commitments .progress-bar {
+            background-color: #008000;
+          }
+        }
+
+        .progress-orders[value]::-webkit-progress-value {
+          background-color: #FFA500;
+        }
+
+        .progress-orders[value]::-moz-progress-bar {
+          background-color: #FFA500;
+        }
+
+        @media screen and (min-width: 0\0) {
+          .progress-orders .progress-bar {
+            background-color: #FFA500;
+          }
+        }
+
 
     </style>
 
@@ -581,6 +616,8 @@ if ($_SESSION['entityid'] > 0) {
             var linktitle = "";
             var linkobjecttitle = "";
             var originationPlotColor = "";
+            var opacity =  0.6; // Default from original map
+            var strokeWidth = 2; // Default from original map
             var urlType = "GET";
 
             var entityid = <?php echo $_SESSION['entityid']; ?>;
@@ -641,6 +678,7 @@ if ($_SESSION['entityid'] > 0) {
                                     }
                                     url += filter+satisfy+'&transform=1';
                                     originationPlotColor = "blue";
+                                    strokeWidth = 2;
                                     break;
                                 case 'Needs':
                                     urlType = "GET";
@@ -668,6 +706,7 @@ if ($_SESSION['entityid'] > 0) {
                                     }
                                     url += filter+satisfy+'&transform=1';
                                     originationPlotColor = "red";
+                                    strokeWidth = 3;
                                     break;
                                 case 'Commitments':
                                     urlType = "GET";
@@ -696,6 +735,7 @@ if ($_SESSION['entityid'] > 0) {
                                     }
                                     url += filter+satisfy+'&transform=1';
                                     originationPlotColor = "green";
+                                    strokeWidth = 4;
                                     break;
                                 case 'Orders':
                                     urlType = "POST";
@@ -724,6 +764,7 @@ if ($_SESSION['entityid'] > 0) {
                                     }
 
                                     originationPlotColor = "orange";
+                                    strokeWidth = 5;
                                     url = '<?php echo HTTP_HOST; ?>'+'/indexgetorders';
                                     params = {"locationStatus": $('input[name=locationStatus]:checked').val(),
                                               "stateFilter": statearray,
@@ -731,8 +772,7 @@ if ($_SESSION['entityid'] > 0) {
                                               "entityid": entityid,
                                               "entitytype": entitytype
                                              };
-                                    params = JSON.stringify(params);
-                                    console.log(params);
+                                    //params = JSON.stringify(params);
                                     break;
                                 default:
 
@@ -858,9 +898,9 @@ if ($_SESSION['entityid'] > 0) {
                                                    link.attrs = {
                                                                 //"stroke": "#a4e100",
                                                                 "stroke": originationPlotColor,
-                                                                "stroke-width": 2,
+                                                                "stroke-width": strokeWidth,
                                                                 "stroke-linecap": "round",
-                                                                "opacity": 0.6,
+                                                                "opacity": opacity,
                                                                 "arrow-end": "classic-wide-long"
                                                             };
                                                    link.tooltip = {"content": linktitle};
@@ -981,9 +1021,9 @@ if ($_SESSION['entityid'] > 0) {
                                                    link.attrs = {
                                                                 //"stroke": "#a4e100",
                                                                 "stroke": originationPlotColor,
-                                                                "stroke-width": 2,
+                                                                "stroke-width": strokeWidth,
                                                                 "stroke-linecap": "round",
-                                                                "opacity": 0.6,
+                                                                "opacity": opacity,
                                                                 "arrow-end": "classic-wide-long"
                                                             };
                                                    link.tooltip = {"content": linktitle};
@@ -1103,9 +1143,9 @@ if ($_SESSION['entityid'] > 0) {
                                                    link.attrs = {
                                                                 //"stroke": "#a4e100",
                                                                 "stroke": originationPlotColor,
-                                                                "stroke-width": 2,
+                                                                "stroke-width": strokeWidth,
                                                                 "stroke-linecap": "round",
-                                                                "opacity": 0.6,
+                                                                "opacity": opacity,
                                                                 "arrow-end": "classic-wide-long"
                                                             };
                                                    link.tooltip = {"content": linktitle};
@@ -1212,9 +1252,9 @@ if ($_SESSION['entityid'] > 0) {
                                                    link.attrs = {
                                                                 //"stroke": "#ffffff",
                                                                 "stroke": originationPlotColor,
-                                                                "stroke-width": 2,
+                                                                "stroke-width": strokeWidth,
                                                                 "stroke-linecap": "round",
-                                                                "opacity": 0.6,
+                                                                "opacity": opacity,
                                                                 "arrow-end": "classic-wide-long"
                                                             };
                                                    link.tooltip = {"content": linktitle};
@@ -1321,7 +1361,7 @@ if ($_SESSION['entityid'] > 0) {
                     <span class="icon">
                         <i class="fa fa-truck"></i>
                     </span>
-                    Requested Needs
+                    Needs
                     <span class="label label-danger">
                         <?php
                             if ( $_SESSION['entitytype'] == 1 ) {
@@ -1429,7 +1469,7 @@ if ($_SESSION['entityid'] > 0) {
                     <span class="icon">
                         <i class="fa fa-dollar"></i>
                     </span>
-                    Invoicing
+                    <i><strong>Invoicing</strong></i>
                 </a>
             </li>
 <?php
@@ -1442,7 +1482,7 @@ if ($_SESSION['entityid'] > 0) {
                     <span class="icon">
                         <i class="fa fa-thumbs-down"></i>
                     </span>
-                    Damage Claims
+                    <i><strong>Damage Claims</strong></i>
                 </a>
             </li>
 <?php
@@ -1450,19 +1490,16 @@ if ($_SESSION['entityid'] > 0) {
 
     if ( ($_SESSION['entitytype'] == 2 || $_SESSION['entityid'] == 0 ) && in_array($_SESSION['usertypeid'], $collectionsMenuAccessList) ) {
  ?>
-            <!--
-             # Menu is being hidden
 
             <li>
                 <a href="#">
                     <span class="icon">
                         <i class="fa fa-money"></i>
                     </span>
-                    Collections
+                    <i><strong>Collections</strong></i>
                 </a>
             </li>
 
-             -->
 <?php
     }
 ?>
@@ -1632,12 +1669,12 @@ if ($_SESSION['entityid'] > 0) {
                          target page -->
                <?php
                    if ($_SESSION['entitytype'] == 1) {
-                     //echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listTrailerSpecs');\">Trailer Specs</a></li>";
+                     echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listTrailerSpecs');\">Trailer Specs</a></li>";
                    } else if ($_SESSION['entitytype'] == 2) {
-                     //echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listTrailerSpecs');\">Trailer Specs</a></li>";
+                     echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listTrailerSpecs');\">Trailer Specs</a></li>";
                    } else {
                      // Must be NEC Admin So Show it all...
-                     //echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listTrailerSpecs');\">Trailer Specs</a></li>";
+                     echo "<li><a href=\"#\" onclick=\"ajaxFormCall('listTrailerSpecs');\">Trailer Specs</a></li>";
                    }
                ?>
                 </ul>
@@ -2141,10 +2178,10 @@ if ($_SESSION['entityid'] > 0) {
                 <div class="row">
                     <div class="col-md-8 col-md-offset-3">
                         <ul class="legend">
-                            <li><span class="orders"></span> Orders</li>
-                            <li><span class="availability"></span> Availability</li>
                             <li><span class="needs"></span> Needs</li>
+                            <li><span class="availability"></span> Availability</li>
                             <li><span class="commitments"></span> Commitments</li>
+                            <li><span class="orders"></span> Orders</li>
                         </ul>
                     </div>
                 </div>
@@ -2152,8 +2189,6 @@ if ($_SESSION['entityid'] > 0) {
 
             <div class="col-lg-4">
                 <section class="widget bg-transparent">
-
-
 
                         <div>
                             <div>
@@ -2169,8 +2204,8 @@ if ($_SESSION['entityid'] > 0) {
 <?php
 if ($_SESSION['entitytype'] == 0) {
 ?>
-                                <option value="Availability">Customer Availability</option>
                                 <option value="Needs">Carrier Needs</option>
+                                <option value="Availability">Customer Availability</option>
                                 <option value="Commitments">Commitments</option>
                                 <option value="Orders" selected=selected>Orders</option>
 <?php
@@ -2183,8 +2218,8 @@ if ($_SESSION['entitytype'] == 0) {
 <?php
 } else if ($_SESSION['entitytype'] == 2) {
 ?>
-                                <option value="Availability">Customer Availability</option>
                                 <option value="Needs" selected=selected>My Needs</option>
+                                <option value="Availability">Customer Availability</option>
                                 <option value="Commitments">My Commitments</option>
                                 <option value="Orders">My Orders</option>
 <?php
@@ -2215,7 +2250,6 @@ if ($_SESSION['entitytype'] == 0) {
                                 <br/>
                                   <select id="stateFilter" name="stateFilter" multiple style="width: 100%">
                                       <!--option value="">ALL</option-->
-
 
 <?php
                                     foreach($stateresult['states'] as $value) {
@@ -2292,7 +2326,7 @@ if ($_SESSION['entitytype'] == 0) {
                             </div>
                             <div class="row progress-stats">
                                 <div class="col-md-9">
-                                    <h6 class="name m-t-1">Availablity</h6>
+                                    <h6 class="name m-t-1">Availability</h6>
                                     <p class="description deemphasize">available trailers</p>
                                     <div class="bg-white progress-bar">
                                         <progress class="progress progress-sm progress-availability js-progress-animate" value="100" max="100" style="width: 0%" data-width="50%"></progress>
@@ -2310,7 +2344,7 @@ if ($_SESSION['entitytype'] == 0) {
                                     <h6 class="name m-t-1">Commitments</h6>
                                     <p class="description deemphasize">available trailers</p>
                                     <div class="bg-white progress-bar">
-                                        <progress class="progress progress-sm progress-warning js-progress-animate" value="100" max="100" style="width: 0%" data-width="50%"></progress>
+                                        <progress class="progress progress-sm progress-commitments js-progress-animate" value="100" max="100" style="width: 0%" data-width="50%"></progress>
                                     </div>
                                 </div>
                                 <div class="col-md-3 text-xs-center">
@@ -2325,7 +2359,7 @@ if ($_SESSION['entitytype'] == 0) {
                                     <h6 class="name m-t-1">Orders</h6>
                                     <p class="description deemphasize">current open orders</p>
                                     <div class="bg-white progress-bar">
-                                        <progress class="progress progress-sm progress-success js-progress-animate" value="100" max="100" style="width: 0%" data-width="12%"></progress>
+                                        <progress class="progress progress-sm progress-orders js-progress-animate" value="100" max="100" style="width: 0%" data-width="12%"></progress>
                                     </div>
                                 </div>
                                 <div class="col-md-3 text-xs-center">
