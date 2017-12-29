@@ -417,10 +417,18 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
 
 
         if (<?php echo $_SESSION['entityid']; ?> > 0) {
-            var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=entities&columns=entities.name,id,entityID,qty,rate,rateType,transportationMode,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,contactEmails&filter[0]=status,eq,Available&filter[1]=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&filter[2]=expirationDate,ge,' + today + '&filter[3]=rootCustomerNeedsID,eq,0&satisfy=all&order[0]=createdAt,desc&transform=1';
+            var pastNeedsDate = new Date();
+            var pastNeedsDateString = new Date(pastNeedsDate.getFullYear(), pastNeedsDate.getMonth()+1, pastNeedsDate.getDate()-availability_expire_days);
+            pastNeedsDateString = pastNeedsDateString.getFullYear() + '-' + pastNeedsDateString.getMonth() + '-' + pastNeedsDateString.getDate();
+
+            var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=entities&columns=entities.name,id,entityID,qty,rate,rateType,transportationMode,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,contactEmails&filter[0]=status,eq,Available&filter[1]=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&filter[2]=expirationDate,ge,' + pastNeedsDateString + '&filter[3]=rootCustomerNeedsID,eq,0&satisfy=all&order[0]=createdAt,desc&transform=1';
             var show = false;
         } else {
-            var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=entities&columns=entities.name,id,entityID,qty,rate,rateType,transportationMode,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,contactEmails&filter[0]=status,eq,Available&filter[1]=expirationDate,ge,' + today + '&filter[2]=rootCustomerNeedsID,eq,0&satisfy=all&order[0]=entityID&order[1]=createdAt,desc&transform=1';
+            var pastNeedsDate = new Date();
+            var pastNeedsDateString = new Date(pastNeedsDate.getFullYear(), pastNeedsDate.getMonth()+1, pastNeedsDate.getDate()-180);
+            pastNeedsDateString = pastNeedsDateString.getFullYear() + '-' + pastNeedsDateString.getMonth() + '-' + pastNeedsDateString.getDate();
+
+            var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=entities&columns=entities.name,id,entityID,qty,rate,rateType,transportationMode,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,contactEmails&filter[0]=status,eq,Available&filter[1]=expirationDate,ge,' + pastNeedsDateString + '&filter[2]=rootCustomerNeedsID,eq,0&satisfy=all&order[0]=entityID&order[1]=createdAt,desc&transform=1';
             var show = true;
         }
 
