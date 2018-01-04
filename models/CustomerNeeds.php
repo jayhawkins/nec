@@ -324,6 +324,78 @@ class CustomerNeeds
 
     }
 
+    public function commitToNeed($api_host,$id,$rootCustomerNeedsID,$carrierID,$qty,$originationAddress1,$originationCity,$originationState,$originationZip,$destinationAddress1,$destinationCity,$destinationState,$destinationZip,$originationLat,$originationLng,$destinationLat,$destinationLng,$distance,$transportationMode,$transportation_mode,$transportation_type,$pickupDate,$deliveryDate,$google_maps_api) {
+
+          /******** WE ARE NOT USING THE LNG AND LAT FROM THIS CALL - WE WILL NEED TO GO GET THE GEOCODE BASED ON THE NEW ORIGINATION AND DESTINATION *****/
+
+          // Load the customer need data to send notification
+          $this->load($api_host,$id);
+
+          $original_originationaddress = $this->originationCity . ", " . $this->originationState;
+          $original_destinationaddress = $this->destinationCity . ", " . $this->destinationState;
+
+          $entered_originationaddress = $originationCity . ", " . $originationState;
+          $entered_destinationaddress = $destinationCity . ", " . $destinationState;
+
+          try {
+
+              $data = array(
+                    "customerNeedsID"=>$id,
+                    "qty"=>$qty,
+                    //"originationAddress1"=>$originationAddress1,
+                    "originationCity"=>$originationCity,
+                    "originationState"=>$originationState,
+                    //"originationZip"=>$originationZip,
+                    //"destinationAddress1"=>$destinationAddress1,
+                    "destinationCity"=>$destinationCity,
+                    "destinationState"=>$destinationState,
+                    //"destinationZip"=>$destinationZip,
+                    "originationLat"=>$originationLat,
+                    "originationLng"=>$originationLng,
+                    "destinationLat"=>$destinationLat,
+                    "destinationLng"=>$destinationLng,
+                    "distance"=>$distance,
+                    "entityID"=>$carrierID,
+                    "status"=>$this->status,
+                    "transportation_type"=>$transportation_type,
+                    "transportation_mode"=>$transportation_mode,
+                    "pickupDate"=>$pickupDate,
+                    "deliveryDate"=>$deliveryDate,
+                    "rate"=>0,
+                    "createdAt" => date('Y-m-d H:i:s'),
+                    "updatedAt" => date('Y-m-d H:i:s')
+                );
+
+                $url = $api_host . "/" . API_ROOT . "/customer_needs_commit/";
+                $options = array(
+                      'http' => array(
+                          'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                          'method'  => 'POST',
+                          'content' => http_build_query($data)
+                      )
+                );
+                $context  = stream_context_create($options);
+                try {
+                      $defaultresult = json_decode(file_get_contents($url,false,$context),true);
+                      if ($defaultresult > 0) {
+                          // KEEP GOING!
+                          //return "success";
+                          $noticesent = $this->sendCommitNotification($api_host);
+                      } else {
+                          return "Failed creating commit record.";
+                      }
+                } catch (Exception $e) {
+                    return $e;
+                }
+
+          } catch (Exception $e) {
+              return $e;
+          }
+
+          return "success";
+
+    }
+
     public function load($api_host,$id) {
 
       $args = array(

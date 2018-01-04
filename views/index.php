@@ -235,6 +235,7 @@ if ($_SESSION['entityid'] > 0) {
     <![endif]-->
 
     <link href="css/new-styles.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 <?php if(ENVIRONMENT == 'development') { ?>
 	<link rel="stylesheet" type="text/css" href="vendor/datatables/media/css/dataTables-r-2_2_0.min.css"/>
 <?php } else { ?>
@@ -2864,7 +2865,7 @@ $(function() {
                                link.tooltip = {"content": linktitle};
                                links[linkobjecttitle] = link;
                            } else {
-                               console.warn("Ignored element " + id + " without GPS position");
+                               console.warn("Ignored element " + index + " without GPS position");
                            }
                    });
            }

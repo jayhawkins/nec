@@ -109,7 +109,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         $("#input-list-box").append(li);
 
     }
-    
+
       function post() {
 
           var result = true;
@@ -168,7 +168,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 alert('Failed Searching for Origination Location! - Notify NEC of this failure.');
              }
           });
-          
+
           if (result) {
             verifyAndPost(function(data) {
                 $("#load").html("Save Changes");
@@ -238,9 +238,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                               for (var i = 0; i < obj.length; i++) {
                                   var blnMatch = false;
                                   var newVinNumber = obj[i].firstChild.value.trim();
-                                  
-                                  if (newVinNumber != ""){ 
-                                      
+
+                                  if (newVinNumber != ""){
+
                                       for(var j=0; j < existingPODList.length; j++){
                                           if(existingPODList[j].vinNumber == newVinNumber){
                                               blnMatch = true;
@@ -248,12 +248,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                               break;
                                           }
                                       }
-                                      
+
                                       if(!blnMatch){
                                         item = {vinNumber: newVinNumber, deliveryDate: "", notes: "", fileName: "", carrier: ""};
                                         podArray.push(item);
                                       }
-                                      
+
                                   }
                               }
 
@@ -266,11 +266,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                   item[obj[i].id] = obj[i].value;
                                   needsarray.push(item);
                               }
-                                                        
+
                                 var decal = {};
                                 decal['decals'] = $("#decals").val();
                                 needsarray.push(decal);
-                          
+
                               var needsdatapoints = needsarray;
 
                               var pickupInformation = {
@@ -323,37 +323,37 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                           async:false,
                                           success: function(data){
 
-                                        $("#load").html("Save Changes");
-                                        $("#load").prop("disabled", false);
+                                                $("#load").html("Save Changes");
+                                                $("#load").prop("disabled", false);
 
-                                        if(entityid > 0) alert(data);
+                                                if(entityid > 0) alert(data);
 
-                                        $("#editOrder").modal('hide');
+                                                $("#editOrder").modal('hide');
 
-                                        var orderDetailTable = $('#order-details-table').DataTable();
-                                        var podListTable = $('#pod-list-table').DataTable();
+                                                var orderDetailTable = $('#order-details-table').DataTable();
+                                                var podListTable = $('#pod-list-table').DataTable();
 
-                                        orderDetailTable.ajax.reload();
-                                        podListTable.ajax.reload();
+                                                orderDetailTable.ajax.reload();
+                                                podListTable.ajax.reload();
 
-                                        $("#id").val('');
-                                        $("#qty").val('');
-                                        $("#rate").val('');
-                                        $("#originationAddress").val('');
-                                        $("#originationCity").val('');
-                                        $("#originationState").val('');
-                                        $("#originationZip").val('');
-                                        $("#destinationAddress").val('');
-                                        $("#destinationCity").val('');
-                                        $("#destinationState").val('');
-                                        $("#destinationZip").val('');
-                                        passValidation = true;
+                                                $("#id").val('');
+                                                $("#qty").val('');
+                                                $("#rate").val('');
+                                                $("#originationAddress").val('');
+                                                $("#originationCity").val('');
+                                                $("#originationState").val('');
+                                                $("#originationZip").val('');
+                                                $("#destinationAddress").val('');
+                                                $("#destinationCity").val('');
+                                                $("#destinationState").val('');
+                                                $("#destinationZip").val('');
+                                                passValidation = true;
 
                                           },
                                           error: function(data){
-                                              $("#load").html("Save Changes");
-                                              $("#load").prop("disabled", false);  
-	                                      console.log("Notification Error: ", JSON.stringify(data));
+                                                $("#load").html("Save Changes");
+                                                $("#load").prop("disabled", false);
+                                                console.log("Notification Error: ", JSON.stringify(data));
                                           }
                                       });
 
@@ -744,6 +744,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         var data = [];
                         vinNumbersList = [];
 
+                        var carrierIDs = json.orders[0].carrierIDs;
                         var podList = json.orders[0].podList;
                         var deliveryInformation = json.orders[0].deliveryInformation;
                         var pickupInformation = json.orders[0].pickupInformation;
@@ -2821,7 +2822,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                           })
                         });
 
-                        
+
                         if(dataPoints.object_type_data_points[i].title == "Decals"){
                             dpli += '<li>' +
                                     'Decals'+
@@ -2989,7 +2990,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             var iframe = $('#download-pdf-container');
                             if (iframe.length == 0) {
                                 iframe = $('<iframe id="download=pdf-container" style="visibility:hidden;"></iframe>').appendTo('body');
-                            }	  
+                            }
                             iframe.attr('src', '<?php echo HTTP_HOST; ?>/download-pdf/' + data);
 
                         },
