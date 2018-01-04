@@ -66,6 +66,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
     var customerNeedsRootIDs = <?php echo json_encode($customer_needs_root)?>;
 
+    var carrierIDs = new Array();
+
     var myApp;
     myApp = myApp || (function () {
         var pleaseWaitDiv = $('<div class="modal hide" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false"><div class="modal-header"><h1>Processing...</h1></div><div class="modal-body"><div class="progress progress-striped active"><div class="bar" style="width: 100%;"></div></div></div></div>');
@@ -353,7 +355,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             $("#load").html("Commit");
                             $("#load").prop("disabled", false);
                               $("#myModal").modal('hide');
-                              loadCustomerNeedsCommitAJAX ($("#id").val());
+                              //loadCustomerNeedsCommitAJAX ($("#id").val());
+                              getCommitted();
                               $("#id").val('');
                               $("#rootCustomerNeedsID").val('');
                               $("#qty").val('');
@@ -378,7 +381,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
     function getCommitted(){
 
-        var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?columns=id,rootCustomerNeedsID&filter[]=rootCustomerNeedsID,neq,0&filter[]=status,eq,Available&transform=1';
+        //var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?columns=id,rootCustomerNeedsID&filter[]=rootCustomerNeedsID,neq,0&filter[]=status,eq,Available&transform=1';
+        var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=customer_needs_commit&filter[]=status,eq,Available&transform=1';
 
         $.ajax({
            url: url,
@@ -948,6 +952,20 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 $('#phoneNumber_relay' + relayNumber).val(customer_needs.deliveryInformation.phoneNumber);
                 $('#hoursOfOperation_relay' + relayNumber).val(customer_needs.deliveryInformation.hoursOfOperation);
 
+
+
+
+                var entid = parseInt(customer_needs.customer_needs_commit[0].entities[0].id);
+                var entname = customer_needs.customer_needs_commit[0].entities[0].name;
+                var carrier = {};
+                carrier[entid] = entname;
+
+                if (carrierIDs.indexOf(carrier) === -1) carrierIDs.push(carrier);
+
+
+
+
+
                 if(relayNumber == 4) return false;
 
             });
@@ -973,454 +991,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         $("#customer-needs").css("display", "none");
     }
 
-/*
-    function loadCustomerNeedsCommitAJAX (id){
 
-        var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,transportationMode,rate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.entityID,customer_needs_commit.status,customer_needs_commit.pickupDate,customer_needs_commit.deliveryDate,customer_needs_commit.rate,customer_needs_commit.transportation_mode,entities.name,entities.rateType,entities.negotiatedRate&filter=rootCustomerNeedsID,eq,' + id + '&satisfy=all&order[]=entityID&order[]=rootCustomerNeedsID&order[]=availableDate,desc&transform=1';
-        //alert(url);
 
-        if ( ! $.fn.DataTable.isDataTable( '#customer-needs-commit-table' ) ) {
+//Part I removed
 
-            var example_table_commit = $('#customer-needs-commit-table').DataTable({
-            retrieve: true,
-            processing: true,
-            ajax: {
-                url: url,
-                //dataSrc: 'customer_needs',
-                dataSrc: function ( json ) {
 
-                    var customer_needs = json.customer_needs;
-                    return customer_needs;
-                }
-            },
-            columns: [
-                //{ data: "entities[0].name", visible: true },
-                {
-                    data: null,
-                    "bSortable": true,
-                    "mRender": function (o) {
 
-                        var entityName = '';
-                        var entityID = o.customer_needs_commit[0].entityID;
-
-                        allEntities.entities.forEach(function(entity){
-
-                            if(entityID == entity.id){
-
-                                entityName = entity.name;
-                            }
-                        });
-
-                        return entityName;
-                    }
-                },
-                { data: "id", visible: false },
-                { data: "rootCustomerNeedsID", visible: false},
-                { data: "entityID", visible: false },
-                { data: "qty" },
-                { data: "rate", visible: false },
-                {
-                    data: null,
-                    "bSortable": false,
-                    "mRender": function (o) {
-                        var theDate = o.customer_needs_commit[0].pickupDate;
-                        return formatDate(new Date(theDate));
-                    }
-                },
-                {
-                    data: null,
-                    "bSortable": false,
-                    "mRender": function (o) {
-                        var theDate = o.customer_needs_commit[0].deliveryDate;
-                        return formatDate(new Date(theDate));
-                    }
-                },
-                { data: "transportationMode" },
-                {
-                    data: null,
-                    "bSortable": false,
-                    "mRender": function (o) {
-
-                        var input = '';
-                        var status = o.customer_needs_commit[0].status;
-                        var carrierRate = o.customer_needs_commit[0].rate.toFixed(2);
-                        var commitID = o.id;
-
-                        if(status == "Available"){
-                            input += "<input id=\"carrierRate-" + commitID + "\" type=\"text\" name=\"carrierRate\" class=\"form-control mb-sm\" placeholder=\"Carrier Rate\" value=\"" + carrierRate + "\"/>";
-                        }
-                        else{
-                            input += "<input id=\"carrierRate-" + commitID + "\" type=\"text\" name=\"carrierRate\" class=\"form-control mb-sm\" placeholder=\"Carrier Rate\" value=\"" + carrierRate + "\" readonly/>";
-                        }
-
-                        return input;
-                    }
-                },
-                { data: "originationCity" },
-                { data: "originationState" },
-                { data: "originationLat", visible: false },
-                { data: "originationLng", visible: false },
-                { data: "destinationCity" },
-                { data: "destinationState" },
-                { data: "destinationLat", visible: false },
-                { data: "destinationLng", visible: false },
-                { data: "distance", render: $.fn.dataTable.render.number(',', '.', 0, '')  },
-                { data: "needsDataPoints", visible: false },
-                {
-                    data: null,
-                    "bSortable": false,
-                    "mRender": function(o) {
-
-                      var newStatus = o.status;
-                      if (o.length > 0) {
-                          var showAmount = o.rate.toString().split(".");
-                          showAmount[0] = showAmount[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                          if (showAmount.length > 1) {
-                              if (showAmount[1].length < 2) {
-                                  showAmount[1] = showAmount[1] + '0';
-                              }
-                              showAmount = "$" + showAmount[0] + "." + showAmount[1];
-                          } else {
-                              showAmount = "$" + showAmount[0] + ".00";
-                          }
-                          if (o.status == "Cancelled") {
-                              newStatus = "<strong>Cancelled</strong>";
-                          } else {
-                              newStatus = "<strong>Committed</strong>";
-                          }
-                      }
-                      return newStatus;
-                    }
-                },
-                { data: "customer_needs_commit[0].id", visible: false },
-                { data: "customer_needs_commit[0].status", visible: false },
-                { data: "customer_needs_commit[0].rate", visible: false },
-                { data: "customer_needs_commit[0].transportation_mode", visible: false },
-                { data: "entities[0].name", visible: false },
-                { data: "entities[0].rateType", visible: false },
-                { data: "entities[0].negotiatedRate", visible: false},
-                {
-                    data: null,
-                    "bSortable": false,
-                    "mRender": function (o) {
-
-                        var buttons = '<div class="pull-right text-nowrap">';
-
-                        var status = o.customer_needs_commit[0].status;
-
-                        if(status == "Available"){
-                            buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"fa fa-check text\"></i> <span class=\"text\">Accept Commit</span></button>';
-                        }
-                        else{
-                            buttons += "<b>Approved!</b>" ;
-                        }
-
-                        buttons += '</div>';
-
-                        return buttons;
-                    }
-                }
-            ],
-            //scrollX: true
-          });
-
-            example_table_commit.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table_commit.table().container() ) );
-
-            //To Reload The Ajax
-            //See DataTables.net for more information about the reload method
-            example_table_commit.ajax.reload(function(json){
-                getCarrierTotal(json);
-            });
-        }
-        else{
-          //The URL will change with each "View Commit" button click
-          // Must load new Url each time.
-            var reload_table_commit = $('#customer-needs-commit-table').DataTable();
-            reload_table_commit.ajax.url(url).load(function(json){
-                getCarrierTotal(json);
-            });
-        }
-
-        $("#customer-needs-commit").css("display", "block");
-        $("#customer-needs").css("display", "none");
-
-      }
-
-    function loadSelectedCustomer(id){
-
-        var baseUrl = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transportation_mode,entities.name,entities.rateType,entities.negotiatedRate';
-
-        baseUrl = baseUrl + "&filter[]=id,eq," + id;
-
-        var url = baseUrl + '&satisfy=any&order[]=entityID&order[]=rootCustomerNeedsID&order[]=availableDate,desc&transform=1';
-
-        if ( ! $.fn.DataTable.isDataTable( '#selected-customer-need' ) ) {
-
-            var example_table_customer = $('#selected-customer-need').DataTable({
-                retrieve: true,
-                processing: true,
-                ajax: {
-                    url: url,
-                    dataSrc: 'customer_needs'
-                },
-                columns: [
-                    //{ data: "entities[0].name", visible: true },
-                    {
-                        data: null,
-                        "bSortable": true,
-                        "mRender": function (o) {
-
-                            var entityName = '';
-                            var entityID = o.entityID;
-
-                            allEntities.entities.forEach(function(entity){
-
-                                if(entityID == entity.id){
-
-                                    entityName = entity.name;
-                                }
-                            });
-
-                            return entityName;
-                        }
-                    },
-                    { data: "id", visible: false },
-                    { data: "rootCustomerNeedsID", visible: false},
-                    { data: "entityID", visible: false },
-                    { data: "qty" },
-                    {
-                        data: null,
-                        "bSortable": true,
-                        "mRender": function (o) {
-                            var theDate = o.availableDate;
-                            return formatDate(new Date(theDate));
-                        }
-                    },
-                    {
-                        data: null,
-                        "bSortable": true,
-                        "mRender": function(o) {
-                          if (o.expirationDate == "0000-00-00") {
-                              return '';
-                          } else {
-                              return formatDate(new Date(o.expirationDate));
-                          }
-                        }
-                    },
-                    { data: "transportationMode" },
-                    { data: "originationCity" },
-                    { data: "originationState" },
-                    { data: "originationLat", visible: false },
-                    { data: "originationLng", visible: false },
-                    { data: "destinationCity" },
-                    { data: "destinationState" },
-                    { data: "destinationLat", visible: false },
-                    { data: "destinationLng", visible: false },
-                    { data: "distance", render: $.fn.dataTable.render.number(',', '.', 0, '')  },
-                    { data: "needsDataPoints", visible: false },
-                    {
-                        data: null,
-                        "bSortable": false,
-                        "mRender": function(o) {
-
-                          var newStatus = o.status;
-                          if (o.length > 0) {
-                              var showAmount = o.rate.toString().split(".");
-                              showAmount[0] = showAmount[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                              if (showAmount.length > 1) {
-                                  if (showAmount[1].length < 2) {
-                                      showAmount[1] = showAmount[1] + '0';
-                                  }
-                                  showAmount = "$" + showAmount[0] + "." + showAmount[1];
-                              } else {
-                                  showAmount = "$" + showAmount[0] + ".00";
-                              }
-                              if (o.status == "Cancelled") {
-                                  newStatus = "<strong>Cancelled</strong>";
-                              } else {
-                                  newStatus = "<strong>Committed</strong>";
-                              }
-                          }
-                          return newStatus;
-                        }
-                    },
-                    { data: "customer_needs_commit[0].id", visible: false },
-                    { data: "customer_needs_commit[0].status", visible: false },
-                    { data: "customer_needs_commit[0].rate", visible: false },
-                    { data: "customer_needs_commit[0].transportation_mode", visible: false },
-                    { data: "entities[0].rateType", visible: false },
-                    { data: "entities[0].negotiatedRate", visible: false}
-
-                ]
-            });
-
-            example_table_customer.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table_customer.table().container() ) );
-
-            //To Reload The Ajax
-            //See DataTables.net for more information about the reload method
-            example_table_customer.ajax.reload();
-        } else {
-          //The URL will change with each "View Commit" button click
-          // Must load new Url each time.
-            var reload_table_customer = $('#selected-customer-need').DataTable();
-            reload_table_customer.ajax.url(url).load();
-        }
-    }
-
-    function loadCustomerNeedsNotesAJAX(id){
-
-        var entityType = <?php echo $_SESSION['entitytype'];  ?>;
-        var blnShow = false;
-
-        if (entityType == 0) blnShow = true;
-
-        var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs_notes?columns=id,customerNeedsID,note,permission,createdAt&filter[]=customerNeedsID,eq,' + id + '&filter[]=permission,cs,' + entityType + '&transform=1';
-
-        if ( ! $.fn.DataTable.isDataTable( '#customer-needs-note-table' ) ) {
-
-            var example_table_notes = $('#customer-needs-note-table').DataTable({
-            retrieve: true,
-            processing: true,
-            ajax: {
-                url: url,
-                dataSrc: 'customer_needs_notes'
-            },
-            columns: [
-                {
-                    data: null,
-                    "bSortable": true,
-                    "render": function(o) {
-                        var permission = o.permission;
-                        var viewAccess = "";
-
-                        switch(permission){
-                            case "0":
-                                viewAccess = "NEC Admin Only";
-                                break;
-                            case "0,1":
-                                viewAccess = "Customer and NEC Admin";
-                                break;
-                            case "0,2":
-                                viewAccess = "Carrier and NEC Admin";
-                                break;
-                            case "0,1,2":
-                                viewAccess = "All";
-                                break;
-                        }
-
-                      return viewAccess;
-                    },
-                    visible: blnShow
-                },
-                { data: "createdAt" },
-                { data: "note" }
-
-            ]
-          });
-
-            example_table_notes.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table_notes.table().container() ) );
-
-            //To Reload The Ajax
-            //See DataTables.net for more information about the reload method
-            example_table_notes.ajax.reload();
-        }
-        else{
-          //The URL will change with each "View Commit" button click
-          // Must load new Url each time.
-            var reload_table_note = $('#customer-needs-note-table').DataTable();
-            reload_table_note.ajax.url(url).load();
-        }
-    }
-
-    function getCarrierTotal(json){
-
-            var customer_needs = json.customer_needs;
-            var carrierTotal = 0;
-
-            customer_needs.forEach(function(customer_need){
-
-                if(customer_need.customer_needs_commit.length > 0 && customer_need.customer_needs_commit[0].status !== "Available"){
-                    carrierTotal += customer_need.customer_needs_commit[0].rate;
-                }
-            });
-
-        $("#carrierTotalRate").val(carrierTotal.toFixed(2));
-        getTotalRevenue();
-      }
-
-    function approveCommit(rootCustomerNeedsID, commitID, carrierRate){
-
-        var type = "";
-        var today = new Date();
-        var dd = today.getDate();
-        var mm = today.getMonth()+1; //January is 0!
-        var yyyy = today.getFullYear();
-        var hours = today.getHours();
-        var min = today.getMinutes();
-        var sec = today.getSeconds();
-
-        if(dd<10) {
-            dd='0'+dd;
-        }
-
-        if(mm<10) {
-            mm='0'+mm;
-        }
-
-        if(hours<10) {
-            hours='0'+hours;
-        }
-
-        if(min<10) {
-            min='0'+min;
-        }
-
-        today = mm+'/'+dd+'/'+yyyy;
-        today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
-
-        var url = '<?php echo API_HOST_URL . "/customer_needs_commit" ?>/' + commitID;
-        type = "PUT";
-        var date = today;
-        var data = {rate: carrierRate, status: "Close", updatedAt: date};
-        //var data = {rate: carrierRate, updatedAt: date};
-
-        $.ajax({
-           url: url,
-           type: type,
-           data: JSON.stringify(data),
-           contentType: "application/json",
-           async: false,
-           success: function(data){
-              if (data > 0) {
-                if (type === 'PUT') {
-                   var params = {id: commitID};
-                   $.ajax({
-                      url: '<?php echo HTTP_HOST."/commitacceptednotification" ?>',
-                      type: 'POST',
-                      data: JSON.stringify(params),
-                      contentType: "application/json",
-                      async: false,
-                      success: function(notification){
-
-                      },
-                      error: function() {
-                         alert('Failed Sending Notifications! - Notify NEC of this failure.');
-                      }
-                   });
-                }
-
-              } else {
-                alert("Approving Commit Failed! Please Verify Your Data.");
-              }
-
-              loadCustomerNeedsCommitAJAX(rootCustomerNeedsID);
-           },
-           error: function() {
-              alert("There Was An Error Approving Commit!");
-           }
-        });
-    }
-*/
  </script>
 
  <style>
@@ -2041,100 +1617,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         format: "yyyy-mm-dd"
     });
 
-/*
-    function addNewCommit(){
 
-        var selectedTable = $("#selected-customer-need").DataTable();
-        var json = selectedTable.ajax.json();
-        var data = json.customer_needs[0];
 
-        var li = '';
-        var checked = '';
-        var qtyselect = '<select id="qty" class="form-control mb-sm">\n';
-        var transportationmodeselect = '<select id="transportationMode" name="transportationMode" class="form-control mb-sm" required="required">\n';
-        var dpchecked = '';
-        $("#id").val(data["id"]);
-        $("#rootCustomerNeedsID").val(data["rootCustomerNeedsID"]);
-        //$("#entityID").val(data["entityID"]); Use the session entity id of the logged in user, not from the customer_needs record
-        $("#entityID").val(entityid);
-        $("#qty").val(data["qty"]);
-        $("#originationAddress1").val(data["originationAddress1"]);
-        $("#originationCity").val(data["originationCity"]);
-        $("#originationState").val(data["originationState"]);
-        $("#originationZip").val(data["originationZip"]);
-        $("#destinationAddress1").val(data["destinationAddress1"]);
-        $("#destinationCity").val(data["destinationCity"]);
-        $("#destinationState").val(data["destinationState"]);
-        $("#destinationZip").val(data["destinationZip"]);
-        $("#oaddress1").val(data["originationAddress1"]);
-        $("#ocity").val(data["originationCity"]);
-        $("#ostate").val(data["originationState"]);
-        $("#ozip").val(data["originationZip"]);
-        $("#daddress1").val(data["destinationAddress1"]);
-        $("#dcity").val(data["destinationCity"]);
-        $("#dstate").val(data["destinationState"]);
-        $("#dzip").val(data["destinationZip"]);
-        // Set up the matching addresses like we do up in the verifyAndPost() - makes it easy to do a compare
-        //$("#originToMatch").val(data["originationAddress1"] + ', ' + data["originationCity"] + ', ' + data["originationState"] + ', ' + data["originationZip"]);
-        //$("#destToMatch").val(data["destinationAddress1"] + ', ' + data["destinationCity"] + ', ' + data["destinationState"] + ', ' + data["destinationZip"]);
-        $("#originToMatch").val(data["originationCity"] + ', ' + data["originationState"]);
-        $("#destToMatch").val(data["destinationCity"] + ', ' + data["destinationState"]);
-        //$("#rate").val(data["entities"][0].negotiatedRate.toFixed(2));
-        $("#rate").val(entity.entities.records[0][1].toFixed(2));
+// Part II Removed
 
-        for (var i = 1; i <= data['qty']; i++) {
-            if (i == data['qty']) {
-                dpchecked = "selected=selected";
-            }
-            qtyselect += '<option ' + dpchecked + '>' + i + '</option>\n';
-        }
-        qtyselect += '</select>\n';
-        $("#qtyDiv").html(qtyselect);
 
-        if (entity.entities.records[0][0] == "Flat Rate") {
-            $('input[name="transportationType"][value="Flat Rate"]').prop('checked', true);
-        } else {
-            $('input[name="transportationType"][value="Mileage"]').prop('checked', true);
-        }
 
-        var empty = "";
-        var loadout = "";
-        var either = "";
-        if (data['transportationMode'] == "Empty") {
-            transportationmodeselect += '<option value="Empty">Empty</option>\n';
-        } else {
-            if (data['transportationMode'] == "Empty") {
-                empty = "selected=selected";
-            } else if (data['transportationMode'] == "Load Out"){
-                loadout = "selected=selected";
-            } else if (data['transportationMode'] == "Either (Empty or Load Out)"){
-                either = "selected=selected";
-            }
-            transportationmodeselect += '<option value="Empty" '+empty+'>Empty</option>\n';
-            transportationmodeselect += '<option value="Load Out" '+loadout+'>Load Out</option>\n';
-            transportationmodeselect += '<option value="Either (Empty or Load Out)" '+either+'>Either (Empty or Load Out)</option>\n';
-        }
-
-        transportationmodeselect += '</select>\n';
-        $("#transportationModeDiv").html(transportationmodeselect);
-
-        $("#entityID").prop('disabled', true);
-        $("#myModalCommit").modal('show');
-    }
-
-    function addNewNote(){
-
-        var selectedTable = $("#selected-customer-need").DataTable();
-        var json = selectedTable.ajax.json();
-        var data = json.customer_needs[0];
-
-        $("#customerNeedsID").val(data["id"]);
-        $("#viewAccess").val("0");
-        $("#commitmentNote").val("");
-
-        $("#addNote").modal('show');
-    }
-*/
     function closeCustomerCommitLegs(customerNeedID){
 
         $.ajax({
@@ -2172,76 +1660,13 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         });
 
     }
-/*
-    function createNewAvailability(customerNeedID, differenceQty, today){
 
-        $.ajax({
-            url: '<?php echo API_HOST_URL ?>' + '/customer_needs/' + customerNeedID + '?transform=1',
-            type: "GET",
-            contentType: "application/json",
-            success: function(data){
-                var url = '<?php echo API_HOST_URL . "/customer_needs" ?>';
-                var type = "POST";
 
-                var newCustomerNeed = {entityID: data.entityID, originationAddress1: data.originationAddress1, originationCity: data.originationCity, originationState: data.originationState, originationZip: data.originationZip,
-                                    destinationAddress1: data.destinationAddress1, destinationCity: data.destinationCity, destinationState: data.destinationState, destinationZip: data.destinationZip,
-                                    originationLng: data.originationLng, originationLat: data.originationLat, destinationLng: data.destinationLng, destinationLat: data.destinationLat, distance: data.distance,
-                                    needsDataPoints: data.needsDataPoints, status: "Available", qty: differenceQty, rate: 0, rateType: data.rateType, transportationMode: data.transportationMode, contactsEmails: data.contactsEmails,
-                                    availableDate: data.availableDate, expirationDate: data.expirationDate, createdAt: today, updatedAt: today};
 
-                $.ajax({
-                   url: url,
-                   type: type,
-                   data: JSON.stringify(newCustomerNeed),
-                   contentType: "application/json",
-                   async: false,
-                   success: function(data){
-                      if (data > 0) {
-                           var params = {id: data};
-                           $.ajax({
-                              url: '<?php echo HTTP_HOST."/customerneedsnotification" ?>',
-                              type: 'POST',
-                              data: JSON.stringify(params),
-                              contentType: "application/json",
-                              async: false,
-                              success: function(notification){
-                                  //var updatedata = {rootCustomerNeedsID: data};
-                                  var updatedata = {rootCustomerNeedsID: 0};
-                                  $.ajax({
-                                      url: '<?php echo API_HOST_URL . "/customer_needs" ?>/' + data,
-                                      type: 'PUT',
-                                      data: JSON.stringify(updatedata),
-                                      contentType: "application/json",
-                                      async: false,
-                                      success: function(updateneeds){
-                                          //alert(notification);
-                                          countCommitments();
-                                      },
-                                      error: function() {
-                                         alert('Failed Updating Root Customer Needs ID! - Notify NEC of this failure.');
-                                      }
-                                  });
-                              },
-                              error: function() {
-                                 alert('Failed Sending Notifications! - Notify NEC of this failure.');
-                              }
-                           });
-                      } else {
-                        alert("Adding Need Failed! Please Verify Your Data.");
-                      }
-                   },
-                   error: function() {
-                      alert("There Was An Error Adding Availability!");
-                   }
-                });
-            },
-            error: function(error){
-                console.log("Error: " + error);
-            }
+// Part III Removed
 
-        });
-    }
-*/
+
+
 
    function addTrailer(){
 
@@ -2423,415 +1848,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
     }
 
-    $('#completeOrder').unbind('click').bind('click', function(event){
 
 
-        event.preventDefault();
-        var today = new Date();
-        var orderID = today.getTime().toString();
-        var dd = today.getDate();
-        var mm = today.getMonth()+1; //January is 0!
-        var yyyy = today.getFullYear();
-        var hours = today.getHours();
-        var min = today.getMinutes();
-        var sec = today.getSeconds();
+// Part IV Removed
 
-        if(dd<10) {
-            dd='0'+dd;
-        }
 
-        if(mm<10) {
-            mm='0'+mm;
-        }
-
-        if(hours<10) {
-            hours='0'+hours;
-        }
-
-        if(min<10) {
-            min='0'+min;
-        }
-
-        if(sec<10) {
-            sec='0'+sec;
-        }
-
-        today = mm+'/'+dd+'/'+yyyy;
-        today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
-
-        var url = '<?php echo HTTP_HOST."/uploaddocument" ?>';
-        var type = "POST";
-        var formData = new FormData();
-        var fileData = $('#filePurchaseOrder')[0].files[0];
-        formData.append('entityID', $("#entityID").val());
-        formData.append('name', "Purchase Order: " + today);
-        formData.append('documentID', "purchaseOrder");
-        formData.append('updatedAt', today);
-        formData.append('fileupload', fileData);
-
-        var selectedTable = $('#selected-customer-need').DataTable();
-        var selectedCustomerNeed = selectedTable.ajax.json().customer_needs[0];
-
-        var commitTable = $('#customer-needs-commit-table').DataTable();
-        var customer_needs = commitTable.ajax.json().customer_needs;
-        var carrierIDs = new Array();
-        var carrierQty = 0;
-        customer_needs.forEach(function(customer_need){
-
-            if(customer_need.customer_needs_commit.length > 0 && customer_need.customer_needs_commit[0].status == "Close"){
-                var carrier = {carrierID: customer_need.customer_needs_commit[0].entityID};
-
-                if (carrierIDs.indexOf(carrier) === -1) carrierIDs.push(carrier);
-
-                if (carrierQty === 0) carrierQty = customer_need.qty;
-            }
-        });
-
-        if(fileData != undefined){
-
-            var fileName = fileData.name;
-            var fileExtension = fileName.split('.').pop();
-            var acceptableExtension = ["pdf", "doc", "docx"];
-
-            if(acceptableExtension.indexOf(fileExtension) > 0){
-                $.ajax({
-                    url: url,
-                    type: type,
-                    data: formData,
-                    processData: false,  // tell jQuery not to process the data
-                    contentType: false,  // tell jQuery not to set contentType
-                    success: function(response){
-                        //alert('Purchase Order Uploaded.');
-                        var documentID = parseInt(response);    // Returned is the uploaded document's ID number.
-
-                        var orderQty = 0;
-                        var differenceQty = 0;
-
-                        if(selectedCustomerNeed.qty > carrierQty) {
-                            orderQty = carrierQty;
-                            differenceQty = selectedCustomerNeed.qty - carrierQty;
-                            createNewAvailability(selectedCustomerNeed.id, differenceQty, today);
-                        }
-                        else {
-                            orderQty = selectedCustomerNeed.qty;
-                        }
-
-                        var url = '<?php echo API_HOST_URL ?>' + '/orders/';
-                        var orderData = {customerID: $("#entityID").val(), carrierIDs: carrierIDs, documentID: documentID, orderID: orderID,
-                                originationAddress: selectedCustomerNeed.originationAddress1, originationCity: selectedCustomerNeed.originationCity,
-                                originationState: selectedCustomerNeed.originationState, originationZip: selectedCustomerNeed.originationZip,
-                                originationLng: selectedCustomerNeed.originationLng, originationLat: selectedCustomerNeed.originationLat,
-                                destinationAddress: selectedCustomerNeed.destinationAddress1, destinationCity: selectedCustomerNeed.destinationCity,
-                                destinationState: selectedCustomerNeed.destinationState, destinationZip: selectedCustomerNeed.destinationZip,
-                                destinationLng: selectedCustomerNeed.destinationLng, destinationLat: selectedCustomerNeed.destinationLat,
-                                distance: selectedCustomerNeed.distance, needsDataPoints: selectedCustomerNeed.needsDataPoints,
-                                status: "Open", transportationMode: selectedCustomerNeed.transportationMode, qty: orderQty,
-                                rateType: selectedCustomerNeed.rateType, customerRate: $('#customerRate').val(), carrierTotalRate: $('#carrierTotalRate').val(),
-                                totalRevenue: $('#totalRevenue').val(), createdAt: today, updatedAt: today};
-
-                            var customerName = "";
-                            allEntities.entities.forEach(function(entity){
-                                if(selectedCustomerNeed.entityID == entity.id){
-                                            customerName = entity.name;
-                                }
-                            });
-
-                           var originationCity = selectedCustomerNeed.originationCity;
-                           var originationState = selectedCustomerNeed.originationState;
-                           var destinationCity = selectedCustomerNeed.destinationCity;
-                           var destinationState = selectedCustomerNeed.destinationState;
-                           var customerRate = $('#customerRate').val();
-                           var customerID = $("#entityID").val();
-                           var customerAddress = '';
-                           var customerCity = '';
-                           var customerState = '';
-                           var customerZip = '';
-                           var customerNotes = originationCity + ', ' + originationState + ' to ' + destinationCity + ', ' + destinationState;
-
-                           var customerBillingAddress = getBillingAddress(customerID);
-
-                           // Here is empty data for Customer Billing Address
-                           customerAddress = customerBillingAddress.address1;
-                           customerCity = customerBillingAddress.city;
-                           customerState = customerBillingAddress.state;
-                           customerZip = customerBillingAddress.zip;
-
-                           var customerData = customerBillingAddress;
-                           customerData.customerName = customerName;
-
-                           // We are not calling this yet.
-                           // We will wait until we have the carrier info as well.
-                           //var retCustomerID = addCustomerInfo(customerName,customerAddress,customerCity,customerState,customerZip,customerRate,customerNotes);
-                           //alert(retCustomerID);
-
-                            var needsCommitTable = $("#customer-needs-commit-table").DataTable();
-                            var needsCommitJSON = needsCommitTable.ajax.json();
-
-                            var customer_needs_commit = needsCommitJSON.customer_needs;
-                            var carrier_detail_list = new Array();
-                            var carrier = "";
-
-                            customer_needs_commit.forEach(function(customer_need){
-
-                                if(customer_need.customer_needs_commit.length > 0 &&
-                                        customer_need.customer_needs_commit[0].status == "Close"){
-
-                                    var entityName = "";
-                                    var entityID = customer_need.customer_needs_commit[0].entityID;
-
-
-                                    allEntities.entities.forEach(function(entity){
-
-                                        if(entityID == entity.id){
-
-                                            entityName = entity.name;
-                                        }
-                                    });
-
-                                    var carrierBillingAddress = getBillingAddress(entityID);
-
-                                    var carrier_detail = {
-                                        carrierName: entityName,                // This is the carrier's Name
-                                        carrierRate: customer_need.customer_needs_commit[0].rate,    // This is that carrier's rate.
-                                        billingAddress: carrierBillingAddress.address1,
-                                        billingCity: carrierBillingAddress.city,
-                                        billingState: carrierBillingAddress.state,
-                                        billingZip: carrierBillingAddress.zip
-                                    };
-
-                                    carrier = carrier_detail.carrierName;
-                                    var carrierNotes = customerNotes;
-
-                                    // We will not be calling addVendorInfo yet. This will be nested inside addCustomerInfo
-                                    //addVendorInfo(carrier_detail.carrierName,carrier_detail.billingAddress,carrier_detail.billingCity,carrier_detail.billingState,carrier_detail.billingZip,carrier_detail.carrierRate,carrierNotes,retCustomerID);
-                                    carrier_detail_list.push(carrier_detail);
-                                }
-                            });
-
-                            // This is a list of all the carriers accepted and associated with the commit.
-                            //console.log(JSON.stringify(carrier_detail_list));
-
-                           // You need the total Carrier...
-                           var carrierTotalRate = $('#carrierTotalRate').val();
-
-                           // Now that we have all of the carriers.
-                           // We will now call addCustomerInfo.
-                           // We do not need to wait for a return.
-                           addCustomerInfo(customerName,customerAddress,customerCity,customerState,customerZip,customerRate,customerNotes, carrier_detail_list);
-
-                           var notes = 'From ' + originationCity + ',' + originationState + ' to ' + destinationCity + ',' + destinationState;
-
-
-
-                        $.ajax({
-                            url: url,
-                            type: type,
-                            data: JSON.stringify(orderData),
-                            contentType: "application/json",
-                            async: false,
-                            success: function(response){
-                                console.log(JSON.stringify(response));
-                                saveOrderDetails(response);
-                                closeCustomerCommitLegs(selectedCustomerNeed.id);
-                                if (differenceQty > 0) createNewAvailability(selectedCustomerNeed.id, differenceQty, today);
-
-                                $.ajax({
-                                    url: '<?php echo API_HOST_URL ?>' + '/customer_needs/' + selectedCustomerNeed.id,
-                                    type: "PUT",
-                                    data: JSON.stringify({status: "Closed"}),
-                                    contentType: "application/json",
-                                    async: false,
-                                    success: function(){
-
-                                        countUserOrders();
-                                        countCommitments();
-                                        closeCommitTransport();
-                                    },
-                                    error: function(){
-                                        alert("Could not Close Customer Needs.");
-                                        closeCommitTransport();
-                                    }
-                                });
-                            },
-                            error: function(){
-                                alert("Purchase Order Uploaded. Unable to Complete the Order. ");
-                            }
-
-                        });
-
-                   },
-                   error: function(error) {
-                      alert("Could not upload file. Purchase order not completed.");
-                   }
-                });
-            }
-            else{
-                alert("This file type is not able to be uploaded. You may only upload PDF or Word Documents.");
-                var input = $('#filePurchaseOrder');
-                input.val('');
-            }
-        }
-        else{
-            var documentID = 0;
-
-            var orderQty = 0;
-            var differenceQty = 0;
-
-            if(selectedCustomerNeed.qty > carrierQty) {
-                orderQty = carrierQty;
-                differenceQty = selectedCustomerNeed.qty - carrierQty;
-                createNewAvailability(selectedCustomerNeed.id, differenceQty, today);
-            }
-            else {
-                orderQty = selectedCustomerNeed.qty;
-            }
-
-            var url = '<?php echo API_HOST_URL ?>' + '/orders/';
-            var orderData = {customerID: $("#entityID").val(), carrierIDs: carrierIDs, documentID: documentID, orderID: orderID,
-                    originationAddress: selectedCustomerNeed.originationAddress1, originationCity: selectedCustomerNeed.originationCity,
-                    originationState: selectedCustomerNeed.originationState, originationZip: selectedCustomerNeed.originationZip,
-                    originationLng: selectedCustomerNeed.originationLng, originationLat: selectedCustomerNeed.originationLat,
-                    destinationAddress: selectedCustomerNeed.destinationAddress1, destinationCity: selectedCustomerNeed.destinationCity,
-                    destinationState: selectedCustomerNeed.destinationState, destinationZip: selectedCustomerNeed.destinationZip,
-                    destinationLng: selectedCustomerNeed.destinationLng, destinationLat: selectedCustomerNeed.destinationLat,
-                    distance: selectedCustomerNeed.distance, needsDataPoints: selectedCustomerNeed.needsDataPoints,
-                    status: "Open", transportationMode: selectedCustomerNeed.transportationMode, qty: orderQty,
-                    rateType: selectedCustomerNeed.rateType, customerRate: $('#customerRate').val(), carrierTotalRate: $('#carrierTotalRate').val(),
-                    totalRevenue: $('#totalRevenue').val(), createdAt: today, updatedAt: today};
-
-                var customerName = "";
-                allEntities.entities.forEach(function(entity){
-                    if(selectedCustomerNeed.entityID == entity.id){
-                                customerName = entity.name;
-                    }
-                });
-
-               var originationCity = selectedCustomerNeed.originationCity;
-               var originationState = selectedCustomerNeed.originationState;
-               var destinationCity = selectedCustomerNeed.destinationCity;
-               var destinationState = selectedCustomerNeed.destinationState;
-               var customerRate = $('#customerRate').val();
-               var customerID = $("#entityID").val();
-               var customerAddress = '';
-               var customerCity = '';
-               var customerState = '';
-               var customerZip = '';
-               var customerNotes = originationCity + ', ' + originationState + ' to ' + destinationCity + ', ' + destinationState;
-
-               var customerBillingAddress = getBillingAddress(customerID);
-
-               // Here is empty data for Customer Billing Address
-               customerAddress = customerBillingAddress.address1;
-               customerCity = customerBillingAddress.city;
-               customerState = customerBillingAddress.state;
-               customerZip = customerBillingAddress.zip;
-
-               var customerData = customerBillingAddress;
-               customerData.customerName = customerName;
-
-               // We are not calling this yet.
-               // We will wait until we have the carrier info as well.
-               //var retCustomerID = addCustomerInfo(customerName,customerAddress,customerCity,customerState,customerZip,customerRate,customerNotes);
-               //alert(retCustomerID);
-
-                var needsCommitTable = $("#customer-needs-commit-table").DataTable();
-                var needsCommitJSON = needsCommitTable.ajax.json();
-
-                var customer_needs_commit = needsCommitJSON.customer_needs;
-                var carrier_detail_list = new Array();
-                var carrier = "";
-
-                customer_needs_commit.forEach(function(customer_need){
-
-                    if(customer_need.customer_needs_commit.length > 0 &&
-                            customer_need.customer_needs_commit[0].status == "Close"){
-
-                        var entityName = "";
-                        var entityID = customer_need.customer_needs_commit[0].entityID;
-
-
-                        allEntities.entities.forEach(function(entity){
-
-                            if(entityID == entity.id){
-
-                                entityName = entity.name;
-                            }
-                        });
-
-                        var carrierBillingAddress = getBillingAddress(entityID);
-
-                        var carrier_detail = {
-                            carrierName: entityName,                // This is the carrier's Name
-                            carrierRate: customer_need.customer_needs_commit[0].rate,    // This is that carrier's rate.
-                            billingAddress: carrierBillingAddress.address1,
-                            billingCity: carrierBillingAddress.city,
-                            billingState: carrierBillingAddress.state,
-                            billingZip: carrierBillingAddress.zip
-                        };
-
-                        carrier = carrier_detail.carrierName;
-                        var carrierNotes = customerNotes;
-
-                        // We will not be calling addVendorInfo yet. This will be nested inside addCustomerInfo
-                        //addVendorInfo(carrier_detail.carrierName,carrier_detail.billingAddress,carrier_detail.billingCity,carrier_detail.billingState,carrier_detail.billingZip,carrier_detail.carrierRate,carrierNotes,retCustomerID);
-                        carrier_detail_list.push(carrier_detail);
-                    }
-                });
-
-                // This is a list of all the carriers accepted and associated with the commit.
-                //console.log(JSON.stringify(carrier_detail_list));
-
-               // You need the total Carrier...
-               var carrierTotalRate = $('#carrierTotalRate').val();
-
-               // Now that we have all of the carriers.
-               // We will now call addCustomerInfo.
-               // We do not need to wait for a return.
-               addCustomerInfo(customerName,customerAddress,customerCity,customerState,customerZip,customerRate,customerNotes, carrier_detail_list);
-
-               var notes = 'From ' + originationCity + ',' + originationState + ' to ' + destinationCity + ',' + destinationState;
-
-
-
-            $.ajax({
-                url: url,
-                type: type,
-                data: JSON.stringify(orderData),
-                contentType: "application/json",
-                async: false,
-                success: function(response){
-                    console.log(JSON.stringify(response));
-                    saveOrderDetails(response);
-                    closeCustomerCommitLegs(selectedCustomerNeed.id);
-                    if (differenceQty > 0) createNewAvailability(selectedCustomerNeed.id, differenceQty, today);
-
-                    $.ajax({
-                        url: '<?php echo API_HOST_URL ?>' + '/customer_needs/' + selectedCustomerNeed.id,
-                        type: "PUT",
-                        data: JSON.stringify({status: "Closed"}),
-                        contentType: "application/json",
-                        async: false,
-                        success: function(){
-
-                            countUserOrders();
-                            countCommitments();
-                            closeCommitTransport();
-                        },
-                        error: function(){
-                            alert("Could not Close Customer Needs.");
-                            closeCommitTransport();
-                        }
-                    });
-                },
-                error: function(){
-                    alert("Purchase Order Uploaded. Unable to Complete the Order. ");
-                }
-
-            });
-        }
-
-        return false;
-    });
 
     $("#customer-needs-commit").css("display", "none");
 
@@ -3471,8 +2492,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
             var qty = $("#qty").val().trim();
             var customerID = $('#customerID').val();
-
+/*
             var orderData = {customerID: customerID, carrierIDs: [{carrierID: 0}], orderID: orderID, deliveryInformation: deliveryInformation, pickupInformation: pickupInformation, originationAddress: originationAddress1, originationCity: originationCity, originationState: originationState, originationZip: originationZip,
+                        destinationAddress: destinationAddress1,  destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, originationLng: "", originationLat: "", destinationLng: "", destinationLat: "", distance: 0, needsDataPoints: needsdatapoints, podList: unitDataList,
+                        comments: "", createdAt: today, updatedAt: today, qty: qty};
+*/
+            var orderData = {customerID: customerID, carrierIDs: carrierIDs, orderID: orderID, deliveryInformation: deliveryInformation, pickupInformation: pickupInformation, originationAddress: originationAddress1, originationCity: originationCity, originationState: originationState, originationZip: originationZip,
                         destinationAddress: destinationAddress1,  destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, originationLng: "", originationLat: "", destinationLng: "", destinationLat: "", distance: 0, needsDataPoints: needsdatapoints, podList: unitDataList,
                         comments: "", createdAt: today, updatedAt: today, qty: qty};
 
@@ -3485,6 +2510,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 contentType: "application/json",
                 async: false,
                 success: function(data){
+                    console.log(data);
                     if(data > 0){
 
                         var relayNumber = 0;
@@ -3543,6 +2569,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         closeCustomerCommitLegs(id);
                         $(document.body).css("cursor", "default");
                         alert("Order Saved.");
+                        getCommitted();
                         closeCommitTransport();
                     }
                     else{

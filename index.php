@@ -530,6 +530,41 @@ $app->route('POST /createcustomerneedsfromexisting', function() {
     }
 });
 
+/* No longer used
+$app->route('POST /committoneed', function() {
+    $id = Flight::request()->data->id;
+    $rootCustomerNeedsID = Flight::request()->data->rootCustomerNeedsID;
+    $carrierID = Flight::request()->data->carrierID;
+    $qty = Flight::request()->data->qty;
+    $originationAddress1 = Flight::request()->data->originationAddress1;
+    $originationCity = Flight::request()->data->originationCity;
+    $originationState = Flight::request()->data->originationState;
+    $originationZip = Flight::request()->data->originationZip;
+    $destinationAddress1 = Flight::request()->data->destinationAddress1;
+    $destinationCity = Flight::request()->data->destinationCity;
+    $destinationState = Flight::request()->data->destinationState;
+    $destinationZip = Flight::request()->data->destinationZip;
+    $originationLat = Flight::request()->data->originationLat;
+    $originationLng = Flight::request()->data->originationLng;
+    $destinationLat = Flight::request()->data->destinationLat;
+    $destinationLng = Flight::request()->data->destinationLng;
+    $distance = Flight::request()->data->distance;
+    $transportationMode = Flight::request()->data->transportationMode;
+    $transportation_mode = Flight::request()->data->transportation_mode;
+    $transportation_type = Flight::request()->data->transportation_type;
+    $pickupDate = Flight::request()->data->pickupDate;
+    $deliveryDate = Flight::request()->data->deliveryDate;
+    $customerneed = Flight::customerNeeds();
+    $result = $customerneed->committoneed(API_HOST,$id,$rootCustomerNeedsID,$carrierID,$qty,$originationAddress1,$originationCity,$originationState,$originationZip,$destinationAddress1,$destinationCity,$destinationState,$destinationZip,$originationLat,$originationLng,$destinationLat,$destinationLng,$distance,$transportationMode,$transportation_mode,$transportation_type,$pickupDate,$deliveryDate,GOOGLE_MAPS_API);
+    if ($result == "success") {
+        print_r($result);
+        //echo "success";
+    } else {
+        print_r($result);
+    }
+});
+*/
+
 $app->route('GET|POST /availabilitymatching/@id', function($id) {
     //$customerneedid = Flight::request()->data->id;
     $customerneed = Flight::customerNeeds();
