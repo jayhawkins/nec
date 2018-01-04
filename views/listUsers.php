@@ -288,8 +288,156 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
           //return passValidation;
       }
 
+      function loadBusinessTableAJAX(){
+        var url = '<?php echo API_HOST_URL; ?>' + '/entities?include=entity_types,locations&filter[0]=status,eq,Active&filter[1]=locations.status,eq,Active&filter[2]=locations.name,eq,Headquarters&order=name&transform=1';
+        var example_table = $('#business-datatable-table').DataTable({
+            retrieve: true,
+            processing: true,
+            bSort: false,
+            ajax: {
+                url: url,
+                //dataSrc: 'entities',
+                dataSrc: function ( json ) {
+
+                    var entities = json.entities;
+                    var businesses = new Array();
+
+                        entities.forEach(function(entity){
+
+                            if(entity.locations.length == 0){
+                                var location = {id: 0, address1: "", address2: "",
+                                    city: "", state: "", zip: ""};
+
+                                entity.locations.push(location);
+                            }
+
+                            var business = {
+                                id: entity.id,
+                                typeID: entity.entityTypeID,
+                                name: entity.name,
+                                addressid: entity.locations[0].id,
+                                address1: entity.locations[0].address1,
+                                address2: entity.locations[0].address2,
+                                city: entity.locations[0].city,
+                                state: entity.locations[0].state,
+                                zip: entity.locations[0].zip
+                            };
+
+                            businesses.push(business);
+                        });
+
+                    return businesses;
+                }
+            },
+            columns: [
+                { data: "id", visible: false },
+                { data: "name" },
+                { data: null,
+                    "bSortable": true,
+                    "mRender": function(p) {
+                        if (p.typeID == 1) {
+                            return "Customer";
+                        } else if (p.typeID == 2){
+                            return "Carrier";
+                        } else {
+                            return "NEC Admin";
+                        }
+                    }
+                },
+                { data: "addressid", visible: false },
+                { data: "address1" },
+                { data: "address2" },
+                { data: "city" },
+                { data: "state" },
+                { data: "zip" },
+                {
+                    data: null,
+                    "bSortable": false,
+                    "mRender": function (o) {
+
+                        var buttons = '<div class="pull-right text-nowrap">';
+                        buttons += '<button class=\"btn btn-primary btn-xs view-contacts\" role=\"button\"><i class=\"glyphicon glyphicon-eye-open text\"></i> <span class=\"text\">View Contacts</span></button>';
+
+                        buttons += "</div>";
+                        return buttons;
+                    }
+                }
+            ]
+          });
+
+          example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
+
+          //To Reload The Ajax
+          //See DataTables.net for more information about the reload method
+          example_table.ajax.reload();
+
+    }
+
+
+      function loadBusinessUsers(entityID) {
+        var url = '<?php echo API_HOST_URL; ?>' + '/members?include=users,user_types,entities&columns=members.id,members.entityID,members.userID,members.firstName,members.lastName,user_types.id,user_types.name,users.username,users.uniqueID,users.textNumber,users.status,entities.name&filter[]=members.entityID,eq,' + entityID + '&order[0]=entityID&order[1]=lastName&order[2]=firstName&transform=1';
+        if ( ! $.fn.DataTable.isDataTable( '#datatable-table' ) ) {
+
+            var example_table = $('#datatable-table').DataTable({
+                retrieve: true,
+                processing: true,
+                ajax: {
+                    url: url,
+                    dataSrc: 'members'
+                },
+                columns: [
+                    { data: "id", visible: false },
+                    { data: "entityID", visible: false },
+                    { data: "userID", visible: false },
+                    { data: "entities[0].name" },
+                    { data: "firstName" },
+                    { data: "lastName" },
+                    { data: "users[0].user_types[0].id", visible: false },
+                    { data: "users[0].user_types[0].name" },
+                    { data: "users[0].username", visible: false },
+                    { data: "users[0].uniqueID", visible: false },
+                    { data: "users[0].textNumber", visible: false },
+                    { data: "users[0].status" },
+                    {
+                        data: null,
+                        "bSortable": false,
+                        "mRender": function (o) {
+                            var buttons = '<div class="pull-right text-nowrap">';
+                            buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text\"></i> <span class=\"text\">Edit</span></button>';
+
+                            if (o.users[0].status == "Active") {
+                                      buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text\"></i> <span class=\"text\">Disable</span></button>";
+                            } else {
+                                      buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text\"></i> <span class=\"text\">Enable</span></button>";
+                            }
+                            buttons += "</div>";
+                            return buttons;
+                        }
+                    }
+                ]
+              });
+
+              example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
+
+              //To Reload The Ajax
+              //See DataTables.net for more information about the reload method
+              example_table.ajax.reload();
+        }
+        else{
+
+            //The URL will change with each "View Commit" button click
+            // Must load new Url each time.
+            var reload_table = $('#datatable-table').DataTable();
+            reload_table.ajax.url(url).load();
+        }
+
+      }
+
  </script>
 
+ <?php
+ if($_SESSION['entitytype'] != 0){
+ ?>
  <ol class="breadcrumb">
    <li>ADMIN</li>
    <li class="active">User Maintenance</li>
@@ -337,6 +485,107 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
      </div>
  </section>
 
+ <?php
+ } 
+ else{
+     ?>
+ 
+ <div id="business-list">
+     
+<ol class="breadcrumb">
+  <li>ADMIN</li>
+  <li class="active">User Maintenance</li>
+</ol>
+ <section class="widget">
+     <header>
+         <h4><span class="fw-semi-bold">Businesses</span></h4>
+         <div class="widget-controls">
+             <!--<a data-widgster="expand" title="Expand" href="#"><i class="glyphicon glyphicon-chevron-up"></i></a>
+             <a data-widgster="collapse" title="Collapse" href="#"><i class="glyphicon glyphicon-chevron-down"></i></a>
+             <a data-widgster="close" title="Close" href="#"><i class="glyphicon glyphicon-remove"></i></a>-->
+         </div>
+     </header>
+
+     <div class="widget-body">
+         <!--p>
+             Column sorting, live search, pagination. Built with
+             <a href="http://www.datatables.net/" target="_blank">jQuery DataTables</a>
+         </p
+         <button type="button" id="addContact" class="btn btn-primary pull-xs-right" data-target="#myModal">Add Contact</button>-->
+         <br /><br />
+         <div id="dataTable" class="mt">
+             <table id="business-datatable-table" class="table table-striped table-hover" width="100%">
+                 <thead>
+                 <tr>
+                     <th>ID</th>
+                     <th class="hidden-sm-down">Name</th>
+                     <th class="hidden-sm-down">Type</th>
+                     <th class="hidden-sm-down">Location ID</th>
+                     <th class="hidden-sm-down">Address 1</th>
+                     <th class="hidden-sm-down">Address 2</th>
+                     <th class="hidden-sm-down">City</th>
+                     <th class="hidden-sm-down">State</th>
+                     <th class="hidden-sm-down">Zip Code</th>
+                     <th>&nbsp;</th>
+                 </tr>
+                 </thead>
+                 <tbody>
+                      <!-- loadTableAJAX() is what populates this area -->
+                 </tbody>
+             </table>
+         </div>
+     </div>
+ </section>
+ </div>
+ 
+ <div id="business-users" style="display: none;">
+     <section class="widget">
+     <header>
+         <h4><span class="fw-semi-bold">User</span></h4>
+         <div class="widget-controls">
+             <!--<a data-widgster="expand" title="Expand" href="#"><i class="glyphicon glyphicon-chevron-up"></i></a>
+             <a data-widgster="collapse" title="Collapse" href="#"><i class="glyphicon glyphicon-chevron-down"></i></a>-->
+             <a data-widgster="close" title="Close" href="Javascript:closeUsers()"><i class="glyphicon glyphicon-remove"></i></a>
+         </div>
+     </header>
+     <div class="widget-body">
+         <!--p>
+             Column sorting, live search, pagination. Built with
+             <a href="http://www.datatables.net/" target="_blank">jQuery DataTables</a>
+         </p -->
+         <button type="button" id="addUser" class="btn btn-primary pull-xs-right" data-target="#myModal">Add User</button>
+         <br /><br />
+         <div id="dataTable" class="mt">
+             <table id="datatable-table" class="table table-striped table-hover" width="100%">
+                 <thead>
+                 <tr>
+                     <th>Members ID</th>
+                     <th>Entity ID</th>
+                     <th>User ID</th>
+                     <th class="sm-down">Business</th>
+                     <th class="hidden-sm-down">First Name</th>
+                     <th class="hidden-sm-down">Last Name</th>
+                     <th class="no-sort">User Type ID</th>
+                     <th class="no-sort">Type</th>
+                     <th class="no-sort">UserName</th>
+                     <th class="no-sort">Unique ID</th>
+                     <th class="no-sort">Text Number</th>
+                     <th class="no-sort">Status</th>
+                     <th>&nbsp;</th>
+                 </tr>
+                 </thead>
+                 <tbody>
+                      <!-- loadTableAJAX() is what populates this area -->
+                 </tbody>
+             </table>
+         </div>
+     </div>
+ </section>
+ </div>
+ <?php
+     
+ }
+ ?>
  <!-- Modal -->
  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
    <div class="modal-dialog modal-lg" role="document">
@@ -516,6 +765,9 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
       </div>
     </div>
 
+ <?php
+ if($_SESSION['entitytype'] != 0){
+ ?>
  <script>
 
     loadTableAJAX();
@@ -594,3 +846,117 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
     });
 
  </script>
+
+ <?php
+ }
+ else{
+     
+ ?>
+<script>
+
+    function openUsers(){
+        $("#business-list").css("display", "none");
+        $("#business-users").css("display", "block");
+    }
+
+
+    function closeUsers(){
+        var table = $("#business-datatable-table").DataTable();
+        $("#business-users").css("display", "none");
+        $("#business-list").css("display", "block");
+        table.ajax.reload();
+    }
+
+    loadBusinessTableAJAX();
+
+
+    $('#business-datatable-table tbody').off('click').on( 'click', 'button', function () {
+        var businesstable = $("#business-datatable-table").DataTable();
+        var data = businesstable.row( $(this).parents('tr') ).data();
+
+        var entityID = data["id"];
+
+        loadBusinessUsers(entityID);
+        openUsers();
+    });
+
+
+    $("#addUser").click(function(){
+        $("#id").val('');
+        $("#userID").val('');
+        $("#userTypeID").val('');
+        $("#firstName").val('');
+        $("#lastName").val('');
+        $("#emailAddress").val('');
+        $("#password").val('');
+        $("#passwordConfirm").val('');
+        $("#uniqueID").val('');
+        $("#status").val('');
+        $("#textNumber").val('');
+        $("#textNumber").removeAttr('required');
+        $("#userTypeID").val('');
+        $("#divUserTypeID").hide();
+        $("#divPassword").hide();
+        $("#myModal").modal('show');
+    });
+
+    $('#datatable-table tbody').on( 'click', 'button', function () {
+            var table = $("#datatable-table").DataTable();
+            var data = table.row( $(this).parents('tr') ).data();
+            
+        if (this.textContent.indexOf("Edit") > -1) {
+          $("#id").val(data["id"]);
+          $("#userID").val(data["userID"]);
+          $("#firstName").val(data["firstName"]);
+          $("#lastName").val(data["lastName"]);
+          $("#emailAddress").val(data["users"][0]["username"]);
+          $("#password").val('');
+          $("#confirmPassword").val('');
+          $("#uniqueID").val(data["users"][0]["uniqueID"]);
+          $("#textNumber").val(data["users"][0]["textNumber"]);
+          $("#userTypeID").val(data["users"][0]["user_types"][0]["id"]);
+          $("#status").val(data['users'][0]['status']);
+
+          if ($("#userTypeID").val() == 5) {
+              $("#textNumber").attr('required', 'required');
+              $("#divPassword").show();
+          } else {
+              $("#textNumber").removeAttr('required');
+              $("#divPassword").hide();
+          }
+
+          $("#divUserTypeID").hide();
+          $("#myModal").modal('show');
+        } else {
+            $("#id").val(data["id"]);
+            $("#userID").val(data["userID"]);
+            if (this.textContent.indexOf("Disable") > -1) {
+              $("#disableDialogLabel").html('Disable <strong>' + data['firstName'] + ' ' + data['lastName'] + '</strong>');
+              $("#myDisableDialog").modal('show');
+            } else {
+              if (this.textContent.indexOf("Enable") > -1) {
+                $("#enableDialogLabel").html('Enable <strong>' + data['firstName'] + ' ' + data['lastName'] + '</strong>');
+                $("#myEnableDialog").modal('show');
+              }
+            }
+        }
+
+    } );
+
+
+    $('#userTypeID').on( 'change', function () {
+        if ($("#userTypeID").val() == 5) {
+            $("#textNumber").attr('required', 'required');
+            $("#divPassword").show();
+        } else {
+            $("#textNumber").removeAttr('required');
+            $("#divPassword").hide();
+        }
+    });
+
+ </script>
+<?php
+ }
+
+
+ ?>
