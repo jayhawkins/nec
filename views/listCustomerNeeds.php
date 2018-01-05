@@ -313,6 +313,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                              async: false,
                              success: function(data){
                                 if (data > 0) {
+                                /* Part of removing sending out notifications FS516
                                   if (type == 'POST') {
                                      var params = {id: data};
                                      $.ajax({
@@ -322,6 +323,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                         contentType: "application/json",
                                         async: false,
                                         success: function(notification){
+                                */
                                             //var updatedata = {rootCustomerNeedsID: data};
                                             var updatedata = {rootCustomerNeedsID: 0};
                                             $.ajax({
@@ -333,7 +335,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                                 success: function(updateneeds){
                                                     $("#load").html("Save Changes");
                                                     $("#load").prop("disabled", false);
-	                                                	alert(notification);
+                                                    //alert(notification);
                                                     countCommitments();
                                                 },
                                                 error: function() {
@@ -342,6 +344,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
 	                                                	alert('Failed Updating Root Customer Needs ID! - Notify NEC of this failure.');
                                                 }
                                             });
+
+                                /* Part of removing sending out notifications FS516
                                         },
                                         error: function(error) {
                                             $("#load").html("Save Changes");
@@ -350,6 +354,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                         }
                                      });
                                   }
+                                */
 
                                   $("#myModal").modal('hide');
                                   loadTableAJAX();
