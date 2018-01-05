@@ -609,6 +609,11 @@ if ($_SESSION['entityid'] > 0) {
             var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
             var dateTime = date+' '+time;
 
+            $('#percent-needs').html(0); // Set to zero for default
+            $('#percent-availability').html(0); // Set to zero for default
+            $('#percent-commitments').html(0); // Set to zero for default
+            $('#percent-orders').html(0); // Set to zero for default
+
             // Parse each elements
             // This variable will hold all the plots of our map
             var plots = {};
@@ -790,6 +795,8 @@ if ($_SESSION['entityid'] > 0) {
 
                                     if(string == "Availability") {
 
+                                           $('#percent-availability').html(response.customer_needs.length);
+
                                            $.each(response.customer_needs, function (index, value) {
 
                                                var availableDate = value.availableDate;
@@ -906,12 +913,14 @@ if ($_SESSION['entityid'] > 0) {
                                                    link.tooltip = {"content": linktitle};
                                                    links[linkobjecttitle] = link;
                                                } else {
-                                                   console.warn("Ignored element " + id + " without GPS position");
+                                                   console.warn("Ignored availability element " + value.id + " without GPS position");
                                                }
                                            });
 
 
                                     } else if(string == 'Needs') {
+
+                                           $('#percent-needs').html(response.carrier_needs.length);
 
                                            $.each(response.carrier_needs, function (index, value) {
 
@@ -1029,11 +1038,13 @@ if ($_SESSION['entityid'] > 0) {
                                                    link.tooltip = {"content": linktitle};
                                                    links[linkobjecttitle] = link;
                                                } else {
-                                                   console.warn("Ignored element " + id + " without GPS position");
+                                                   console.warn("Ignored needs element " + value.id + " without GPS position");
                                                }
                                            });
 
                                     } else if(string == 'Commitments') {
+
+                                           $('#percent-commitments').html(response.customer_needs_commit.length);
 
                                            $.each(response.customer_needs_commit, function (index, value) {
 
@@ -1151,12 +1162,14 @@ if ($_SESSION['entityid'] > 0) {
                                                    link.tooltip = {"content": linktitle};
                                                    links[linkobjecttitle] = link;
                                                } else {
-                                                   console.warn("Ignored element " + id + " without GPS position");
+                                                   console.warn("Ignored commitment element " + value.id + " without GPS position");
                                                }
                                            });
 
                                     } else if(string == 'Orders') {
-                                           //console.log(response);
+
+                                           $('#percent-orders').html(response.order_details.length);
+
                                            $.each(response.order_details, function (index, value) {
                                                // Setup Pickup Date
                                                //alert(formatDate(new Date(value.pickupDate)));
@@ -1260,7 +1273,7 @@ if ($_SESSION['entityid'] > 0) {
                                                    link.tooltip = {"content": linktitle};
                                                    links[linkobjecttitle] = link;
                                                } else {
-                                                   console.warn("Ignored element " + id + " without GPS position");
+                                                   console.warn("Ignored orders element " + value.id + " without GPS position");
                                                }
                                            });
 
@@ -2319,7 +2332,7 @@ if ($_SESSION['entitytype'] == 0) {
                                 </div>
                                 <div class="col-md-3 text-xs-center">
                                     <!--span class="status rounded rounded-lg bg-body-light"-->
-                                    <span class="label label-pill statistic-needs">
+                                    <span class="label label-pill statistic-needs" onclick="ajaxFormCall('listNeeds');" onmouseover="" style="cursor: pointer">
                                         <small><span id="percent-needs">63</span></small>
                                     </span>
                                 </div>
@@ -2334,7 +2347,7 @@ if ($_SESSION['entitytype'] == 0) {
                                 </div>
                                 <div class="col-md-3 text-xs-center">
                                     <!--span class="status rounded rounded-lg bg-body-light"-->
-                                    <span class="label label-pill statistic-availability">
+                                    <span class="label label-pill statistic-availability" onclick="ajaxFormCall('listAvailability');" onmouseover="" style="cursor: pointer">
                                         <small><span id="percent-availability">37</span></small>
                                     </span>
                                 </div>
@@ -2349,7 +2362,7 @@ if ($_SESSION['entitytype'] == 0) {
                                 </div>
                                 <div class="col-md-3 text-xs-center">
                                     <!--span class="status rounded rounded-lg bg-body-light"-->
-                                    <span class="label label-pill statistic-commitments">
+                                    <span class="label label-pill statistic-commitments" onclick="ajaxFormCall('listCommitment');" onmouseover="" style="cursor: pointer">
                                         <small><span id="percent-commitments">37</span></small>
                                     </span>
                                 </div>
@@ -2364,7 +2377,7 @@ if ($_SESSION['entitytype'] == 0) {
                                 </div>
                                 <div class="col-md-3 text-xs-center">
                                     <!--span class="status rounded rounded-lg bg-body-light"-->
-                                    <span class="label label-pill statistic-orders">
+                                    <span class="label label-pill statistic-orders" onclick="ajaxFormCall('listOrders');" onmouseover="" style="cursor: pointer">
                                         <small><span  id="percent-orders">12</span></small>
                                     </span>
                                 </div>
@@ -2697,7 +2710,7 @@ $(function() {
                            link.tooltip = {"content": linktitle};
                            links[linkobjecttitle] = link;
                        } else {
-                           console.warn("Ignored element " + id + " without GPS position");
+                           console.warn("Ignored element " + value.id + " without GPS position");
                        }
                    });
 
@@ -2751,7 +2764,7 @@ $(function() {
                                    // Set plot element to array
                                    plots[value.id+'-'+value.city] = plot;
                                } else {
-                                   console.warn("Ignored element " + vcolumbusalue.id + " without GPS position");
+                                   console.warn("Ignored element " + value.id + " without GPS position");
                                }
 
                        });
@@ -2864,7 +2877,7 @@ $(function() {
                                link.tooltip = {"content": linktitle};
                                links[linkobjecttitle] = link;
                            } else {
-                               console.warn("Ignored element " + index + " without GPS position");
+                               console.warn("Ignored orders element " + index + " without GPS position");
                            }
                    });
            }
