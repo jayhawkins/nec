@@ -1,8 +1,14 @@
 <?php
 
+parse_str($argv[1],$params);
+var_dump $params;
+die();
+
+$environment = $params['environment'];
+
 date_default_timezone_set('America/New_York');
 
-require "/var/www/absolute_paths.php";
+include_once "/var/www/absolute_paths.php";
 
 require DOCROOT.'vendor/autoload.php';
 
