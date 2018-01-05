@@ -325,6 +325,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                  async: false,
                                  success: function(data){
                                     if (data > 0) {
+
+                                      /* Don't send out notifications now. Do it during the Needs matching cron job
                                       if (type == 'POST') {
                                         var params = {id: data};
                                         $.ajax({
@@ -345,6 +347,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                            }
                                         });
                                       }
+                                      */
+
                                       $("#myModal").modal('hide');
                                       loadTableAJAX();
                                       $("#id").val('');

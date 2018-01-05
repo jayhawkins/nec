@@ -397,17 +397,17 @@ if ($_SESSION['entityid'] > 0) {
                     url += '/order_details?include=orders';
                     break;
                 case 1:    // URL for Customer. The Customer can only see their orders.
-                    url += '/orders?include=documents,entities,order_details&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,originationLat,originationLng,destinationLat,destinationLng,distance,needsDataPoints,status,qty,rateType,transportationMode,entities.id,entities.name,documents.id,documents.documentURL,order_details.pickupDate&filter=customerID,eq,' + entityid;
+                    url += '/orders?include=documents,entities,order_details&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,originationLat,originationLng,destinationLat,destinationLng,distance,needsDataPoints,status,qty,rateType,transportationMode,entities.id,entities.name,documents.id,documents.documentURL,order_details.pickupDate&filter[]=customerID,eq,' + entityid;
                     break;
                 case 2:     // URL for the Carrier. Same as the admin but will be filtered below.
                     url += '/orders?include=documents,entities,order_details&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,originationLat,originationLng,destinationLat,destinationLng,distance,needsDataPoints,status,qty,rateType,transportationMode,entities.id,entities.name,documents.id,documents.documentURL,order_details.pickupDate';
                     break;
             }
 
-            url += '&filter[]=status,eq,Open&filter[]=deliveryDate,ge,'+theDate+'&satisfy=all&transform=1';
+            //url += '&filter[]=status,eq,Open&filter[]=deliveryDate,ge,'+theDate+'&satisfy=all&transform=1';
+            url += '&filter[]=status,eq,Open&satisfy=all&transform=1';
 
             $.ajax({
-               //url: '<?php echo API_HOST_URL . "/orders" ?>?transform=1',
                url: url,
                type: "GET",
                contentType: "application/json",
@@ -419,7 +419,6 @@ if ($_SESSION['entityid'] > 0) {
                     } else {
                       orders = json.order_details;
                     }
-                    console.log(orders);
 
                     if (orders.length > 0) {
                         if(entityType == 2) {
@@ -743,7 +742,7 @@ if ($_SESSION['entityid'] > 0) {
                                     url += "/order_details?";
                                     url += "include=orders";
                                     filter += '&filter[]=status,eq,Open';
-                                    filter += '&filter[]=deliveryDate,ge,'+dateTime;
+                                    //filter += '&filter[]=deliveryDate,ge,'+dateTime;
                                     if (entityid > 0 && entitytype == 2) {
                                         filter += '&filter[]=carrierID,eq,'+entityid;
                                     }
