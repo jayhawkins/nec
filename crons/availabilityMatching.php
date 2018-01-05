@@ -1,8 +1,6 @@
 <?php
 
 parse_str($argv[1],$params);
-var_dump $params;
-die();
 
 $environment = $params['environment'];
 
