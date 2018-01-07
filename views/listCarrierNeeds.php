@@ -1056,7 +1056,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
 
                 var date = today;
                 var data = {
-                        entityID: $("#entityID").val(),
+                        entityID: $("#carrierID").val(),
                         contactTypeID: $("#contactTypeID").val(),
                         firstName: $("#firstName").val(),
                         lastName: $("#lastName").val(),
@@ -1088,7 +1088,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                         $("#secondaryPhone").val('');
                         $("#fax").val('');
                         $("#contactRating").val('');
-                        $("#entityID").val('');
+                        $("#carrierID").val('');
                         $("#addCarrierContact").modal('hide');
 
                         $("#load2").html("Add Contact");
@@ -1620,10 +1620,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                      <div class="col-sm-4">
                        <div class="form-group">
              <?php if ($_SESSION['entityid'] > 0) { ?>
-                            <input type="hidden" id="entityID" name="entityID" value="<?php echo $_SESSION['entityid']; ?>" />
+                            <input type="hidden" id="carrierID" name="carrierID" value="<?php echo $_SESSION['entityid']; ?>" />
              <?php } else { ?>
                              <label for="entityID">Carrier:</label>
-                             <select id="entityID" name="entityID" data-placeholder="Carrier" class="form-control chzn-select" required="required">
+                             <select id="carrierID" name="carrierID" data-placeholder="Carrier" class="form-control chzn-select" required="required">
                                <option value="">*Select Carrier...</option>
               <?php
                                foreach($entities->entities->records as $value) {

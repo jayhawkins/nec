@@ -23,6 +23,8 @@ $contacts = json_decode(file_get_contents(API_HOST_URL . "/contacts?columns=id,f
 $locations_contacts = '';
 $locations_contacts = json_decode(file_get_contents(API_HOST_URL . "/locations_contacts?columns=location_id,contact_id&filter=entityID,eq," . $_SESSION['entityid'] ));
 
+$contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?columns=id,name&order=id'));
+
 $loccon = array();
 for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
     $loccon[$locations_contacts->locations_contacts->records[$lc][0]] = $locations_contacts->locations_contacts->records[$lc][1];
@@ -1051,6 +1053,116 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
 
       }
 
+      function addCustomerContact() {
+
+          $("#load2").html("<i class='fa fa-spinner fa-spin'></i> Adding Contact");
+          $("#load2").prop("disabled", true);
+
+        if ( $('#formContact').parsley().validate() ) {
+
+                var passValidation = false;
+                var type = "";
+                var today = new Date();
+                var dd = today.getDate();
+                var mm = today.getMonth()+1; //January is 0!
+                var yyyy = today.getFullYear();
+                var hours = today.getHours();
+                var min = today.getMinutes();
+                var sec = today.getSeconds();
+
+                if(dd<10) {
+                    dd='0'+dd;
+                }
+
+                if(mm<10) {
+                    mm='0'+mm;
+                }
+
+                if(hours<10) {
+                    hours='0'+hours;
+                }
+
+                if(min<10) {
+                    min='0'+min;
+                }
+
+                today = mm+'/'+dd+'/'+yyyy;
+                today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+
+                var url = '<?php echo API_HOST_URL . "/contacts" ?>';
+                type = "POST";
+
+                var phone = $("#primaryPhone").val().replace(/(\d{3})\-?(\d{3})\-?(\d{4})/, '$1-$2-$3');
+                var ext = $("#primaryPhoneExt").val();
+                if (ext != "") {
+                        phone = phone + " x" + ext;
+                }
+
+                var date = today;
+                var data = {
+                        entityID: $("#customerID").val(),
+                        contactTypeID: $("#contactTypeID").val(),
+                        firstName: $("#firstName").val(),
+                        lastName: $("#lastName").val(),
+                        title: $("#title").val(),
+                        emailAddress: $("#emailAddress").val(),
+                        primaryPhone: phone,
+                        secondaryPhone: $("#secondaryPhone").val(),
+                        fax: $("#fax").val(),
+                        contactRating: $("#contactRating").val(),
+                        createdAt: date
+                  };
+
+                $.ajax({
+                   url: url,
+                   type: type,
+                   data: JSON.stringify(data),
+                   contentType: "application/json",
+                   async: false,
+                   success: function(data){
+                      if (data > 0) {
+                        loadTableAJAX();
+                        $("#contactTypeID").val('');
+                        $("#firstName").val('');
+                        $("#lastName").val('');
+                        $("#title").val('');
+                        $("#emailAddress").val('');
+                        $("#primaryPhone").val('');
+                        $("#primaryPhoneExt").val('');
+                        $("#secondaryPhone").val('');
+                        $("#fax").val('');
+                        $("#contactRating").val('');
+                        $("#customerID").val('');
+                        $("#addCustomerContact").modal('hide');
+
+                        $("#load2").html("Add Contact");
+                        $("#load2").prop("disabled", false);
+                        passValidation = true;
+                      } else {
+                          $("#load2").html("Add Contact");
+                          $("#load2").prop("disabled", false);
+                        alert("Adding Contact Failed!");
+                      }
+                   },
+                   error: function() {
+                       $("#load2").html("Add Contact");
+                       $("#load2").prop("disabled", false);
+                      alert("There Was An Error Adding Contact!");
+                   }
+                });
+
+                $("#load2").html("Add Contact");
+                $("#load2").prop("disabled", false);
+                return passValidation;
+
+          } else {
+
+              $("#load2").html("Add Contact");
+              $("#load2").prop("disabled", false);
+                return false;
+          }
+
+      }
  </script>
 
  <style>
@@ -1085,6 +1197,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
 
     #destination-list li:hover{background:#ece3d2;cursor: pointer;}
 
+    .btn-contact{
+        display: inline-block;
+        position: relative;
+        left: 10%;
+        margin-bottom: 10px;
+    }
+    
  </style>
 
  <ol class="breadcrumb">
@@ -1357,7 +1476,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                             </div>
                         </div>
                         <div class="col-xs-6">
-                             <h5 class="text-center" id="customerContactTitle"><strong>Contacts For This Availability</strong></h5>
+                             <h5 class="text-center" id="customerContactTitle" style="display:inline-block"><strong>Contacts For This Availability</strong></h5>
+                            <button type="button" class="btn btn-primary btn-contact" onclick="openAddContact()">Add Contact</button>
                              <div class="well" style="max-height: 200px;overflow: auto;">
                                  <ul id="check-list-box" class="list-group checked-list-box">
 
@@ -1375,6 +1495,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
       </div>
     </div>
   </div>
+ 
   <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
@@ -1477,6 +1598,143 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
         </div>
       </div>
     </div>
+
+ <!-- Modal -->
+ <div class="modal fade" id="addCustomerContact" z-index="1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+   <div class="modal-dialog modal-lg" role="document">
+     <div class="modal-content">
+       <div class="modal-header">
+         <h5 class="modal-title" id="exampleModalLabel"><strong>Contact</strong></h5>
+         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+           <span aria-hidden="true">&times;</span>
+         </button>
+       </div>
+       <div class="modal-body">
+               <form id="formContact" class="register-form mt-lg">
+                <?php if ($_SESSION['entityid'] > 0) { ?>
+                        <input type="hidden" id="entityID" name="entityID" value="<?php echo $_SESSION['entityid']; ?>" />
+                <?php } else { ?>
+                        <input type="hidden" id="entityID" name="entityID" />
+              <?php } ?>
+                 <input type="hidden" id="id" name="id" value="" />
+                 <div class="row">
+                     <div class="col-sm-6">
+                         <label for="firstName">First Name</label>
+                         <div class="form-group">
+                           <input type="text" id="firstName" name="firstName" class="form-control mb-sm" placeholder="*First Name" required="required" />
+                         </div>
+                     </div>
+                     <div class="col-sm-6">
+                         <label for="lastName">Last Name</label>
+                         <div class="form-group">
+                           <input type="text" id="lastName" name="lastName" class="form-control mb-sm" placeholder="Last Name" required="required" />
+                         </div>
+                     </div>
+                  </div>
+                  <div class="row">
+                     <div class="col-sm-4">
+                         <label for="contactTypeID">Contact Type</label>
+                         <div class="form-group">
+                           <select id="contactTypeID" name="contactTypeID" data-placeholder="*Contact Type" class="form-control chzn-select" data-ui-jq="select2" required="required">
+                             <option value="">*Select Type...</option>
+            <?php
+                             foreach($contactTypes->contact_types->records as $value) {
+                                 $selected = ($value[0] == $contactTypeID) ? 'selected=selected':'';
+                                 echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
+                             }
+            ?>
+                           </select>
+                         </div>
+                     </div>
+                     <div class="col-sm-4">
+                         <div class="form-group">
+             <?php if ($_SESSION['entityid'] > 0) { ?>
+                            <input type="hidden" id="customerID" name="customerID" value="<?php echo $_SESSION['entityid']; ?>" />
+             <?php } else { ?>
+                             <label for="customerID">Customer:</label>
+                             <select id="customerID" name="customerID" data-placeholder="Carrier" class="form-control chzn-select" required="required">
+                               <option value="">*Select Customer...</option>
+              <?php
+                               foreach($entities->entities->records as $value) {
+                                   $selected = ($value[0] == $entity) ? 'selected=selected':'';
+                                   echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
+                               }
+              ?>
+                             </select>
+              <?php } ?>
+                         </div>
+                     </div>
+                     <div class="col-sm-4">
+                       <div class="form-group">
+                         &nbsp;
+                       </div>
+                     </div>
+                 </div>
+                 <div class="row">
+                     <div class="col-sm-6">
+                       <label for="title">Title</label>
+                       <div class="form-group">
+                         <input type="text" id="title" name="title" class="form-control mb-sm" placeholder="*Title" required="required" />
+                       </div>
+                     </div>
+                     <div class="col-sm-6">
+                         <label for="emailAddress">Email Address</label>
+                         <div class="form-group">
+                           <input type="email" data-parsley-type="email" id="emailAddress" name="emailAddress" class="form-control mb-sm" placeholder="*Email Address" required="required"/>
+                         </div>
+                     </div>
+                 </div>
+                 <div class="row">
+                     <div class="col-sm-6">
+                         <label for="primaryPhone">Primary Phone</label>
+                         <div class="form-group">
+                           <div class="col-sm-9" style="padding-left: 0; padding-right: 0">
+ 	                          <input type="text" id="primaryPhone" name="primaryPhone" class="form-control" placeholder="*Primary Phone" required="required" />
+                           </div>
+                           <div class="col-sm-3" style="padding-right: 0;">
+                              <input type="text" maxlength="15" data-parsley-maxlength="15" id="primaryPhoneExt" name="primaryPhoneExt" class="form-control" placeholder="Ext" />
+                           </div>
+                         </div>
+                     </div>
+                     <div class="col-sm-6">
+                         <label for="secondaryPhone">Secondary Phone</label>
+                         <div class="form-group">
+                           <input type="text" id="secondaryPhone" name="secondaryPhone" class="form-control" placeholder="Secondary Phone" />
+                         </div>
+                     </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-6">
+                        <label for="fax">Fax</label>
+                        <div class="form-group">
+                          <input type="text" id="fax" name="fax" class="form-control mb-sm" placeholder="Fax" />
+                        </div>
+                    </div>
+                     <div class="col-sm-6">
+                         <label for="contactRating">Rating</label>
+                         <div class="form-group">
+                           <select id="contactRating" name="contactRating" data-placeholder="Rating" class="form-control chzn-select" data-ui-jq="select2">
+                              <option value="">*Rating...</option>
+             <?php
+                              for($s = 1; $s < 6; $s++) {
+                                  $selected = ($s == $contactRating) ? 'selected=selected':'';
+                                  echo "<option value=" .$s . " " . $selected . ">" . $s . " Star(s)</option>\n";
+                              }
+             ?>
+                           </select>
+                         </div>
+                     </div>
+
+                 </div>
+                </form>
+       </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button id="load2" type="button" class="btn btn-primary" onclick="return addCustomerContact();">Add Contact</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
  <script>
 
@@ -1955,8 +2213,23 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
         });
     }
 
+    var blnFromAddForm = false;
+
+    function openAddContact(){
+
+        blnFromAddForm = true;
+
+        $("#myModal").modal('hide');
+    }
+    
     $("#myModal").on("hidden.bs.modal", function () {
         $("#entityID").prop('disabled', false);
+        
+        if(blnFromAddForm){            
+            blnFromAddForm = false;
+            $("#addCustomerContact").modal('show');            
+        }
+        
     });
 
     function setContactsOnLocationSelected() {
