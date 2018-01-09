@@ -85,6 +85,24 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
        };
       })();
 
+        function reloadContacts(){
+            
+            var url = '<?php echo API_HOST_URL . "/contacts?columns=id,firstName,lastName&order=lastName&filter=entityID,eq," . $_SESSION['entityid'] ?>';
+            var type = "GET";
+
+            $.ajax({
+               url: url,
+               type: type,
+               async: false,
+               success: function(data){
+                    contacts = data;
+               },
+               error: function() {
+                  alert("There Was An Error Retrieving Contacts!");
+               }
+            });
+        }
+
         function getCarrierContactTitle(entityID){
             var carrierContactTitle = "";
             entities.entities.records.forEach(function(value){
@@ -1078,6 +1096,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                    success: function(data){
                       if (data > 0) {
                         loadTableAJAX();
+                        reloadContacts();
                         $("#contactTypeID").val('');
                         $("#firstName").val('');
                         $("#lastName").val('');
@@ -1708,7 +1727,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
   </div>
 
  <script>
-
     //$( "#originationState" ).select2();
     //$( "#destinationState" ).select2();
 
