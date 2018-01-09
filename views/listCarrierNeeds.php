@@ -2159,6 +2159,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
         $("#myModal").modal('hide');
     }
 
+    $("#addCarrierContact").on("hidden.bs.modal", function () {
+        
+        $("#addNeed").trigger("click");       
+    });
+
     $("#myModal").on("hidden.bs.modal", function () {
         $("#entityID").prop('disabled', false);
 

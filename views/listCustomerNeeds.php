@@ -2250,6 +2250,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
         }
         
     });
+    
+    $("#addCustomerContact").on("hidden.bs.modal", function () {
+        
+        $("#addNeed").trigger("click");       
+    });
 
     function setContactsOnLocationSelected() {
         var location_id = $("#originationLocationID").val();
