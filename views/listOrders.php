@@ -374,25 +374,27 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
               });
       }
 
-    function loadTableAJAX() {
+    function loadTableAJAX(status) {
 
         var url = '<?php echo API_HOST_URL; ?>';
         var blnShow = false;
 
         switch(entityType){
             case 0:     // URL for the Admin. The admin can see ALL Orders.
-                url += '/orders?includes=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,distance,needsDataPoints,status,qty,rateType,transportationMode,entities.id,entities.name,documents.id,documents.documentURL&satisfy=all&transform=1';
+                url += '/orders?includes=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,distance,needsDataPoints,status,qty,rateType,transportationMode,entities.id,entities.name,documents.id,documents.documentURL&filter=status,eq,' + status + '&satisfy=all&transform=1';
                 blnShow = true;
                 break;
             case 1:    // URL for Customer. The Customer can only see their orders.
-                url += '/orders?includes=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,distance,needsDataPoints,status,qty,rateType,transportationMode,entities.id,entities.name,documents.id,documents.documentURL&filter=customerID,eq,' + entityid + '&satisfy=all&transform=1';
+                url += '/orders?includes=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,distance,needsDataPoints,status,qty,rateType,transportationMode,entities.id,entities.name,documents.id,documents.documentURL&filter[0]=customerID,eq,' + entityid + '&filter[1]=status,eq,' + status + '&satisfy=all&transform=1';
                 break;
             case 2:     // URL for the Carrier. Same as the admin but will be filtered below.
-                url += '/orders?includes=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,distance,needsDataPoints,status,qty,rateType,transportationMode,entities.id,entities.name,documents.id,documents.documentURL&satisfy=all&transform=1';
+                url += '/orders?includes=documents,entities&columns=id,customerID,carrierIDs,documentID,orderID,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,distance,needsDataPoints,status,qty,rateType,transportationMode,entities.id,entities.name,documents.id,documents.documentURL&filter=status,eq,' + status + '&satisfy=all&transform=1';
                 break;
         }
 
-        var orders_table = $('#orders-table').DataTable({
+        if ( ! $.fn.DataTable.isDataTable( '#orders-table' ) ) {
+
+            var orders_table = $('#orders-table').DataTable({
             retrieve: true,
             processing: true,
             ajax: {
@@ -491,13 +493,30 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 }
             ],
             scrollX: true
-          });
+          });          
+          
+            orders_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', orders_table.table().container() ) );
+            //To Reload The Ajax
+            //See DataTables.net for more information about the reload method
+            orders_table.ajax.reload();
+        }
+        else{
 
-        orders_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', orders_table.table().container() ) );
-
-        //To Reload The Ajax
-        //See DataTables.net for more information about the reload method
-        orders_table.ajax.reload();
+            //The URL will change with each "View Commit" button click
+          // Must load new Url each time.
+            var reload_table = $('#orders-table').DataTable();
+            reload_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', reload_table.table().container() ) );
+            reload_table.ajax.url(url).load();
+        }
+        
+        if(status == "Open"){
+            $('#viewOpenOrders').css('display', 'none');
+            $('#viewClosedOrders').css('display', 'block');
+        }
+        else{
+            $('#viewOpenOrders').css('display', 'block');
+            $('#viewClosedOrders').css('display', 'none');
+        }
 
       }
 
@@ -1877,11 +1896,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
  <section  class="widget">
      <header>
          <h4><span class="fw-semi-bold">Order Details for My Trailers in Route</span></h4>
-         <!--<div class="widget-controls">
-             <a data-widgster="expand" title="Expand" href="#"><i class="glyphicon glyphicon-chevron-up"></i></a>
-             <a data-widgster="collapse" title="Collapse" href="#"><i class="glyphicon glyphicon-chevron-down"></i></a>
-             <a data-widgster="close" title="Close" href="#"><i class="glyphicon glyphicon-remove"></i></a>
-         </div>-->
+         <div class="widget-controls">
+             <!--<a data-widgster="expand" title="Expand" href="#"><i class="glyphicon glyphicon-chevron-up"></i></a>
+             <a data-widgster="collapse" title="Collapse" href="#"><i class="glyphicon glyphicon-chevron-down"></i></a>-->
+             <button type="button" class="btn btn-primary btn-md" onclick="loadTableAJAX('Open');" id="viewOpenOrders">View Open Orders</button>
+             <button type="button" class="btn btn-primary btn-md" onclick="loadTableAJAX('Closed');" id="viewClosedOrders">View Closed Orders</button>
+         </div>
      </header>
      <div class="widget-body">
          <br /><br />
@@ -2713,7 +2733,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
     $(document).ready(function(){
 
-        loadTableAJAX();
+        loadTableAJAX("Open");
 
         $('.datepicker').datepicker({
             autoclose: true,
