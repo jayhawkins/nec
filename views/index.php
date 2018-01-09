@@ -24,27 +24,6 @@ $mapsMenuAccessList = array(0,1,2);
 //$settingsMenuAccessList = array(0,1,2);
 $settingsMenuAccessList = array(0);
 
-/*
-$cityargs = array(
-      //"transform"=>"1",
-      "columns"=>"originationCity,destinationCity",
-      "filter[0]"=> "entityID,eq,".$_SESSION['entityid'],
-      "filter[1]"=>"rootCustomNeedsID,eq,0",
-      "filter[2]"=>"expirationDate,ge,".date('Y-m-d')
-);
-
-
-$cityurl = API_HOST_URL . "/customer_needs?".http_build_query($cityargs);
-$cityoptions = array(
-    'http' => array(
-        'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
-        'method'  => 'GET'
-    )
-);
-$citycontext  = stream_context_create($cityoptions);
-$cityresult = json_decode(file_get_contents($cityurl,false,$citycontext), true);
-*/
-
 // Get States
 $stateargs = array(
     "transform"=>"1",
@@ -146,6 +125,17 @@ if ($_SESSION['entityid'] > 0) {
 
     $carrierneedresult = '{}';
     $customerneedresult = '{}';
+
+    $db = Flight::db();
+    $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
+    $result = $dbhandle->query("select distinct state
+                             from locations
+                             where entityID = '" . $_SESSION['entityid'] . "'");
+
+    if (count($result) > 0) {
+        $row = $result->FetchAll();
+        var_dump($row);
+    }
 
     //print_r($cnresult);
     //die();
@@ -807,9 +797,9 @@ if ($_SESSION['entityid'] > 0) {
                                                if (value.originationLat) {
                                                    // Setup Availability Date
                                                    if (value.availableDate > '') {
-                                                       var availableDate = 'Availability Date: ' + formatDate(new Date(availableDate));
+                                                       var availableDate = 'Date: ' + formatDate(new Date(availableDate));
                                                    } else {
-                                                       var availableDate = 'Availability Date: ' + expirationDateStatus;
+                                                       var availableDate = 'Date: ' + expirationDateStatus;
                                                    }
                                                    if (value.expirationDate > '') {
                                                        var expirationDate = formatDate(new Date(expirationDate));
@@ -932,9 +922,9 @@ if ($_SESSION['entityid'] > 0) {
                                                if (value.originationLat) {
                                                    // Setup Availability Date
                                                    if (value.availableDate > '') {
-                                                       var availableDate = 'Availability Date: ' + formatDate(new Date(availableDate));
+                                                       var availableDate = 'Date: ' + formatDate(new Date(availableDate));
                                                    } else {
-                                                       var availableDate = 'Availability Date: ' + expirationDateStatus;
+                                                       var availableDate = 'Date: ' + expirationDateStatus;
                                                    }
                                                    if (value.expirationDate > '') {
                                                        var expirationDate = formatDate(new Date(expirationDate));
@@ -1056,9 +1046,9 @@ if ($_SESSION['entityid'] > 0) {
                                                if (value.originationLat) {
                                                    // Setup Availability Date
                                                    if (value.availableDate > '') {
-                                                       var availableDate = 'Availability Date: ' + formatDate(new Date(availableDate));
+                                                       var availableDate = 'Date: ' + formatDate(new Date(availableDate));
                                                    } else {
-                                                       var availableDate = 'Availability Date: ' + expirationDateStatus;
+                                                       var availableDate = 'Date: ' + expirationDateStatus;
                                                    }
                                                    if (value.expirationDate > '') {
                                                        var expirationDate = formatDate(new Date(expirationDate));
@@ -2279,18 +2269,6 @@ if ($_SESSION['entitytype'] == 0) {
                                 <div class="form-group" width="100%">
                                   <input type="text" class="form-control" id="cityFilter" name="cityFilter" placeholder="City to Search For" value="" />
                                 </div>
-                                  <!--select id="cityFilter" name="cityFilter" multiple style="width: 100%"-->
-                                      <!--option value="">ALL</option-->
-
-
-<?php
-//                                    foreach($cityresult['customer_needs']['records'] as $value) {
-//                                       echo "<option value=" .$value[0] . ">" . $value[0] . "</option>\n";
-//                                       echo "<option value=" .$value[1] . ">" . $value[1] . "</option>\n";
-//                                    }
- ?>
-
-                                <!--/select-->
 
                             </div>
                         </div>
@@ -2604,9 +2582,9 @@ $(function() {
                        if (value.originationLat) {
                            // Setup Availability Date
                            if (value.availableDate > '') {
-                               var availableDate = 'Availability Date: ' + formatDate(new Date(availableDate));
+                               var availableDate = 'Date: ' + formatDate(new Date(availableDate));
                            } else {
-                               var availableDate = 'Availability Date: ' + expirationDateStatus;
+                               var availableDate = 'Date: ' + expirationDateStatus;
                            }
                            if (value.expirationDate > '') {
                                var expirationDate = formatDate(new Date(expirationDate));
@@ -2901,7 +2879,36 @@ $(function() {
                        eventHandlers: {
                            mouseover: function(e, id){
                                state = id;
-                           }
+                           },
+                           click: function (e, id, mapElem, textElem) {
+                                var newData = {
+                                    'areas': {}
+                                };
+                                var keepSelected = $("#stateFilter").select2("val");
+                                $("#stateFilter > option").each(function() {
+                                    if (this.value == id) {
+                                        if (jQuery.inArray(id,keepSelected) == -1) {
+                                            keepSelected.push(id);
+                                            newData.areas[id] = {
+                                                attrs: {
+                                                    fill: "#0088db"
+                                                }
+                                            };
+                                        } else {
+                                            keepSelected = jQuery.grep(keepSelected, function(value) {
+                                                              return value != id;
+                                                           });
+                                            newData.areas[id] = {
+                                                attrs: {
+                                                    fill: "#343434"
+                                                }
+                                            };
+                                        }
+                                    }
+                                });
+                                $("#stateFilter").select2("val", keepSelected); //set the value
+                                $(".mapcontainer").trigger('update', [{mapOptions: newData}]);
+                            }
                        }
                    },
                    defaultPlot:{

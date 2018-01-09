@@ -455,7 +455,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
             var pastNeedsDateString = new Date(pastNeedsDate.getFullYear(), pastNeedsDate.getMonth()+1, pastNeedsDate.getDate()-180); // Only go back 6 months to get history
             pastNeedsDateString = pastNeedsDateString.getFullYear() + '-' + pastNeedsDateString.getMonth() + '-' + pastNeedsDateString.getDate();
 
-            var url = '<?php echo API_HOST_URL; ?>' + '/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,transportationMode,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&filter[0]=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&filter[1]=expirationDate,ge,' + pastNeedsDateString + '&satisfy=all&order[]=availableDate,desc&transform=1';
+            var url = '<?php echo API_HOST_URL; ?>' + '/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,transportationMode,availableDate,expirationDate,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&filter[0]=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&filter[1]=expirationDate,ge,' + pastNeedsDateString + '&satisfy=all&order[]=expirationDate,desc&transform=1';
             var example_table = $('#datatable-table').DataTable({
                 retrieve: true,
                 processing: true,
@@ -510,7 +510,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
             var pastNeedsDateString = new Date(pastNeedsDate.getFullYear(), pastNeedsDate.getMonth()+1, pastNeedsDate.getDate()-180);
             pastNeedsDateString = pastNeedsDateString.getFullYear() + '-' + pastNeedsDateString.getMonth() + '-' + pastNeedsDateString.getDate();
 
-            var url = '<?php echo API_HOST_URL; ?>' + '/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,transportationMode,availableDate,expirationDate,originationCity,originationState,originationZip,originationLat,originationLng,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&filter[0]=expirationDate,ge,' + pastNeedsDateString + '&satisfy=all&order[]=entityID&order[]=createdAt,desc&transform=1';
+            var url = '<?php echo API_HOST_URL; ?>' + '/carrier_needs?include=entities&columns=entities.name,id,entityID,qty,transportationMode,availableDate,expirationDate,originationCity,originationState,originationZip,originationLat,originationLng,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,needsDataPoints,status,contactEmails&filter[0]=expirationDate,ge,' + pastNeedsDateString + '&satisfy=all&order[]=entityID&order[]=expirationDate,desc&transform=1';
             var example_table = $('#datatable-table').DataTable({
                 retrieve: true,
                 processing: true,
@@ -1178,7 +1178,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
         left:20%;
         margin-bottom: 10px;
     }
-    
+
  </style>
 
  <ol class="breadcrumb">
@@ -1593,8 +1593,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
      </div>
    </div>
 
-  
-  
+
+
  <!-- Modal -->
  <div class="modal fade" id="addCarrierContact" z-index="1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
    <div class="modal-dialog modal-lg" role="document">
@@ -2158,16 +2158,16 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
 
         $("#myModal").modal('hide');
     }
-    
+
     $("#myModal").on("hidden.bs.modal", function () {
         $("#entityID").prop('disabled', false);
-        
+
         if(blnFromAddForm){
-            
+
             blnFromAddForm = false;
-            $("#addCarrierContact").modal('show');            
+            $("#addCarrierContact").modal('show');
         }
-        
+
     });
 
     function setContactsOnLocationSelected() {
@@ -2195,6 +2195,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
 	    return false;
 	});
 
-	document.getElementById('downloadTemplateButton').addEventListener('click', downloadTemplateClick);      
+	document.getElementById('downloadTemplateButton').addEventListener('click', downloadTemplateClick);
 
  </script>
