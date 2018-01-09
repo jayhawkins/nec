@@ -1114,9 +1114,13 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
      <header>
          <h4><span class="fw-semi-bold">Committed Transport</span></h4>
          <div class="widget-controls">
-             <!--<a data-widgster="save" title="Save" href="#" onclick="saveCommitAsOrder()"><i class="glyphicon glyphicon-floppy-disk" style="font-size: 20px;"></i></a>-->
+             <!--<a data-widgster="save" title="Save" href="#" onclick="saveCommitAsOrder()"><i class="glyphicon glyphicon-floppy-disk" style="font-size: 20px;"></i></a>
              <a data-widgster="edit" title="Edit" href="#" onclick="editCommitTransport()"><i class="glyphicon glyphicon-pencil" style="font-size: 20px;"></i></a>
-             <a data-widgster="close" title="Close" href="#" onclick="closeCommitTransport()"><i class="glyphicon glyphicon-remove" style="font-size: 20px;"></i></a>
+             <a data-widgster="close" title="Close" href="#" onclick="closeCommitTransport()"><i class="glyphicon glyphicon-remove" style="font-size: 20px;"></i></a>-->
+             
+           <button type="button" class="btn btn-primary btn-md" onclick="editCommitTransport();" id="editCommitment">Edit</button>
+           <button type="button" class="btn btn-primary btn-md" onclick="saveCommitAsOrder();" id="saveCommitAsOrder">Submit to Order</button>
+           <button type="button" class="btn btn-primary btn-md" onclick="closeCommitTransport();" id="closeForm">Close</button>
          </div>
      </header>
      <br />
@@ -1197,13 +1201,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         </table>
                     </div>
              </div>
-         </div>
-     </div>
-     <br>
-     <div class="row">
-         <div class="col-md-12">
-
-           <button type="button" class="btn btn-primary btn-md" onclick="saveCommitAsOrder();" id="saveCommitAsOrder">Complete Order</button>
          </div>
      </div>
  </section>
