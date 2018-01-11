@@ -120,13 +120,14 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
               return false;
           }
 
-            //console.log(commitOriginationCity);
-            //console.log(commitDestinationCity);
-            //console.log($("#ocity").val());
-            //console.log($("#dcity").val());
-            //console.log('origin city: ' + commitOriginationCity.indexOf($("#ocity").val()));
+            console.log(commitOriginationCity);
+            console.log(commitDestinationCity);
+            console.log($("#ocity").val());
+            console.log($("#dcity").val());
+            console.log('origin city: ' + commitOriginationCity.indexOf($("#ocity").val()));
+            console.log('dest city: ' + commitDestinationCity.indexOf($("#dcity").val()));
 
-          if (commitOriginationCity.length == 2 && !admin && (commitOriginationCity.indexOf($("#ocity").val()) == -1 || commitDestinationCity.indexOf($("#dcity").val()) == -1) ) {
+          if (commitOriginationCity.length == 2 && !admin && ( (commitOriginationCity.indexOf($("#ocity").val()) == -1 && $("#originationCity").val() != $("#ocity").val()) || (commitDestinationCity.indexOf($("#dcity").val()) == -1 && $("#destinationCity").val() != $("#dcity").val()) ) ) {
               //$("#relayMessage").html("<strong>" + $("#ocity").val() + " or " + $("#dcity").val() + " must have be in at least one relay</strong>");
               //$("#relayDialog").modal('show');
               alert("Check the current relays. " + $("#ocity").val() + " or " + $("#dcity").val() + " must be specified in at least one relay");
