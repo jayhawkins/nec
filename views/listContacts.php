@@ -168,7 +168,7 @@ $contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?col
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
             processing: true,
-            bSort: false,
+            //bSort: false,
             ajax: {
                 url: url,
                 dataSrc: 'contacts'

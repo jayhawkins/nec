@@ -307,7 +307,7 @@ $cdpvList = $cdpvresult["configuration_data_points"];
    <div class="modal-dialog modal-lg" role="document">
      <div class="modal-content">
        <div class="modal-header">
-         <h5 class="modal-title" id="exampleModalLabel"><strong>Business</strong></h5>
+         <h5 class="modal-title" id="formTitle"><strong>Business</strong></h5>
          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
            <span aria-hidden="true">&times;</span>
          </button>
@@ -536,13 +536,15 @@ $cdpvList = $cdpvresult["configuration_data_points"];
               entityID: $("#id").val()
           };
 
+          var entityTypeID = 0;
+
           $.ajax({
                url: '<?php echo API_HOST_URL . "/entities"; ?>/' + $("#id").val(),
                type: 'GET',
                contentType: "application/json",
                async: false,
                success: function(response){
-                 var entityTypeID = response.entityTypeID;
+                 entityTypeID = response.entityTypeID;
                  var cs = response.configuration_settings;
                  //console.log('length: ' + cs);
                  var li = '';
@@ -588,6 +590,12 @@ $cdpvList = $cdpvresult["configuration_data_points"];
                   alert('Failed Getting Configuration Settings!');
                }
           });
+
+          if (entityTypeID == 1) {
+              $("#formTitle").html("<strong>Customer Maintenance</strong>");
+          } else {
+              $("#formTitle").html("<strong>Carrier Maintenance</strong>");
+          }
 
           $("#myModal").modal('show');
         } else {
