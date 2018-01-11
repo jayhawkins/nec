@@ -126,15 +126,20 @@ if ($_SESSION['entityid'] > 0) {
     $carrierneedresult = '{}';
     $customerneedresult = '{}';
 
+    // Get the states the Customer/Carrier has locations in for queries
     $db = Flight::db();
     $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
     $result = $dbhandle->query("select distinct state
                              from locations
                              where entityID = '" . $_SESSION['entityid'] . "'");
 
+    $defaultStates = "";
     if (count($result) > 0) {
-        $row = $result->FetchAll();
-        var_dump($row);
+        $rows = $result->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($rows as $row) {
+            if (!empty($defaultStates)) $defaultStates .= ",";
+            $defaultStates .= $row['state'];
+        }
     }
 
     //print_r($cnresult);

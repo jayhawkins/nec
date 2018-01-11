@@ -72,6 +72,9 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
          admin = false;
      }
 
+     var commitOriginationCity = new Array();
+     var commitDestinationCity = new Array();
+
      var myApp;
       myApp = myApp || (function () {
        var pleaseWaitDiv = $('<div class="modal hide" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false"><div class="modal-header"><h1>Processing...</h1></div><div class="modal-body"><div class="progress progress-striped active"><div class="bar" style="width: 100%;"></div></div></div></div>');
@@ -111,12 +114,24 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
           var destinationaddress = $("#destinationCity").val() + ', ' + $("#destinationState").val();
 
           if (originationaddress != $("#originToMatch").val() && destinationaddress != $("#destToMatch").val()) {
-              alert("The commitment for this Available request must be picked up or dropped off at the listed Origination or Destination. Please select a new Origination or Destination address.");
+              alert("The commitment for this Availablility must be picked up at " + $("#originToMatch").val() + " or dropped off at " + $("#destToMatch").val() + ". Please make a valid selection.");
               //alert($("#originToMatch").val());
               //alert($("#destToMatch").val());
               return false;
           }
 
+            //console.log(commitOriginationCity);
+            //console.log(commitDestinationCity);
+            //console.log($("#ocity").val());
+            //console.log($("#dcity").val());
+            //console.log('origin city: ' + commitOriginationCity.indexOf($("#ocity").val()));
+
+          if (commitOriginationCity.length == 2 && !admin && (commitOriginationCity.indexOf($("#ocity").val()) == -1 || commitDestinationCity.indexOf($("#dcity").val()) == -1) ) {
+              //$("#relayMessage").html("<strong>" + $("#ocity").val() + " or " + $("#dcity").val() + " must have be in at least one relay</strong>");
+              //$("#relayDialog").modal('show');
+              alert("Check the current relays. " + $("#ocity").val() + " or " + $("#dcity").val() + " must be specified in at least one relay");
+              return false;
+          }
 
           if (confirm("You have selected to Commit to this Availability. A Nationwide Equipment Control team member will contact you within 4 buisness hours to start the order process. Do you wish to proceed with this commitment?") == true) {
 
@@ -1260,6 +1275,30 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
      </div>
    </div>
 
+   <!-- Modal -->
+  <div class="modal fade" id="relayDialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="cancelDialogLabel"></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+              <div class="row">
+                  <div class="col-sm-12" id="relayMessage">
+
+                  </div>
+              </div>
+        </div>
+         <div class="modal-footer">
+           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+         </div>
+       </div>
+     </div>
+   </div>
+
 
 <!-- These modals are currently not used -->
   <!-- Modal -->
@@ -1525,7 +1564,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
             $("#transportationModeDiv").html(transportationmodeselect);
 
             // Determine if this is the third relay. If so, lock down Origination and Destination so they have to select it. Limit relays to 3.
-            var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,availableDate,expirationDate&filter[]=rootCustomerNeedsID,eq,' + data['id'] + '&order[]=createdAt,desc&transform=1';
+            var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,availableDate,expirationDate,customer_needs_commit.originationCity,customer_needs_commit.originationState,customer_needs_commit.destinationCity,customer_needs_commit.destinationState&filter[]=rootCustomerNeedsID,eq,' + data['id'] + '&order[]=createdAt,desc&transform=1';
             var params = {id: data['id']};
             $.ajax({
                url: url,
@@ -1534,16 +1573,42 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                contentType: "application/json",
                async: false,
                success: function(response){
-                    if (response.customer_needs.length == 3 && !admin) {
-                        $("#divMaxRelayMessage").show();
-                        $("#originationCity").prop("disabled", true);
-                        $("#originationState").prop("disabled", true);
-                        $("#destinationCity").prop("disabled", true);
-                        $("#destinationState").prop("disabled", true);
-                        //$("#entityID").prop('disabled', true);
-                    }
 
-                    $("#myModalCommit").modal('show');
+                    commitOriginationCity = [];
+                    commitDestinationCity = [];
+
+                   // Load relay array so we can check relays in post function
+                   var needs = response.customer_needs;
+                   for (var x = 0; x < needs.length; x++) {
+                       var commits = needs[x].customer_needs_commit;
+                       for (var y = 0; y < commits.length; y++) {
+                           //console.log('Commits ' + y + ': ' + commits[y].destinationCity);
+                           commitOriginationCity.push(commits[y].originationCity);
+                           commitDestinationCity.push(commits[y].destinationCity);
+                       }
+
+                   }
+
+                   if (commitOriginationCity.length == 3 && !admin) { // Per Troy, carriers can only commit to 3 relays total. Only NEC Admin can add more relays....
+                        //$("#divMaxRelayMessage").show();
+                        //$("#originationCity").prop("disabled", true);
+                        //$("#originationState").prop("disabled", true);
+                        //$("#destinationCity").prop("disabled", true);
+                        //$("#destinationState").prop("disabled", true);
+                        ////$("#entityID").prop('disabled', true);
+                        $("#relayMessage").html("<h5><strong>Relay limit has been reached. No more relays allowed.</strong></h5>");
+                        $("#relayDialog").modal('show');
+                    //} else if (commitOriginationCity.length == 2 && !admin && (commitOriginationCity.indexOf($("#originationCity").val()) == -1) ) {
+                    //    $("#divMaxRelayMessage").show();
+                    //    $("#originationCity").prop("disabled", true);
+                    //    $("#originationState").prop("disabled", true);
+                    //    $("#destinationCity").prop("disabled", true);
+                    //    $("#destinationState").prop("disabled", true);
+                        ////$("#entityID").prop('disabled', true);
+                    //    $("#myModalCommit").modal('show');
+                    } else {
+                        $("#myModalCommit").modal('show');
+                    }
                },
                error: function() {
                     alert('Error Selecting Relays for ' + id + '!');
