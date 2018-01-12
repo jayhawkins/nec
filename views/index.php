@@ -65,6 +65,22 @@ $cncount = 0;
 $locresult = 0;
 $loccount = 0;
 
+// Get the states the Customer/Carrier has locations in for queries below
+$db = Flight::db();
+$dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
+$result = $dbhandle->query("select distinct state
+                         from locations
+                         where entityID = '" . $_SESSION['entityid'] . "'");
+
+$defaultStates = "";
+if (count($result) > 0) {
+    $rows = $result->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($rows as $row) {
+        if (!empty($defaultStates)) $defaultStates .= ",";
+        $defaultStates .= "'" . $row['state'] . "'";
+    }
+}
+
 if ($_SESSION['entityid'] > 0) {
     if ( $eresult['entities'][0]['entityTypeID'] == 1 ) { // Customer
         $cnargs = array(
@@ -72,7 +88,9 @@ if ($_SESSION['entityid'] > 0) {
               "filter[0]"=>"rootCustomerNeedsID,eq,0",
               "filter[1]"=>"status,eq,Available",
               "filter[2]"=>"expirationDate,ge," . date("Y-m-d 00:00:00"),
-              "filter[3]"=>"entityID,eq," . $_SESSION['entityid']
+              "filter[3]"=>"entityID,eq," . $_SESSION['entityid'],
+              "filter[4]"=>"originationState,in," . str_replace("'","",$defaultStates),
+              //"filter[5]"=>"destinationState,in," . str_replace("'","",$defaultStates)
         );
         $entityname = $eresult['entities'][0]['name'] . " - (Customer)";
         $cnurl = API_HOST_URL . "/customer_needs?".http_build_query($cnargs);
@@ -81,7 +99,9 @@ if ($_SESSION['entityid'] > 0) {
               "transform"=>"1",
               "filter[0]"=>"status,eq,Available",
               "filter[1]"=>"expirationDate,ge," . date("Y-m-d 00:00:00"),
-              "filter[2]"=>"entityID,eq," . $_SESSION['entityid']
+              "filter[2]"=>"entityID,eq," . $_SESSION['entityid'],
+              "filter[3]"=>"originationState,in," . str_replace("'","",$defaultStates),
+              //"filter[4]"=>"destinationState,in," . str_replace("'","",$defaultStates)
         );
         $entityname = $eresult['entities'][0]['name'] . " - (Carrier)";
         $cnurl = API_HOST_URL . "/carrier_needs?".http_build_query($cnargs);
@@ -125,22 +145,6 @@ if ($_SESSION['entityid'] > 0) {
 
     $carrierneedresult = '{}';
     $customerneedresult = '{}';
-
-    // Get the states the Customer/Carrier has locations in for queries
-    $db = Flight::db();
-    $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
-    $result = $dbhandle->query("select distinct state
-                             from locations
-                             where entityID = '" . $_SESSION['entityid'] . "'");
-
-    $defaultStates = "";
-    if (count($result) > 0) {
-        $rows = $result->fetchAll(PDO::FETCH_ASSOC);
-        foreach ($rows as $row) {
-            if (!empty($defaultStates)) $defaultStates .= ",";
-            $defaultStates .= $row['state'];
-        }
-    }
 
     //print_r($cnresult);
     //die();
@@ -2241,15 +2245,15 @@ if ($_SESSION['entitytype'] == 0) {
                                 <label for="stateFilter">Location Status:</label>
                                 <br/>
                                 <div class="btn-group" data-toggle="buttons">
-                                    <label class="btn btn-default active">
-                                        <input type="radio" name="locationStatus" id="locationStatus" value="Origination" checked>
+                                    <label class="btn btn-default">
+                                        <input type="radio" name="locationStatus" id="locationStatus" value="Origination" />
                                     Origination </label>
                                     <label class="btn btn-default">
-                                        <input type="radio" name="locationStatus" id="locationStatus" value="Destination">
+                                        <input type="radio" name="locationStatus" id="locationStatus" value="Destination" />
                                     Destination </label>
-                                    <label class="btn btn-default">
-                                        <input type="radio" name="locationStatus" id="locationStatus" value="Both">
-                                    Either/Or </label>
+                                    <!--label class="btn btn-default active">
+                                        <input type="radio" name="locationStatus" id="locationStatus" value="Both" checked />
+                                    Either/Or </label-->
                                 </div>
 
                                 <br />
@@ -2520,6 +2524,13 @@ $(function() {
    var customerneedresult = <?php echo $customerneedresult; ?>;
    var locresult = <?php echo $locresult; ?>;
    var entityTypeID = <?php echo $eresult['entities'][0]['entityTypeID']; ?>;
+   var defaultStates = [<?php echo $defaultStates; ?>];
+
+   //console.log(defaultStates);
+   //console.log(defaultStates.length);
+
+   $("#stateFilter").val([<?php echo $defaultStates; ?>]);
+   $('#stateFilter').trigger('change'); // Notify any JS components that the value changed
 
    if ( entityTypeID == 1 ) { // Customer
        cnresult = cnresult['customer_needs'];
@@ -2544,6 +2555,12 @@ $(function() {
 
    // We need a setTimeout (~200ms) in order to allow the UI to be refreshed for the message to be shown
    setTimeout(function(){
+
+           var areas = {};
+           var stateProcessed = '';
+           for (var ds = 0; ds < defaultStates.length; ds++) {
+               areas[defaultStates[ds]] = { attrs: {fill: "#0088db"} };
+           }
 
            if (cnresult) {
                var data = cnresult;
@@ -2913,6 +2930,7 @@ $(function() {
                                 });
                                 $("#stateFilter").select2("val", keepSelected); //set the value
                                 $(".mapcontainer").trigger('update', [{mapOptions: newData}]);
+                                getOrdersByFilters();
                             }
                        }
                    },
@@ -2934,6 +2952,9 @@ $(function() {
                        step : 0.75
                    }
                },
+
+               areas: areas,
+
                plots: plots,
                links: links
 

@@ -72,8 +72,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
          admin = false;
      }
 
-     var commitOriginationCity = new Array();
-     var commitDestinationCity = new Array();
+     var commitOriginationCity = [];
+     var commitDestinationCity = [];
 
      var myApp;
       myApp = myApp || (function () {
@@ -391,6 +391,137 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
             var show = false;
         } else {
             var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=entities&columns=id,rootCustomerNeedsID,entityID,qty,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate&satisfy=all&filter[0]=rootCustomerNeedsID,eq,0&filter[1]=status,eq,Available&filter[2]=expirationDate,ge,' + today + '&order[0]=entityID&order[1]=rootCustomerNeedsID&order[2]=createdAt,desc&transform=1';
+            var show = true;
+        }
+
+        var example_table = $('#datatable-table').DataTable({
+            retrieve: true,
+            processing: true,
+            ajax: {
+                url: url,
+                dataSrc: 'customer_needs'
+            },
+            columns: [
+                {
+                    "className":      'details-control-add',
+                    "orderable":      false,
+                    "data":           null,
+                    "defaultContent": ''
+                },
+                //{ data: "entities[0].name", visible: show },
+                {
+                    data: null,
+                    "bSortable": true,
+                    "mRender": function (o) {
+
+                        var entityName = '';
+                        var entityID = o.entityID;
+
+                        allentities.entities.forEach(function(entity){
+
+                            if(entityID == entity.id){
+
+                                entityName = entity.name;
+                            }
+                        });
+
+                        return entityName;
+                    }
+                },
+                { data: "id", visible: false },
+                { data: "rootCustomerNeedsID", visible: false},
+                { data: "entityID", visible: false },
+                { data: "qty" },
+                { data: "availableDate" },
+                {
+                    data: null,
+                    "bSortable": true,
+                    "render": function(o) {
+                      if (o.expirationDate == "0000-00-00") {
+                          return '';
+                      } else {
+                          return o.expirationDate;
+                      }
+                    }
+                },
+                { data: "transportationMode", visible: false },
+                { data: "originationAddress1", visible: false },
+                { data: "originationCity" },
+                { data: "originationState" },
+                { data: "originationZip", visible: false },
+                { data: "originationLat", visible: false },
+                { data: "originationLng", visible: false },
+                { data: "destinationAddress1", visible: false },
+                { data: "destinationCity" },
+                { data: "destinationState" },
+                { data: "destinationZip", visible: false },
+                { data: "destinationLat", visible: false },
+                { data: "destinationLng", visible: false },
+                { data: "distance", render: $.fn.dataTable.render.number(',', '.', 0, '')  },
+                { data: "needsDataPoints", visible: false },
+                { data: "entities[0].name", visible: false },
+                { data: "entities[0].rateType", visible: false },
+                { data: "entities[0].negotiatedRate", visible: false},
+                { data: "status", visible: false},
+                {
+                    data: null,
+                    "bSortable": false,
+                    "mRender": function (o) {
+                        var buttons = '<div class="pull-right text-nowrap">';
+                        buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-link text\"></i> <span class=\"text\">View Relays</span></button>';
+                        buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-plus text\"></i> <span class=\"text\">Commit</span></button>";
+                        buttons += '</div>';
+                        return buttons;
+                    }
+                }
+            ]
+          });
+
+          example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
+
+          //To Reload The Ajax
+          //See DataTables.net for more information about the reload method
+          example_table.ajax.reload();
+          $("#entityID").prop('disabled', false);
+          $("#load").html("Commit");
+          $("#load").prop("disabled", false);
+
+      }
+
+      function loadCarrierTableAJAX() {
+
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth()+1; //January is 0!
+        var yyyy = today.getFullYear();
+        var hours = today.getHours();
+        var min = today.getMinutes();
+        var sec = today.getSeconds();
+
+        if(dd<10) {
+            dd='0'+dd;
+        }
+
+        if(mm<10) {
+            mm='0'+mm;
+        }
+
+        if(hours<10) {
+            hours='0'+hours;
+        }
+
+        if(min<10) {
+            min='0'+min;
+        }
+
+        today = mm+'/'+dd+'/'+yyyy;
+        today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+
+        if (<?php echo $_SESSION['entityid']; ?> > 0) {
+            var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=entities,customer_needs_commit&columns=id,rootCustomerNeedsID,entityID,qty,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,entities.name,entities.rateType,entities.negotiatedRate&filter[0]=rootCustomerNeedsID,eq,0&filter[1]=expirationDate,ge,' + today + '&filter[2]=status,eq,Available&order[]=createdAt,desc&transform=1';
+            var show = false;
+        } else {
+            var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=entities&columns=id,rootCustomerNeedsID,entityID,qty,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate&satisfy=all&filter[0]=rootCustomerNeedsID,eq,0&filter[]=status,eq,Available&filter[]=expirationDate,ge,' + today + '&order[]=entityID&order[]=rootCustomerNeedsID&order[]=createdAt,desc&transform=1';
             var show = true;
         }
 
@@ -897,6 +1028,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
              <a href="http://www.datatables.net/" target="_blank">jQuery DataTables</a>
          </p -->
          <!--button type="button" id="addNeed" class="btn btn-primary pull-xs-right" data-target="#myModal">Add Need</button-->
+         <div class="pull-right text-nowrap">
+            <button type="button" id="myRelays" class="btn btn-primary">View My Relays</button>
+            <button type="button" id="allRelays" class="btn btn-primary">View All Relays</button>
+         </div>
          <br /><br />
          <div id="dataTable" class="mt">
              <table id="datatable-table" class="table table-striped table-hover">
@@ -1378,6 +1513,14 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
         autoclose: true,
         todayHighlight: true,
         format: "yyyy-mm-dd"
+    });
+
+    $("#myRelays").unbind('click').on('click', function(){
+        loadCarrierTableAJAX();
+    });
+
+    $("#allRelays").unbind('click').on('click', function(){
+        loadTableAJAX();
     });
 
     $("#addNeed").click(function(){

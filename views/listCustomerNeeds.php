@@ -1475,28 +1475,28 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                         </div>
                      </div>
                      <div class="col-sm-2">
-                        <label for="rate">Minimum Rate</label>
+                        <label for="rate"><b>Minimum Rate</b></label>
                         <div class="form-group" id="divMinimumTowAwayRate">
                         </div>
                         <div class="form-group" id="divMinimumLoadOutRate">
                         </div>
                      </div>
                      <div class="col-sm-2">
-                        <label for="rate">Maximum Rate</label>
+                        <label for="rate"><b>Maximum Rate</b></label>
                         <div class="form-group" id="divMaximumTowAwayRate">
                         </div>
                         <div class="form-group" id="divMaximumLoadOutRate">
                         </div>
                      </div>
                      <div class="col-sm-2">
-                        <label for="rate">Rate Type</label>
+                        <label for="rate"><b>Rate Type</b></label>
                         <div class="form-group" id="divTowAwayRateType">
                         </div>
                         <div class="form-group" id="divLoadOutRateType">
                         </div>
                      </div>
                      <div class="col-sm-12">
-                        <i>* This is an estimate only. Rates may change based on season and trailer dimesions</i>
+                        <i>* This is an estimate based on standard configurations (53/102/13’6 dry vans or reefers). <br />&nbsp;&nbsp;&nbsp;Rates may change based on season and trailer configurations.</i>
                      </div>
                  </div>
                  <hr />

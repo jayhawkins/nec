@@ -2,10 +2,10 @@
 
 class CarrierNeeds
 {
-    
+
     /**
      * The table name
-     * 
+     *
      * @var string
      */
     public $table = "carrier_needs";
@@ -40,7 +40,7 @@ class CarrierNeeds
       $args = array(
             "transform"=>"1"
       );
-      
+
       $url = $api_host . "/" . API_ROOT . "/carrier_needs/".$id."?".http_build_query($args);
       $options = array(
           'http' => array(
@@ -159,7 +159,7 @@ class CarrierNeeds
             }
 
             $from = array("operations@nationwide-equipment.com" => "Nationwide Operations Control Manager");
-            
+
             $returnObject = array();
 
             if (count($templateresult) > 0) {
@@ -170,8 +170,8 @@ class CarrierNeeds
 
                       $body = "Hello " . $entitycontactresult['contacts'][$ec]['firstName'] . ",<br /><br />";
                       $body .= $templateresult['email_templates'][0]['body'];
-                      
-                      $returnObject = sendmail($to, $subject, $body, $from);                      
+
+                      $returnObject = sendmail($to, $subject, $body, $from);
 
                         // Are there any failed emails?
                         if(sizeof($returnObject["failedRecipients"]) > 0){
@@ -217,4 +217,77 @@ class CarrierNeeds
 
         return "Your Need Notification has been recorded, and Customers will be notified";
     }
+
+    public function indexgetneeds(&$db,$locationStatus,$stateFilter,$cityFilter,$entityid = 0,$entitytype = 0) {
+
+        try {
+
+              $query .= "select * from carrier_needs
+                         where status = 'Available'
+                         and expirationDate >= '" . date('Y-m-d') . "'";
+
+              if ($entityid > 0 && $entitytype == 2) {
+                  $query .= " and entityID = '" . $entityid . "'";
+              }
+
+              if (!empty($stateFilter)) {
+                    if (count($stateFilter) == 1) {
+                        $sfilter = "'" . $stateFilter[0] . "'";
+                    } else {
+                        $numStates = $stateFilter;
+                        $sfilter = "";
+                        for ($s=0;$s<count($numStates);$s++) {
+                            $sfilter .= "'" . $numStates[$s] . "'";
+                            if ($s < count($numStates) - 1) {
+                                $sfilter .= ",";
+                            }
+                        }
+                    }
+                    if ($locationStatus == "Origination") {
+                        $query .= " and originationState in (" . $sfilter . ")";
+                    } else if ($locationStatus == "Destination") {
+                        $query .= " and destinationState in (" . $sfilter . ")";
+                    } else {
+                        $query .= " and (originationState in (" . $sfilter . ") or destinationState in (" . $sfilter . "))";
+                    }
+              }
+              if (!empty($cityFilter)) {
+                    if (count($cityFilter) == 1) {
+                        $cfilter = "'" . $cityFilter[0] . "'";
+                    } else {
+                        //$numCities = explode(",",$cityFilter);
+                        $numCities = $cityFilter;
+                        $cfilter = "";
+                        for ($c=0;$c<count($numCities);$c++) {
+                            $cfilter .= "'" . $numCities[$c] . "'";
+                            if ($c < count($numCities) - 1) {
+                                $cfilter .= ",";
+                            }
+                        }
+                    }
+                    if ($locationStatus == "Origination") {
+                        $query .= " and originationCity in (" . $cfilter . ")";
+                    } else if ($locationStatus == "Destination") {
+                        $query .= " and destinationCity in (" . $cfilter . ")";
+                    } else {
+                        $query .= " and (originationCity in (" . $sfilter . ") or destinationCity in (" . $sfilter . "))";
+                    }
+              }
+
+              $result = $db->query($query);
+
+              if (count($result) > 0) {
+                  echo "{ \"carrier_needs\":".json_encode($result->fetchAll()) . "}";
+              } else {
+                  return false;
+              }
+        } catch (Exception $e) { // The indexgetorders query failed verification
+              header('HTTP/1.1 404 Not Found');
+              header('Content-Type: text/plain; charset=utf8');
+              echo $e->getMessage();
+              exit();
+        }
+    }
+
+
 }

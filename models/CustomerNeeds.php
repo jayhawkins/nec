@@ -48,6 +48,77 @@ class CustomerNeeds
 
     }
 
+    public function indexgetavailability(&$db,$locationStatus,$stateFilter,$cityFilter,$entityid = 0,$entitytype = 0) {
+
+        try {
+
+              $query .= "select * from customer_needs
+                         where status = 'Available'
+                         and expirationDate >= '" . date('Y-m-d') . "'";
+
+              if ($entityid > 0 && $entitytype == 2) {
+                  $query .= " and entityID = '" . $entityid . "'";
+              }
+
+              if (!empty($stateFilter)) {
+                    if (count($stateFilter) == 1) {
+                        $sfilter = "'" . $stateFilter[0] . "'";
+                    } else {
+                        $numStates = $stateFilter;
+                        $sfilter = "";
+                        for ($s=0;$s<count($numStates);$s++) {
+                            $sfilter .= "'" . $numStates[$s] . "'";
+                            if ($s < count($numStates) - 1) {
+                                $sfilter .= ",";
+                            }
+                        }
+                    }
+                    if ($locationStatus == "Origination") {
+                        $query .= " and originationState in (" . $sfilter . ")";
+                    } else if ($locationStatus == "Destination") {
+                        $query .= " and destinationState in (" . $sfilter . ")";
+                    } else {
+                        $query .= " and (originationState in (" . $sfilter . ") or destinationState in (" . $sfilter . "))";
+                    }
+              }
+              if (!empty($cityFilter)) {
+                    if (count($cityFilter) == 1) {
+                        $cfilter = "'" . $cityFilter[0] . "'";
+                    } else {
+                        //$numCities = explode(",",$cityFilter);
+                        $numCities = $cityFilter;
+                        $cfilter = "";
+                        for ($c=0;$c<count($numCities);$c++) {
+                            $cfilter .= "'" . $numCities[$c] . "'";
+                            if ($c < count($numCities) - 1) {
+                                $cfilter .= ",";
+                            }
+                        }
+                    }
+                    if ($locationStatus == "Origination") {
+                        $query .= " and originationCity in (" . $cfilter . ")";
+                    } else if ($locationStatus == "Destination") {
+                        $query .= " and destinationCity in (" . $cfilter . ")";
+                    } else {
+                        $query .= " and (originationCity in (" . $sfilter . ") or destinationCity in (" . $sfilter . "))";
+                    }
+              }
+
+              $result = $db->query($query);
+
+              if (count($result) > 0) {
+                  echo "{ \"customer_needs\":".json_encode($result->fetchAll()) . "}";
+              } else {
+                  return false;
+              }
+        } catch (Exception $e) { // The indexgetorders query failed verification
+              header('HTTP/1.1 404 Not Found');
+              header('Content-Type: text/plain; charset=utf8');
+              echo $e->getMessage();
+              exit();
+        }
+    }
+
     public function createFromExisting($api_host,$id,$rootCustomerNeedsID,$carrierID,$qty,$originationAddress1,$originationCity,$originationState,$originationZip,$destinationAddress1,$destinationCity,$destinationState,$destinationZip,$originationLat,$originationLng,$destinationLat,$destinationLng,$distance,$transportationMode,$transportation_mode,$transportation_type,$pickupDate,$deliveryDate,$google_maps_api) {
 
           /******** WE ARE NOT USING THE LNG AND LAT FROM THIS CALL - WE WILL NEED TO GO GET THE GEOCODE BASED ON THE NEW ORIGINATION AND DESTINATION *****/
