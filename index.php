@@ -341,7 +341,7 @@ $app->route('/dashboard', function() {
 /*****************************************************************************/
 $app->route('POST /deletelocationcontacts', function() {
     $locationid = Flight::request()->data->location_id;
-    $locationcontact = Flight::locationcontacts();
+    $locationcontact = Flight::locationsContacts();
     $recorddeleted = $locationcontact->deleteById($locationid);
     if ($recorddeleted) {
         echo "success";
@@ -678,6 +678,33 @@ $app->route('POST /indexgetorders', function() {
     $return = $orders->indexgetorders($db,$locationStatus,$stateFilter,$cityFilter,$entityid,$entitytype);
     echo $return;
 });
+
+/* Not used yet for dashboard filter Either/Or
+$app->route('POST /indexgetneeds', function() {
+	$locationStatus = Flight::request()->data->locationStatus;
+	$stateFilter = Flight::request()->data->stateFilter;
+    $cityFilter = Flight::request()->data->cityFilter;
+    $entityid = Flight::request()->data->entityid;
+    $entitytype = Flight::request()->data->entitytype;
+	$carrierneeds = Flight::carrierNeeds();
+	$db = Flight::db();
+	echo "here";
+    $return = $carrierneeds->indexgetneeds($db,$locationStatus,$stateFilter,$cityFilter,$entityid,$entitytype);
+    echo $return;
+});
+
+$app->route('POST /indexgetavailability', function() {
+	$locationStatus = Flight::request()->data->locationStatus;
+	$stateFilter = Flight::request()->data->stateFilter;
+    $cityFilter = Flight::request()->data->cityFilter;
+    $entityid = Flight::request()->data->entityid;
+    $entitytype = Flight::request()->data->entitytype;
+	$customerneeds = Flight::customerNeeds();
+	$db = Flight::db();
+    $return = $customerneeds->indexgetavailability($db,$locationStatus,$stateFilter,$cityFilter,$entityid,$entitytype);
+    echo $return;
+});
+*/
 
 /*****************************************************************************/
 // POD API Process
