@@ -2245,8 +2245,8 @@ if ($_SESSION['entitytype'] == 0) {
                                 <label for="stateFilter">Location Status:</label>
                                 <br/>
                                 <div class="btn-group" data-toggle="buttons">
-                                    <label class="btn btn-default">
-                                        <input type="radio" name="locationStatus" id="locationStatus" value="Origination" />
+                                    <label class="btn btn-default active">
+                                        <input type="radio" name="locationStatus" id="locationStatus" value="Origination" checked />
                                     Origination </label>
                                     <label class="btn btn-default">
                                         <input type="radio" name="locationStatus" id="locationStatus" value="Destination" />
