@@ -173,6 +173,25 @@ color: #ccc;
 filter: grayscale(80%);
 }
 
+
+
+
+.trailer-row {
+font-size: 13px;
+padding: 25px 10px
+}
+.trailer-row__selected {
+	background: #5e5e5e;
+	color: #fff;
+}
+.trailer-row__selected h3 { font-size: 24px; }
+
+.trailer-row__border-bot { border-bottom: 1px solid#ccc; }
+.trailer-row__border-top { border-top: 1px solid #ccc; }
+
+.trailer-row__notselected { color: #8b8585; }
+.trailer-row__notselected h3 { color: #8b8585; font-size: 24px; }
+
 .dimmed h5, .dimmed img, .dimmed .fa-pencil { filter: grayscale(100%); opacity: .5;}
 
 

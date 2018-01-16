@@ -232,7 +232,7 @@ if ($_SESSION['entityid'] > 0) {
         <link href="css/application-ie9-part2.css" rel="stylesheet">
     <![endif]-->
 
-    <link href="css/new-styles.css" rel="stylesheet">
+    <link href="css/new-styles.css?v=20180101" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 <?php if(ENVIRONMENT == 'development') { ?>
 	<link rel="stylesheet" type="text/css" href="vendor/datatables/media/css/dataTables-r-2_2_0.min.css"/>
