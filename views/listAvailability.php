@@ -403,6 +403,42 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
             },
             columns: [
                 {
+                    data: function (o) {
+
+                        var checkurl = '<?php echo API_HOST_URL; ?>' + '/customer_needs_commit?include=customer_needs&filter[]=customer_needs.rootCustomerNeedsID,eq,' + o.id + '&filter[]=entityID,eq,'+ <?php echo $_SESSION['entityid']; ?> + '&transform=1';
+                        var buttons = '';
+                        $.ajax({
+                             url: checkurl,
+                             type: 'GET',
+                             //data: JSON.stringify(data),
+                             //contentType: "application/json",
+                             async: false,
+                             success: function(data){
+                                 //console.log(data);
+                                 //console.log(data.customer_needs_commit[0].customer_needs.length);
+
+                                if (data.customer_needs_commit[0].customer_needs.length > 0) {
+                                  console.log(o.id);
+                                  console.log(data.customer_needs_commit[0].customer_needs.length);
+                                  buttons += '<div class="pull-right text-nowrap">';
+                                  buttons += '<i class=\"glyphicon glyphicon-star text\"></i> <span class=\"text\"></span>';
+                                  buttons += '</div>';
+                                } else {
+                                  buttons += '<div class="pull-right text-nowrap">';
+                                  buttons += '</div>';
+                                }
+
+                             },
+                             error: function() {
+                                buttons += '<div class="pull-right text-nowrap">';
+                                buttons += '</div>';
+                             }
+                        });
+                        return buttons;
+
+                    }
+                },
+                {
                     "className":      'details-control-add',
                     "orderable":      false,
                     "data":           null,
@@ -447,13 +483,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                 { data: "transportationMode", visible: false },
                 { data: "originationAddress1", visible: false },
                 { data: "originationCity" },
-                { data: "originationState" },
+                { data: "originationState", visible: false },
                 { data: "originationZip", visible: false },
                 { data: "originationLat", visible: false },
                 { data: "originationLng", visible: false },
                 { data: "destinationAddress1", visible: false },
                 { data: "destinationCity" },
-                { data: "destinationState" },
+                { data: "destinationState", visible: false },
                 { data: "destinationZip", visible: false },
                 { data: "destinationLat", visible: false },
                 { data: "destinationLng", visible: false },
@@ -533,6 +569,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                 dataSrc: 'customer_needs'
             },
             columns: [
+
                 {
                     "className":      'details-control-add',
                     "orderable":      false,
@@ -1033,10 +1070,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
             <button type="button" id="allRelays" class="btn btn-primary">View All Relays</button>
          </div>
          <br /><br />
+         <div><strong><i class="glyphicon glyphicon-star text"></i> <span class="text">indicates you have committed to relays on this availability</span></strong></div>
          <div id="dataTable" class="mt">
              <table id="datatable-table" class="table table-striped table-hover">
                  <thead>
                  <tr>
+                     <th></th>
                      <th></th>
                      <th>Company</th>
                      <th>ID</th>
