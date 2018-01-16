@@ -10,11 +10,10 @@ $availabilityMenuAccessList = array(0,1,2,4);
 $ordersMenuAccessList = array(0,1,2,3,4,5);
 
 //$invoicingMenuAccessList = array(0,1,2,3);
-//$claimsMenuAccessList = array(0,1,2,3,4);
+$claimsMenuAccessList = array(0,1,2,3,4);
 //$collectionsMenuAccessList = array(0,1,2,4);
 
 $invoicingMenuAccessList = array(0);
-$claimsMenuAccessList = array(0);
 $collectionsMenuAccessList = array(0);
 
 $profilesMenuAccessList = array(0,1);
@@ -1487,14 +1486,17 @@ if ($_SESSION['entityid'] > 0) {
 <?php
     }
 
-    if ( ($_SESSION['entitytype'] == 2 || $_SESSION['entityid'] == 0 ) && in_array($_SESSION['usertypeid'], $claimsMenuAccessList) ) {
+    if ( ($_SESSION['entitytype'] > 0 || $_SESSION['entityid'] == 0 ) && in_array($_SESSION['usertypeid'], $claimsMenuAccessList) ) {
  ?>
             <li>
-                <a href="#">
+                <a href="#" onclick="ajaxFormCall('listDamageClaims');">
                     <span class="icon">
                         <i class="fa fa-thumbs-down"></i>
                     </span>
-                    <i><strong>Damage Claims</strong></i>
+                    Damage Claims
+                    <span id="claimsCount" class="label label-danger">
+
+                    </span>
                 </a>
             </li>
 <?php
