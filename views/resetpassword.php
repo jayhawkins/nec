@@ -25,20 +25,20 @@
             var checkNumber = new RegExp("\\d");
             var checkWhitespace = new RegExp("\\s");
             var searchSpecialChars = new RegExp("[-!@#$%^&*()_+|~=`{}\\[\\]':\";<>?,.\\/]");
-            
+
             if(password.length < 8 || password.length > 32) return false;
             else if(!checkNumber.test(password)) return false;
             else if(checkWhitespace.test(password)) return false;
             else if(!searchSpecialChars.test(password)) return false;
-            
+
             return true;
          }
 
          function trimPasswords(){
-             
+
              var password = $('#password').val();
              var password2 = $('#passwordConfirm').val();
-             
+
              $('#password').val(password.trim());
              $('#passwordConfirm').val(password2.trim());
          }
@@ -48,11 +48,11 @@
              if ( $('#formLogin').parsley().validate() ) {
                     if(!verifyPassword()){
                             alert('The password does not meet the password policy requirements.');
-                            
+
                             return false;
                        }
                        else{
-                            
+
                             return true;
                        }
 
@@ -86,11 +86,11 @@
                             <input type="hidden" id="username" name="username" value="<?php echo $id ?>" />
                             <div class="form-group">
                                 <label>Password   <span  id="lblPassword" class="fa fa-info-circle"></span></label>
-                                <input type="text" class="form-control" id="password" name="password" placeholder="Password" required="required" />
+                                <input type="password" class="form-control" id="password" name="password" placeholder="Password" required="required" />
                             </div>
                             <div class="form-group">
                                 <label for="rate">Confirm Password</label>
-                                <input type="text" class="form-control" id="passwordConfirm" name="passwordConfirm" placeholder="Confirm Password" data-parsley-equalto="#password" required="required" />
+                                <input type="password" class="form-control" id="passwordConfirm" name="passwordConfirm" placeholder="Confirm Password" data-parsley-equalto="#password" required="required" />
                             </div>
                             <div class="clearfix">
                                 <div class="btn-toolbar pull-xs-right">
@@ -154,7 +154,7 @@ $(function() {
                     "Maximum of 32 characters <br>" +
                     "Contains one numeric character <br>" +
                     "Contains one special character <br> (! @ # * >) <br>" +
-                    "Cannot contain spaces", 
+                    "Cannot contain spaces",
                 placement: "right",
                 trigger: "click"
             }

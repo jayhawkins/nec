@@ -72,6 +72,9 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
          admin = false;
      }
 
+     var commitOriginationCity = [];
+     var commitDestinationCity = [];
+
      var myApp;
       myApp = myApp || (function () {
        var pleaseWaitDiv = $('<div class="modal hide" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false"><div class="modal-header"><h1>Processing...</h1></div><div class="modal-body"><div class="progress progress-striped active"><div class="bar" style="width: 100%;"></div></div></div></div>');
@@ -111,12 +114,25 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
           var destinationaddress = $("#destinationCity").val() + ', ' + $("#destinationState").val();
 
           if (originationaddress != $("#originToMatch").val() && destinationaddress != $("#destToMatch").val()) {
-              alert("The commitment for this Available request must be picked up or dropped off at the listed Origination or Destination. Please select a new Origination or Destination address.");
+              alert("The commitment for this Availablility must be picked up at " + $("#originToMatch").val() + " or dropped off at " + $("#destToMatch").val() + ". Please make a valid selection.");
               //alert($("#originToMatch").val());
               //alert($("#destToMatch").val());
               return false;
           }
 
+            //console.log(commitOriginationCity);
+            //console.log(commitDestinationCity);
+            //console.log($("#ocity").val());
+            //console.log($("#dcity").val());
+            //console.log('origin city: ' + commitOriginationCity.indexOf($("#ocity").val()));
+            //console.log('dest city: ' + commitDestinationCity.indexOf($("#dcity").val()));
+
+          if (commitOriginationCity.length == 2 && !admin && ( (commitOriginationCity.indexOf($("#ocity").val()) == -1 && $("#originationCity").val() != $("#ocity").val()) || (commitDestinationCity.indexOf($("#dcity").val()) == -1 && $("#destinationCity").val() != $("#dcity").val()) ) ) {
+              //$("#relayMessage").html("<strong>" + $("#ocity").val() + " or " + $("#dcity").val() + " must have be in at least one relay</strong>");
+              //$("#relayDialog").modal('show');
+              alert("Check the current relays. " + $("#ocity").val() + " or " + $("#dcity").val() + " must be specified in at least one relay");
+              return false;
+          }
 
           if (confirm("You have selected to Commit to this Availability. A Nationwide Equipment Control team member will contact you within 4 buisness hours to start the order process. Do you wish to proceed with this commitment?") == true) {
 
@@ -375,6 +391,137 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
             var show = false;
         } else {
             var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=entities&columns=id,rootCustomerNeedsID,entityID,qty,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate&satisfy=all&filter[0]=rootCustomerNeedsID,eq,0&filter[1]=status,eq,Available&filter[2]=expirationDate,ge,' + today + '&order[0]=entityID&order[1]=rootCustomerNeedsID&order[2]=createdAt,desc&transform=1';
+            var show = true;
+        }
+
+        var example_table = $('#datatable-table').DataTable({
+            retrieve: true,
+            processing: true,
+            ajax: {
+                url: url,
+                dataSrc: 'customer_needs'
+            },
+            columns: [
+                {
+                    "className":      'details-control-add',
+                    "orderable":      false,
+                    "data":           null,
+                    "defaultContent": ''
+                },
+                //{ data: "entities[0].name", visible: show },
+                {
+                    data: null,
+                    "bSortable": true,
+                    "mRender": function (o) {
+
+                        var entityName = '';
+                        var entityID = o.entityID;
+
+                        allentities.entities.forEach(function(entity){
+
+                            if(entityID == entity.id){
+
+                                entityName = entity.name;
+                            }
+                        });
+
+                        return entityName;
+                    }
+                },
+                { data: "id", visible: false },
+                { data: "rootCustomerNeedsID", visible: false},
+                { data: "entityID", visible: false },
+                { data: "qty" },
+                { data: "availableDate" },
+                {
+                    data: null,
+                    "bSortable": true,
+                    "render": function(o) {
+                      if (o.expirationDate == "0000-00-00") {
+                          return '';
+                      } else {
+                          return o.expirationDate;
+                      }
+                    }
+                },
+                { data: "transportationMode", visible: false },
+                { data: "originationAddress1", visible: false },
+                { data: "originationCity" },
+                { data: "originationState" },
+                { data: "originationZip", visible: false },
+                { data: "originationLat", visible: false },
+                { data: "originationLng", visible: false },
+                { data: "destinationAddress1", visible: false },
+                { data: "destinationCity" },
+                { data: "destinationState" },
+                { data: "destinationZip", visible: false },
+                { data: "destinationLat", visible: false },
+                { data: "destinationLng", visible: false },
+                { data: "distance", render: $.fn.dataTable.render.number(',', '.', 0, '')  },
+                { data: "needsDataPoints", visible: false },
+                { data: "entities[0].name", visible: false },
+                { data: "entities[0].rateType", visible: false },
+                { data: "entities[0].negotiatedRate", visible: false},
+                { data: "status", visible: false},
+                {
+                    data: null,
+                    "bSortable": false,
+                    "mRender": function (o) {
+                        var buttons = '<div class="pull-right text-nowrap">';
+                        buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-link text\"></i> <span class=\"text\">View Relays</span></button>';
+                        buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-plus text\"></i> <span class=\"text\">Commit</span></button>";
+                        buttons += '</div>';
+                        return buttons;
+                    }
+                }
+            ]
+          });
+
+          example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
+
+          //To Reload The Ajax
+          //See DataTables.net for more information about the reload method
+          example_table.ajax.reload();
+          $("#entityID").prop('disabled', false);
+          $("#load").html("Commit");
+          $("#load").prop("disabled", false);
+
+      }
+
+      function loadCarrierTableAJAX() {
+
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth()+1; //January is 0!
+        var yyyy = today.getFullYear();
+        var hours = today.getHours();
+        var min = today.getMinutes();
+        var sec = today.getSeconds();
+
+        if(dd<10) {
+            dd='0'+dd;
+        }
+
+        if(mm<10) {
+            mm='0'+mm;
+        }
+
+        if(hours<10) {
+            hours='0'+hours;
+        }
+
+        if(min<10) {
+            min='0'+min;
+        }
+
+        today = mm+'/'+dd+'/'+yyyy;
+        today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+
+        if (<?php echo $_SESSION['entityid']; ?> > 0) {
+            var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=entities,customer_needs_commit&columns=id,rootCustomerNeedsID,entityID,qty,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,entities.name,entities.rateType,entities.negotiatedRate&filter[0]=rootCustomerNeedsID,eq,0&filter[1]=expirationDate,ge,' + today + '&filter[2]=status,eq,Available&order[]=createdAt,desc&transform=1';
+            var show = false;
+        } else {
+            var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=entities&columns=id,rootCustomerNeedsID,entityID,qty,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.name,entities.rateType,entities.negotiatedRate&satisfy=all&filter[0]=rootCustomerNeedsID,eq,0&filter[]=status,eq,Available&filter[]=expirationDate,ge,' + today + '&order[]=entityID&order[]=rootCustomerNeedsID&order[]=createdAt,desc&transform=1';
             var show = true;
         }
 
@@ -881,6 +1028,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
              <a href="http://www.datatables.net/" target="_blank">jQuery DataTables</a>
          </p -->
          <!--button type="button" id="addNeed" class="btn btn-primary pull-xs-right" data-target="#myModal">Add Need</button-->
+         <div class="pull-right text-nowrap">
+            <button type="button" id="myRelays" class="btn btn-primary">View My Relays</button>
+            <button type="button" id="allRelays" class="btn btn-primary">View All Relays</button>
+         </div>
          <br /><br />
          <div id="dataTable" class="mt">
              <table id="datatable-table" class="table table-striped table-hover">
@@ -1260,6 +1411,30 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
      </div>
    </div>
 
+   <!-- Modal -->
+  <div class="modal fade" id="relayDialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="cancelDialogLabel"></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+              <div class="row">
+                  <div class="col-sm-12" id="relayMessage">
+
+                  </div>
+              </div>
+        </div>
+         <div class="modal-footer">
+           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+         </div>
+       </div>
+     </div>
+   </div>
+
 
 <!-- These modals are currently not used -->
   <!-- Modal -->
@@ -1338,6 +1513,14 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
         autoclose: true,
         todayHighlight: true,
         format: "yyyy-mm-dd"
+    });
+
+    $("#myRelays").unbind('click').on('click', function(){
+        loadCarrierTableAJAX();
+    });
+
+    $("#allRelays").unbind('click').on('click', function(){
+        loadTableAJAX();
     });
 
     $("#addNeed").click(function(){
@@ -1525,7 +1708,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
             $("#transportationModeDiv").html(transportationmodeselect);
 
             // Determine if this is the third relay. If so, lock down Origination and Destination so they have to select it. Limit relays to 3.
-            var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,availableDate,expirationDate&filter[]=rootCustomerNeedsID,eq,' + data['id'] + '&order[]=createdAt,desc&transform=1';
+            var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,availableDate,expirationDate,customer_needs_commit.originationCity,customer_needs_commit.originationState,customer_needs_commit.destinationCity,customer_needs_commit.destinationState&filter[]=rootCustomerNeedsID,eq,' + data['id'] + '&order[]=createdAt,desc&transform=1';
             var params = {id: data['id']};
             $.ajax({
                url: url,
@@ -1534,16 +1717,42 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                contentType: "application/json",
                async: false,
                success: function(response){
-                    if (response.customer_needs.length == 3 && !admin) {
-                        $("#divMaxRelayMessage").show();
-                        $("#originationCity").prop("disabled", true);
-                        $("#originationState").prop("disabled", true);
-                        $("#destinationCity").prop("disabled", true);
-                        $("#destinationState").prop("disabled", true);
-                        //$("#entityID").prop('disabled', true);
-                    }
 
-                    $("#myModalCommit").modal('show');
+                    commitOriginationCity = [];
+                    commitDestinationCity = [];
+
+                   // Load relay array so we can check relays in post function
+                   var needs = response.customer_needs;
+                   for (var x = 0; x < needs.length; x++) {
+                       var commits = needs[x].customer_needs_commit;
+                       for (var y = 0; y < commits.length; y++) {
+                           //console.log('Commits ' + y + ': ' + commits[y].destinationCity);
+                           commitOriginationCity.push(commits[y].originationCity);
+                           commitDestinationCity.push(commits[y].destinationCity);
+                       }
+
+                   }
+
+                   if (commitOriginationCity.length == 3 && !admin) { // Per Troy, carriers can only commit to 3 relays total. Only NEC Admin can add more relays....
+                        //$("#divMaxRelayMessage").show();
+                        //$("#originationCity").prop("disabled", true);
+                        //$("#originationState").prop("disabled", true);
+                        //$("#destinationCity").prop("disabled", true);
+                        //$("#destinationState").prop("disabled", true);
+                        ////$("#entityID").prop('disabled', true);
+                        $("#relayMessage").html("<h5><strong>Relay limit has been reached. No more relays allowed.</strong></h5>");
+                        $("#relayDialog").modal('show');
+                    //} else if (commitOriginationCity.length == 2 && !admin && (commitOriginationCity.indexOf($("#originationCity").val()) == -1) ) {
+                    //    $("#divMaxRelayMessage").show();
+                    //    $("#originationCity").prop("disabled", true);
+                    //    $("#originationState").prop("disabled", true);
+                    //    $("#destinationCity").prop("disabled", true);
+                    //    $("#destinationState").prop("disabled", true);
+                        ////$("#entityID").prop('disabled', true);
+                    //    $("#myModalCommit").modal('show');
+                    } else {
+                        $("#myModalCommit").modal('show');
+                    }
                },
                error: function() {
                     alert('Error Selecting Relays for ' + id + '!');

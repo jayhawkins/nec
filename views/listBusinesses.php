@@ -150,29 +150,43 @@ $cdpvList = $cdpvresult["configuration_data_points"];
       }
 
       function loadTableAJAX() {
-        var url = '<?php echo API_HOST_URL; ?>' + '/entities?columns=id,entityTypeID,name,entityRating,contactID,status,rateType,negotiatedRate,towAwayRateMin,towAwayRateMax,towAwayRateType,loadOutRateMin,loadOutRateMax,loadOutRateType&filter[]=id,gt,0&order=name&transform=1';
+        var url = '<?php echo API_HOST_URL; ?>' + '/entities?include=locations&columns=id,entityTypeID,name,entityRating,contactID,status,rateType,negotiatedRate,towAwayRateMin,towAwayRateMax,towAwayRateType,loadOutRateMin,loadOutRateMax,loadOutRateType,locations.name,locations.city,locations.state,locations.zip&filter[]=id,gt,0&filter[]=locations.locationTypeID,eq,1&order=name&transform=1';
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
             processing: true,
-            bSort: false,
+            //bSort: false,
             ajax: {
                 url: url,
                 dataSrc: 'entities'
             },
             columns: [
                 { data: "id", visible: false },
-                { data: "entityTypeID", visible: false },
+                //{ data: "entityTypeID", visible: false },
+                {
+                  data: null,
+                  "mRender": function(o) {
+                      if (o.entityTypeID == 1) {
+                          return "Customer";
+                      } else {
+                          return "Carrier";
+                      }
+                  }
+                },
                 { data: "name" },
                 { data: "entityRating", visible: false },
                 { data: "contactID", visible: false },
                 { data: "rateType", visible: false },
-                { data: "negotiatedRate", render: $.fn.dataTable.render.number(',', '.', 2, '$') },
-                { data: "towAwayRateMin", render: $.fn.dataTable.render.number(',', '.', 2, '$')},
-                { data: "towAwayRateMax", render: $.fn.dataTable.render.number(',', '.', 2, '$')},
+                { data: "negotiatedRate", render: $.fn.dataTable.render.number(',', '.', 2, '$'), visible: false },
+                { data: "towAwayRateMin", render: $.fn.dataTable.render.number(',', '.', 2, '$'), visible: false},
+                { data: "towAwayRateMax", render: $.fn.dataTable.render.number(',', '.', 2, '$'), visible: false},
                 { data: "towAwayRateType", visible: false},
-                { data: "loadOutRateMin", render: $.fn.dataTable.render.number(',', '.', 2, '$') },
-                { data: "loadOutRateMax", render: $.fn.dataTable.render.number(',', '.', 2, '$') },
+                { data: "loadOutRateMin", render: $.fn.dataTable.render.number(',', '.', 2, '$'), visible: false },
+                { data: "loadOutRateMax", render: $.fn.dataTable.render.number(',', '.', 2, '$'), visible: false },
                 { data: "loadOutRateType", visible: false},
+                { data: "locations[0].name", visible: false },
+                { data: "locations[0].city" },
+                { data: "locations[0].state" },
+                { data: "locations[0].zip" },
                 {
                     data: null,
                     "bSortable": false,
@@ -279,7 +293,7 @@ $cdpvList = $cdpvresult["configuration_data_points"];
                  <thead>
                  <tr>
                      <th>ID</th>
-                     <th>Type ID</th>
+                     <th>Business Type</th>
                      <th class="hidden-sm-down text-nowrap">Business</th>
                      <th class="no-sort hidden-sm-down">Rating</th>
                      <th class="no-sort hidden-sm-down">Contact</th>
@@ -291,6 +305,10 @@ $cdpvList = $cdpvresult["configuration_data_points"];
                      <th class="no-sort hidden-sm-down">Load Out Min</th>
                      <th class="no-sort hidden-sm-down">Load Out Rate Max</th>
                      <th class="no-sort hidden-sm-down">Load Out Rate Type</th>
+                     <th>Location Name</th>
+                     <th class="hidden-sm-down text-nowrap">City</th>
+                     <th class="hidden-sm-down text-nowrap">State</th>
+                     <th class="hidden-sm-down text-nowrap">Zip</th>
                      <th>&nbsp;</th>
                  </tr>
                  </thead>
@@ -307,7 +325,7 @@ $cdpvList = $cdpvresult["configuration_data_points"];
    <div class="modal-dialog modal-lg" role="document">
      <div class="modal-content">
        <div class="modal-header">
-         <h5 class="modal-title" id="exampleModalLabel"><strong>Business</strong></h5>
+         <h5 class="modal-title" id="formTitle"><strong>Business</strong></h5>
          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
            <span aria-hidden="true">&times;</span>
          </button>
@@ -536,13 +554,15 @@ $cdpvList = $cdpvresult["configuration_data_points"];
               entityID: $("#id").val()
           };
 
+          var entityTypeID = 0;
+
           $.ajax({
                url: '<?php echo API_HOST_URL . "/entities"; ?>/' + $("#id").val(),
                type: 'GET',
                contentType: "application/json",
                async: false,
                success: function(response){
-                 var entityTypeID = response.entityTypeID;
+                 entityTypeID = response.entityTypeID;
                  var cs = response.configuration_settings;
                  //console.log('length: ' + cs);
                  var li = '';
@@ -588,6 +608,12 @@ $cdpvList = $cdpvresult["configuration_data_points"];
                   alert('Failed Getting Configuration Settings!');
                }
           });
+
+          if (entityTypeID == 1) {
+              $("#formTitle").html("<strong>Customer Maintenance</strong>");
+          } else {
+              $("#formTitle").html("<strong>Carrier Maintenance</strong>");
+          }
 
           $("#myModal").modal('show');
         } else {

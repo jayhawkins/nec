@@ -90,7 +90,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
       })();
 
         function reloadContacts(){
-            
+
             var url = '<?php echo API_HOST_URL . "/contacts?columns=id,firstName,lastName&order=lastName&filter=entityID,eq," . $_SESSION['entityid'] ?>';
             var type = "GET";
 
@@ -1023,22 +1023,30 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                             var minAmount;
                             var maxAmount;
                             if (entity.entities[0].towAwayRateType == "Flat Rate") {
-                                minAmount = "$" + (entity.entities[0].towAwayRateMin).toFixed(2);
-                                maxAmount = "$" + (entity.entities[0].towAwayRateMax).toFixed(2);
+                                minAmount = (entity.entities[0].towAwayRateMin).toFixed(2);
+                                minAmount = "$" + minAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                maxAmount = (entity.entities[0].towAwayRateMax).toFixed(2);
+                                maxAmount = "$" + maxAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                             } else {
-                                minAmount = "$" + (entity.entities[0].towAwayRateMin * distance).toFixed(2);
-                                maxAmount = "$" + (entity.entities[0].towAwayRateMax * distance).toFixed(2);
+                                minAmount = (entity.entities[0].towAwayRateMin * distance).toFixed(2);
+                                minAmount = "$" + minAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                maxAmount = (entity.entities[0].towAwayRateMax * distance).toFixed(2);
+                                maxAmount = "$" + maxAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                             }
                             $("#divMinimumTowAwayRate").html(minAmount);
                             $("#divMaximumTowAwayRate").html(maxAmount);
                             $("#divTowAwayRateType").html(entity.entities[0].towAwayRateType);
 
                             if (entity.entities[0].towAwayRateType == "Flat Rate") {
-                                minAmount = "$" + (entity.entities[0].loadOutRateMin).toFixed(2);
-                                maxAmount = "$" + (entity.entities[0].loadOutRateMax).toFixed(2);
+                                minAmount = (entity.entities[0].loadOutRateMin).toFixed(2);
+                                minAmount = "$" + minAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                maxAmount = (entity.entities[0].loadOutRateMax).toFixed(2);
+                                maxAmount = "$" + maxAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                             } else {
-                                minAmount = "$" + (entity.entities[0].loadOutRateMin * distance).toFixed(2);
-                                maxAmount = "$" + (entity.entities[0].loadOutRateMax * distance).toFixed(2);
+                                minAmount = (entity.entities[0].loadOutRateMin * distance).toFixed(2);
+                                minAmount = "$" + minAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                maxAmount = (entity.entities[0].loadOutRateMax * distance).toFixed(2);
+                                maxAmount = "$" + maxAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                             }
                             $("#divMinimumLoadOutRate").html(minAmount);
                             $("#divMaximumLoadOutRate").html(maxAmount);
@@ -1057,9 +1065,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                           $("#divMaximumLoadOutRate").html(maxAmount);
                           $("#divLoadOutRateType").html(entity.entities[0].loadOutRateType);
 */
-
-                          //console.log(entity.entities[0].loadOutRateMax);
-                          //console.log(entity.entities[0].loadOutRateMin);
 
                           $("#divPossibleCharges").show();
 
@@ -1222,7 +1227,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
         left: 10%;
         margin-bottom: 10px;
     }
-    
+
  </style>
 
  <ol class="breadcrumb">
@@ -1302,6 +1307,14 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
        <div class="modal-body">
                <form id="formNeed" class="register-form mt-lg">
                  <input type="hidden" id="id" name="id" value="" />
+                 <input type="hidden" id="rateType" name="rateType" value="" />
+                 <input type="hidden" id="negotiatedRate" name="negotiatedRate" value="" />
+                 <input type="hidden" id="towAwayRateMin" name="towAwayRateMin" value="" />
+                 <input type="hidden" id="towAwayRateMax" name="towAwayRateMax" value="" />
+                 <input type="hidden" id="towAwayRateType" name="towAwayRateType" value="" />
+                 <input type="hidden" id="loadOutRateMin" name="loadOutRateMin" value="" />
+                 <input type="hidden" id="loadOutRateMax" name="loadOutRateMax" value="" />
+                 <input type="hidden" id="loadOutRateType" name="loadOutRateType" value="" />
                  <div class="row">
                      <div class="col-sm-2">
                          <label for="qty">Trailers Available:</label>
@@ -1451,9 +1464,9 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                          &nbsp;
                      </div>
                  </div>
-                 <div class="row bg-info" id="divPossibleCharges">
-                     <div class="col-sm-4">
-                        <label for="rate"><b>Possible Tow Away/Load Out Charges</b></label>
+                 <div class="row bg-primary text-white" id="divPossibleCharges">
+                     <div class="col-sm-6">
+                        <label for="rate"><b>*Estimated Tow Away/Load Out Charges</b></label>
                         <div class="form-group">
                            <b>Tow Away:</b>
                         </div>
@@ -1461,26 +1474,29 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                            <b>Load Out:</b>
                         </div>
                      </div>
-                     <div class="col-sm-3">
-                        <label for="rate">Minimum Rate</label>
+                     <div class="col-sm-2">
+                        <label for="rate"><b>Minimum Rate</b></label>
                         <div class="form-group" id="divMinimumTowAwayRate">
                         </div>
                         <div class="form-group" id="divMinimumLoadOutRate">
                         </div>
                      </div>
-                     <div class="col-sm-3">
-                        <label for="rate">Maximum Rate</label>
+                     <div class="col-sm-2">
+                        <label for="rate"><b>Maximum Rate</b></label>
                         <div class="form-group" id="divMaximumTowAwayRate">
                         </div>
                         <div class="form-group" id="divMaximumLoadOutRate">
                         </div>
                      </div>
                      <div class="col-sm-2">
-                        <label for="rate">Rate Type</label>
+                        <label for="rate"><b>Rate Type</b></label>
                         <div class="form-group" id="divTowAwayRateType">
                         </div>
                         <div class="form-group" id="divLoadOutRateType">
                         </div>
+                     </div>
+                     <div class="col-sm-12">
+                        <i>* This is an estimate based on standard configurations (53/102/13’6 dry vans or reefers). <br />&nbsp;&nbsp;&nbsp;Rates may change based on season and trailer configurations.</i>
                      </div>
                  </div>
                  <hr />
@@ -1514,7 +1530,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
       </div>
     </div>
   </div>
- 
+
   <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
@@ -1909,31 +1925,6 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                 $('input[name="rateType"][value="Mileage"]').prop('checked', true);
             }
 
-            var minAmount;
-            var maxAmount;
-            if (entity.entities[0].towAwayRateType == "Flat Rate") {
-                minAmount = "$" + (entity.entities[0].towAwayRateMin).toFixed(2);
-                maxAmount = "$" + (entity.entities[0].towAwayRateMax).toFixed(2);
-            } else {
-                minAmount = "$" + (entity.entities[0].towAwayRateMin * data['distance']).toFixed(2);
-                maxAmount = "$" + (entity.entities[0].towAwayRateMax * data['distance']).toFixed(2);
-            }
-            $("#divMinimumTowAwayRate").html(minAmount);
-            $("#divMaximumTowAwayRate").html(maxAmount);
-            $("#divTowAwayRateType").html(entity.entities[0].towAwayRateType);
-
-            if (entity.entities[0].towAwayRateType == "Flat Rate") {
-                minAmount = "$" + (entity.entities[0].loadOutRateMin).toFixed(2);
-                maxAmount = "$" + (entity.entities[0].loadOutRateMax).toFixed(2);
-            } else {
-                minAmount = "$" + (entity.entities[0].loadOutRateMin * data['distance']).toFixed(2);
-                maxAmount = "$" + (entity.entities[0].loadOutRateMax * data['distance']).toFixed(2);
-            }
-            $("#divMinimumLoadOutRate").html(minAmount);
-            $("#divMaximumLoadOutRate").html(maxAmount);
-            $("#divLoadOutRateType").html(entity.entities[0].loadOutRateType);
-            $("#divPossibleCharges").show();
-
             // Get configuration_settings for data manipulation
             $.ajax({
                url: '<?php echo API_HOST_URL . "/entities"; ?>/' + $("#entityID").val(),
@@ -1955,6 +1946,40 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                       })
                     });
                  }
+
+                 var minAmount;
+                 var maxAmount;
+                 if (response.towAwayRateType == "Flat Rate") {
+                    minAmount = (response.towAwayRateMin).toFixed(2);
+                    minAmount = "$" + minAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                    maxAmount = (response.towAwayRateMax).toFixed(2);
+                    maxAmount = "$" + maxAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                 } else {
+                    minAmount = (response.towAwayRateMin * data['distance']).toFixed(2);
+                    minAmount = "$" + minAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                    maxAmount = (response.towAwayRateMax * data['distance']).toFixed(2);
+                    maxAmount = "$" + maxAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                 }
+                 $("#divMinimumTowAwayRate").html(minAmount);
+                 $("#divMaximumTowAwayRate").html(maxAmount);
+                 $("#divTowAwayRateType").html(response.towAwayRateType);
+
+                 if (response.towAwayRateType == "Flat Rate") {
+                    minAmount = (response.loadOutRateMin).toFixed(2);
+                    minAmount = "$" + minAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                    maxAmount = (response.loadOutRateMax).toFixed(2);
+                    maxAmount = "$" + maxAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                 } else {
+                    minAmount = (response.loadOutRateMin * data['distance']).toFixed(2);
+                    minAmount = "$" + minAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                    maxAmount = (response.loadOutRateMax * data['distance']).toFixed(2);
+                    maxAmount = "$" + maxAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                 }
+                 $("#divMinimumLoadOutRate").html(minAmount);
+                 $("#divMaximumLoadOutRate").html(maxAmount);
+                 $("#divLoadOutRateType").html(response.loadOutRateType);
+                 $("#divPossibleCharges").show();
+
                },
                error: function() {
                   alert('Failed Getting Configuration Settings! - Notify NEC of this failure.');
@@ -2240,20 +2265,20 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
 
         $("#myModal").modal('hide');
     }
-    
+
     $("#myModal").on("hidden.bs.modal", function () {
         $("#entityID").prop('disabled', false);
-        
-        if(blnFromAddForm){            
+
+        if(blnFromAddForm){
             blnFromAddForm = false;
-            $("#addCustomerContact").modal('show');            
+            $("#addCustomerContact").modal('show');
         }
-        
+
     });
-    
+
     $("#addCustomerContact").on("hidden.bs.modal", function () {
-        
-        $("#addNeed").trigger("click");       
+
+        $("#addNeed").trigger("click");
     });
 
     function setContactsOnLocationSelected() {
