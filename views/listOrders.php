@@ -556,7 +556,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             var toAddress = destinationCity + ", " + destinationState;
                         
             var carriers = [];
-            var relayList = "<div class=\"row carrier-row__border-bot carrier-row__notselected\"><div class=\"col-md-12\"><h4>Relays</h4><br></div></div>";
+            var relayList = "<div class=\"row carrier-row__border-bot carrier-row__notselected\"><div class=\"col-md-12\"><h4>Carriers</h4><div class=\"fa fa-lg fa-refresh text-blue\" style=\"float: right; position: relative; top: -25px;\"></div><br></div></div>";
             
             for(var i = 0; i < order_details.length; i++){
                 var currentCarrier = order_details[i].carrierID;
@@ -595,6 +595,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     
                     $("#carrierDistance").empty().html(carrierDistance);
                     
+                    if(order_details[i].pickupInformation.hoursOfOperation == "") order_details[i].pickupInformation.hoursOfOperation = "N/A";
+                    if(order_details[i].deliveryInformation.hoursOfOperation == "") order_details[i].deliveryInformation.hoursOfOperation = "N/A";
+                        
                     if(entityType == 0){
                         $("#pickupName").val(order_details[i].pickupInformation.pickupLocation);
                         $("#pickupAddress").val(order_details[i].originationAddress);
@@ -2087,6 +2090,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
     .text-summary{
        color: inherit;
     }
+    
+    .text-summary li{
+       width: 250px;
+    }
 
  </style>
 
@@ -2173,6 +2180,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 <li>To: <p id="toAddress" style="display: inline;"></p></li>
                 <li>Number of Relays: <p id="relayCount" style="display: inline;"></p></li>
             </ul>
+            <br>
+            
+            
             <?php
                 }
                 else{
@@ -2206,7 +2216,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     <div id="relayList" class="carrier-container">
                         <div class="row">
                             <div class="col-md-12">
-                                <h4>Relays</h4>
+                                <h4>Carriers</h4>
+                                <div class="fa fa-lg fa-refresh text-blue" style="float: right; position: relative; top: -25px;"></div>
                                 <br>
                             </div>
                         </div>
@@ -2281,18 +2292,25 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 <input type="text" class="form-control" id="pickupName" placeholder="Business Name"><br>
                                 <input type="text" class="form-control" id="pickupAddress" placeholder="Business Address"><br>
                                 <input type="text" class="form-control" id="pickupCity" placeholder="Business City"><br>
-                                <select class="form-control" id="pickupState">
-                                        <option value="">*Select State...</option>
-                                          <?php
-                                                foreach($states->states->records as $value) {
-                                                    $selected = ($value[0] == $state) ? 'selected=selected':'';
-                                                    echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
-                                                }
-                                          ?>
-                                  </select><br>
                                 
-                                    <input type="text" class="form-control" id="pickupZip" placeholder="Business Zip Code"><br>
-                         
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <select class="form-control" id="pickupState">
+                                                <option value="">*Select State...</option>
+                                                  <?php
+                                                        foreach($states->states->records as $value) {
+                                                            $selected = ($value[0] == $state) ? 'selected=selected':'';
+                                                            echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
+                                                        }
+                                                  ?>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input type="text" class="form-control" id="pickupZip" placeholder="Business Zip Code">
+                                    </div>
+                                </div>
+                                <br>
+                                    
                                     <input type="text" class="form-control" id="pickupPhone" placeholder="Contact Phone Number"><br>
                                     <input type="text" class="form-control" id="pickupContact" placeholder="Contact - First and Last Name"><br>
                                         <input type="text" class="form-control" id="pickupHours" placeholder="Hours Of Operations"><br>
@@ -2305,17 +2323,24 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     <input type="text" class="form-control" id="deliveryName" placeholder="Business Name"><br>
                                     <input type="text" class="form-control" id="deliveryAddress" placeholder="Business Address"><br>
                                     <input type="text" class="form-control" id="deliveryCity" placeholder="Business City"><br>
-                                    <select class="form-control" id="deliveryState">
-                                        <option value="">*Select State...</option>
-                                          <?php
-                                                foreach($states->states->records as $value) {
-                                                    $selected = ($value[0] == $state) ? 'selected=selected':'';
-                                                    echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
-                                                }
-                                          ?>
-                                      </select>
-                                    <br>
-                                    <input type="text" class="form-control" id="deliveryZip" placeholder="Business Zip Code"><br>
+                                    
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <select class="form-control" id="deliveryState">
+                                                <option value="">*Select State...</option>
+                                                  <?php
+                                                        foreach($states->states->records as $value) {
+                                                            $selected = ($value[0] == $state) ? 'selected=selected':'';
+                                                            echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
+                                                        }
+                                                  ?>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input type="text" class="form-control" id="deliveryZip" placeholder="Business Zip Code">
+                                    </div>
+                                </div>
+                                <br>
                                     
                                     <input type="text" class="form-control" id="deliveryPhone" placeholder="Contact Phone Number"><br>
                                     <input type="text" class="form-control" id="deliveryContact" placeholder="Contact - First and Last Name"><br>
@@ -2325,7 +2350,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 <div class="fa fa-lg fa-calendar text-blue" style="position: relative; left: 10px; top: -28px;"></div>
                                 </div>
                                 <div class="col-md-2">
-                                    <br>
                                     <label for="transport-mode">Transport Mode</label>
                                     <select class="form-control" id="transportMode">
                                         <option value="">*Select Mode...</option>
@@ -2333,11 +2357,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                         <option value="Load Out">Load Out</option>
                                         <option value="Either (Empty or Load Out)">Either (Empty or Load Out)</option>
                                     </select><br><br>
-                                    <label for="transport-rate">Rate</label>
+                                    <label for="transport-rate">Carrier Rate</label>
                                     <input type="text" class="form-control" id="carrierRate" placeholder="i.e. - $250">
                                 </div>
                                 <div class="col-md-2">
-                                        <br>
                                         <label for="transport-rate">Quantity</label>
                                 <input type="text" class="form-control" id="carrierQty" placeholder="Number of Items">
                                 </div>
@@ -2454,6 +2477,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         <div class="row trailer-row__border-bot trailer-row__notselected">
                             <div class="col-md-12">
                                 <h4>Trailer List</h4>
+                                <div class="fa fa-lg fa-refresh text-blue" style="float: right; position: relative; top: -25px;"></div>
                                 <br>
                             </div>
                         </div>
@@ -4237,6 +4261,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             if(data.deliveryInformation == null){
                 data.deliveryInformation = {deliveryLocation: "", contactPerson: "", phoneNumber: "", hoursOfOperation: ""};
             }
+
+            if(data.pickupInformation.hoursOfOperation == "") data.pickupInformation.hoursOfOperation = "N/A";
+            if(data.deliveryInformation.hoursOfOperation == "") data.deliveryInformation.hoursOfOperation = "N/A";
 
             $("#pickupName").val(data.pickupInformation.pickupLocation);
             $("#pickupAddress").val(data.originationAddress);
