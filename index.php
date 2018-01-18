@@ -170,6 +170,32 @@ $app->route('POST /setpasswordvalidate', function() {
     }
 });
 
+//-----------------------------------------------------------------------------------------
+// Used for migration only
+$app->route('GET /setmigratedpassword/@username/@password', function($username,$password) {
+    $user = Flight::users();
+    $return = $user->getMigratedUserValidateById($username,$password);
+    if ($return == "success") {
+        Flight::render('setmigratedpassword', array("username"=>$username));
+    } else {
+        Flight::render('invalidrequest');
+    }
+});
+
+$app->route('POST /setmigratedpasswordvalidate', function() {
+    $username = Flight::request()->data['username'];
+    $password = Flight::request()->data['password'];
+    $user = Flight::users();
+    $return = $user->setmigratedpasswordvalidateapi($username,$password);
+    if ($return) {
+      Flight::redirect('login');
+    } else {
+      $invalidPassword = (isset($_SESSION['invalidPassword'])) ? $_SESSION['invalidPassword']:''; // Just use the invalidPassword session var since it's just an error
+      Flight::render('setpassword', array('invalidPassword'=> $invalidPassword));
+    }
+});
+//-----------------------------------------------------------------------------------------
+
 $app->route('POST /checkforuniqueid', function() {
     $uniqueID = Flight::request()->data['uniqueID'];
     $user = Flight::users();
