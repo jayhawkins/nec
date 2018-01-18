@@ -542,6 +542,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 break;
         }
         
+        $("#orderID").val(orderID);
+        
         $.get(url, function(data){
             
             var order_details = data.order_details;
@@ -556,7 +558,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             var toAddress = destinationCity + ", " + destinationState;
                         
             var carriers = [];
-            var relayList = "<div class=\"row carrier-row__border-bot carrier-row__notselected\"><div class=\"col-md-12\"><h4>Relays</h4><br></div></div>";
+            var relayList = "<div class=\"row carrier-row__border-bot carrier-row__notselected\"><div class=\"col-md-12\"><h4>Carriers</h4><div class=\"fa fa-lg fa-refresh text-blue\" style=\"float: right; position: relative; top: -25px;\"></div><br></div></div>";
             
             for(var i = 0; i < order_details.length; i++){
                 var currentCarrier = order_details[i].carrierID;
@@ -595,6 +597,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     
                     $("#carrierDistance").empty().html(carrierDistance);
                     
+                    if(order_details[i].pickupInformation.hoursOfOperation == "") order_details[i].pickupInformation.hoursOfOperation = "N/A";
+                    if(order_details[i].deliveryInformation.hoursOfOperation == "") order_details[i].deliveryInformation.hoursOfOperation = "N/A";
+                        
                     if(entityType == 0){
                         $("#pickupName").val(order_details[i].pickupInformation.pickupLocation);
                         $("#pickupAddress").val(order_details[i].originationAddress);
@@ -2016,11 +2021,185 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
     function showOrderSummary(){
         $('#orderSummary').css('display', 'block');
         $('#trackingHistory').css('display', 'none');
+        $('#editOrderDetails').css('display', 'none');
     }
 
     function showTrackingHistory(){
         $('#orderSummary').css('display', 'none');
         $('#trackingHistory').css('display', 'block');
+        $('#editOrderDetails').css('display', 'none');
+    }
+    
+    function populateEditForm(orderID){
+        
+        var url = '<?php echo API_HOST_URL; ?>' + '/orders?include=order_details,entities&filter=id,eq,' + orderID + '&transform=1';
+        
+        $.get(url, function(data){
+            var order = data.orders[0];
+            var needsDataPoints = order.needsDataPoints;
+            
+            if(order.deliveryInformation == null) order.deliveryInformation = {deliveryLocation: "", contactPerson: "", phoneNumber: "", hoursOfOperation: ""};
+            if(order.pickupInformation == null) order.pickupInformation = {pickupLocation: "", contactPerson: "", phoneNumber: "", hoursOfOperation: ""};
+            if(order.originationAddress1 == null) order.originationAddress1 = "";
+            if(order.destinationAddress1 == null) order.destinationAddress1 = "";
+            if(order.originationAddress2 == null) order.originationAddress2 = "";
+            if(order.destinationAddress2 == null) order.destinationAddress2 = "";
+            if(order.originationZip == null) order.originationZip = "";
+            if(order.destinationZip == null) order.destinationZip = "";
+            if(order.podList == null) order.podList = [];
+
+            // Populate Edit form
+            $('#pickupLocation').val(order.pickupInformation.pickupLocation);
+            $('#pickupContactPerson').val(order.pickupInformation.contactPerson);
+            $('#pickupPhoneNumber').val(order.pickupInformation.phoneNumber);
+            $('#pickupHoursOfOperation').val(order.pickupInformation.hoursOfOperation);
+            $('#originationAddress1').val(order.originationAddress1);
+            $('#originationAddress2').val(order.originationAddress2);
+            $('#originationCity').val(order.originationCity);
+            $('#originationState').val(order.originationState);
+            $('#originationZip').val(order.originationZip);
+            $('#originationNotes').val(order.originationNotes);
+
+
+            $('#deliveryLocation').val(order.deliveryInformation.deliveryLocation);
+            $('#deliveryContactPerson').val(order.deliveryInformation.contactPerson);
+            $('#deliveryPhoneNumber').val(order.deliveryInformation.phoneNumber);
+            $('#deliveryHoursOfOperation').val(order.deliveryInformation.hoursOfOperation);
+            $('#destinationAddress1').val(order.destinationAddress1);
+            $('#destinationAddress2').val(order.destinationAddress2);
+            $('#destinationCity').val(order.destinationCity);
+            $('#destinationState').val(order.destinationState);
+            $('#destinationZip').val(order.destinationZip);
+            $('#destinationNotes').val(order.destinationNotes);
+
+            var dpli = '<div class="form-group row">' +
+                            '<label for="qty" class="col-sm-3 col-form-label">Quantity</label>'+
+                            '<div class="col-sm-9">' +
+                            '<input id="qty" name="qty" class="form-control" value="'+order.qty+'">'+
+                            '</div>'+
+                            '</div>';
+
+            for (var i = 0; i < dataPoints.object_type_data_points.length; i++) {
+                var selected = '';
+                var value = '';
+
+                $.each(needsDataPoints, function(idx, obj) {
+                  $.each(obj, function(key, val) {
+                    if (dataPoints.object_type_data_points[i].columnName == key) {
+                        value = val; // Get the value from the JSON data in the record to use to set the selected option in the dropdown
+
+                    }
+                  })
+                });
+
+                if(dataPoints.object_type_data_points[i].title == "Decals"){
+                    dpli += '<div class="form-group row">' +
+                            '<label for="decals" class="col-sm-3 col-form-label">Decals</label>'+
+                            '<div class="col-sm-9">' +
+                            '<input id="decals" name="decals" class="form-control" value="'+value+'">'+
+                            '</div>'+
+                            '</div>';
+                  }
+                  else{
+
+                    dpli += '<div class="form-group row">' +
+                            '<label for="' + dataPoints.object_type_data_points[i].columnName + '" class="col-sm-3 col-form-label">' + dataPoints.object_type_data_points[i].title + '</label>' +
+                            '<div class="col-sm-9"> <select class="form-control" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '">' +
+                            ' <option value="">-Select From List-</option>\n';
+
+                    for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
+
+                        if (dataPoints.object_type_data_points[i].object_type_data_point_values[v].value === value) {
+                            selected = ' selected ';
+                        } else {
+                            selected = '';
+                        }
+
+                        dpli += '<option' + selected + '>' + dataPoints.object_type_data_points[i].object_type_data_point_values[v].value + '</option>\n';
+
+                    }
+
+                    dpli += '</select>' +
+                            '</div></div>';
+                  }
+            }
+
+
+            dpli += '<div class="form-group row">' +
+                    '   <label for="rate" class="col-sm-3 col-form-label">Rate</label>' +
+                    '   <div class="col-sm-9">' +
+                    '       <input id="rate" name="rate" class="form-control" value="' + order.customerRate + '">' +
+                    '   </div>' +
+                    '</div>';
+
+            dpli += '<div class="form-group row">' +
+                    '   <label for="rateType" class="col-sm-3 col-form-label">Rate Type</label>' +
+                    '   <div class="col-sm-9">' +
+                    '       <input type="radio" id="rateType" name="rateType" value="Flat Rate" ' + (order.rateType == "Flat Rate" ? "checked" : "") + '/> Flat Rate ' +
+                    '       <input type="radio" id="rateType" name="rateType" value="Mileage" ' + (order.rateType == "Mileage" ? "checked" : "") + '/> Mileage</div>' +
+                    '   </div>'+
+                    '</div>';
+
+            dpli += '<div class="form-group row">' +
+                    '   <label for="transportationMode" class="col-sm-3 col-form-label">Transportation Mode</label>' +
+                    '   <div class="col-sm-9">' +
+                    '       <select class="form-control" id="transportationMode" name="transportationMode">' +
+                    '           <option value="">*Select Mode...</option>' +
+                    '           <option value="Empty" ' + (order.transportationMode == "Empty" ? "selected" : "") + '>Empty</option>' +
+                    '           <option value="Load Out" ' + (order.transportationMode == "Load Out" ? "selected" : "") + '>Load Out</option>' +
+                    '           <option value="Either (Empty or Load Out)" ' + (order.transportationMode == "Either (Empty or Load Out)" ? "selected" : "") + '>Either (Empty or Load Out)</option>' +
+                    '       </select>' +
+                    '   </div>'+
+                    '</div>';
+
+            $("#dp-check-list-box").append(dpli);
+
+            var order_details = order.order_details;
+            
+            $.each(order_details, function(key, detail){
+                if(detail.deliveryInformation == null) detail.deliveryInformation = {deliveryLocation: "", contactPerson: "", phoneNumber: "", hoursOfOperation: ""};
+                if(detail.destinationAddress1 == null) detail.destinationAddress1 = "";
+                if(detail.destinationZip == null) detail.destinationZip = "";
+
+                var relayNumber = key + 1;
+                
+                $('#relay_id' + relayNumber).val(detail.id);
+                $('#commit_id' + relayNumber).val(detail.id);
+                $('#address_relay' + relayNumber).val(detail.destinationAddress1);
+                $('#city_relay' + relayNumber).val(detail.destinationCity);
+                $('#state_relay' + relayNumber).val(detail.destinationState);
+                $('#zip_relay' + relayNumber).val(detail.destinationZip);
+                $('#notes_relay' + relayNumber).val(detail.destinationNotes);
+                $('#pickupDate_relay' + relayNumber).val(detail.pickupDate);
+                $('#deliveryDate_relay' + relayNumber).val(detail.deliveryDate);
+
+                $('#deliveryLocation_relay' + relayNumber).val(detail.deliveryInformation.deliveryLocation);
+                $('#contactPerson_relay' + relayNumber).val(detail.deliveryInformation.contactPerson);
+                $('#phoneNumber_relay' + relayNumber).val(detail.deliveryInformation.phoneNumber);
+                $('#hoursOfOperation_relay' + relayNumber).val(detail.deliveryInformation.hoursOfOperation);
+
+                if(relayNumber == 4) return false;
+
+            });
+
+            
+            console.log(order);
+            
+            
+        });
+    }
+
+    function showEditOrder(){
+        var orderID = $("#orderID").val();
+        populateEditForm(orderID);
+        
+        $('#order-details').css('display', 'none');
+        $('#editOrderDetails').css('display', 'block');
+    }
+    
+    function closeEditOrder(){
+        $('#order-details').css('display', 'block');
+        $('#editOrderDetails').css('display', 'none');
     }
 
  </script>
@@ -2087,6 +2266,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
     .text-summary{
        color: inherit;
     }
+    
+    .text-summary li{
+       width: 250px;
+    }
 
  </style>
 
@@ -2142,578 +2325,1000 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
  </section>
  </div>
 
-    <div id="order-details" style="display: none;">
-         
-        <ol class="breadcrumb">
-            <li>ADMIN</li>
-            <li>View Orders</li>
-            <li class="active">View Order Details</li>
-        </ol>
+<div id="order-details" style="display: none;">
 
-        <section class="widget">
-            <header>
-                <!--<h4><span class="fw-semi-bold">Order Details</span></h4>-->
-                <div class="widget-controls">
-                    <a data-widgster="close" title="Close" href="Javascript:closeOrderDetails()"><i class="glyphicon glyphicon-remove"></i></a>
-                </div>
-            </header>
-        
-                <?php
-                    if($_SESSION['entitytype'] == 0){
+    <ol class="breadcrumb">
+        <li>ADMIN</li>
+        <li>View Orders</li>
+        <li class="active">View Order Details</li>
+    </ol>
+
+    <section class="widget">
+        <header>
+            <!--<h4><span class="fw-semi-bold">Order Details</span></h4>-->
+            <div class="widget-controls">
+                <a data-widgster="close" title="Close" href="Javascript:closeOrderDetails()"><i class="glyphicon glyphicon-remove"></i></a>
+            </div>
+        </header>
+
+            <?php
+                if($_SESSION['entitytype'] == 0){
+            ?>
+        <div class="text-summary">Order # <p id="orderNumber" style="display: inline;"></p></div>
+        <ul class="text-summary">
+            <li>Customer: <p id="customerName" style="display: inline;"></p></li>
+            <li>From: <p id="fromAddress" style="display: inline;"></p></li>
+            <li>Number of Carriers: <p id="carriersCount" style="display: inline;"></p></li>
+        </ul>
+        <br>
+        <ul class="text-summary">
+            <li>Trailer QTY: <p id="qty" style="display: inline;"></p></li>
+            <li>To: <p id="toAddress" style="display: inline;"></p></li>
+            <li>Number of Relays: <p id="relayCount" style="display: inline;"></p></li>
+        </ul>
+        <br>
+
+
+        <?php
+            }
+            else{
                 ?>
-            <div class="text-summary">Order # <p id="orderNumber" style="display: inline;"></p></div>
-            <ul class="text-summary">
-                <li>Customer: <p id="customerName" style="display: inline;"></p></li>
-                <li>From: <p id="fromAddress" style="display: inline;"></p></li>
-                <li>Number of Carriers: <p id="carriersCount" style="display: inline;"></p></li>
-            </ul>
-            <br>
-            <ul class="text-summary">
-                <li>Trailer QTY: <p id="qty" style="display: inline;"></p></li>
-                <li>To: <p id="toAddress" style="display: inline;"></p></li>
-                <li>Number of Relays: <p id="relayCount" style="display: inline;"></p></li>
-            </ul>
+        <ul class="text-summary">
+            <li>Order # <p id="orderNumber" style="display: inline;"></p></li>
+            <li>From: <p id="fromAddress" style="display: inline;"></p></li>
+        </ul>
+        <br>
+        <ul class="text-summary">
+            <li>Trailer QTY: <p id="qty" style="display: inline;"></p></li>
+            <li>To: <p id="toAddress" style="display: inline;"></p></li>
+        </ul>
+        <?php
+            }
+        ?>
+        <br>
+        <br>
+        <ul id="ordersTabs" class="tablist">
+            <li id="current">
+                <a href="#" onclick="showOrderSummary();">Order Summary</a>
+            </li>
+            <li>
+                <a href="#" onclick="showTrackingHistory();">Tracking History</a>
+            </li>
+        </ul>
+
+        <div id="orderSummary" class="row">
+            <!-- start left column content -->
+            <div class="col-md-3">
+                <div id="relayList" class="carrier-container">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h4>Carriers</h4>
+                            <div class="fa fa-lg fa-refresh text-blue" style="float: right; position: relative; top: -25px;"></div>
+                            <br>
+                        </div>
+                    </div>
+
+                    <div class="row carrier-row carrier-row__border-top carrier-row__selected">
+                        <div class="col-md-3">
+                            <div class="carrier-logo carrier-logo__buds"></div>
+                        </div>
+                        <div class="col-md-9">
+                            <h4>Buds Enterprise</h4>
+                            QTY <span class="pad-left-25">5</span>
+                        </div>
+                    </div>
+
+                    <br>
+                    <br>
+                </div>
+            </div>
+
+            <!-- start right column -->
+            <?php
+                if($_SESSION['entitytype'] == 0){
+            ?>
+            <div class="col-md-9">
+                <div class="carrier-summary__top-container">
+                    <div class="row">
+                        <div class="col-md-1">
+                            <div class="carrier-logo carrier-logo__buds"></div>
+                        </div>
+                        <div id="carrierDistance" class="col-md-3">
+                            <h5>Buds Enterprise</h5>
+                            <small class="text-blue">Distance: 1663 miles</small>
+                        </div>
+                        <div class="col-md-4">
+                            <ul class="list-inline">
+                                <li class="list-inline-item" style="width: 150px;">In Transit</li>
+                                <li class="list-inline-item">
+                                        <span class="carrier-summary__quantity bkg-qty-yellow border-green">5</span>
+                                </li>
+                            </ul>
+                            <ul class="list-inline">
+                              <li class="list-inline-item" style="width: 150px;">Pending Pick Up</li>
+                              <li class="list-inline-item"><span class="carrier-summary__quantity bkg-qty-green border-green">2</span></li>
+                            </ul>
+                            <ul class="list-inline">
+                              <li class="list-inline-item" style="width: 150px;">At Destination</li>
+                              <li class="list-inline-item"><span class="carrier-summary__quantity bkg-md-gray border-green">0</span></li>
+                            </ul>
+                            <ul class="list-inline">
+                              <li class="list-inline-item" style="width: 150px;">Relay</li>
+                              <li class="list-inline-item"><span class="carrier-summary__quantity bkg-md-gray border-green">0</span></li>
+                            </ul>
+                            <ul class="list-inline">
+                              <li class="list-inline-item" style="width: 150px;">Other</li>
+                              <li class="list-inline-item"><span class="carrier-summary__quantity bkg-md-gray border-green">0</span></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <ul class="list-inline text-right">
+                              <li class="list-inline-item"><a href="#" class="btn btn-primary">Save Changes</a></li>
+                              <li class="list-inline-item"><a href="#" id="showEditOrder" class="btn btn-secondary" onclick="showEditOrder();"><span class="fa fa-pencil"></span> Edit</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="carrier-summary__bottom-container">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <input type="hidden" class="form-control" id="orderDetailID">
+                            <h5 class="text-blue">Pick Up Information</h5>
+                            <input type="text" class="form-control" id="pickupName" placeholder="Business Name"><br>
+                            <input type="text" class="form-control" id="pickupAddress" placeholder="Business Address"><br>
+                            <input type="text" class="form-control" id="pickupCity" placeholder="Business City"><br>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <select class="form-control" id="pickupState">
+                                            <option value="">*Select State...</option>
+                                              <?php
+                                                    foreach($states->states->records as $value) {
+                                                        $selected = ($value[0] == $state) ? 'selected=selected':'';
+                                                        echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
+                                                    }
+                                              ?>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" id="pickupZip" placeholder="Business Zip Code">
+                                </div>
+                            </div>
+                            <br>
+
+                                <input type="text" class="form-control" id="pickupPhone" placeholder="Contact Phone Number"><br>
+                                <input type="text" class="form-control" id="pickupContact" placeholder="Contact - First and Last Name"><br>
+                                    <input type="text" class="form-control" id="pickupHours" placeholder="Hours Of Operations"><br>
+                                    <label for="pick-up-date" class="text-blue">Pick Up Date</label>
+                            <input type="date" class="form-control" style="padding-left: 40px;" id="pickupDate" placeholder="MM/DD/YYYY">
+                                    <div class="fa fa-lg fa-calendar text-blue" style="position: relative; left: 10px; top: -28px;"></div>
+                        </div>
+                            <div class="col-md-4">
+                                <h5 class="text-blue">Delivery Information</h5>
+                                <input type="text" class="form-control" id="deliveryName" placeholder="Business Name"><br>
+                                <input type="text" class="form-control" id="deliveryAddress" placeholder="Business Address"><br>
+                                <input type="text" class="form-control" id="deliveryCity" placeholder="Business City"><br>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <select class="form-control" id="deliveryState">
+                                            <option value="">*Select State...</option>
+                                              <?php
+                                                    foreach($states->states->records as $value) {
+                                                        $selected = ($value[0] == $state) ? 'selected=selected':'';
+                                                        echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
+                                                    }
+                                              ?>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" id="deliveryZip" placeholder="Business Zip Code">
+                                </div>
+                            </div>
+                            <br>
+
+                                <input type="text" class="form-control" id="deliveryPhone" placeholder="Contact Phone Number"><br>
+                                <input type="text" class="form-control" id="deliveryContact" placeholder="Contact - First and Last Name"><br>
+                                <input type="text" class="form-control" id="deliveryHours" placeholder="Hours Of Operations"><br>
+                                <label for="pick-up-date" class="text-blue">Drop Off Date</label>
+                            <input type="date" class="form-control" style="padding-left: 40px;" id="deliveryDate" placeholder="MM/DD/YYYY">
+                            <div class="fa fa-lg fa-calendar text-blue" style="position: relative; left: 10px; top: -28px;"></div>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="transport-mode">Transport Mode</label>
+                                <select class="form-control" id="transportMode">
+                                    <option value="">*Select Mode...</option>
+                                    <option value="Empty">Empty</option>
+                                    <option value="Load Out">Load Out</option>
+                                    <option value="Either (Empty or Load Out)">Either (Empty or Load Out)</option>
+                                </select><br><br>
+                                <label for="transport-rate">Carrier Rate</label>
+                                <input type="text" class="form-control" id="carrierRate" placeholder="i.e. - $250">
+                            </div>
+                            <div class="col-md-2">
+                                    <label for="transport-rate">Quantity</label>
+                            <input type="text" class="form-control" id="carrierQty" placeholder="Number of Items">
+                            </div>
+                    </div>	
+                </div>
+            </div>
             <?php
                 }
                 else{
                     ?>
-            <ul class="text-summary">
-                <li>Order # <p id="orderNumber" style="display: inline;"></p></li>
-                <li>From: <p id="fromAddress" style="display: inline;"></p></li>
-            </ul>
-            <br>
-            <ul class="text-summary">
-                <li>Trailer QTY: <p id="qty" style="display: inline;"></p></li>
-                <li>To: <p id="toAddress" style="display: inline;"></p></li>
-            </ul>
-            <?php
-                }
-            ?>
-            <br>
-            <br>
-            <ul id="ordersTabs" class="tablist">
-                <li id="current">
-                    <a href="#" onclick="showOrderSummary();">Order Summary</a>
-                </li>
-                <li>
-                    <a href="#" onclick="showTrackingHistory();">Tracking History</a>
-                </li>
-            </ul>
-            
-            <div id="orderSummary" class="row">
-                <!-- start left column content -->
-                <div class="col-md-3">
-                    <div id="relayList" class="carrier-container">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <h4>Relays</h4>
-                                <br>
-                            </div>
-                        </div>
 
-                        <div class="row carrier-row carrier-row__border-top carrier-row__selected">
-                            <div class="col-md-3">
-                                <div class="carrier-logo carrier-logo__buds"></div>
-                            </div>
-                            <div class="col-md-9">
-                                <h4>Buds Enterprise</h4>
-                                QTY <span class="pad-left-25">5</span>
-                            </div>
+            <div class="col-md-9">
+                <div class="carrier-summary__top-container">
+                    <div class="row">
+                        <div class="col-md-1">
+                            <div class="carrier-logo carrier-logo__buds"></div>
                         </div>
-
-                        <br>
-                        <br>
-                    </div>
-                </div>
-                
-                <!-- start right column -->
-                <?php
-                    if($_SESSION['entitytype'] == 0){
-                ?>
-                <div class="col-md-9">
-                    <div class="carrier-summary__top-container">
-                        <div class="row">
-                            <div class="col-md-1">
-                                <div class="carrier-logo carrier-logo__buds"></div>
-                            </div>
-                            <div id="carrierDistance" class="col-md-3">
-                                <h5>Buds Enterprise</h5>
-                                <small class="text-blue">Distance: 1663 miles</small>
-                            </div>
-                            <div class="col-md-4">
-                                <ul class="list-inline">
+                        <div id="carrierDistance" class="col-md-3">
+                            <h5>Buds Enterprise</h5>
+                            <small class="text-blue">Distance: 1663 miles</small>
+                        </div>
+                        <div class="col-md-4">
+                            <ul class="list-inline">
                                     <li class="list-inline-item" style="width: 150px;">In Transit</li>
                                     <li class="list-inline-item">
                                             <span class="carrier-summary__quantity bkg-qty-yellow border-green">5</span>
                                     </li>
-                                </ul>
-                                <ul class="list-inline">
-                                  <li class="list-inline-item" style="width: 150px;">Pending Pick Up</li>
-                                  <li class="list-inline-item"><span class="carrier-summary__quantity bkg-qty-green border-green">2</span></li>
-                                </ul>
-                                <ul class="list-inline">
-                                  <li class="list-inline-item" style="width: 150px;">At Destination</li>
-                                  <li class="list-inline-item"><span class="carrier-summary__quantity bkg-md-gray border-green">0</span></li>
-                                </ul>
-                                <ul class="list-inline">
-                                  <li class="list-inline-item" style="width: 150px;">Relay</li>
-                                  <li class="list-inline-item"><span class="carrier-summary__quantity bkg-md-gray border-green">0</span></li>
-                                </ul>
-                                <ul class="list-inline">
-                                  <li class="list-inline-item" style="width: 150px;">Other</li>
-                                  <li class="list-inline-item"><span class="carrier-summary__quantity bkg-md-gray border-green">0</span></li>
-                                </ul>
-                            </div>
-                            <div class="col-md-4">
-                                <ul class="list-inline text-right">
-                                  <li class="list-inline-item"><a href="#" class="btn btn-primary">Save Changes</a></li>
-                                  <li class="list-inline-item"><a href="#" class="btn btn-secondary disabled"><span class="fa fa-pencil"></span> Edit</a></li>
-                                </ul>
-                            </div>
+                            </ul>
+                            <ul class="list-inline">
+                              <li class="list-inline-item" style="width: 150px;">Pending Pick Up</li>
+                              <li class="list-inline-item"><span class="carrier-summary__quantity bkg-qty-green border-green">2</span></li>
+                            </ul>
+                            <ul class="list-inline">
+                              <li class="list-inline-item" style="width: 150px;">At Destination</li>
+                              <li class="list-inline-item"><span class="carrier-summary__quantity bkg-md-gray border-green">0</span></li>
+                            </ul>
+                            <ul class="list-inline">
+                              <li class="list-inline-item" style="width: 150px;">Relay</li>
+                              <li class="list-inline-item"><span class="carrier-summary__quantity bkg-md-gray border-green">0</span></li>
+                            </ul>
+                            <ul class="list-inline">
+                              <li class="list-inline-item" style="width: 150px;">Other</li>
+                              <li class="list-inline-item"><span class="carrier-summary__quantity bkg-md-gray border-green">0</span></li>
+                            </ul>
                         </div>
-                    </div>
-                    
-                    <div class="carrier-summary__bottom-container">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <input type="hidden" class="form-control" id="orderDetailID">
-                                <h5 class="text-blue">Pick Up Information</h5>
-                                <input type="text" class="form-control" id="pickupName" placeholder="Business Name"><br>
-                                <input type="text" class="form-control" id="pickupAddress" placeholder="Business Address"><br>
-                                <input type="text" class="form-control" id="pickupCity" placeholder="Business City"><br>
-                                <select class="form-control" id="pickupState">
-                                        <option value="">*Select State...</option>
-                                          <?php
-                                                foreach($states->states->records as $value) {
-                                                    $selected = ($value[0] == $state) ? 'selected=selected':'';
-                                                    echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
-                                                }
-                                          ?>
-                                  </select><br>
-                                
-                                    <input type="text" class="form-control" id="pickupZip" placeholder="Business Zip Code"><br>
-                         
-                                    <input type="text" class="form-control" id="pickupPhone" placeholder="Contact Phone Number"><br>
-                                    <input type="text" class="form-control" id="pickupContact" placeholder="Contact - First and Last Name"><br>
-                                        <input type="text" class="form-control" id="pickupHours" placeholder="Hours Of Operations"><br>
-                                        <label for="pick-up-date" class="text-blue">Pick Up Date</label>
-                                <input type="date" class="form-control" style="padding-left: 40px;" id="pickupDate" placeholder="MM/DD/YYYY">
-                                        <div class="fa fa-lg fa-calendar text-blue" style="position: relative; left: 10px; top: -28px;"></div>
-                            </div>
-                                <div class="col-md-4">
-                                    <h5 class="text-blue">Delivery Information</h5>
-                                    <input type="text" class="form-control" id="deliveryName" placeholder="Business Name"><br>
-                                    <input type="text" class="form-control" id="deliveryAddress" placeholder="Business Address"><br>
-                                    <input type="text" class="form-control" id="deliveryCity" placeholder="Business City"><br>
-                                    <select class="form-control" id="deliveryState">
-                                        <option value="">*Select State...</option>
-                                          <?php
-                                                foreach($states->states->records as $value) {
-                                                    $selected = ($value[0] == $state) ? 'selected=selected':'';
-                                                    echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
-                                                }
-                                          ?>
-                                      </select>
-                                    <br>
-                                    <input type="text" class="form-control" id="deliveryZip" placeholder="Business Zip Code"><br>
-                                    
-                                    <input type="text" class="form-control" id="deliveryPhone" placeholder="Contact Phone Number"><br>
-                                    <input type="text" class="form-control" id="deliveryContact" placeholder="Contact - First and Last Name"><br>
-                                    <input type="text" class="form-control" id="deliveryHours" placeholder="Hours Of Operations"><br>
-                                    <label for="pick-up-date" class="text-blue">Drop Off Date</label>
-                                <input type="date" class="form-control" style="padding-left: 40px;" id="deliveryDate" placeholder="MM/DD/YYYY">
-                                <div class="fa fa-lg fa-calendar text-blue" style="position: relative; left: 10px; top: -28px;"></div>
-                                </div>
-                                <div class="col-md-2">
-                                    <br>
-                                    <label for="transport-mode">Transport Mode</label>
-                                    <select class="form-control" id="transportMode">
-                                        <option value="">*Select Mode...</option>
-                                        <option value="Empty">Empty</option>
-                                        <option value="Load Out">Load Out</option>
-                                        <option value="Either (Empty or Load Out)">Either (Empty or Load Out)</option>
-                                    </select><br><br>
-                                    <label for="transport-rate">Rate</label>
-                                    <input type="text" class="form-control" id="carrierRate" placeholder="i.e. - $250">
-                                </div>
-                                <div class="col-md-2">
-                                        <br>
-                                        <label for="transport-rate">Quantity</label>
-                                <input type="text" class="form-control" id="carrierQty" placeholder="Number of Items">
-                                </div>
-                        </div>	
+                        <div class="col-md-4">
+                            Deadline to Deliver: 01/06/2018<br>
+                            <br>
+                            Notes from prior carrier:<br>
+                            This part is still static.
+                        </div>
                     </div>
                 </div>
-                <?php
-                    }
-                    else{
-                        ?>
-                
-                <div class="col-md-9">
-                    <div class="carrier-summary__top-container">
-                        <div class="row">
-                            <div class="col-md-1">
-                                <div class="carrier-logo carrier-logo__buds"></div>
-                            </div>
-                            <div id="carrierDistance" class="col-md-3">
-                                <h5>Buds Enterprise</h5>
-                                <small class="text-blue">Distance: 1663 miles</small>
-                            </div>
-                            <div class="col-md-4">
-                                <ul class="list-inline">
-                                        <li class="list-inline-item" style="width: 150px;">In Transit</li>
-                                        <li class="list-inline-item">
-                                                <span class="carrier-summary__quantity bkg-qty-yellow border-green">5</span>
-                                        </li>
-                                </ul>
-                                <ul class="list-inline">
-                                  <li class="list-inline-item" style="width: 150px;">Pending Pick Up</li>
-                                  <li class="list-inline-item"><span class="carrier-summary__quantity bkg-qty-green border-green">2</span></li>
-                                </ul>
-                                <ul class="list-inline">
-                                  <li class="list-inline-item" style="width: 150px;">At Destination</li>
-                                  <li class="list-inline-item"><span class="carrier-summary__quantity bkg-md-gray border-green">0</span></li>
-                                </ul>
-                                <ul class="list-inline">
-                                  <li class="list-inline-item" style="width: 150px;">Relay</li>
-                                  <li class="list-inline-item"><span class="carrier-summary__quantity bkg-md-gray border-green">0</span></li>
-                                </ul>
-                                <ul class="list-inline">
-                                  <li class="list-inline-item" style="width: 150px;">Other</li>
-                                  <li class="list-inline-item"><span class="carrier-summary__quantity bkg-md-gray border-green">0</span></li>
-                                </ul>
-                            </div>
-                            <div class="col-md-4">
-                                Deadline to Deliver: 01/06/2018<br>
-                                <br>
-                                Notes from prior carrier:<br>
-                                This part is still static.
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="carrier-summary__bottom-container">
-                        <div class="row">
-                            <div id="carrierPickupInformation" class="col-md-4">
-                                <h5 class="text-blue">Pick Up From</h5>
-                                Wabash National<br>
-                                3700 E. Veterans Memorial Pkwy<br>
-                                Lafayette, Indiana 47909<br>
-                                <br>
-                                708-758-7430<br>
-                                <br>
-                                David Rupp<br>
-                                <br>
-                                M-F, 8am to 5pm ET<br>
-                                <br>
-                                <strong>Pick Up Date</strong><br>
-                                <div style="margin-left: 30px;">12/20/2017</div>
-                                <div class="fa fa-lg fa-calendar text-blue" style="position: relative; left: 0; top: -22px;"></div>
-                            </div>
-                            <div id="carrierDeliveryInformation"  class="col-md-4">
-                                <h5 class="text-blue">Deliver To</h5>
-                                Federal Express Freight<br>
-                                470 E Joe Orr Rd<br>
-                                Chicago Heights, IL 60411<br>
-                                <br>
-                                817-740-9980<br>
-                                <br>
-                                John Burgess<br>
-                                <br>
-                                M-F, 9am to 2pm CT<br>
-                                <br>
-                                <strong>Delivery Date</strong><br>
-                                <div style="margin-left: 30px;">01/06/2018</div>
-                                <div class="fa fa-lg fa-calendar text-blue" style="position: relative; left: 0; top: -22px;"></div>
-                            </div>
-                            <div class="col-md-2">
-                                <br>
-                                <strong>Transport Mode</strong><br>
-                                <!-- transportMode -->
-                                <p id="transportMode" style="display: inline;"></p><br><br>
-                            </div>
-                            <div class="col-md-2">
-                                <br>
-                                <strong>Quantity</strong>
-                                <br>
-                                <!-- carrierQty -->
-                               <p id="carrierQty" style="display: inline;"></p>
-                            </div>
+                <div class="carrier-summary__bottom-container">
+                    <div class="row">
+                        <div id="carrierPickupInformation" class="col-md-4">
+                            <h5 class="text-blue">Pick Up From</h5>
+                            Wabash National<br>
+                            3700 E. Veterans Memorial Pkwy<br>
+                            Lafayette, Indiana 47909<br>
+                            <br>
+                            708-758-7430<br>
+                            <br>
+                            David Rupp<br>
+                            <br>
+                            M-F, 8am to 5pm ET<br>
+                            <br>
+                            <strong>Pick Up Date</strong><br>
+                            <div style="margin-left: 30px;">12/20/2017</div>
+                            <div class="fa fa-lg fa-calendar text-blue" style="position: relative; left: 0; top: -22px;"></div>
+                        </div>
+                        <div id="carrierDeliveryInformation"  class="col-md-4">
+                            <h5 class="text-blue">Deliver To</h5>
+                            Federal Express Freight<br>
+                            470 E Joe Orr Rd<br>
+                            Chicago Heights, IL 60411<br>
+                            <br>
+                            817-740-9980<br>
+                            <br>
+                            John Burgess<br>
+                            <br>
+                            M-F, 9am to 2pm CT<br>
+                            <br>
+                            <strong>Delivery Date</strong><br>
+                            <div style="margin-left: 30px;">01/06/2018</div>
+                            <div class="fa fa-lg fa-calendar text-blue" style="position: relative; left: 0; top: -22px;"></div>
+                        </div>
+                        <div class="col-md-2">
+                            <br>
+                            <strong>Transport Mode</strong><br>
+                            <!-- transportMode -->
+                            <p id="transportMode" style="display: inline;"></p><br><br>
+                        </div>
+                        <div class="col-md-2">
+                            <br>
+                            <strong>Quantity</strong>
+                            <br>
+                            <!-- carrierQty -->
+                           <p id="carrierQty" style="display: inline;"></p>
                         </div>
                     </div>
                 </div>
-                <?php
-                    }
-                ?>
             </div>
-            
-            <div id="trackingHistory" class="row" style="display: none;">
-                <!-- start left column content -->
-                <div class="col-md-3">
-                    <div id="trailerList" class="carrier-container">
-                        <div class="row trailer-row__border-bot trailer-row__notselected">
-                            <div class="col-md-12">
-                                <h4>Trailer List</h4>
-                                <br>
-                            </div>
-                        </div>
+            <?php
+                }
+            ?>
+        </div>
 
-                        <div class="row trailer-row trailer-row__border-top trailer-row__selected" onclick="displayTrailer(this)">
-                            <div class="col-md-12">
-                                <h4>Vin#: 1JJV532D0JL041440</h4>
-                                <div class="text-blue">Unit #: <span class="pad-left-25">JBHZ 675140</span></div>
-                            </div>
+        <div id="trackingHistory" class="row" style="display: none;">
+            <!-- start left column content -->
+            <div class="col-md-3">
+                <div id="trailerList" class="carrier-container">
+                    <div class="row trailer-row__border-bot trailer-row__notselected">
+                        <div class="col-md-12">
+                            <h4>Trailer List</h4>
+                            <div class="fa fa-lg fa-refresh text-blue" style="float: right; position: relative; top: -25px;"></div>
+                            <br>
                         </div>
+                    </div>
 
-                        <div class="row trailer-row trailer-row__border-bot trailer-row__notselected" onclick="displayTrailer(this)">
-                            <div class="col-md-12">
-                                <h4>Vin#: 1JJV532D0JL041443</h4>
-                                <div class="text-blue">Unit #: <span class="pad-left-25">JBHZ 675143</span></div>
-                            </div>
+                    <div class="row trailer-row trailer-row__border-top trailer-row__selected" onclick="displayTrailer(this)">
+                        <div class="col-md-12">
+                            <h4>Vin#: 1JJV532D0JL041440</h4>
+                            <div class="text-blue">Unit #: <span class="pad-left-25">JBHZ 675140</span></div>
                         </div>
+                    </div>
 
-                        <div class="row trailer-row trailer-row__border-bot trailer-row__notselected" onclick="displayTrailer(this)">
-                            <div class="col-md-12">
-                                <h4>Vin#: 1JJV532D0JL041446</h4>
-                                <div class="text-blue">Unit #: <span class="pad-left-25">JBHZ 675146</span></div>
-                            </div>
+                    <div class="row trailer-row trailer-row__border-bot trailer-row__notselected" onclick="displayTrailer(this)">
+                        <div class="col-md-12">
+                            <h4>Vin#: 1JJV532D0JL041443</h4>
+                            <div class="text-blue">Unit #: <span class="pad-left-25">JBHZ 675143</span></div>
                         </div>
+                    </div>
 
-                        <div class="row trailer-row trailer-row__border-bot trailer-row__notselected" onclick="displayTrailer(this)">
-                            <div class="col-md-12">
-                                <h4>Vin#: 1JJV532D0JL041449</h4>
-                                <div class="text-blue">Unit #: <span class="pad-left-25">JBHZ 675149</span></div>
-                            </div>
+                    <div class="row trailer-row trailer-row__border-bot trailer-row__notselected" onclick="displayTrailer(this)">
+                        <div class="col-md-12">
+                            <h4>Vin#: 1JJV532D0JL041446</h4>
+                            <div class="text-blue">Unit #: <span class="pad-left-25">JBHZ 675146</span></div>
+                        </div>
+                    </div>
+
+                    <div class="row trailer-row trailer-row__border-bot trailer-row__notselected" onclick="displayTrailer(this)">
+                        <div class="col-md-12">
+                            <h4>Vin#: 1JJV532D0JL041449</h4>
+                            <div class="text-blue">Unit #: <span class="pad-left-25">JBHZ 675149</span></div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                
-                <!-- start right column -->
-                <?php
-                    if($_SESSION['entitytype'] == 0){
-                ?>
-                <!-- start right column content -->
-                <div class="col-md-9">
-                    <div class="carrier-summary__top-container">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <h4>1JJV532D0JL041440</h4>
-                                <ul class="list-inline">
-                                    <li class="list-inline-item">Active Carrier:</li>
-                                    <li class="list-inline-item">
-                                        <select class="form-control" id="activeCarrier">
-                                          <option selected>Buds Enterprise</option>
-                                          <option value="1">One</option>
-                                          <option value="2">Two</option>
-                                          <option value="3">Three</option>
-                                        </select>
-                                    </li>
-                                </ul>
-                            </div>
 
+            <!-- start right column -->
+            <?php
+                if($_SESSION['entitytype'] == 0){
+            ?>
+            <!-- start right column content -->
+            <div class="col-md-9">
+                <div class="carrier-summary__top-container">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h4>1JJV532D0JL041440</h4>
+                            <ul class="list-inline">
+                                <li class="list-inline-item">Active Carrier:</li>
+                                <li class="list-inline-item">
+                                    <select class="form-control" id="activeCarrier">
+                                      <option selected>Buds Enterprise</option>
+                                      <option value="1">One</option>
+                                      <option value="2">Two</option>
+                                      <option value="3">Three</option>
+                                    </select>
+                                </li>
+                            </ul>
                         </div>
-                    </div>
 
-                    <div class="carrier-summary__bottom-container">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <!-- start carrier 1 panel -->
-                                <div class="carrier-tracking__panel">
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <img src="img/logo-truck-warrior.png" width="53" height="44" alt=""/>
-                                        </div>
-                                        <div class="col-md-9">
-                                            <h5 class="text-bright-blue">Buds Enterprise</h5>
-                                        </div>
-                                    </div>
-                                    <hr>
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <span class="text-blue">Last Location:</span><br>
-                                            <span class="text-blue">Date</span><br>
-                                        </div>
-                                        <div class="col-md-8">
-                                            Lafayette, GA<br>
-                                            12/01/2017<br>
-                                        </div>
-                                    </div>
-                                    <hr>
-                                    <ul class="list-inline">
-                                        <li class="list-inline-item">Add a Note</li>
-                                        <li class="list-inline-item pad-left-25"><span class="fa fa-pencil text-bright-blue"></span></li>
-                                    </ul>
-                                    <p>Schedule to arrive at 10pm on 12/22</p>
-                                </div>
-                                <!-- end carrier 1 panel -->
-                            </div>
-                            <div class="col-md-4">
-                                <!-- start carrier 2 panel -->
-                                <div class="carrier-tracking__panel dimmed">
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <img src="img/logo-truck-warrior.png" width="53" height="44" alt=""/>
-                                        </div>
-                                        <div class="col-md-9">
-                                            <h5 class="text-bright-blue">Buds Enterprise</h5>
-                                        </div>
-                                    </div>
-                                    <hr>
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <span class="text-blue">Last Location:</span><br>
-                                            <span class="text-blue">Date</span><br>
-                                        </div>
-                                        <div class="col-md-8">
-                                            Lafayette, GA<br>
-                                            12/01/2017<br>
-                                        </div>
-                                    </div>
-                                    <hr>
-                                    <ul class="list-inline">
-                                        <li class="list-inline-item">Add a Note</li>
-                                        <li class="list-inline-item pad-left-25"><span class="fa fa-pencil text-bright-blue"></span></li>
-                                    </ul>
-                                    <p>Schedule to arrive at 10pm on 12/22</p>
-                                </div>
-                                <!-- end carrier 2 panel -->
-                            </div>
-                            <div class="col-md-4">
-                                <!-- start carrier 3 panel -->
-                                <div class="carrier-tracking__panel dimmed">
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <img src="img/logo-truck-warrior.png" width="53" height="44" alt=""/>
-                                        </div>
-                                        <div class="col-md-8">
-                                            <h5 class="text-bright-blue">Buds Enterprise</h5>
-                                        </div>
-                                    </div>
-                                    <hr>
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <span class="text-blue">Last Location:</span><br>
-                                            <span class="text-blue">Date</span><br>
-                                        </div>
-                                        <div class="col-md-8">
-                                            Lafayette, GA<br>
-                                            12/01/2017<br>
-                                        </div>
-                                    </div>
-                                    <hr>
-                                    <ul class="list-inline">
-                                        <li class="list-inline-item">Add a Note</li>
-                                        <li class="list-inline-item pad-left-25"><span class="fa fa-pencil text-bright-blue"></span></li>
-                                    </ul>
-                                    <p>Schedule to arrive at 10pm on 12/22</p>
-                                </div>
-                                <!-- end carrier 3 panel -->
-                            </div>
-                        </div>
                     </div>
                 </div>
-                
-                <?php
-                    }
-                    else{
-                        ?>
-                        <!-- start right column content -->
-			<div class="col-md-9">
-                            <div class="carrier-summary__top-container">
+
+                <div class="carrier-summary__bottom-container">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <!-- start carrier 1 panel -->
+                            <div class="carrier-tracking__panel">
                                 <div class="row">
-                                    <div class="col-md-12">
-                                        <h4>1JJV532D0JL041440</h4>
-                                        <ul class="list-inline">
-                                            <li class="list-inline-item">Notes from prior Carrier:</li>
-                                            <li class="list-inline-item">N/A</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="carrier-summary__bottom-container">
-                                <div class="row">
-                                    <div class="col-md-1">
-                                        <div class="carrier-logo carrier-logo__buds"></div>
-                                    </div>
-                                    <div class="col-md-3">Buds Enterprise</div>
                                     <div class="col-md-3">
-                                        <div class="text-blue">Update Trailer Status:</div>
+                                        <img src="img/logo-truck-warrior.png" width="53" height="44" alt=""/>
                                     </div>
-                                    <div class="col-md-4">
-                                        <select class="custom-select bkg-qty-yellow">
-                                            <option selected>In Transit</option>
-                                            <option value="1">One</option>
-                                            <option value="2">Two</option>
-                                            <option value="3">Three</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-1">&nbsp;</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-1">&nbsp;</div>
-                                    <div class="col-md-3">&nbsp;</div>
-                                    <div class="col-md-3">
-                                        <div class="text-blue">Update Current Location:</div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <input type="current-location" class="form-control" id="exampleFormControlInput1" placeholder="City, State" value="Augusta GA"><br>
-                                    </div>
-                                    <div class="col-md-1">&nbsp;</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-1">&nbsp;</div>
-                                    <div class="col-md-3">&nbsp;</div>
-                                    <div class="col-md-3">
-                                        <div class="text-blue">Loading Status:</div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <input type="loading-status" class="form-control" id="exampleFormControlInput1" placeholder="Loaded or Unloaded?" value="Loaded"><br>
-                                    </div>
-                                    <div class="col-md-1">&nbsp;</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-1">&nbsp;</div>
-                                    <div class="col-md-3">&nbsp;</div>
-                                    <div class="col-md-3">
-                                        <div class="text-blue">Arrival ETA</div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <input type="arrival-eta" class="form-control" id="exampleFormControlInput1" placeholder="ETA in hours" value="72"><br>
-                                    </div>
-                                    <div class="col-md-1">&nbsp;</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-1">&nbsp;</div>
-                                    <div class="col-md-3">&nbsp;</div>
-                                    <div class="col-md-3">
-                                        <a href="#" class="btn btn-bright-blue">Download Pod &nbsp; <span class="fa fa-download"></span></a>
-                                    </div>
-                                    <div class="col-md-5">
-                                        <a href="#" class="btn btn-outline-light"><span class="fa fa-lg fa-paperclip"></span></a>
-                                        &nbsp;
-                                        <a href="#" class="btn btn-bright-blue">Upload Pod &nbsp; <span class="fa fa-upload"></span></a>
+                                    <div class="col-md-9">
+                                        <h5 class="text-bright-blue">Buds Enterprise</h5>
                                     </div>
                                 </div>
                                 <hr>
-                                <div class="widget border-radius-5 border-light-blue">
-                                    <label for="tracking-notes" class="text-blue">Add a Note</label>
-                                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea><br>
-                                    <a href="#" class="btn btn-bright-blue">Add Note</a>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <span class="text-blue">Last Location:</span><br>
+                                        <span class="text-blue">Date</span><br>
+                                    </div>
+                                    <div class="col-md-8">
+                                        Lafayette, GA<br>
+                                        12/01/2017<br>
+                                    </div>
+                                </div>
+                                <hr>
+                                <ul class="list-inline">
+                                    <li class="list-inline-item">Add a Note</li>
+                                    <li class="list-inline-item pad-left-25"><span class="fa fa-pencil text-bright-blue"></span></li>
+                                </ul>
+                                <p>Schedule to arrive at 10pm on 12/22</p>
+                            </div>
+                            <!-- end carrier 1 panel -->
+                        </div>
+                        <div class="col-md-4">
+                            <!-- start carrier 2 panel -->
+                            <div class="carrier-tracking__panel dimmed">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <img src="img/logo-truck-warrior.png" width="53" height="44" alt=""/>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <h5 class="text-bright-blue">Buds Enterprise</h5>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <span class="text-blue">Last Location:</span><br>
+                                        <span class="text-blue">Date</span><br>
+                                    </div>
+                                    <div class="col-md-8">
+                                        Lafayette, GA<br>
+                                        12/01/2017<br>
+                                    </div>
+                                </div>
+                                <hr>
+                                <ul class="list-inline">
+                                    <li class="list-inline-item">Add a Note</li>
+                                    <li class="list-inline-item pad-left-25"><span class="fa fa-pencil text-bright-blue"></span></li>
+                                </ul>
+                                <p>Schedule to arrive at 10pm on 12/22</p>
+                            </div>
+                            <!-- end carrier 2 panel -->
+                        </div>
+                        <div class="col-md-4">
+                            <!-- start carrier 3 panel -->
+                            <div class="carrier-tracking__panel dimmed">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <img src="img/logo-truck-warrior.png" width="53" height="44" alt=""/>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <h5 class="text-bright-blue">Buds Enterprise</h5>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <span class="text-blue">Last Location:</span><br>
+                                        <span class="text-blue">Date</span><br>
+                                    </div>
+                                    <div class="col-md-8">
+                                        Lafayette, GA<br>
+                                        12/01/2017<br>
+                                    </div>
+                                </div>
+                                <hr>
+                                <ul class="list-inline">
+                                    <li class="list-inline-item">Add a Note</li>
+                                    <li class="list-inline-item pad-left-25"><span class="fa fa-pencil text-bright-blue"></span></li>
+                                </ul>
+                                <p>Schedule to arrive at 10pm on 12/22</p>
+                            </div>
+                            <!-- end carrier 3 panel -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <?php
+                }
+                else{
+                    ?>
+                    <!-- start right column content -->
+                    <div class="col-md-9">
+                        <div class="carrier-summary__top-container">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h4>1JJV532D0JL041440</h4>
+                                    <ul class="list-inline">
+                                        <li class="list-inline-item">Notes from prior Carrier:</li>
+                                        <li class="list-inline-item">N/A</li>
+                                    </ul>
                                 </div>
                             </div>
-			</div>
-                <?php
-                    }
-                ?>
-                
-            </div>
-                
-            
-            
-        </section>
-    </div>
+                        </div>
+                        <div class="carrier-summary__bottom-container">
+                            <div class="row">
+                                <div class="col-md-1">
+                                    <div class="carrier-logo carrier-logo__buds"></div>
+                                </div>
+                                <div class="col-md-3">Buds Enterprise</div>
+                                <div class="col-md-3">
+                                    <div class="text-blue">Update Trailer Status:</div>
+                                </div>
+                                <div class="col-md-4">
+                                    <select class="custom-select bkg-qty-yellow">
+                                        <option selected>In Transit</option>
+                                        <option value="1">One</option>
+                                        <option value="2">Two</option>
+                                        <option value="3">Three</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-1">&nbsp;</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-1">&nbsp;</div>
+                                <div class="col-md-3">&nbsp;</div>
+                                <div class="col-md-3">
+                                    <div class="text-blue">Update Current Location:</div>
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="current-location" class="form-control" id="exampleFormControlInput1" placeholder="City, State" value="Augusta GA"><br>
+                                </div>
+                                <div class="col-md-1">&nbsp;</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-1">&nbsp;</div>
+                                <div class="col-md-3">&nbsp;</div>
+                                <div class="col-md-3">
+                                    <div class="text-blue">Loading Status:</div>
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="loading-status" class="form-control" id="exampleFormControlInput1" placeholder="Loaded or Unloaded?" value="Loaded"><br>
+                                </div>
+                                <div class="col-md-1">&nbsp;</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-1">&nbsp;</div>
+                                <div class="col-md-3">&nbsp;</div>
+                                <div class="col-md-3">
+                                    <div class="text-blue">Arrival ETA</div>
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="arrival-eta" class="form-control" id="exampleFormControlInput1" placeholder="ETA in hours" value="72"><br>
+                                </div>
+                                <div class="col-md-1">&nbsp;</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-1">&nbsp;</div>
+                                <div class="col-md-3">&nbsp;</div>
+                                <div class="col-md-3">
+                                    <a href="#" class="btn btn-bright-blue">Download Pod &nbsp; <span class="fa fa-download"></span></a>
+                                </div>
+                                <div class="col-md-5">
+                                    <a href="#" class="btn btn-outline-light"><span class="fa fa-lg fa-paperclip"></span></a>
+                                    &nbsp;
+                                    <a href="#" class="btn btn-bright-blue">Upload Pod &nbsp; <span class="fa fa-upload"></span></a>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="widget border-radius-5 border-light-blue">
+                                <label for="tracking-notes" class="text-blue">Add a Note</label>
+                                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea><br>
+                                <a href="#" class="btn btn-bright-blue">Add Note</a>
+                            </div>
+                        </div>
+                    </div>
+            <?php
+                }
+            ?>
+
+        </div>
+
+
+
+    </section>
+</div>
  
+ <div id="editOrderDetails" style="display: none">
+         
+    <ol class="breadcrumb">
+        <li>ADMIN</li>
+        <li>View Orders</li>
+        <li>View Order Details</li>
+        <li class="active">Edit Order Details</li>
+    </ol>
+
+     <section>
+
+        <header>
+                <h1 class="fw-semi-bold">Edit Order</h1>
+        </header>
+            <div class="row">
+                    <div class="col-md-12">
+                    <h2>Pickup Address</h2>
+                    <form>
+                        <input type="hidden" id="orderID" name="orderID" value="" />
+                            <div class="form-group row">
+                                    <label for="pickupLocation" class="col-sm-3 col-form-label">Location</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="pickupLocation" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="pickupContactPerson" class="col-sm-3 col-form-label">Contact Person</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="pickupContactPerson" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="pickupPhoneNumber" class="col-sm-3 col-form-label">Phone Number</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="pickupPhoneNumber" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="pickupHoursOfOperation" class="col-sm-3 col-form-label">Hours of Operation</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="pickupHoursOfOperation" placeholder="" type="text">
+                                    </div>
+                            </div>
+
+                            <div class="form-group row">
+                                    <label for="originationAddress1" class="col-sm-3 col-form-label">Address 1</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="originationAddress1" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="originationAddress2" class="col-sm-3 col-form-label">Address 2</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="originationAddress2" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="originationCity" class="col-sm-3 col-form-label">City</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="originationCity" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="originationState" class="col-sm-3 col-form-label">State</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="originationState" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="originationZip" class="col-sm-3 col-form-label">Zip</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="originationZip" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="originationNotes" class="col-sm-3 col-form-label">Notes</label>
+                                    <div class="col-sm-9">
+                                            <textarea class="form-control" id="originationNotes" rows="3"></textarea>
+                                    </div>
+                             </div>
+                    </form>
+                    </div>
+            </div>
+
+            <hr>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <h2>Delivery Address</h2>
+                    <form>
+                            <div class="form-group row">
+                                    <label for="deliveryLocation" class="col-sm-3 col-form-label">Location</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="deliveryLocation" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="deliveryContactPerson" class="col-sm-3 col-form-label">Contact Person</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="deliveryContactPerson" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="deliveryPhoneNumber" class="col-sm-3 col-form-label">Phone Number</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="deliveryPhoneNumber" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="deliveryHoursOfOperation" class="col-sm-3 col-form-label">Hours of Operation</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="deliveryHoursOfOperation" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="destinationAddress1" class="col-sm-3 col-form-label">Address 1</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="destinationAddress1" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="destinationAddress2" class="col-sm-3 col-form-label">Address 2</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="destinationAddress2" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="destinationCity" class="col-sm-3 col-form-label">City</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="destinationCity" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="destinationState" class="col-sm-3 col-form-label">State</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="destinationState" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="destinationZip" class="col-sm-3 col-form-label">Zip</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="destinationZip" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="destinationNotes" class="col-sm-3 col-form-label">Notes</label>
+                                    <div class="col-sm-9">
+                                            <textarea class="form-control" id="destinationNotes" rows="3"></textarea>
+                                    </div>
+                             </div>
+                    </form>
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="row">
+                    <div class="col-md-12">
+                    <h2>Trailer Data</h2>
+                    <form id="dp-check-list-box">
+
+                    </form>
+                    </div>
+            </div>
+
+            <hr>
+
+            <div class="row">
+                    <div class="col-md-12">
+                            <h2>Relay Addresses</h2>
+                    </div>
+            </div>
+            <br>
+            <div class="row">
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                        <h4>Relay Address 1</h4>
+                            <input class="form-control" id="relay_id1" placeholder="" type="hidden">
+                            <input class="form-control" id="commit_id1" placeholder="" type="hidden">
+                            <div class="form-group">
+                                    <label for="deliveryLocation_relay1">Location</label>
+                                    <input class="form-control" id="deliveryLocation_relay1" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="contactPerson_relay1">Contact Person</label>
+                                    <input class="form-control" id="contactPerson_relay1" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="phoneNumber_relay1">Phone Number</label>
+                                    <input class="form-control" id="phoneNumber_relay1" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="hoursOfOperation_relay1">Hours of Operation</label>
+                                    <input class="form-control" id="hoursOfOperation_relay1" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="pickupDate_relay1">Pickup Date</label>
+                                    <input class="form-control" id="pickupDate_relay1" placeholder="" type="date">
+                            </div>
+                            <div class="form-group">
+                                    <label for="deliveryDate_relay1">Delivery Date</label>
+                                    <input class="form-control" id="deliveryDate_relay1" placeholder="" type="date">
+                            </div>
+                            <div class="form-group">
+                                    <label for="address_relay1">Address</label>
+                                    <input class="form-control" id="address_relay1" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="city_relay1">City</label>
+                                    <input class="form-control" id="city_relay1" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="state_relay1">State</label>
+                                    <input class="form-control" id="state_relay1" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="zip_relay1">Zip</label>
+                                    <input class="form-control" id="zip_relay1" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="notes_relay1">Notes</label>
+                                    <textarea class="form-control" id="notes_relay1" rows="3"></textarea>
+                             </div>
+                    </div>
+
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                        <h4>Relay Address 2</h4>
+                            <input class="form-control" id="relay_id2" placeholder="" type="hidden">
+                            <input class="form-control" id="commit_id2" placeholder="" type="hidden">
+                            <div class="form-group">
+                                    <label for="deliveryLocation_relay2">Location</label>
+                                    <input class="form-control" id="deliveryLocation_relay2" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="contactPerson_relay2">Contact Person</label>
+                                    <input class="form-control" id="contactPerson_relay2" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="phoneNumber_relay2">Phone Number</label>
+                                    <input class="form-control" id="phoneNumber_relay2" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="hoursOfOperation_relay2">Hours of Operation</label>
+                                    <input class="form-control" id="hoursOfOperation_relay2" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="pickupDate_relay2">Pickup Date</label>
+                                    <input class="form-control" id="pickupDate_relay2" placeholder="" type="date">
+                            </div>
+                            <div class="form-group">
+                                    <label for="deliveryDate_relay2">Delivery Date</label>
+                                    <input class="form-control" id="deliveryDate_relay2" placeholder="" type="date">
+                            </div>
+                            <div class="form-group">
+                                    <label for="address_relay2">Address</label>
+                                    <input class="form-control" id="address_relay2" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="city_relay2">City</label>
+                                    <input class="form-control" id="city_relay2" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="state_relay2">State</label>
+                                    <input class="form-control" id="state_relay2" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="zip_relay2">Zip</label>
+                                    <input class="form-control" id="zip_relay2" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="notes_relay2">Notes</label>
+                                    <textarea class="form-control" id="notes_relay2" rows="3"></textarea>
+                             </div>
+                    </div>
+
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                        <h4>Relay Address 3</h4>
+                            <input class="form-control" id="relay_id3" placeholder="" type="hidden">
+                            <input class="form-control" id="commit_id3" placeholder="" type="hidden">
+                            <div class="form-group">
+                                    <label for="deliveryLocation_relay3">Location</label>
+                                    <input class="form-control" id="deliveryLocation_relay3" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="contactPerson_relay3">Contact Person</label>
+                                    <input class="form-control" id="contactPerson_relay3" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="phoneNumber_relay3">Phone Number</label>
+                                    <input class="form-control" id="phoneNumber_relay3" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="hoursOfOperation_relay3">Hours of Operation</label>
+                                    <input class="form-control" id="hoursOfOperation_relay3" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="pickupDate_relay3">Pickup Date</label>
+                                    <input class="form-control" id="pickupDate_relay3" placeholder="" type="date">
+                            </div>
+                            <div class="form-group">
+                                    <label for="deliveryDate_relay3">Delivery Date</label>
+                                    <input class="form-control" id="deliveryDate_relay3" placeholder="" type="date">
+                            </div>
+                            <div class="form-group">
+                                    <label for="address_relay3">Address</label>
+                                    <input class="form-control" id="address_relay3" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="city_relay3">City</label>
+                                    <input class="form-control" id="city_relay3" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="state_relay3">State</label>
+                                    <input class="form-control" id="state_relay3" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="zip_relay3">Zip</label>
+                                    <input class="form-control" id="zip_relay3" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="notes_relay3">Notes</label>
+                                    <textarea class="form-control" id="notes_relay3" rows="3"></textarea>
+                             </div>
+                    </div>
+
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                        <h4>Relay Address 4</h4>
+                            <input class="form-control" id="relay_id4" placeholder="" type="hidden">
+                            <input class="form-control" id="commit_id4" placeholder="" type="hidden">
+                            <div class="form-group">
+                                    <label for="deliveryLocation_relay4">Location</label>
+                                    <input class="form-control" id="deliveryLocation_relay4" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="contactPerson_relay4">Contact Person</label>
+                                    <input class="form-control" id="contactPerson_relay4" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="phoneNumber_relay4">Phone Number</label>
+                                    <input class="form-control" id="phoneNumber_relay4" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="hoursOfOperation_relay4">Hours of Operation</label>
+                                    <input class="form-control" id="hoursOfOperation_relay4" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="pickupDate_relay4">Pickup Date</label>
+                                    <input class="form-control" id="pickupDate_relay4" placeholder="" type="date">
+                            </div>
+                            <div class="form-group">
+                                    <label for="deliveryDate_relay4">Delivery Date</label>
+                                    <input class="form-control" id="deliveryDate_relay4" placeholder="" type="date">
+                            </div>
+                            <div class="form-group">
+                                    <label for="address_relay4">Address</label>
+                                    <input class="form-control" id="address_relay4" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="city_relay4">City</label>
+                                    <input class="form-control" id="city_relay4" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="state_relay4">State</label>
+                                    <input class="form-control" id="state_relay4" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="zip_relay4">Zip</label>
+                                    <input class="form-control" id="zip_relay4" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="notes_relay4">Notes</label>
+                                    <textarea class="form-control" id="notes_relay4" rows="3"></textarea>
+                             </div>
+                    </div>
+            </div>
+<!--
+            <hr>
+
+            <div class="row">
+                    <div class="col-md-12">
+                            <h2>Unit Data</h2>
+                    </div>
+            </div>
+
+            <br>
+
+            <div class="row">
+                <div id="addTrailer" class="col-md-12">
+
+                </div>
+            </div>
+-->
+            <br>
+
+        <div class="row row-grid">
+                <div class="col-lg-3 col-md-5 col-sm-12">
+                        <a class="btn btn-secondary btn-block" href="#" role="button" onclick="closeEditOrder()">Cancel</a>
+                </div>
+                <div class="col-lg-3 col-md-5 col-sm-12">
+                        <a class="btn btn-primary btn-block disabled" href="orders-view-mode.html" role="button" disabled>Save</a>
+                </div>
+        </div>
+
+     </section>
+     
+ </div>
  
  <div id="order-details-old" style="display: none;">
     <ol class="breadcrumb">
@@ -4237,6 +4842,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             if(data.deliveryInformation == null){
                 data.deliveryInformation = {deliveryLocation: "", contactPerson: "", phoneNumber: "", hoursOfOperation: ""};
             }
+
+            if(data.pickupInformation.hoursOfOperation == "") data.pickupInformation.hoursOfOperation = "N/A";
+            if(data.deliveryInformation.hoursOfOperation == "") data.deliveryInformation.hoursOfOperation = "N/A";
 
             $("#pickupName").val(data.pickupInformation.pickupLocation);
             $("#pickupAddress").val(data.originationAddress);
