@@ -2181,10 +2181,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 if(relayNumber == 4) return false;
 
             });
-
-            
-            console.log(order);
-            
             
         });
     }
