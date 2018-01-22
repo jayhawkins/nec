@@ -528,16 +528,16 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
         switch(entityType){
             case 0:     // URL for the Admin.
-                url += '/order_details?include=orders,entities&columns=id,carrierID,orderID,pickupInformation,deliveryInformation,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,orders.qty,orders.customerID,orders.pickupInformation,orders.deliveryInformation,entities.name&filter=orderID,eq,' + orderID + '&transform=1';
+                url += '/order_details?include=orders,entities&columns=id,carrierID,orderID,pickupInformation,deliveryInformation,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,orders.qty,orders.customerID,orders.pickupInformation,orders.deliveryInformation,orders.podList,entities.name&filter=orderID,eq,' + orderID + '&transform=1';
                 blnShow = true;
                 blnCarrierRate = true;
                 break;
             case 1:    // URL for Customer.
-                url += '/order_details?include=orders,entities&columns=id,carrierID,orderID,pickupInformation,deliveryInformation,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,orders.qty,orders.customerID,orders.pickupInformation,orders.deliveryInformation,entities.name&filter=orderID,eq,' + orderID + '&transform=1';
+                url += '/order_details?include=orders,entities&columns=id,carrierID,orderID,pickupInformation,deliveryInformation,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,orders.qty,orders.customerID,orders.pickupInformation,orders.deliveryInformation,orders.podList,entities.name&filter=orderID,eq,' + orderID + '&transform=1';
                 blnShow = true;
                 break;
             case 2:     // URL for the Carrier. The Customer can only see order details of their route.
-                url += '/order_details?include=orders,entities&columns=id,carrierID,orderID,pickupInformation,deliveryInformation,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,orders.qty,orders.customerID,orders.pickupInformation,orders.deliveryInformation,entities.name&filter[]=orderID,eq,' + orderID + '&filter[]=carrierID,eq,' + entityid + '&transform=1';
+                url += '/order_details?include=orders,entities&columns=id,carrierID,orderID,pickupInformation,deliveryInformation,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,orders.qty,orders.customerID,orders.pickupInformation,orders.deliveryInformation,orders.podList,entities.name&filter[]=orderID,eq,' + orderID + '&filter[]=carrierID,eq,' + entityid + '&transform=1';
                 blnCarrierRate = true;
                 break;
         }
@@ -558,7 +558,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             var toAddress = destinationCity + ", " + destinationState;
                         
             var carriers = [];
+            var trailers = order_details[0].orders[0].podList;
+            
             var relayList = "<div class=\"row carrier-row__border-bot carrier-row__notselected\"><div class=\"col-md-12\"><h4>Carriers</h4><div class=\"fa fa-lg fa-refresh text-blue\" style=\"float: right; position: relative; top: -25px;\"></div><br></div></div>";
+            var trailerList = "<div class=\"row trailer-row__border-bot trailer-row__notselected\"><div class=\"col-md-12\"><h4>Trailer List</h4><div class=\"fa fa-lg fa-refresh text-blue\" style=\"float: right; position: relative; top: -25px;\"></div><br></div></div>";
             
             for(var i = 0; i < order_details.length; i++){
                 var currentCarrier = order_details[i].carrierID;
@@ -584,6 +587,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 "           QTY <span class=\"pad-left-25\">" + order_details[i].qty + "</span>" +
                                 "       </div>" +
                                 " </div>";
+                        
+                        
                         
                     if(order_details[i].pickupInformation == null){
                         order_details[i].pickupInformation = {pickupLocation: "", contactPerson: "", phoneNumber: "", hoursOfOperation: ""};
@@ -680,6 +685,34 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 }
             }            
             
+            
+            $.each(trailers, function(key, trailer){
+            
+                if(trailer.vinNumber == null || trailer.vinNumber == "") trailer.unitNumber = "N/A";
+                if(trailer.unitNumber == null || trailer.unitNumber == "") trailer.unitNumber = "N/A";
+            
+                if(key == 0){
+                    trailerList += "<div class=\"row trailer-row trailer-row__border-top trailer-row__selected\" onclick=\"displayTrailer(this, '" + trailer.vinNumber + "')\">" +
+                                "       <div class=\"col-md-12\">" +    
+                                "           <h4>Vin#: " + trailer.vinNumber + "</h4>" +                            
+                                "           <div class=\"text-blue\">Unit #:" +
+                                "               <span class=\"pad-left-25\">" + trailer.unitNumber + "</span>" +
+                                "           </div>" +
+                                "       </div>" +
+                                " </div>";
+                }
+                else{
+                    trailerList += "<div class=\"row trailer-row trailer-row__border-bot trailer-row__notselected\" onclick=\"displayTrailer(this, '" + trailer.vinNumber + "')\">" +
+                                "       <div class=\"col-md-12\">" +    
+                                "           <h4>Vin#: " + trailer.vinNumber + "</h4>" +                            
+                                "           <div class=\"text-blue\">Unit #:" +
+                                "               <span class=\"pad-left-25\">" + trailer.unitNumber + "</span>" +
+                                "           </div>" +
+                                "       </div>" +
+                                " </div>";
+                }
+            });
+            
             $("#fromAddress").html(fromAddress);
             $("#toAddress").html(toAddress);
             $("#relayCount").html(order_details.length);
@@ -687,6 +720,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             $("#qty").html(order_details[0].orders[0].qty);
 
             $("#relayList").empty().html(relayList);
+            $("#trailerList").empty().html(trailerList);
 
         });
         
@@ -2665,20 +2699,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         <div class="col-md-12">
                             <h4>Vin#: 1JJV532D0JL041443</h4>
                             <div class="text-blue">Unit #: <span class="pad-left-25">JBHZ 675143</span></div>
-                        </div>
-                    </div>
-
-                    <div class="row trailer-row trailer-row__border-bot trailer-row__notselected" onclick="displayTrailer(this)">
-                        <div class="col-md-12">
-                            <h4>Vin#: 1JJV532D0JL041446</h4>
-                            <div class="text-blue">Unit #: <span class="pad-left-25">JBHZ 675146</span></div>
-                        </div>
-                    </div>
-
-                    <div class="row trailer-row trailer-row__border-bot trailer-row__notselected" onclick="displayTrailer(this)">
-                        <div class="col-md-12">
-                            <h4>Vin#: 1JJV532D0JL041449</h4>
-                            <div class="text-blue">Unit #: <span class="pad-left-25">JBHZ 675149</span></div>
                         </div>
                     </div>
                 </div>
@@ -4890,7 +4910,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         $(element).addClass('trailer-row__selected');
     }
     
-    function displayTrailer(element){
+    function displayTrailer(element, vinNumber){
         switchTrailerSelect(element);
         
     }
