@@ -100,6 +100,122 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         $('#orderStatusVinNumber').append(option);
     }
 
+    function displayOrderStatuses(orderID, carrierID, vinNumber){
+        
+    var orderStatusURL = '<?php echo API_HOST_URL; ?>' + '/order_statuses?filter[0]=id,eq,' + orderID + '&filter[1]=vinNumber,eq,' + vinNumber + '&filter[2]=carrierID,eq,' + carrierID + '&transform=1';
+
+    $.get(orderStatusURL, function(data){
+        var statuses = data.order_statuses;
+
+        var statusesList = "<div class=\"row\">";
+
+        if (statuses.length == 0){
+            statusesList += "<div class=\"col-md-12\"><h3>There are no statuses available.</<h3></div>";
+        }
+        else{
+            $.each(statuses, function(key, status){                                
+                var index = key + 1;
+                var carrierName = "";
+
+                allEntities.entities.forEach(function(entity){
+
+                    if(status.carrierID == entity.id){
+
+                        carrierName += entity.name;
+                    }
+                });
+                
+                var dimmed = "dimmed";
+                if(key == 0) dimmed = "";
+
+                statusesList += "<div class=\"col-md-4\">" +
+                                "   <div class=\"carrier-tracking__panel " + dimmed + "\">" +
+                                "       <div class=\"row\">" +
+                                "           <div class=\"col-md-3\">" +
+                                "               <img src=\"img/logo-truck-warrior.png\" width=\"53\" height=\"44\" alt=\"\"/>" +
+                                "           </div>" +
+                                "           <div class=\"col-md-9\">" +
+                                "               <h5 class=\"text-bright-blue\">" + carrierName + "</h5>" +
+                                "           </div>" +
+                                "       </div>" +
+                                "       <hr>" +
+                                "       <div class=\"row\">" +
+                                "           <div class=\"col-md-4\">" +
+                                "               <div class=\"row\">" +
+                                "                   <div class=\"col-md-12\">" +
+                                "                       <span class=\"text-blue\">Trailer Status</span><br>" +
+                                "                   </div>" +
+                                "               </div>" +
+                                "               <div class=\"row\">" +
+                                "                   <div class=\"col-md-12\">" +
+                                "                       <span class=\"text-blue\">Loading Status</span><br>" +
+                                "                   </div>" +
+                                "               </div>" +
+                                "               <div class=\"row\">" +
+                                "                   <div class=\"col-md-12\">" +
+                                "                       <span class=\"text-blue\">Last Location:</span><br>" +
+                                "                   </div>" +
+                                "               </div>" +
+                                "               <div class=\"row\">" +
+                                "                   <div class=\"col-md-12\">" +
+                                "                       <span class=\"text-blue\">Date</span><br>" +
+                                "                   </div>" +
+                                "               </div>" +
+                                "               <div class=\"row\">" +
+                                "                   <div class=\"col-md-12\">" +
+                                "                       <span class=\"text-blue\">Arrival Eta</span><br>" +
+                                "                   </div>" +
+                                "               </div>" +
+                                "           </div>" +
+                                "           <div class=\"col-md-8\">" +
+                                "               <div class=\"row\">" +
+                                "                   <div class=\"col-md-12\">" +
+                                "                       " + status.status + "<br>" +
+                                "                   </div>" +
+                                "               </div>" +
+                                "               <div class=\"row\">" +
+                                "                   <div class=\"col-md-12\">" +
+                                "                       " + status.loadingStatus + "<br>" +
+                                "                   </div>" +
+                                "               </div>" +
+                                "               <div class=\"row\">" +
+                                "                   <div class=\"col-md-12\">" +
+                                "                       "+status.city+", " + status.state + "<br>" +
+                                "                   </div>" +
+                                "               </div>" +
+                                "               <div class=\"row\">" +
+                                "                   <div class=\"col-md-12\">" +
+                                "                       " + status.updatedAt + "<br>" +
+                                "                   </div>" +
+                                "               </div>" +
+                                "               <div class=\"row\">" +
+                                "                   <div class=\"col-md-12\">" +
+                                "                       " + status.arrivalEta + " Hrs<br>" +
+                                "                   </div>" +
+                                "               </div>" +
+                                "           </div>" +
+                                "       </div>" +
+                                "       <hr>" +
+                                "       <ul class=\"list-inline\">" +
+                                "           <li class=\"list-inline-item\">Add a Note</li>" +
+                                "           <li class=\"list-inline-item pad-left-25\"><span class=\"fa fa-pencil text-bright-blue\"></span></li>" +
+                                "       </ul>" +
+                                "       <p>Note: " + status.note + "</p>" +
+                                "   </div>" +
+                                "</div>";
+                            
+                if(index % 3 == 0){
+                    statusesList +="</div><div class=\"row\">";
+                }
+            });
+        }                            
+
+        statusesList += "</div>";
+        $("#statusesList").empty().html(statusesList);
+
+    });
+    }
+
     function addVINNumber(){
 
 		var count = $('#input-list-box > li').length;
@@ -705,104 +821,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 " </div>";
                         
                         $("#displayVinNumber").html(trailer.vinNumber);
-                        var orderStatusURL = '<?php echo API_HOST_URL; ?>' + '/order_statuses?filter[0]=id,eq,' + orderID + '&filter[1]=vinNumber,eq,' + trailer.vinNumber + '&transform=1';
+                        $("#activeCarrier").val('');
                         
-                        $.get(orderStatusURL, function(data){
-                            var statuses = data.order_statuses;
-                            
-                            var statusesList = "<div class=\"row\">";
-                        
-                            if (statuses.length == 0){
-                                statusesList += "<div class=\"col-md-12\"><h3>There are no statuses available.</<h3></div>";
-                            }
-                            else{
-                                $.each(statuses, function(key, status){                                
-                                    var index = key + 1;
-                                    var carrierName = "";
-
-                                    allEntities.entities.forEach(function(entity){
-
-                                        if(status.carrierID == entity.id){
-
-                                            carrierName += entity.name;
-                                        }
-                                    });
-
-                                    if(key == 0){
-
-                                        statusesList += "<div class=\"col-md-4\">" +
-                                                        "   <div class=\"carrier-tracking__panel\">" +
-                                                        "       <div class=\"row\">" +
-                                                        "           <div class=\"col-md-3\">" +
-                                                        "               <img src=\"img/logo-truck-warrior.png\" width=\"53\" height=\"44\" alt=\"\"/>" +
-                                                        "           </div>" +
-                                                        "           <div class=\"col-md-9\">" +
-                                                        "               <h5 class=\"text-bright-blue\">" + carrierName + "</h5>" +
-                                                        "           </div>" +
-                                                        "       </div>" +
-                                                        "       <hr>" +
-                                                        "       <div class=\"row\">" +
-                                                        "           <div class=\"col-md-4\">" +
-                                                        "               <span class=\"text-blue\">Last Location:</span><br>" +
-                                                        "               <span class=\"text-blue\">Date</span><br>" +
-                                                        "           </div>" +
-                                                        "           <div class=\"col-md-8\">" +
-                                                        "               "+status.city+", " + status.state + "<br>" +
-                                                        "               " + status.updatedAt + "<br>" +
-                                                        "           </div>" +
-                                                        "       </div>" +
-                                                        "       <hr>" +
-                                                        "       <ul class=\"list-inline\">" +
-                                                        "           <li class=\"list-inline-item\">Add a Note</li>" +
-                                                        "           <li class=\"list-inline-item pad-left-25\"><span class=\"fa fa-pencil text-bright-blue\"></span></li>" +
-                                                        "       </ul>" +
-                                                        "       <p>" + status.note + "</p>" +
-                                                        "   </div>" +
-                                                        "</div>";
-                                    }
-                                    else{
-
-                                        statusesList += "<div class=\"col-md-4\">" +
-                                                        "   <div class=\"carrier-tracking__panel\">" +
-                                                        "       <div class=\"row\">" +
-                                                        "           <div class=\"col-md-3\">" +
-                                                        "               <img src=\"img/logo-truck-warrior.png\" width=\"53\" height=\"44\" alt=\"\"/>" +
-                                                        "           </div>" +
-                                                        "           <div class=\"col-md-9\">" +
-                                                        "               <h5 class=\"text-bright-blue\">" + carrierName + "</h5>" +
-                                                        "           </div>" +
-                                                        "       </div>" +
-                                                        "       <hr>" +
-                                                        "       <div class=\"row\">" +
-                                                        "           <div class=\"col-md-4\">" +
-                                                        "               <span class=\"text-blue\">Last Location:</span><br>" +
-                                                        "               <span class=\"text-blue\">Date</span><br>" +
-                                                        "           </div>" +
-                                                        "           <div class=\"col-md-8\">" +
-                                                        "               "+status.city+", " + status.state + "<br>" +
-                                                        "               " + status.updatedAt + "<br>" +
-                                                        "           </div>" +
-                                                        "       </div>" +
-                                                        "       <hr>" +
-                                                        "       <ul class=\"list-inline\">" +
-                                                        "           <li class=\"list-inline-item\">Add a Note</li>" +
-                                                        "           <li class=\"list-inline-item pad-left-25\"><span class=\"fa fa-pencil text-bright-blue\"></span></li>" +
-                                                        "       </ul>" +
-                                                        "       <p>" + status.note + "</p>" +
-                                                        "   </div>" +
-                                                        "</div>";
-                                    }
-
-                                    if(index % 3 == 0){
-                                        statusesList +="</div><div class=\"row\">";
-                                    }
-                                });
-                            }                            
-                            
-                            statusesList += "</div>";
-                            $("#statusesList").empty().html(statusesList);
-                        
-                        });
+                        displayOrderStatuses(orderID, '', trailer.vinNumber);
                 }
                 else{
                     trailerList += "<div class=\"row trailer-row trailer-row__border-bot trailer-row__notselected\" onclick=\"displayTrailer(this, '" + trailer.vinNumber + "')\">" +
@@ -4924,105 +4945,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             var activeCarrier = $("#activeCarrier").val();
             var orderID = $("#orderID").val();
 
-            var orderStatusURL = '<?php echo API_HOST_URL; ?>' + '/order_statuses?filter[0]=id,eq,' + orderID + '&filter[1]=vinNumber,eq,' + vinNumber + '&filter[2]=carrierID,eq,' + activeCarrier + '&transform=1';
-
-            $.get(orderStatusURL, function(data){
-                var statuses = data.order_statuses;
-
-                var statusesList = "<div class=\"row\">";
-
-                if (statuses.length == 0){
-                    statusesList += "<div class=\"col-md-12\"><h3>There are no statuses available.</<h3></div>";
-                }
-                else{
-                    $.each(statuses, function(key, status){                                
-                        var index = key + 1;
-                        var carrierName = "";
-
-                        allEntities.entities.forEach(function(entity){
-
-                            if(status.carrierID == entity.id){
-
-                                carrierName += entity.name;
-                            }
-                        });
-                        if(key == 0){
-
-                            statusesList += "<div class=\"col-md-4\">" +
-                                            "   <div class=\"carrier-tracking__panel\">" +
-                                            "       <div class=\"row\">" +
-                                            "           <div class=\"col-md-3\">" +
-                                            "               <img src=\"img/logo-truck-warrior.png\" width=\"53\" height=\"44\" alt=\"\"/>" +
-                                            "           </div>" +
-                                            "           <div class=\"col-md-9\">" +
-                                            "               <h5 class=\"text-bright-blue\">" + carrierName + "</h5>" +
-                                            "           </div>" +
-                                            "       </div>" +
-                                            "       <hr>" +
-                                            "       <div class=\"row\">" +
-                                            "           <div class=\"col-md-4\">" +
-                                            "               <span class=\"text-blue\">Last Location:</span><br>" +
-                                            "               <span class=\"text-blue\">Date</span><br>" +
-                                            "           </div>" +
-                                            "           <div class=\"col-md-8\">" +
-                                            "               "+status.city+", " + status.state + "<br>" +
-                                            "               " + status.updatedAt + "<br>" +
-                                            "           </div>" +
-                                            "       </div>" +
-                                            "       <hr>" +
-                                            "       <ul class=\"list-inline\">" +
-                                            "           <li class=\"list-inline-item\">Add a Note</li>" +
-                                            "           <li class=\"list-inline-item pad-left-25\"><span class=\"fa fa-pencil text-bright-blue\"></span></li>" +
-                                            "       </ul>" +
-                                            "       <p>" + status.note + "</p>" +
-                                            "   </div>" +
-                                            "</div>";
-                        }
-                        else{
-
-                            statusesList += "<div class=\"col-md-4\">" +
-                                            "   <div class=\"carrier-tracking__panel\">" +
-                                            "       <div class=\"row\">" +
-                                            "           <div class=\"col-md-3\">" +
-                                            "               <img src=\"img/logo-truck-warrior.png\" width=\"53\" height=\"44\" alt=\"\"/>" +
-                                            "           </div>" +
-                                            "           <div class=\"col-md-9\">" +
-                                            "               <h5 class=\"text-bright-blue\">" + carrierName + "</h5>" +
-                                            "           </div>" +
-                                            "       </div>" +
-                                            "       <hr>" +
-                                            "       <div class=\"row\">" +
-                                            "           <div class=\"col-md-4\">" +
-                                            "               <span class=\"text-blue\">Last Location:</span><br>" +
-                                            "               <span class=\"text-blue\">Date</span><br>" +
-                                            "           </div>" +
-                                            "           <div class=\"col-md-8\">" +
-                                            "               "+status.city+", " + status.state + "<br>" +
-                                            "               " + status.updatedAt + "<br>" +
-                                            "           </div>" +
-                                            "       </div>" +
-                                            "       <hr>" +
-                                            "       <ul class=\"list-inline\">" +
-                                            "           <li class=\"list-inline-item\">Add a Note</li>" +
-                                            "           <li class=\"list-inline-item pad-left-25\"><span class=\"fa fa-pencil text-bright-blue\"></span></li>" +
-                                            "       </ul>" +
-                                            "       <p>" + status.note + "</p>" +
-                                            "   </div>" +
-                                            "</div>";
-                        }
-
-                        if(index % 3 == 0){
-                            statusesList +="</div><div class=\"row\">";
-                        }
-                    });
-                }                            
-
-                statusesList += "</div>";
-                $("#statusesList").empty().html(statusesList);
-
-            });
+            displayOrderStatuses(orderID, activeCarrier, vinNumber);
         });
         
+    });
+    
         function switchRelaySelect(element){
 
             $(".carrier-row").removeClass('carrier-row__border-top');
@@ -5123,106 +5050,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             var activeCarrier = $("#activeCarrier").val();
             var orderID = $("#orderID").val();
 
-            var orderStatusURL = '<?php echo API_HOST_URL; ?>' + '/order_statuses?filter[0]=id,eq,' + orderID + '&filter[1]=vinNumber,eq,' + vinNumber + '&filter[2]=carrierID,eq,' + activeCarrier + '&transform=1';
-
-            $.get(orderStatusURL, function(data){
-                var statuses = data.order_statuses;
-
-                var statusesList = "<div class=\"row\">";
-
-                if (statuses.length == 0){
-                    statusesList += "<div class=\"col-md-12\"><h3>There are no statuses available.</<h3></div>";
-                }
-                else{
-                    $.each(statuses, function(key, status){                                
-                        var index = key + 1;
-                        var carrierName = "";
-
-                        allEntities.entities.forEach(function(entity){
-
-                            if(status.carrierID == entity.id){
-
-                                carrierName += entity.name;
-                            }
-                        });
-                        if(key == 0){
-
-                            statusesList += "<div class=\"col-md-4\">" +
-                                            "   <div class=\"carrier-tracking__panel\">" +
-                                            "       <div class=\"row\">" +
-                                            "           <div class=\"col-md-3\">" +
-                                            "               <img src=\"img/logo-truck-warrior.png\" width=\"53\" height=\"44\" alt=\"\"/>" +
-                                            "           </div>" +
-                                            "           <div class=\"col-md-9\">" +
-                                            "               <h5 class=\"text-bright-blue\">" + carrierName + "</h5>" +
-                                            "           </div>" +
-                                            "       </div>" +
-                                            "       <hr>" +
-                                            "       <div class=\"row\">" +
-                                            "           <div class=\"col-md-4\">" +
-                                            "               <span class=\"text-blue\">Last Location:</span><br>" +
-                                            "               <span class=\"text-blue\">Date</span><br>" +
-                                            "           </div>" +
-                                            "           <div class=\"col-md-8\">" +
-                                            "               "+status.city+", " + status.state + "<br>" +
-                                            "               " + status.updatedAt + "<br>" +
-                                            "           </div>" +
-                                            "       </div>" +
-                                            "       <hr>" +
-                                            "       <ul class=\"list-inline\">" +
-                                            "           <li class=\"list-inline-item\">Add a Note</li>" +
-                                            "           <li class=\"list-inline-item pad-left-25\"><span class=\"fa fa-pencil text-bright-blue\"></span></li>" +
-                                            "       </ul>" +
-                                            "       <p>" + status.note + "</p>" +
-                                            "   </div>" +
-                                            "</div>";
-                        }
-                        else{
-
-                            statusesList += "<div class=\"col-md-4\">" +
-                                            "   <div class=\"carrier-tracking__panel\">" +
-                                            "       <div class=\"row\">" +
-                                            "           <div class=\"col-md-3\">" +
-                                            "               <img src=\"img/logo-truck-warrior.png\" width=\"53\" height=\"44\" alt=\"\"/>" +
-                                            "           </div>" +
-                                            "           <div class=\"col-md-9\">" +
-                                            "               <h5 class=\"text-bright-blue\">" + carrierName + "</h5>" +
-                                            "           </div>" +
-                                            "       </div>" +
-                                            "       <hr>" +
-                                            "       <div class=\"row\">" +
-                                            "           <div class=\"col-md-4\">" +
-                                            "               <span class=\"text-blue\">Last Location:</span><br>" +
-                                            "               <span class=\"text-blue\">Date</span><br>" +
-                                            "           </div>" +
-                                            "           <div class=\"col-md-8\">" +
-                                            "               "+status.city+", " + status.state + "<br>" +
-                                            "               " + status.updatedAt + "<br>" +
-                                            "           </div>" +
-                                            "       </div>" +
-                                            "       <hr>" +
-                                            "       <ul class=\"list-inline\">" +
-                                            "           <li class=\"list-inline-item\">Add a Note</li>" +
-                                            "           <li class=\"list-inline-item pad-left-25\"><span class=\"fa fa-pencil text-bright-blue\"></span></li>" +
-                                            "       </ul>" +
-                                            "       <p>" + status.note + "</p>" +
-                                            "   </div>" +
-                                            "</div>";
-                        }
-
-                        if(index % 3 == 0){
-                            statusesList +="</div><div class=\"row\">";
-                        }
-                    });
-                }                            
-
-                statusesList += "</div>";
-                $("#statusesList").empty().html(statusesList);
-
-            });
+            displayOrderStatuses(orderID, activeCarrier, vinNumber);
         }
-    });
-    
-    
-    
  </script>
