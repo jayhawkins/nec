@@ -727,6 +727,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                             carrierName += entity.name;
                                         }
                                     });
+
                                     if(key == 0){
 
                                         statusesList += "<div class=\"col-md-4\">" +
@@ -746,8 +747,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                                         "               <span class=\"text-blue\">Date</span><br>" +
                                                         "           </div>" +
                                                         "           <div class=\"col-md-8\">" +
-                                                        "               Lafayette, GA<br>" +
-                                                        "               12/01/2017<br>" +
+                                                        "               "+status.city+", " + status.state + "<br>" +
+                                                        "               " + status.updatedAt + "<br>" +
                                                         "           </div>" +
                                                         "       </div>" +
                                                         "       <hr>" +
@@ -755,7 +756,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                                         "           <li class=\"list-inline-item\">Add a Note</li>" +
                                                         "           <li class=\"list-inline-item pad-left-25\"><span class=\"fa fa-pencil text-bright-blue\"></span></li>" +
                                                         "       </ul>" +
-                                                        "       <p>Schedule to arrive at 10pm on 12/22</p>" +
+                                                        "       <p>" + status.note + "</p>" +
                                                         "   </div>" +
                                                         "</div>";
                                     }
@@ -778,8 +779,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                                         "               <span class=\"text-blue\">Date</span><br>" +
                                                         "           </div>" +
                                                         "           <div class=\"col-md-8\">" +
-                                                        "               Lafayette, GA<br>" +
-                                                        "               12/01/2017<br>" +
+                                                        "               "+status.city+", " + status.state + "<br>" +
+                                                        "               " + status.updatedAt + "<br>" +
                                                         "           </div>" +
                                                         "       </div>" +
                                                         "       <hr>" +
@@ -787,7 +788,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                                         "           <li class=\"list-inline-item\">Add a Note</li>" +
                                                         "           <li class=\"list-inline-item pad-left-25\"><span class=\"fa fa-pencil text-bright-blue\"></span></li>" +
                                                         "       </ul>" +
-                                                        "       <p>Schedule to arrive at 10pm on 12/22</p>" +
+                                                        "       <p>" + status.note + "</p>" +
                                                         "   </div>" +
                                                         "</div>";
                                     }
@@ -4964,8 +4965,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                             "               <span class=\"text-blue\">Date</span><br>" +
                                             "           </div>" +
                                             "           <div class=\"col-md-8\">" +
-                                            "               Lafayette, GA<br>" +
-                                            "               12/01/2017<br>" +
+                                            "               "+status.city+", " + status.state + "<br>" +
+                                            "               " + status.updatedAt + "<br>" +
                                             "           </div>" +
                                             "       </div>" +
                                             "       <hr>" +
@@ -4973,7 +4974,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                             "           <li class=\"list-inline-item\">Add a Note</li>" +
                                             "           <li class=\"list-inline-item pad-left-25\"><span class=\"fa fa-pencil text-bright-blue\"></span></li>" +
                                             "       </ul>" +
-                                            "       <p>Schedule to arrive at 10pm on 12/22</p>" +
+                                            "       <p>" + status.note + "</p>" +
                                             "   </div>" +
                                             "</div>";
                         }
@@ -4996,8 +4997,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                             "               <span class=\"text-blue\">Date</span><br>" +
                                             "           </div>" +
                                             "           <div class=\"col-md-8\">" +
-                                            "               Lafayette, GA<br>" +
-                                            "               12/01/2017<br>" +
+                                            "               "+status.city+", " + status.state + "<br>" +
+                                            "               " + status.updatedAt + "<br>" +
                                             "           </div>" +
                                             "       </div>" +
                                             "       <hr>" +
@@ -5005,7 +5006,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                             "           <li class=\"list-inline-item\">Add a Note</li>" +
                                             "           <li class=\"list-inline-item pad-left-25\"><span class=\"fa fa-pencil text-bright-blue\"></span></li>" +
                                             "       </ul>" +
-                                            "       <p>Schedule to arrive at 10pm on 12/22</p>" +
+                                            "       <p>" + status.note + "</p>" +
                                             "   </div>" +
                                             "</div>";
                         }
@@ -5163,8 +5164,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                             "               <span class=\"text-blue\">Date</span><br>" +
                                             "           </div>" +
                                             "           <div class=\"col-md-8\">" +
-                                            "               Lafayette, GA<br>" +
-                                            "               12/01/2017<br>" +
+                                            "               "+status.city+", " + status.state + "<br>" +
+                                            "               " + status.updatedAt + "<br>" +
                                             "           </div>" +
                                             "       </div>" +
                                             "       <hr>" +
@@ -5172,7 +5173,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                             "           <li class=\"list-inline-item\">Add a Note</li>" +
                                             "           <li class=\"list-inline-item pad-left-25\"><span class=\"fa fa-pencil text-bright-blue\"></span></li>" +
                                             "       </ul>" +
-                                            "       <p>Schedule to arrive at 10pm on 12/22</p>" +
+                                            "       <p>" + status.note + "</p>" +
                                             "   </div>" +
                                             "</div>";
                         }
@@ -5195,8 +5196,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                             "               <span class=\"text-blue\">Date</span><br>" +
                                             "           </div>" +
                                             "           <div class=\"col-md-8\">" +
-                                            "               Lafayette, GA<br>" +
-                                            "               12/01/2017<br>" +
+                                            "               "+status.city+", " + status.state + "<br>" +
+                                            "               " + status.updatedAt + "<br>" +
                                             "           </div>" +
                                             "       </div>" +
                                             "       <hr>" +
@@ -5204,7 +5205,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                             "           <li class=\"list-inline-item\">Add a Note</li>" +
                                             "           <li class=\"list-inline-item pad-left-25\"><span class=\"fa fa-pencil text-bright-blue\"></span></li>" +
                                             "       </ul>" +
-                                            "       <p>Schedule to arrive at 10pm on 12/22</p>" +
+                                            "       <p>" + status.note + "</p>" +
                                             "   </div>" +
                                             "</div>";
                         }
