@@ -562,6 +562,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             
             var relayList = "<div class=\"row carrier-row__border-bot carrier-row__notselected\"><div class=\"col-md-12\"><h4>Carriers</h4><div class=\"fa fa-lg fa-refresh text-blue\" style=\"float: right; position: relative; top: -25px;\"></div><br></div></div>";
             var trailerList = "<div class=\"row trailer-row__border-bot trailer-row__notselected\"><div class=\"col-md-12\"><h4>Trailer List</h4><div class=\"fa fa-lg fa-refresh text-blue\" style=\"float: right; position: relative; top: -25px;\"></div><br></div></div>";
+            var activeCarriers = "<option value=\"\">*Select Carrier...</option>";
             
             for(var i = 0; i < order_details.length; i++){
                 var currentCarrier = order_details[i].carrierID;
@@ -576,6 +577,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         entityName += entity.name;
                     }
                 });
+                
+                activeCarriers += "<option value=\"" + order_details[i].carrierID + "\">" + entityName + "</option>";
                 
                 if(i == 0){
                     relayList += "<div class=\"row carrier-row carrier-row__border-top carrier-row__selected\" onclick=\"displayRelay(this, " + order_details[i].id + ")\">" +
@@ -700,6 +703,105 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 "           </div>" +
                                 "       </div>" +
                                 " </div>";
+                        
+                        $("#displayVinNumber").html(trailer.vinNumber);
+                        var orderStatusURL = '<?php echo API_HOST_URL; ?>' + '/order_statuses?filter[0]=id,eq,' + orderID + '&filter[1]=vinNumber,eq,' + trailer.vinNumber + '&transform=1';
+                        
+                        $.get(orderStatusURL, function(data){
+                            var statuses = data.order_statuses;
+                            
+                            var statusesList = "<div class=\"row\">";
+                        
+                            if (statuses.length == 0){
+                                statusesList += "<div class=\"col-md-12\"><h3>There are no statuses available.</<h3></div>";
+                            }
+                            else{
+                                $.each(statuses, function(key, status){                                
+                                    var index = key + 1;
+                                    var carrierName = "";
+
+                                    allEntities.entities.forEach(function(entity){
+
+                                        if(status.carrierID == entity.id){
+
+                                            carrierName += entity.name;
+                                        }
+                                    });
+                                    if(key == 0){
+
+                                        statusesList += "<div class=\"col-md-4\">" +
+                                                        "   <div class=\"carrier-tracking__panel\">" +
+                                                        "       <div class=\"row\">" +
+                                                        "           <div class=\"col-md-3\">" +
+                                                        "               <img src=\"img/logo-truck-warrior.png\" width=\"53\" height=\"44\" alt=\"\"/>" +
+                                                        "           </div>" +
+                                                        "           <div class=\"col-md-9\">" +
+                                                        "               <h5 class=\"text-bright-blue\">" + carrierName + "</h5>" +
+                                                        "           </div>" +
+                                                        "       </div>" +
+                                                        "       <hr>" +
+                                                        "       <div class=\"row\">" +
+                                                        "           <div class=\"col-md-4\">" +
+                                                        "               <span class=\"text-blue\">Last Location:</span><br>" +
+                                                        "               <span class=\"text-blue\">Date</span><br>" +
+                                                        "           </div>" +
+                                                        "           <div class=\"col-md-8\">" +
+                                                        "               Lafayette, GA<br>" +
+                                                        "               12/01/2017<br>" +
+                                                        "           </div>" +
+                                                        "       </div>" +
+                                                        "       <hr>" +
+                                                        "       <ul class=\"list-inline\">" +
+                                                        "           <li class=\"list-inline-item\">Add a Note</li>" +
+                                                        "           <li class=\"list-inline-item pad-left-25\"><span class=\"fa fa-pencil text-bright-blue\"></span></li>" +
+                                                        "       </ul>" +
+                                                        "       <p>Schedule to arrive at 10pm on 12/22</p>" +
+                                                        "   </div>" +
+                                                        "</div>";
+                                    }
+                                    else{
+
+                                        statusesList += "<div class=\"col-md-4\">" +
+                                                        "   <div class=\"carrier-tracking__panel\">" +
+                                                        "       <div class=\"row\">" +
+                                                        "           <div class=\"col-md-3\">" +
+                                                        "               <img src=\"img/logo-truck-warrior.png\" width=\"53\" height=\"44\" alt=\"\"/>" +
+                                                        "           </div>" +
+                                                        "           <div class=\"col-md-9\">" +
+                                                        "               <h5 class=\"text-bright-blue\">" + carrierName + "</h5>" +
+                                                        "           </div>" +
+                                                        "       </div>" +
+                                                        "       <hr>" +
+                                                        "       <div class=\"row\">" +
+                                                        "           <div class=\"col-md-4\">" +
+                                                        "               <span class=\"text-blue\">Last Location:</span><br>" +
+                                                        "               <span class=\"text-blue\">Date</span><br>" +
+                                                        "           </div>" +
+                                                        "           <div class=\"col-md-8\">" +
+                                                        "               Lafayette, GA<br>" +
+                                                        "               12/01/2017<br>" +
+                                                        "           </div>" +
+                                                        "       </div>" +
+                                                        "       <hr>" +
+                                                        "       <ul class=\"list-inline\">" +
+                                                        "           <li class=\"list-inline-item\">Add a Note</li>" +
+                                                        "           <li class=\"list-inline-item pad-left-25\"><span class=\"fa fa-pencil text-bright-blue\"></span></li>" +
+                                                        "       </ul>" +
+                                                        "       <p>Schedule to arrive at 10pm on 12/22</p>" +
+                                                        "   </div>" +
+                                                        "</div>";
+                                    }
+
+                                    if(index % 3 == 0){
+                                        statusesList +="</div><div class=\"row\">";
+                                    }
+                                });
+                            }                            
+                            
+                            statusesList += "</div>";
+                            $("#statusesList").empty().html(statusesList);
+                        
+                        });
                 }
                 else{
                     trailerList += "<div class=\"row trailer-row trailer-row__border-bot trailer-row__notselected\" onclick=\"displayTrailer(this, '" + trailer.vinNumber + "')\">" +
@@ -719,6 +821,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             $("#carriersCount").html(carriers.length);
             $("#qty").html(order_details[0].orders[0].qty);
 
+            $("#activeCarrier").empty().html(activeCarriers);
             $("#relayList").empty().html(relayList);
             $("#trailerList").empty().html(trailerList);
 
@@ -2714,15 +2817,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 <div class="carrier-summary__top-container">
                     <div class="row">
                         <div class="col-md-12">
-                            <h4>1JJV532D0JL041440</h4>
+                            <h4 id="displayVinNumber">1JJV532D0JL041440</h4>
                             <ul class="list-inline">
                                 <li class="list-inline-item">Active Carrier:</li>
                                 <li class="list-inline-item">
                                     <select class="form-control" id="activeCarrier">
-                                      <option selected>Buds Enterprise</option>
-                                      <option value="1">One</option>
-                                      <option value="2">Two</option>
-                                      <option value="3">Three</option>
+                                        
                                     </select>
                                 </li>
                             </ul>
@@ -2731,7 +2831,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     </div>
                 </div>
 
-                <div class="carrier-summary__bottom-container">
+                <div id="statusesList" class="carrier-summary__bottom-container">
                     <div class="row">
                         <div class="col-md-4">
                             <!-- start carrier 1 panel -->
@@ -4816,102 +4916,312 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             }
         });
 
-    });
-    
-    function switchRelaySelect(element){
-    
-        $(".carrier-row").removeClass('carrier-row__border-top');
-        $(".carrier-row").removeClass('carrier-row__selected');
-        $(".carrier-row").removeClass('carrier-row__border-bot');
-        $(".carrier-row").removeClass('carrier-row__notselected');
-        $(".carrier-row").addClass('carrier-row__border-bot');
-        $(".carrier-row").addClass('carrier-row__notselected');
-        
-        $(element).removeClass('carrier-row__border-bot');
-        $(element).removeClass('carrier-row__notselected');
-        $(element).addClass('carrier-row__border-top');
-        $(element).addClass('carrier-row__selected');
-    }
-    
-    function displayRelay(element, orderDetailID){
-        switchRelaySelect(element);
-        var url = '<?php echo API_HOST_URL; ?>/order_details/' + orderDetailID;
-        
-        $.get(url, function(data){
-                        
-            var currentCarrier = data.carrierID;
-            var entityName = "";
+        $("#activeCarrier").unbind('change').bind('change',function(){ // Doing it like this because it was double posting document giving me duplicates
 
-            allEntities.entities.forEach(function(entity){
+            var vinNumber = $("#displayVinNumber").html();
+            
+            var activeCarrier = $("#activeCarrier").val();
+            var orderID = $("#orderID").val();
 
-                if(currentCarrier == entity.id){
+            var orderStatusURL = '<?php echo API_HOST_URL; ?>' + '/order_statuses?filter[0]=id,eq,' + orderID + '&filter[1]=vinNumber,eq,' + vinNumber + '&filter[2]=carrierID,eq,' + activeCarrier + '&transform=1';
 
-                    entityName += entity.name;
+            $.get(orderStatusURL, function(data){
+                var statuses = data.order_statuses;
+
+                var statusesList = "<div class=\"row\">";
+
+                if (statuses.length == 0){
+                    statusesList += "<div class=\"col-md-12\"><h3>There are no statuses available.</<h3></div>";
                 }
+                else{
+                    $.each(statuses, function(key, status){                                
+                        var index = key + 1;
+                        var carrierName = "";
+
+                        allEntities.entities.forEach(function(entity){
+
+                            if(status.carrierID == entity.id){
+
+                                carrierName += entity.name;
+                            }
+                        });
+                        if(key == 0){
+
+                            statusesList += "<div class=\"col-md-4\">" +
+                                            "   <div class=\"carrier-tracking__panel\">" +
+                                            "       <div class=\"row\">" +
+                                            "           <div class=\"col-md-3\">" +
+                                            "               <img src=\"img/logo-truck-warrior.png\" width=\"53\" height=\"44\" alt=\"\"/>" +
+                                            "           </div>" +
+                                            "           <div class=\"col-md-9\">" +
+                                            "               <h5 class=\"text-bright-blue\">" + carrierName + "</h5>" +
+                                            "           </div>" +
+                                            "       </div>" +
+                                            "       <hr>" +
+                                            "       <div class=\"row\">" +
+                                            "           <div class=\"col-md-4\">" +
+                                            "               <span class=\"text-blue\">Last Location:</span><br>" +
+                                            "               <span class=\"text-blue\">Date</span><br>" +
+                                            "           </div>" +
+                                            "           <div class=\"col-md-8\">" +
+                                            "               Lafayette, GA<br>" +
+                                            "               12/01/2017<br>" +
+                                            "           </div>" +
+                                            "       </div>" +
+                                            "       <hr>" +
+                                            "       <ul class=\"list-inline\">" +
+                                            "           <li class=\"list-inline-item\">Add a Note</li>" +
+                                            "           <li class=\"list-inline-item pad-left-25\"><span class=\"fa fa-pencil text-bright-blue\"></span></li>" +
+                                            "       </ul>" +
+                                            "       <p>Schedule to arrive at 10pm on 12/22</p>" +
+                                            "   </div>" +
+                                            "</div>";
+                        }
+                        else{
+
+                            statusesList += "<div class=\"col-md-4\">" +
+                                            "   <div class=\"carrier-tracking__panel\">" +
+                                            "       <div class=\"row\">" +
+                                            "           <div class=\"col-md-3\">" +
+                                            "               <img src=\"img/logo-truck-warrior.png\" width=\"53\" height=\"44\" alt=\"\"/>" +
+                                            "           </div>" +
+                                            "           <div class=\"col-md-9\">" +
+                                            "               <h5 class=\"text-bright-blue\">" + carrierName + "</h5>" +
+                                            "           </div>" +
+                                            "       </div>" +
+                                            "       <hr>" +
+                                            "       <div class=\"row\">" +
+                                            "           <div class=\"col-md-4\">" +
+                                            "               <span class=\"text-blue\">Last Location:</span><br>" +
+                                            "               <span class=\"text-blue\">Date</span><br>" +
+                                            "           </div>" +
+                                            "           <div class=\"col-md-8\">" +
+                                            "               Lafayette, GA<br>" +
+                                            "               12/01/2017<br>" +
+                                            "           </div>" +
+                                            "       </div>" +
+                                            "       <hr>" +
+                                            "       <ul class=\"list-inline\">" +
+                                            "           <li class=\"list-inline-item\">Add a Note</li>" +
+                                            "           <li class=\"list-inline-item pad-left-25\"><span class=\"fa fa-pencil text-bright-blue\"></span></li>" +
+                                            "       </ul>" +
+                                            "       <p>Schedule to arrive at 10pm on 12/22</p>" +
+                                            "   </div>" +
+                                            "</div>";
+                        }
+
+                        if(index % 3 == 0){
+                            statusesList +="</div><div class=\"row\">";
+                        }
+                    });
+                }                            
+
+                statusesList += "</div>";
+                $("#statusesList").empty().html(statusesList);
+
             });
-                
-            
-            if(data.pickupInformation == null){
-                data.pickupInformation = {pickupLocation: "", contactPerson: "", phoneNumber: "", hoursOfOperation: ""};
-            }
-
-            if(data.deliveryInformation == null){
-                data.deliveryInformation = {deliveryLocation: "", contactPerson: "", phoneNumber: "", hoursOfOperation: ""};
-            }
-
-            if(data.pickupInformation.hoursOfOperation == "") data.pickupInformation.hoursOfOperation = "N/A";
-            if(data.deliveryInformation.hoursOfOperation == "") data.deliveryInformation.hoursOfOperation = "N/A";
-
-            $("#pickupName").val(data.pickupInformation.pickupLocation);
-            $("#pickupAddress").val(data.originationAddress);
-            $("#pickupCity").val(data.originationCity);
-            $("#pickupState").val(data.originationState);
-            $("#pickupZip").val(data.originationZip);
-            $("#pickupPhone").val(data.pickupInformation.phoneNumber);
-            $("#pickupContact").val(data.pickupInformation.contactPerson);
-            $("#pickupHours").val(data.pickupInformation.hoursOfOperation);
-            $("#pickupDate").val(data.pickupDate);    
-
-            $("#deliveryName").val(data.deliveryInformation.deliveryLocation);
-            $("#deliveryAddress").val(data.destinationAddress);
-            $("#deliveryCity").val(data.destinationCity);
-            $("#deliveryState").val(data.destinationState);
-            $("#deliveryZip").val(data.destinationZip);
-            $("#deliveryPhone").val(data.deliveryInformation.phoneNumber);
-            $("#deliveryContact").val(data.deliveryInformation.contactPerson);
-            $("#deliveryHours").val(data.deliveryInformation.hoursOfOperation);
-            $("#deliveryDate").val(data.deliveryDate);  
-
-            $("#transportMode").val(data.transportationMode);    
-            $("#carrierRate").val(data.carrierRate);    
-            $("#carrierQty").val(data.qty);    
-
-            var carrierDistance = " <h5>" + entityName + "</h5> <small class=\"text-blue\">Distance: " + data.distance + " miles</small>";
-
-            $("#carrierDistance").empty().html(carrierDistance);
-            $("#orderDetailID").val(data.id);
-            
         });
         
-    }
+        function switchRelaySelect(element){
+
+            $(".carrier-row").removeClass('carrier-row__border-top');
+            $(".carrier-row").removeClass('carrier-row__selected');
+            $(".carrier-row").removeClass('carrier-row__border-bot');
+            $(".carrier-row").removeClass('carrier-row__notselected');
+            $(".carrier-row").addClass('carrier-row__border-bot');
+            $(".carrier-row").addClass('carrier-row__notselected');
+
+            $(element).removeClass('carrier-row__border-bot');
+            $(element).removeClass('carrier-row__notselected');
+            $(element).addClass('carrier-row__border-top');
+            $(element).addClass('carrier-row__selected');
+        }
+
+        function displayRelay(element, orderDetailID){
+            switchRelaySelect(element);
+            var url = '<?php echo API_HOST_URL; ?>/order_details/' + orderDetailID;
+
+            $.get(url, function(data){
+
+                var currentCarrier = data.carrierID;
+                var entityName = "";
+
+                allEntities.entities.forEach(function(entity){
+
+                    if(currentCarrier == entity.id){
+
+                        entityName += entity.name;
+                    }
+                });
+
+
+                if(data.pickupInformation == null){
+                    data.pickupInformation = {pickupLocation: "", contactPerson: "", phoneNumber: "", hoursOfOperation: ""};
+                }
+
+                if(data.deliveryInformation == null){
+                    data.deliveryInformation = {deliveryLocation: "", contactPerson: "", phoneNumber: "", hoursOfOperation: ""};
+                }
+
+                if(data.pickupInformation.hoursOfOperation == "") data.pickupInformation.hoursOfOperation = "N/A";
+                if(data.deliveryInformation.hoursOfOperation == "") data.deliveryInformation.hoursOfOperation = "N/A";
+
+                $("#pickupName").val(data.pickupInformation.pickupLocation);
+                $("#pickupAddress").val(data.originationAddress);
+                $("#pickupCity").val(data.originationCity);
+                $("#pickupState").val(data.originationState);
+                $("#pickupZip").val(data.originationZip);
+                $("#pickupPhone").val(data.pickupInformation.phoneNumber);
+                $("#pickupContact").val(data.pickupInformation.contactPerson);
+                $("#pickupHours").val(data.pickupInformation.hoursOfOperation);
+                $("#pickupDate").val(data.pickupDate);    
+
+                $("#deliveryName").val(data.deliveryInformation.deliveryLocation);
+                $("#deliveryAddress").val(data.destinationAddress);
+                $("#deliveryCity").val(data.destinationCity);
+                $("#deliveryState").val(data.destinationState);
+                $("#deliveryZip").val(data.destinationZip);
+                $("#deliveryPhone").val(data.deliveryInformation.phoneNumber);
+                $("#deliveryContact").val(data.deliveryInformation.contactPerson);
+                $("#deliveryHours").val(data.deliveryInformation.hoursOfOperation);
+                $("#deliveryDate").val(data.deliveryDate);  
+
+                $("#transportMode").val(data.transportationMode);    
+                $("#carrierRate").val(data.carrierRate);    
+                $("#carrierQty").val(data.qty);    
+
+                var carrierDistance = " <h5>" + entityName + "</h5> <small class=\"text-blue\">Distance: " + data.distance + " miles</small>";
+
+                $("#carrierDistance").empty().html(carrierDistance);
+                $("#orderDetailID").val(data.id);
+
+            });
+
+        }
+
+        function switchTrailerSelect(element){
+
+            $(".trailer-row").removeClass('trailer-row__border-top');
+            $(".trailer-row").removeClass('trailer-row__selected');
+            $(".trailer-row").removeClass('trailer-row__border-bot');
+            $(".trailer-row").removeClass('trailer-row__notselected');
+            $(".trailer-row").addClass('trailer-row__border-bot');
+            $(".trailer-row").addClass('trailer-row__notselected');
+
+            $(element).removeClass('trailer-row__border-bot');
+            $(element).removeClass('trailer-row__notselected');
+            $(element).addClass('trailer-row__border-top');
+            $(element).addClass('trailer-row__selected');
+        }
+
+        function displayTrailer(element, vinNumber){
+            switchTrailerSelect(element);
+
+            $("#displayVinNumber").html(vinNumber);
+
+            var activeCarrier = $("#activeCarrier").val();
+            var orderID = $("#orderID").val();
+
+            var orderStatusURL = '<?php echo API_HOST_URL; ?>' + '/order_statuses?filter[0]=id,eq,' + orderID + '&filter[1]=vinNumber,eq,' + vinNumber + '&filter[2]=carrierID,eq,' + activeCarrier + '&transform=1';
+
+            $.get(orderStatusURL, function(data){
+                var statuses = data.order_statuses;
+
+                var statusesList = "<div class=\"row\">";
+
+                if (statuses.length == 0){
+                    statusesList += "<div class=\"col-md-12\"><h3>There are no statuses available.</<h3></div>";
+                }
+                else{
+                    $.each(statuses, function(key, status){                                
+                        var index = key + 1;
+                        var carrierName = "";
+
+                        allEntities.entities.forEach(function(entity){
+
+                            if(status.carrierID == entity.id){
+
+                                carrierName += entity.name;
+                            }
+                        });
+                        if(key == 0){
+
+                            statusesList += "<div class=\"col-md-4\">" +
+                                            "   <div class=\"carrier-tracking__panel\">" +
+                                            "       <div class=\"row\">" +
+                                            "           <div class=\"col-md-3\">" +
+                                            "               <img src=\"img/logo-truck-warrior.png\" width=\"53\" height=\"44\" alt=\"\"/>" +
+                                            "           </div>" +
+                                            "           <div class=\"col-md-9\">" +
+                                            "               <h5 class=\"text-bright-blue\">" + carrierName + "</h5>" +
+                                            "           </div>" +
+                                            "       </div>" +
+                                            "       <hr>" +
+                                            "       <div class=\"row\">" +
+                                            "           <div class=\"col-md-4\">" +
+                                            "               <span class=\"text-blue\">Last Location:</span><br>" +
+                                            "               <span class=\"text-blue\">Date</span><br>" +
+                                            "           </div>" +
+                                            "           <div class=\"col-md-8\">" +
+                                            "               Lafayette, GA<br>" +
+                                            "               12/01/2017<br>" +
+                                            "           </div>" +
+                                            "       </div>" +
+                                            "       <hr>" +
+                                            "       <ul class=\"list-inline\">" +
+                                            "           <li class=\"list-inline-item\">Add a Note</li>" +
+                                            "           <li class=\"list-inline-item pad-left-25\"><span class=\"fa fa-pencil text-bright-blue\"></span></li>" +
+                                            "       </ul>" +
+                                            "       <p>Schedule to arrive at 10pm on 12/22</p>" +
+                                            "   </div>" +
+                                            "</div>";
+                        }
+                        else{
+
+                            statusesList += "<div class=\"col-md-4\">" +
+                                            "   <div class=\"carrier-tracking__panel\">" +
+                                            "       <div class=\"row\">" +
+                                            "           <div class=\"col-md-3\">" +
+                                            "               <img src=\"img/logo-truck-warrior.png\" width=\"53\" height=\"44\" alt=\"\"/>" +
+                                            "           </div>" +
+                                            "           <div class=\"col-md-9\">" +
+                                            "               <h5 class=\"text-bright-blue\">" + carrierName + "</h5>" +
+                                            "           </div>" +
+                                            "       </div>" +
+                                            "       <hr>" +
+                                            "       <div class=\"row\">" +
+                                            "           <div class=\"col-md-4\">" +
+                                            "               <span class=\"text-blue\">Last Location:</span><br>" +
+                                            "               <span class=\"text-blue\">Date</span><br>" +
+                                            "           </div>" +
+                                            "           <div class=\"col-md-8\">" +
+                                            "               Lafayette, GA<br>" +
+                                            "               12/01/2017<br>" +
+                                            "           </div>" +
+                                            "       </div>" +
+                                            "       <hr>" +
+                                            "       <ul class=\"list-inline\">" +
+                                            "           <li class=\"list-inline-item\">Add a Note</li>" +
+                                            "           <li class=\"list-inline-item pad-left-25\"><span class=\"fa fa-pencil text-bright-blue\"></span></li>" +
+                                            "       </ul>" +
+                                            "       <p>Schedule to arrive at 10pm on 12/22</p>" +
+                                            "   </div>" +
+                                            "</div>";
+                        }
+
+                        if(index % 3 == 0){
+                            statusesList +="</div><div class=\"row\">";
+                        }
+                    });
+                }                            
+
+                statusesList += "</div>";
+                $("#statusesList").empty().html(statusesList);
+
+            });
+        }
+    });
     
-    function switchTrailerSelect(element){
     
-        $(".trailer-row").removeClass('trailer-row__border-top');
-        $(".trailer-row").removeClass('trailer-row__selected');
-        $(".trailer-row").removeClass('trailer-row__border-bot');
-        $(".trailer-row").removeClass('trailer-row__notselected');
-        $(".trailer-row").addClass('trailer-row__border-bot');
-        $(".trailer-row").addClass('trailer-row__notselected');
-        
-        $(element).removeClass('trailer-row__border-bot');
-        $(element).removeClass('trailer-row__notselected');
-        $(element).addClass('trailer-row__border-top');
-        $(element).addClass('trailer-row__selected');
-    }
     
-    function displayTrailer(element, vinNumber){
-        switchTrailerSelect(element);
-        
-    }
  </script>
