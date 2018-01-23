@@ -792,6 +792,46 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         $("#carrierQty").val(order_details[i].qty);    
 
                         $("#orderDetailID").val(order_details[i].id);
+                        
+                        $.ajax({
+                            url: '<?php echo API_HOST_URL . "/locations"; ?>' + '?filter=entityID,eq,' + currentCarrier + '&transform=1',
+                            contentType: "application/json",
+                            success: function (json) {
+                                var locations = json.locations;
+                                var data = [];
+                                $.each(locations, function(key, location){
+                                    var value = location.address1;
+                                    var label = location.address1 + ', ' + location.city + ', ' + location.state + ' ' + location.zip;
+                                    var id = location.id
+                                    var city = location.city;
+                                    var state = location.state;
+                                    var zip = location.zip;
+                                    var entry = {id: id, value: value, label: label, city: city, state: state, zip: zip};
+                                    data.push(entry);
+                                });
+                               
+                                $("#pickupAddress").autocomplete({
+                                    source: data,
+                                    minLength: 0,
+                                    select: function (event, ui) {
+                                        $("#pickupCity").val(ui.item.city);
+                                        $("#pickupState").val(ui.item.state);
+                                        $("#pickupZip").val(ui.item.zip);
+                                    }
+                                });
+                                
+                                
+                                $("#deliveryAddress").autocomplete({
+                                    source: data,
+                                    minLength: 0,
+                                    select: function (event, ui) {
+                                        $("#deliveryCity").val(ui.item.city);
+                                        $("#deliveryState").val(ui.item.state);
+                                        $("#deliveryZip").val(ui.item.zip);
+                                    }
+                                });
+                            }
+                        });
                     }
                     else{
                         var carrierPickupInformation = "<h5 class=\"text-blue\">Pick Up From</h5>" +
@@ -923,7 +963,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             $("#trailerList").empty().html(trailerList);
 
         });
-        
+                                
         $("#order-details").css("display", "block");
         $("#orders").css("display", "none");
         
@@ -5299,6 +5339,45 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 $("#carrierDistance").empty().html(carrierDistance);
                 $("#orderDetailID").val(data.id);
 
+                $.ajax({
+                    url: '<?php echo API_HOST_URL . "/locations"; ?>' + '?filter=entityID,eq,' + currentCarrier + '&transform=1',
+                    contentType: "application/json",
+                    success: function (json) {
+                        var locations = json.locations;
+                        var data = [];
+                        $.each(locations, function(key, location){
+                            var value = location.address1;
+                            var label = location.address1 + ', ' + location.city + ', ' + location.state + ' ' + location.zip;
+                            var id = location.id
+                            var city = location.city;
+                            var state = location.state;
+                            var zip = location.zip;
+                            var entry = {id: id, value: value, label: label, city: city, state: state, zip: zip};
+                            data.push(entry);
+                        });
+
+                        $("#pickupAddress").autocomplete({
+                            source: data,
+                            minLength: 0,
+                            select: function (event, ui) {
+                                $("#pickupCity").val(ui.item.city);
+                                $("#pickupState").val(ui.item.state);
+                                $("#pickupZip").val(ui.item.zip);
+                            }
+                        });
+
+
+                        $("#deliveryAddress").autocomplete({
+                            source: data,
+                            minLength: 0,
+                            select: function (event, ui) {
+                                $("#deliveryCity").val(ui.item.city);
+                                $("#deliveryState").val(ui.item.state);
+                                $("#deliveryZip").val(ui.item.zip);
+                            }
+                        });
+                    }
+                });
             });
 
         }
