@@ -87,6 +87,21 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             }
         };
     })();
+    
+    Date.daysBetween = function( date1, date2 ) {
+      //Get 1 day in milliseconds
+      var one_day=1000*60*60*24;
+
+      // Convert both dates to milliseconds
+      var date1_ms = date1.getTime();
+      var date2_ms = date2.getTime();
+
+      // Calculate the difference in milliseconds
+      var difference_ms = date2_ms - date1_ms;
+
+      // Convert back to days and return
+      return Math.round(difference_ms/one_day); 
+    }
 
     function loadVinNumberList(){
         var option = '';
@@ -101,119 +116,119 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
     }
 
     function displayOrderStatuses(orderID, carrierID, vinNumber){
-        
-    var orderStatusURL = '<?php echo API_HOST_URL; ?>' + '/order_statuses?filter[0]=id,eq,' + orderID + '&filter[1]=vinNumber,eq,' + vinNumber + '&filter[2]=carrierID,eq,' + carrierID + '&order=updatedAt,desc&transform=1';
 
-    $.get(orderStatusURL, function(data){
-        var statuses = data.order_statuses;
+        var orderStatusURL = '<?php echo API_HOST_URL; ?>' + '/order_statuses?filter[0]=id,eq,' + orderID + '&filter[1]=vinNumber,eq,' + vinNumber + '&filter[2]=carrierID,eq,' + carrierID + '&order=updatedAt,desc&transform=1';
 
-        var statusesList = "<div class=\"row\">";
+        $.get(orderStatusURL, function(data){
+            var statuses = data.order_statuses;
 
-        if (statuses.length == 0){
-            statusesList += "<div class=\"col-md-12\"><h3>There are no statuses available.</<h3></div>";
-        }
-        else{
-            $.each(statuses, function(key, status){                                
-                var index = key + 1;
-                var carrierName = "";
+            var statusesList = "<div class=\"row\">";
 
-                allEntities.entities.forEach(function(entity){
+            if (statuses.length == 0){
+                statusesList += "<div class=\"col-md-12\"><h3>There are no statuses available.</<h3></div>";
+            }
+            else{
+                $.each(statuses, function(key, status){                                
+                    var index = key + 1;
+                    var carrierName = "";
 
-                    if(status.carrierID == entity.id){
+                    allEntities.entities.forEach(function(entity){
 
-                        carrierName += entity.name;
+                        if(status.carrierID == entity.id){
+
+                            carrierName += entity.name;
+                        }
+                    });
+
+                    var dimmed = "dimmed";
+                    if(key == 0) dimmed = "";
+
+                    statusesList += "<div class=\"col-md-4\">" +
+                                    "   <div class=\"carrier-tracking__panel " + dimmed + "\">" +
+                                    "       <div class=\"row\">" +
+                                    "           <div class=\"col-md-3\">" +
+                                    "               <img src=\"img/logo-truck-warrior.png\" width=\"53\" height=\"44\" alt=\"\"/>" +
+                                    "           </div>" +
+                                    "           <div class=\"col-md-9\">" +
+                                    "               <h5 class=\"text-bright-blue\">" + carrierName + "</h5>" +
+                                    "           </div>" +
+                                    "       </div>" +
+                                    "       <hr>" +
+                                    "       <div class=\"row\">" +
+                                    "           <div class=\"col-md-4\">" +
+                                    "               <div class=\"row\">" +
+                                    "                   <div class=\"col-md-12\">" +
+                                    "                       <span class=\"text-blue\">Trailer Status</span><br>" +
+                                    "                   </div>" +
+                                    "               </div>" +
+                                    "               <div class=\"row\">" +
+                                    "                   <div class=\"col-md-12\">" +
+                                    "                       <span class=\"text-blue\">Loading Status</span><br>" +
+                                    "                   </div>" +
+                                    "               </div>" +
+                                    "               <div class=\"row\">" +
+                                    "                   <div class=\"col-md-12\">" +
+                                    "                       <span class=\"text-blue\">Last Location:</span><br>" +
+                                    "                   </div>" +
+                                    "               </div>" +
+                                    "               <div class=\"row\">" +
+                                    "                   <div class=\"col-md-12\">" +
+                                    "                       <span class=\"text-blue\">Date</span><br>" +
+                                    "                   </div>" +
+                                    "               </div>" +
+                                    "               <div class=\"row\">" +
+                                    "                   <div class=\"col-md-12\">" +
+                                    "                       <span class=\"text-blue\">Arrival Eta</span><br>" +
+                                    "                   </div>" +
+                                    "               </div>" +
+                                    "           </div>" +
+                                    "           <div class=\"col-md-8\">" +
+                                    "               <div class=\"row\">" +
+                                    "                   <div class=\"col-md-12\">" +
+                                    "                       " + status.status + "<br>" +
+                                    "                   </div>" +
+                                    "               </div>" +
+                                    "               <div class=\"row\">" +
+                                    "                   <div class=\"col-md-12\">" +
+                                    "                       " + status.loadingStatus + "<br>" +
+                                    "                   </div>" +
+                                    "               </div>" +
+                                    "               <div class=\"row\">" +
+                                    "                   <div class=\"col-md-12\">" +
+                                    "                       "+status.city+", " + status.state + "<br>" +
+                                    "                   </div>" +
+                                    "               </div>" +
+                                    "               <div class=\"row\">" +
+                                    "                   <div class=\"col-md-12\">" +
+                                    "                       " + status.updatedAt + "<br>" +
+                                    "                   </div>" +
+                                    "               </div>" +
+                                    "               <div class=\"row\">" +
+                                    "                   <div class=\"col-md-12\">" +
+                                    "                       " + status.arrivalEta + " Hrs<br>" +
+                                    "                   </div>" +
+                                    "               </div>" +
+                                    "           </div>" +
+                                    "       </div>" +
+                                    "       <hr>" +
+                                    "       <ul class=\"list-inline\">" +
+                                    "           <li class=\"list-inline-item\">Add a Note</li>" +
+                                    "           <li class=\"list-inline-item pad-left-25\"><span class=\"fa fa-pencil text-bright-blue\"></span></li>" +
+                                    "       </ul>" +
+                                    "       <p>Note: " + status.note + "</p>" +
+                                    "   </div>" +
+                                    "</div>";
+
+                    if(index % 3 == 0){
+                        statusesList +="</div><div class=\"row\">";
                     }
                 });
-                
-                var dimmed = "dimmed";
-                if(key == 0) dimmed = "";
+            }                            
 
-                statusesList += "<div class=\"col-md-4\">" +
-                                "   <div class=\"carrier-tracking__panel " + dimmed + "\">" +
-                                "       <div class=\"row\">" +
-                                "           <div class=\"col-md-3\">" +
-                                "               <img src=\"img/logo-truck-warrior.png\" width=\"53\" height=\"44\" alt=\"\"/>" +
-                                "           </div>" +
-                                "           <div class=\"col-md-9\">" +
-                                "               <h5 class=\"text-bright-blue\">" + carrierName + "</h5>" +
-                                "           </div>" +
-                                "       </div>" +
-                                "       <hr>" +
-                                "       <div class=\"row\">" +
-                                "           <div class=\"col-md-4\">" +
-                                "               <div class=\"row\">" +
-                                "                   <div class=\"col-md-12\">" +
-                                "                       <span class=\"text-blue\">Trailer Status</span><br>" +
-                                "                   </div>" +
-                                "               </div>" +
-                                "               <div class=\"row\">" +
-                                "                   <div class=\"col-md-12\">" +
-                                "                       <span class=\"text-blue\">Loading Status</span><br>" +
-                                "                   </div>" +
-                                "               </div>" +
-                                "               <div class=\"row\">" +
-                                "                   <div class=\"col-md-12\">" +
-                                "                       <span class=\"text-blue\">Last Location:</span><br>" +
-                                "                   </div>" +
-                                "               </div>" +
-                                "               <div class=\"row\">" +
-                                "                   <div class=\"col-md-12\">" +
-                                "                       <span class=\"text-blue\">Date</span><br>" +
-                                "                   </div>" +
-                                "               </div>" +
-                                "               <div class=\"row\">" +
-                                "                   <div class=\"col-md-12\">" +
-                                "                       <span class=\"text-blue\">Arrival Eta</span><br>" +
-                                "                   </div>" +
-                                "               </div>" +
-                                "           </div>" +
-                                "           <div class=\"col-md-8\">" +
-                                "               <div class=\"row\">" +
-                                "                   <div class=\"col-md-12\">" +
-                                "                       " + status.status + "<br>" +
-                                "                   </div>" +
-                                "               </div>" +
-                                "               <div class=\"row\">" +
-                                "                   <div class=\"col-md-12\">" +
-                                "                       " + status.loadingStatus + "<br>" +
-                                "                   </div>" +
-                                "               </div>" +
-                                "               <div class=\"row\">" +
-                                "                   <div class=\"col-md-12\">" +
-                                "                       "+status.city+", " + status.state + "<br>" +
-                                "                   </div>" +
-                                "               </div>" +
-                                "               <div class=\"row\">" +
-                                "                   <div class=\"col-md-12\">" +
-                                "                       " + status.updatedAt + "<br>" +
-                                "                   </div>" +
-                                "               </div>" +
-                                "               <div class=\"row\">" +
-                                "                   <div class=\"col-md-12\">" +
-                                "                       " + status.arrivalEta + " Hrs<br>" +
-                                "                   </div>" +
-                                "               </div>" +
-                                "           </div>" +
-                                "       </div>" +
-                                "       <hr>" +
-                                "       <ul class=\"list-inline\">" +
-                                "           <li class=\"list-inline-item\">Add a Note</li>" +
-                                "           <li class=\"list-inline-item pad-left-25\"><span class=\"fa fa-pencil text-bright-blue\"></span></li>" +
-                                "       </ul>" +
-                                "       <p>Note: " + status.note + "</p>" +
-                                "   </div>" +
-                                "</div>";
-                            
-                if(index % 3 == 0){
-                    statusesList +="</div><div class=\"row\">";
-                }
-            });
-        }                            
+            statusesList += "</div>";
+            $("#statusesList").empty().html(statusesList);
 
-        statusesList += "</div>";
-        $("#statusesList").empty().html(statusesList);
-
-    });
+        });
     }
 
     function addVINNumber(){
@@ -489,7 +504,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                               return passValidation;
               });
       }
-
+      
     function loadTableAJAX(status) {
 
         var url = '<?php echo API_HOST_URL; ?>';
@@ -792,6 +807,28 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         $('#carrierPickupInformation').empty().html(carrierPickupInformation);
                         $('#carrierDeliveryInformation').empty().html(carrierDeliveryInformation);
                         
+                        $('#deliveryDeadline').html(order_details[i].deliveryDate);
+                        
+                        var deliveryDeadline = new Date(order_details[i].deliveryDate);
+                        var today = new Date();
+                        var difference = Date.daysBetween(today, deliveryDeadline);
+                        
+                        if (difference <= 2 && difference >= 0){
+                            console.log("Getting close to deadline");
+                            
+                            setInterval(function() {
+                                if($('#deliveryDeadline').hasClass("deadline-warning")) $('#deliveryDeadline').removeClass("deadline-warning");
+                                else $('#deliveryDeadline').addClass("deadline-warning");
+                            }, 2000);
+                        }
+                        else if(difference < 0){
+                            console.log("Pass deadline");
+                            
+                            setInterval(function() {
+                                if($('#deliveryDeadline').hasClass("deadline-danger")) $('#deliveryDeadline').removeClass("deadline-danger");
+                                else $('#deliveryDeadline').addClass("deadline-danger");
+                            }, 2000);
+                        }
                         
                         $("#transportMode").html(order_details[i].transportationMode);
                         $("#carrierQty").html(order_details[i].qty);    
@@ -814,10 +851,20 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             // Calculate total Revenue
             var displayTotalRevenue = displayCustomerRate - displayCarrierTotal;
             
-            // Display
-            $('#displayCustomerRate').html(displayCustomerRate);
-            $('#displayCarrierTotal').html(displayCarrierTotal);
-            $('#displayTotalRevenue').html(displayTotalRevenue);
+            if(entityType == 0){
+                // Display
+                $('#displayCustomerRate').html(displayCustomerRate);
+                $('#displayCarrierTotal').html(displayCarrierTotal);
+                $('#displayTotalRevenue').html(displayTotalRevenue);
+            }
+            
+            if(trailers == null){
+                trailers = [];
+                if(entityType == 0){
+                    var statusesList = "<div class=\"row\"></div>";
+                    $("#statusesList").empty().html(statusesList);
+                }
+            }
             
             $.each(trailers, function(key, trailer){
             
@@ -2439,7 +2486,18 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
     .text-summary li{
        width: 250px;
     }
-
+    
+    .deadline-warning{
+        color: orange !important;
+        font-weight: bold !important;
+        font-size: large;
+    }
+    
+    .deadline-danger{
+        color: red !important;
+        font-weight: bold !important;
+        font-size: large;
+    }
  </style>
 
  <div id="orders">
@@ -2758,7 +2816,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             </ul>
                         </div>
                         <div class="col-md-4">
-                            Deadline to Deliver: 01/06/2018<br>
+                            Deadline to Deliver: <p id="deliveryDeadline" style="display: inline;"></p><br>
                             <br>
                             Notes from prior carrier:<br>
                             This part is still static.
@@ -4419,7 +4477,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             });
         });
 
-        $('#orders-table tbody').on( 'click', 'td.order-details-link', function () {
+        $('#orders-table tbody').off('click').on( 'click', 'td.order-details-link', function () {
             var data = table.row( $(this).parents('tr') ).data();
 
             var orderID = data["id"];
