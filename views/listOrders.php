@@ -644,16 +644,16 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
         switch(entityType){
             case 0:     // URL for the Admin.
-                url += '/order_details?include=orders,entities&columns=id,carrierID,orderID,pickupInformation,deliveryInformation,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,orders.qty,orders.customerID,orders.pickupInformation,orders.deliveryInformation,orders.podList,entities.name&filter=orderID,eq,' + orderID + '&transform=1';
+                url += '/order_details?include=orders,entities&columns=id,carrierID,orderID,pickupInformation,deliveryInformation,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,orders.customerRate,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,orders.qty,orders.customerID,orders.pickupInformation,orders.deliveryInformation,orders.podList,entities.name&filter=orderID,eq,' + orderID + '&transform=1';
                 blnShow = true;
                 blnCarrierRate = true;
                 break;
             case 1:    // URL for Customer.
-                url += '/order_details?include=orders,entities&columns=id,carrierID,orderID,pickupInformation,deliveryInformation,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,orders.qty,orders.customerID,orders.pickupInformation,orders.deliveryInformation,orders.podList,entities.name&filter=orderID,eq,' + orderID + '&transform=1';
+                url += '/order_details?include=orders,entities&columns=id,carrierID,orderID,pickupInformation,deliveryInformation,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,orders.customerRate,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,orders.qty,orders.customerID,orders.pickupInformation,orders.deliveryInformation,orders.podList,entities.name&filter=orderID,eq,' + orderID + '&transform=1';
                 blnShow = true;
                 break;
             case 2:     // URL for the Carrier. The Customer can only see order details of their route.
-                url += '/order_details?include=orders,entities&columns=id,carrierID,orderID,pickupInformation,deliveryInformation,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,orders.qty,orders.customerID,orders.pickupInformation,orders.deliveryInformation,orders.podList,entities.name&filter[]=orderID,eq,' + orderID + '&filter[]=carrierID,eq,' + entityid + '&transform=1';
+                url += '/order_details?include=orders,entities&columns=id,carrierID,orderID,pickupInformation,deliveryInformation,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,orders.customerRate,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,orders.qty,orders.customerID,orders.pickupInformation,orders.deliveryInformation,orders.podList,entities.name&filter[]=orderID,eq,' + orderID + '&filter[]=carrierID,eq,' + entityid + '&transform=1';
                 blnCarrierRate = true;
                 break;
         }
@@ -676,6 +676,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             var carriers = [];
             var trailers = order_details[0].orders[0].podList;
             
+            // Get the Carrier Rate
+            var displayCustomerRate = order_details[0].orders[0].customerRate;
+            var displayCarrierTotal = 0;
+            
             var relayList = "<div class=\"row carrier-row__border-bot carrier-row__notselected\"><div class=\"col-md-12\"><h4>Carriers</h4><div class=\"fa fa-lg fa-refresh text-blue\" style=\"float: right; position: relative; top: -25px;\"></div><br></div></div>";
             var trailerList = "<div class=\"row trailer-row__border-bot trailer-row__notselected\"><div class=\"col-md-12\"><h4>Trailer List</h4><div class=\"fa fa-lg fa-refresh text-blue\" style=\"float: right; position: relative; top: -25px;\"></div><br></div></div>";
             var activeCarriers = "<option value=\"\">*Select Carrier...</option>";
@@ -693,6 +697,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         entityName += entity.name;
                     }
                 });
+                
+                // Add all of the carrier rates together
+                displayCarrierTotal += order_details[i].carrierRate;
                 
                 activeCarriers += "<option value=\"" + order_details[i].carrierID + "\">" + entityName + "</option>";
                 
@@ -804,6 +811,13 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 }
             }            
             
+            // Calculate total Revenue
+            var displayTotalRevenue = displayCustomerRate - displayCarrierTotal;
+            
+            // Display
+            $('#displayCustomerRate').html(displayCustomerRate);
+            $('#displayCarrierTotal').html(displayCarrierTotal);
+            $('#displayTotalRevenue').html(displayTotalRevenue);
             
             $.each(trailers, function(key, trailer){
             
@@ -2510,6 +2524,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             <li>Trailer QTY: <p id="qty" style="display: inline;"></p></li>
             <li>To: <p id="toAddress" style="display: inline;"></p></li>
             <li>Number of Relays: <p id="relayCount" style="display: inline;"></p></li>
+        </ul>
+        <br>
+        <ul class="text-summary">
+            <li>Customer Rate: $<p id="displayCustomerRate" style="display: inline;"></p></li>
+            <li>Carrier Payout Rate: $<p id="displayCarrierTotal" style="display: inline;"></p></li>
+            <li>Total Revenue: $<p id="displayTotalRevenue" style="display: inline;"></p></li>
         </ul>
         <br>
 
