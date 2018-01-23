@@ -49,6 +49,26 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
  <!--script type="text/javascript" src="https://maps.google.com/maps/api/js?key=<?php echo GOOGLE_MAPS_API; ?>"></script-->
 
  <script>
+(function($) {
+    $.fn.blink = function(options) {
+        var defaults = {
+            delay: 500
+        };
+        var options = $.extend(defaults, options);
+
+        return this.each(function() {
+            var obj = $(this);
+            setInterval(function() {
+                if ($(obj).css("visibility") == "visible") {
+                    $(obj).css('visibility', 'hidden');
+                }
+                else {
+                    $(obj).css('visibility', 'visible');
+                }
+            }, options.delay);
+        });
+    }
+}(jQuery)) 
 
     var contacts = <?php echo json_encode($contacts); ?>;
     //console.log(contacts);
@@ -816,18 +836,15 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         if (difference <= 2 && difference >= 0){
                             console.log("Getting close to deadline");
                             
-                            setInterval(function() {
-                                if($('#deliveryDeadline').hasClass("deadline-warning")) $('#deliveryDeadline').removeClass("deadline-warning");
-                                else $('#deliveryDeadline').addClass("deadline-warning");
-                            }, 2000);
+                            $('#deliveryDeadline').addClass("deadline-warning");
+                            $('#deliveryDeadline').blink({delay:1000});
                         }
                         else if(difference < 0){
                             console.log("Pass deadline");
                             
-                            setInterval(function() {
-                                if($('#deliveryDeadline').hasClass("deadline-danger")) $('#deliveryDeadline').removeClass("deadline-danger");
-                                else $('#deliveryDeadline').addClass("deadline-danger");
-                            }, 2000);
+                            $('#deliveryDeadline').addClass("deadline-danger");
+                            $('#deliveryDeadline').blink({delay:1000});
+                            
                         }
                         
                         $("#transportMode").html(order_details[i].transportationMode);
