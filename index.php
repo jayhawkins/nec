@@ -705,6 +705,14 @@ $app->route('POST /indexgetorders', function() {
     echo $return;
 });
 
+$app->route('POST /getorderdetailstatuses', function() {
+	$orderID = Flight::request()->data->orderID;
+	$orders = Flight::orders();
+	$db = Flight::db();
+    $return = $orders->getorderdetailstatuses($db,$orderID);
+    echo $return;
+});
+
 /* Not used yet for dashboard filter Either/Or
 $app->route('POST /indexgetneeds', function() {
 	$locationStatus = Flight::request()->data->locationStatus;
