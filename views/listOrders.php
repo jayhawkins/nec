@@ -3194,7 +3194,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 <div class="col-md-1">&nbsp;</div>
                                 <div class="col-md-3">&nbsp;</div>
                                 <div class="col-md-3">
-                                    <a href="#" class="btn btn-primary">Download Pod &nbsp; <span class="fa fa-download"></span></a>
+                                    <button type="button" onclick="viewPOD()" class="btn btn-primary">Download Pod &nbsp; <span class="fa fa-download"></span></button>
                                 </div>
                                 <div class="col-md-5">
                                     <a href="#" class="btn btn-outline-light"><span class="fa fa-lg fa-paperclip"></span></a>
