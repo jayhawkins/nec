@@ -564,10 +564,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             var carrierIDs = order.carrierIDs;
 
                             for(var i = 0; i < carrierIDs.length; i++){
-                                if(carrierIDs[i].carrierID == entityid){
+
+                                if(Object.keys(carrierIDs[i]) == entityid){
                                     carrierOrders.push(order);
                                     break;
                                 }
+
                             }
 
                         });
@@ -950,6 +952,41 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 "       </div>" +
                                 " </div>";
                 }
+
+                var url = '<?php echo API_HOST_URL . "/order_statuses?filter[]=vinNumber,eq," ?>' + trailer.vinNumber + '&filter[]=carrierID,eq,' + currentCarrier + '&transform=1';
+                var type = "GET";
+
+                $.ajax({
+                     url: url,
+                     type: type,
+                     async: false,
+                     success: function(data){
+                         //console.log(data.order_statuses[0]);
+                         if (data.order_statuses.length > 0) {
+                             $("#statusAddANote").val(data.order_statuses[0].note);
+                             $("#statusTrailerStatus").val(data.order_statuses[0].status);
+                             $("#statusCurrentLocation").val(data.order_statuses[0].city + ', ' + data.order_statuses[0].state);
+                             $("#statusLoadingStatus").val(data.order_statuses[0].loadingStatus);
+                             $("#statusArrivalEta").val(data.order_statuses[0].arrivalEta);
+                             $("#statusOrderID").val(data.order_statuses[0].orderID);
+                             $("#statusCarrierID").val(data.order_statuses[0].carrierID);
+                             $("#statusVinNumber").val(data.order_statuses[0].vinNumber);
+                         } else {
+                             $("#statusAddANote").val('');
+                             $("#statusTrailerStatus").val('In Transit');
+                             $("#statusCurrentLocation").val('');
+                             $("#statusLoadingStatus").val('');
+                             $("#statusArrivalEta").val('');
+                             $("#statusOrderID").val(orderID);
+                             $("#statusCarrierID").val(<?php echo $_SESSION['entityid']; ?>);
+                             $("#statusVinNumber").val(trailer.vinNumber);
+                         }
+                     },
+                     error: function() {
+                        alert("There Was An Error Retrieving Order Status Data!");
+                     }
+                });
+
             });
 
             $("#fromAddress").html(fromAddress);
@@ -3089,27 +3126,33 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 <div class="col-md-12">
                                     <h4>1JJV532D0JL041440</h4>
                                     <ul class="list-inline">
+                                        <li class="list-inline-item btn btn-primary pull-right" id="saveTrailerStatus">Save Changes</li>
                                         <li class="list-inline-item">Notes from prior Carrier:</li>
-                                        <li class="list-inline-item">N/A</li>
+                                        <li class="list-inline-item" id="statusNotes">N/A</li>
                                     </ul>
                                 </div>
                             </div>
                         </div>
                         <div class="carrier-summary__bottom-container">
+                            <input type="hidden" id="statusOrderID" value="" />
+                            <input type="hidden" id="statusCarrierID" value="" />
+                            <input type="hidden" id="statusVinNumber" value="" />
                             <div class="row">
                                 <div class="col-md-1">
                                     <div class="carrier-logo carrier-logo__buds"></div>
                                 </div>
-                                <div class="col-md-3">Buds Enterprise</div>
+                                <div class="col-md-3" id="statusCarrierName">Buds Enterprise</div>
                                 <div class="col-md-3">
                                     <div class="text-blue">Update Trailer Status:</div>
                                 </div>
                                 <div class="col-md-4">
-                                    <select class="custom-select bkg-qty-yellow">
+                                    <select class="custom-select bkg-qty-yellow" id="statusTrailerStatus">
                                         <option selected>In Transit</option>
-                                        <option value="1">One</option>
-                                        <option value="2">Two</option>
-                                        <option value="3">Three</option>
+                                        <option>In Carrier Yard</option>
+                                        <option>At Shipper To Be Loaded</option>
+                                        <option>Trailer Loaded In Route</option>
+                                        <option>At Consignee To Be Unloaded</option>
+                                        <option>Trailer Delivered</option>
                                     </select>
                                 </div>
                                 <div class="col-md-1">&nbsp;</div>
@@ -3121,7 +3164,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     <div class="text-blue">Update Current Location:</div>
                                 </div>
                                 <div class="col-md-4">
-                                    <input type="current-location" class="form-control" id="exampleFormControlInput1" placeholder="City, State" value="Augusta GA"><br>
+                                    <input type="current-location" class="form-control" id="statusCurrentLocation" placeholder="City, State" value="Augusta GA"><br>
                                 </div>
                                 <div class="col-md-1">&nbsp;</div>
                             </div>
@@ -3132,7 +3175,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     <div class="text-blue">Loading Status:</div>
                                 </div>
                                 <div class="col-md-4">
-                                    <input type="loading-status" class="form-control" id="exampleFormControlInput1" placeholder="Loaded or Unloaded?" value="Loaded"><br>
+                                    <input type="loading-status" class="form-control" id="statusLoadingStatus" placeholder="Loaded or Unloaded?" value="Loaded"><br>
                                 </div>
                                 <div class="col-md-1">&nbsp;</div>
                             </div>
@@ -3143,7 +3186,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     <div class="text-blue">Arrival ETA</div>
                                 </div>
                                 <div class="col-md-4">
-                                    <input type="arrival-eta" class="form-control" id="exampleFormControlInput1" placeholder="ETA in hours" value="72"><br>
+                                    <input type="arrival-eta" class="form-control" id="statusArrivalEta" placeholder="ETA in hours" value="72"><br>
                                 </div>
                                 <div class="col-md-1">&nbsp;</div>
                             </div>
@@ -3151,19 +3194,19 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 <div class="col-md-1">&nbsp;</div>
                                 <div class="col-md-3">&nbsp;</div>
                                 <div class="col-md-3">
-                                    <a href="#" class="btn btn-bright-blue">Download Pod &nbsp; <span class="fa fa-download"></span></a>
+                                    <a href="#" class="btn btn-primary">Download Pod &nbsp; <span class="fa fa-download"></span></a>
                                 </div>
                                 <div class="col-md-5">
                                     <a href="#" class="btn btn-outline-light"><span class="fa fa-lg fa-paperclip"></span></a>
                                     &nbsp;
-                                    <a href="#" class="btn btn-bright-blue">Upload Pod &nbsp; <span class="fa fa-upload"></span></a>
+                                    <a href="#" class="btn btn-primary">Upload Pod &nbsp; <span class="fa fa-upload"></span></a>
                                 </div>
                             </div>
                             <hr>
                             <div class="widget border-radius-5 border-light-blue">
                                 <label for="tracking-notes" class="text-blue">Add a Note</label>
-                                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea><br>
-                                <a href="#" class="btn btn-bright-blue">Add Note</a>
+                                <textarea class="form-control" id="statusAddANote" rows="3"></textarea><br>
+                                <button type="button" id="addNote" class="btn btn-primary">Add Note</a>
                             </div>
                         </div>
                     </div>
@@ -5039,6 +5082,174 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             var orderID = $("#orderID").val();
 
             displayOrderStatuses(orderID, activeCarrier, vinNumber);
+        });
+
+        $("#saveTrailerStatus").unbind('click').bind('click',function(){ // Doing it like this because it was double posting document giving me duplicates
+
+                var today = new Date();
+                var dd = today.getDate();
+                var mm = today.getMonth()+1; //January is 0!
+                var yyyy = today.getFullYear();
+                var hours = today.getHours();
+                var min = today.getMinutes();
+                var sec = today.getSeconds();
+
+                if(dd<10) {
+                    dd='0'+dd;
+                }
+
+                if(mm<10) {
+                    mm='0'+mm;
+                }
+
+                if(hours<10) {
+                    hours='0'+hours;
+                }
+
+                if(min<10) {
+                    min='0'+min;
+                }
+
+                today = mm+'/'+dd+'/'+yyyy;
+                today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+
+                var statusOrderID = $("#statusOrderID").val();
+                var statusCarrierID = $("#statusCarrierID").val();
+                var statusVinNumber = $("#statusVinNumber").val();
+                var type = 'POST';
+                var url = '';
+
+                $.ajax({
+                url: '<?php echo API_HOST_URL . "/order_statuses?filter[]=vinNumber,eq," ?>' + statusVinNumber + '&filter[]=carrierID,eq,' + statusCarrierID + '&transform=1',
+                type: 'GET',
+                contentType: "application/json",
+                async: false,
+                success: function(data){
+
+                    var citystate = $("#statusCurrentLocation").val().split(',');
+
+                    var params = {orderID: statusOrderID,
+                                  carrierID: statusCarrierID,
+                                  vinNumber: statusVinNumber,
+                                  status: $("#statusTrailerStatus").val(),
+                                  city: citystate[0],
+                                  state: citystate[1],
+                                  loadingStatus: $("#statusLoadingStatus").val(),
+                                  arrivalEta: $("#statusArrivalEta").val()
+                    };
+
+                    if (data.order_statuses.length > 0) {
+                        type = 'PUT';
+                        url = '<?php echo API_HOST_URL . "/order_statuses/" ?>' + data.order_statuses[0].id;
+                        params.updatedAt = today;
+                    } else {
+                        type = 'POST';
+                        url = '<?php echo API_HOST_URL . "/order_statuses" ?>';
+                        params.createdAt = today;
+                        params.updatedAt = today;
+                    }
+
+                    $.ajax({
+                        url: url,
+                        type: type,
+                        data: JSON.stringify(params),
+                        contentType: "application/json",
+                        async: false,
+                        success: function(){
+                            alert('Order Trailer Status Saved!');
+                        },
+                        error: function(error){
+                            alert("Unable to Save Order Status Data.");
+                        }
+                    });
+
+
+                },
+                error: function(error){
+                    alert("Unable to locate Order Status Data.");
+                }
+            });
+
+        });
+
+        $("#addNote").unbind('click').bind('click',function(){ // Doing it like this because it was double posting document giving me duplicates
+
+                var today = new Date();
+                var dd = today.getDate();
+                var mm = today.getMonth()+1; //January is 0!
+                var yyyy = today.getFullYear();
+                var hours = today.getHours();
+                var min = today.getMinutes();
+                var sec = today.getSeconds();
+
+                if(dd<10) {
+                    dd='0'+dd;
+                }
+
+                if(mm<10) {
+                    mm='0'+mm;
+                }
+
+                if(hours<10) {
+                    hours='0'+hours;
+                }
+
+                if(min<10) {
+                    min='0'+min;
+                }
+
+                today = mm+'/'+dd+'/'+yyyy;
+                today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+
+                var statusOrderID = $("#statusOrderID").val();
+                var statusCarrierID = $("#statusCarrierID").val();
+                var statusVinNumber = $("#statusVinNumber").val();
+                var type = 'POST';
+                var url = '';
+
+                $.ajax({
+                url: '<?php echo API_HOST_URL . "/order_statuses?filter[]=vinNumber,eq," ?>' + statusVinNumber + '&filter[]=carrierID,eq,' + statusCarrierID + '&transform=1',
+                type: 'GET',
+                contentType: "application/json",
+                async: false,
+                success: function(data){
+
+                    var citystate = $("#statusCurrentLocation").val().split(',');
+
+                    var params = {note: $("#statusAddANote").val()};
+
+                    if (data.order_statuses.length > 0) {
+                        type = 'PUT';
+                        url = '<?php echo API_HOST_URL . "/order_statuses/" ?>' + data.order_statuses[0].id;
+                        params.updatedAt = today;
+                    } else {
+                        type = 'POST';
+                        url = '<?php echo API_HOST_URL . "/order_statuses" ?>';
+                        params.createdAt = today;
+                        params.updatedAt = today;
+                    }
+
+                    $.ajax({
+                        url: url,
+                        type: type,
+                        data: JSON.stringify(params),
+                        contentType: "application/json",
+                        async: false,
+                        success: function(){
+                            alert('Trailer Note Saved!');
+                        },
+                        error: function(error){
+                            alert("Unable to Save Trailer Status Note Data.");
+                        }
+                    });
+
+
+                },
+                error: function(error){
+                    alert("Unable to locate Trailer Status Note.");
+                }
+            });
+
         });
 
     });
