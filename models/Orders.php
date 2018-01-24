@@ -511,5 +511,38 @@ class Orders
         }
     }
 
+    public function getorderdetailstatuses(&$db,$orderID) {
+
+        try {
+
+              $query .= "select order_details.*,
+                         order_statuses.carrierID as statusesCarrierID,
+                         order_statuses.documentID as statusesDocumentID,
+                         order_statuses.vinNumber as statusesVinNumber,
+                         order_statuses.city as statusesCity,
+                         order_statuses.state as statusesState,
+                         order_statuses.status as statusesStatus,
+                         order_statuses.loadingStatus as statusesLoadingStatus,
+                         order_statuses.arrivalEta as statusesArrivalEta,
+                         order_statuses.note as statusesNote
+                         from order_details
+                         left join order_statuses on order_statuses.orderID = order_details.orderID
+                         where order_details.orderID = " . $orderID;
+
+              $result = $db->query($query);
+
+              if (count($result) > 0) {
+                  echo "{ \"order_details\":".json_encode($result->fetchAll()) . "}";
+              } else {
+                  return false;
+              }
+        } catch (Exception $e) { // The indexgetorders query failed verification
+              header('HTTP/1.1 404 Not Found');
+              header('Content-Type: text/plain; charset=utf8');
+              echo $e->getMessage();
+              exit();
+        }
+    }
+
 }
 

@@ -69,7 +69,8 @@ $db = Flight::db();
 $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
 $result = $dbhandle->query("select distinct state
                          from locations
-                         where entityID = '" . $_SESSION['entityid'] . "'");
+                         where entityID = '" . $_SESSION['entityid'] . "'
+                         and status = 'Active'");
 
 $defaultStates = "";
 if (count($result) > 0) {

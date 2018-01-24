@@ -1,11 +1,18 @@
 <?php
 
+date_default_timezone_set('America/New_York');
+
 session_start();
 
 use flight\Engine;
 require '../vendor/autoload.php';
 
 require_once '../../nec_config.php';
+
+//require_once '../lib/common.php';
+
+$failedRecipients = array();
+$numSent = 0;
 
 Flight::register('db', 'PDO', array('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS ), function($db){
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -16,6 +23,31 @@ Flight::register('db', 'PDO', array('mysql:host=localhost;dbname=' . DBNAME, DBU
 $db = Flight::db();
 $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
 $result = $dbhandle->query(" select * from carrier_import where Email > '' AND Main_Contact > '' ");
+
+// Create the Transport
+$transport = Swift_SmtpTransport::newInstance('smtp.gmail.com', 587, 'tls')
+->setUsername('necmailer@gmail.com')
+->setPassword('smzncalqysuakryl'); // This password was setup in the Gmail account Security Settings for Apps
+
+// Create the Mailer using your created Transport
+$mailer = Swift_Mailer::newInstance($transport);
+
+$from = array("operations@nationwide-equipment.com" => "Nationwide Operations Control Manager");
+//$templateresult = json_decode(file_get_contents(API_HOST_URL . '/email_templates?filter=title,eq,Authorize Account'));
+
+$templateargs = array("filter"=>"title,eq,Authorize Account");
+$templateurl = API_HOST_URL . "/email_templates?".http_build_query($templateargs);
+$templateoptions = array(
+    'http' => array(
+        'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+        'method'  => 'GET'
+    )
+);
+
+/* Send "Set Password" email for migrated carriers */
+$templatecontext  = stream_context_create($templateoptions);
+$templateresult = json_decode(file_get_contents($templateurl,false,$templatecontext));
+
 
 // Fields
 /*
@@ -267,26 +299,43 @@ foreach ($result as $row) {
                         $member_id = $memberresult;
                         $code = 0;
                         $numSent = 0;
-                        $to = array($row['Email'] => $importName[0] . " " . $importName[1]);
-                        $from = array("operations@nationwide-equipment.com" => "Nationwide Operations Control Manager");
-                        //$templateresult = json_decode(file_get_contents(API_HOST_URL . '/email_templates?filter=title,eq,Authorize Account'));
+                        //$ = array($row['Email'] => $importName[0] . " " . $importName[1]);
+                        $to = array("jaycarl.hawkins@gmail.com" => "Jay Hawkins");
 
-                        $templateargs = array("filter"=>"title,eq,Authorize Account");
-                        $templateurl = API_HOST_URL . "/email_templates?".http_build_query($templateargs);
-                        $templateoptions = array(
-                            'http' => array(
-                                'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
-                                'method'  => 'GET'
-                            )
-                        );
-
-                        /* Send "Set Password" email for migrated carriers */
-                        $templatecontext  = stream_context_create($templateoptions);
-                        $templateresult = json_decode(file_get_contents($templateurl,false,$templatecontext));
                         $subject = $templateresult->email_templates->records[0][6];
-                        $body = "Hello " . $firstName . ",<br /><br />";
+                        $body = "Hello " . $importName[0] . ",<br /><br />";
                         $body .= $templateresult->email_templates->records[0][2];
                         $body .= "<a href='".HTTP_HOST."/setmigratedpassword/".$user_id."/".$row['Zip']."'>Click HERE to Reset Password and Activate Account!</a>";
+
+                        // Create the message
+                        $message = Swift_Message::newInstance()
+
+                        // Give the message a subject
+                        ->setSubject($subject)
+
+                        // Set the From address with an associative array
+                        ->setFrom($from)
+
+                        // Set the To address with an associative array
+                        ->setTo($to)
+
+                        // Give it a body
+                        ->setBody($body)
+
+                        // And optionally an alternative body
+                        ->addPart($body, 'text/html');
+
+                        try {
+                            if (!$mailer->send($message, $failedRecipients)) {
+                                array_push($returnObject["failedRecipients"], $failedRecipients[0]);
+                            }
+                            else{
+                              $numSent++;
+                            }
+                        } catch (Exception $e) {
+                            echo "<p>".$e."</p>";
+                            die();
+                        }
                         //if (count($templateresult) > 0) {
                         //  try {
                         //    $numSent = sendmail($to, $subject, $body, $from);
@@ -315,6 +364,7 @@ foreach ($result as $row) {
                         }
 
                         echo "Got er done!<br /><br />\n";
+                        unset($message);
 
                     } else {
                         return "There was an issue with your member information. Please verify your information.";  // There was an issue, let the router know something failed!

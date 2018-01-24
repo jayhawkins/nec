@@ -1,11 +1,15 @@
 <?php
 
+date_default_timezone_set('America/New_York');
+
 session_start();
 
 use flight\Engine;
 require '../vendor/autoload.php';
 
 require_once '../../nec_config.php';
+
+require_once '../lib/common.php';
 
 Flight::register('db', 'PDO', array('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS ), function($db){
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
