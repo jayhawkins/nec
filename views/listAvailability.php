@@ -96,15 +96,24 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
           var d2 = Date.parse($("#pickupDate").val());
           var d3 = Date.parse($("#deliveryDate").val());
           if (d1 > d2) {
-              alert ("Your pickup date is prior to the availability date!");
+              //alert ("Your pickup date is prior to the availability date!");
+                $("#errorAlertTitle").html("Error");
+                $("#errorAlertBody").html("Your pickup date is prior to the availability date!");
+                $("#errorAlert").modal('show');
               return false;
           }
           if (d1 > d3) {
-              alert ("Your delivery date is prior to the availability date!");
+              //alert ("Your delivery date is prior to the availability date!");
+                $("#errorAlertTitle").html("Error");
+                $("#errorAlertBody").html("Your delivery date is prior to the availability date!");
+                $("#errorAlert").modal('show');
               return false;
           }
           if (d2 > d3) {
-              alert ("Your pickup date is after your delivery date!");
+              //alert ("Your pickup date is after your delivery date!");
+                $("#errorAlertTitle").html("Error");
+                $("#errorAlertBody").html("Your pickup date is after your delivery date!");
+                $("#errorAlert").modal('show');
               return false;
           }
 
@@ -114,9 +123,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
           var destinationaddress = $("#destinationCity").val() + ', ' + $("#destinationState").val();
 
           if (originationaddress != $("#originToMatch").val() && destinationaddress != $("#destToMatch").val()) {
-              alert("The commitment for this Availablility must be picked up at " + $("#originToMatch").val() + " or dropped off at " + $("#destToMatch").val() + ". Please make a valid selection.");
-              //alert($("#originToMatch").val());
-              //alert($("#destToMatch").val());
+              //alert("The commitment for this Availablility must be picked up at " + $("#originToMatch").val() + " or dropped off at " + $("#destToMatch").val() + ". Please make a valid selection.");
+              
+                $("#errorAlertTitle").html("Error");
+                $("#errorAlertBody").html("The commitment for this Availablility must be picked up at " + $("#originToMatch").val() + " or dropped off at " + $("#destToMatch").val() + ". Please make a valid selection.");
+                $("#errorAlert").modal('show');
+            
               return false;
           }
 
@@ -130,8 +142,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
           if (commitOriginationCity.length == 2 && !admin && ( (commitOriginationCity.indexOf($("#ocity").val()) == -1 && $("#originationCity").val() != $("#ocity").val()) || (commitDestinationCity.indexOf($("#dcity").val()) == -1 && $("#destinationCity").val() != $("#dcity").val()) ) ) {
               //$("#relayMessage").html("<strong>" + $("#ocity").val() + " or " + $("#dcity").val() + " must have be in at least one relay</strong>");
               //$("#relayDialog").modal('show');
-              alert("Check the current relays. " + $("#ocity").val() + " or " + $("#dcity").val() + " must be specified in at least one relay");
-              return false;
+              //alert("Check the current relays. " + $("#ocity").val() + " or " + $("#dcity").val() + " must be specified in at least one relay");
+              
+                $("#errorAlertTitle").html("Error");
+                $("#errorAlertBody").html("Check the current relays. " + $("#ocity").val() + " or " + $("#dcity").val() + " must be specified in at least one relay");
+                $("#errorAlert").modal('show');
+                return false;
           }
 
           if (confirm("You have selected to Commit to this Availability. A Nationwide Equipment Control team member will contact you within 4 buisness hours to start the order process. Do you wish to proceed with this commitment?") == true) {
@@ -177,9 +193,15 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                 if (response == "success") {
                                 } else {
                                     if (response == "ZERO_RESULTS") {
-                                        alert("Destination Address does not exist!");
+                                        // alert("Destination Address does not exist!");
+                                        $("#errorAlertTitle").html("Error");
+                                        $("#errorAlertBody").html("Destination Address does not exist!");
+                                        $("#errorAlert").modal('show');
                                     } else {
-                                        alert("Destination Address Error: " + JSON.stringify(response));
+                                        // alert("Destination Address Error: " + JSON.stringify(response));
+                                        $("#errorAlertTitle").html("Destination Address Error");
+                                        $("#errorAlertBody").html(JSON.stringify(response));
+                                        $("#errorAlert").modal('show');
                                     }
                                     result = false;
                                     //alert('Preparation Failed!');
@@ -187,9 +209,15 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                              },
                              error: function(response) {
                                 if (response == "ZERO_RESULTS") {
-                                    alert("Destination Address does not exist!");
+                                    // alert("Destination Address does not exist!");
+                                    $("#errorAlertTitle").html("Error");
+                                    $("#errorAlertBody").html("Destination Address does not exist!");
+                                    $("#errorAlert").modal('show');
                                 } else {
-                                    alert("Destination Address Error: " + JSON.stringify(response));
+                                    // alert("Destination Address Error: " + JSON.stringify(response));
+                                    $("#errorAlertTitle").html("Destination Address Error");
+                                    $("#errorAlertBody").html(JSON.stringify(response));
+                                    $("#errorAlert").modal('show');
                                 }
                                 result = false;
                                 //alert('Failed Searching for Destination Location! - Notify NEC of this failure.');
@@ -197,16 +225,25 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                           });
                       } else {
                           if (response == "ZERO_RESULTS") {
-                              alert("Origination Address does not exist!");
+                                //alert("Origination Address does not exist!");
+                                $("#errorAlertTitle").html("Error");
+                                $("#errorAlertBody").html("Origination Address does not exist!");
+                                $("#errorAlert").modal('show');
                           } else {
-                              alert("Origination Address Error: " + JSON.stringify(response));
+                                //alert("Origination Address Error: " + JSON.stringify(response));
+                                $("#errorAlertTitle").html("Origination Address Error");
+                                $("#errorAlertBody").html(JSON.stringify(response));
+                                $("#errorAlert").modal('show');
                           }
                           result = false;
                           //alert('Preparation Failed!');
                       }
                    },
                    error: function(response) {
-                      alert("Issue With Origination Address: " + JSON.stringify(response));
+                        //alert("Issue With Origination Address: " + JSON.stringify(response));
+                        $("#errorAlertTitle").html("Issue With Origination Address");
+                        $("#errorAlertBody").html(JSON.stringify(response));
+                        $("#errorAlert").modal('show');
                       result = false;
                       //alert('Failed Searching for Origination Location! - Notify NEC of this failure.');
                    }
@@ -214,7 +251,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
 
                 if (result) {
                     verifyAndPost(function(data) {
-                      alert(data);
+                        //alert(data);
+                        $("#errorAlertTitle").html("Message");
+                        $("#errorAlertBody").html(JSON.stringify(data));
+                        $("#errorAlert").modal('show');
                       $("#load").html("Commit");
                       $("#load").prop("disabled", false);
                     });
@@ -322,8 +362,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                          $("#myModalCommit").modal('hide');
                                      },
                                      error: function() {
-                                        alert('Failed creating a new Need from an existing.');
+                                        //alert('Failed creating a new Need from an existing.');
                                         $("#myModalCommit").modal('hide');
+                                        
+                                        $("#errorAlertTitle").html("Error");
+                                        $("#errorAlertBody").html("Failed creating a new Need from an existing.");
+                                        $("#errorAlert").modal('show');
                                      }
                                   });
                               //}
@@ -688,11 +732,17 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                   passValidation = true;
                 } else {
                   $(myDialog).modal('hide');
-                  alert("Changing Status of Need Failed!");
+                  //alert("Changing Status of Need Failed!");
+                    $("#errorAlertTitle").html("Error");
+                    $("#errorAlertBody").html("Changing Status of Need Failed!");
+                    $("#errorAlert").modal('show');
                 }
              },
              error: function() {
-                alert("There Was An Error Changing Need Status!");
+                //alert("There Was An Error Changing Need Status!");
+                $("#errorAlertTitle").html("Error");
+                $("#errorAlertBody").html("There Was An Error Changing Need Status!");
+                $("#errorAlert").modal('show');
              }
           });
 
@@ -719,12 +769,18 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                   loadTableAJAX();
                   passValidation = true;
                 } else {
-                  $(myCancelDialog).modal('hide');
-                  alert("Updating of Cancellation of Commit Failed!");
+                    $(myCancelDialog).modal('hide');
+                    //alert("Updating of Cancellation of Commit Failed!");
+                    $("#errorAlertTitle").html("Error");
+                    $("#errorAlertBody").html("Updating of Cancellation of Commit Failed!");
+                    $("#errorAlert").modal('show');
                 }
              },
              error: function() {
-                alert("There Was An Error Canceling Commit!");
+                //alert("There Was An Error Canceling Commit!");
+                $("#errorAlertTitle").html("Error");
+                $("#errorAlertBody").html("There Was An Error Canceling Commit!");
+                $("#errorAlert").modal('show');
              }
           });
 
@@ -885,15 +941,24 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                          getLocationContacts();
                                     },
                                     error: function() {
-                                       alert("There Was An Error Adding Need Contacts!");
+                                        //alert("There Was An Error Adding Need Contacts!");
+                                        $("#errorAlertTitle").html("Error");
+                                        $("#errorAlertBody").html("There Was An Error Adding Need Contacts!");
+                                        $("#errorAlert").modal('show');
                                     }
                                  });
                             } else {
-                                  alert("There Was An Issue Clearing Need Contacts!");
+                                  //alert("There Was An Issue Clearing Need Contacts!");
+                                $("#errorAlertTitle").html("Error");
+                                $("#errorAlertBody").html("There Was An Issue Clearing Need Contacts!");
+                                $("#errorAlert").modal('show');
                             }
                          },
                          error: function() {
-                              alert("There Was An Error Deleting Need Records!");
+                             // alert("There Was An Error Deleting Need Records!");
+                            $("#errorAlertTitle").html("Error");
+                            $("#errorAlertBody").html("There Was An Error Deleting Need Records!");
+                            $("#errorAlert").modal('show');
                          }
                       });
                   }
@@ -969,7 +1034,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                   locations_contacts = data;
              },
              error: function() {
-                alert("There Was An Error Retrieving Location Contacts!");
+                //alert("There Was An Error Retrieving Location Contacts!");
+                $("#errorAlertTitle").html("Error");
+                $("#errorAlertBody").html("There Was An Error Retrieving Location Contacts!");
+                $("#errorAlert").modal('show');
              }
           });
       }
@@ -985,10 +1053,16 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
              type: type,
              async: false,
              success: function(data){
-                  alert(JSON.stringify(data));
+                  //alert(JSON.stringify(data));
+                $("#errorAlertTitle").html("Message");
+                $("#errorAlertBody").html(JSON.stringify(data));
+                $("#errorAlert").modal('show');
              },
              error: function() {
-                alert("There Was An Error Retrieving Location Contacts!");
+                //alert("There Was An Error Retrieving Location Contacts!");
+                $("#errorAlertTitle").html("Error");
+                $("#errorAlertBody").html("There Was An Error Retrieving Location Contacts!");
+                $("#errorAlert").modal('show');
              }
           });
       }
@@ -1794,7 +1868,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                     }
                },
                error: function() {
-                    alert('Error Selecting Relays for ' + id + '!');
+                    //alert('Error Selecting Relays for ' + id + '!');
+                    $("#errorAlertTitle").html("Error");
+                    $("#errorAlertBody").html('Error Selecting Relays for ' + id + '!');
+                    $("#errorAlert").modal('show');
                }
             });
 
@@ -1851,7 +1928,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
              formatListBox();
            },
            error: function() {
-              alert('Failed Getting Contacts! - Notify NEC of this failure.');
+                // alert('Failed Getting Contacts! - Notify NEC of this failure.');
+                $("#errorAlertTitle").html("Error");
+                $("#errorAlertBody").html('Failed Getting Contacts! - Notify NEC of this failure.');
+                $("#errorAlert").modal('show');
            }
         });
     });
@@ -1900,7 +1980,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
              $("#org-suggesstion-box").hide();
            },
            error: function() {
-                alert('Error Selecting Origination City!');
+                // alert('Error Selecting Origination City!');
+                $("#errorAlertTitle").html("Error");
+                $("#errorAlertBody").html('Error Selecting Origination City!');
+                $("#errorAlert").modal('show');
            }
         });
     }
@@ -1949,7 +2032,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
              $("#dest-suggesstion-box").hide();
            },
            error: function() {
-                alert('Error Selecting Destination City!');
+                // alert('Error Selecting Destination City!');
+                $("#errorAlertTitle").html("Error");
+                $("#errorAlertBody").html('Error Selecting Destination City!');
+                $("#errorAlert").modal('show');
            }
         });
     }
@@ -2088,7 +2174,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                 .removeClass( 'loading' );
             },
             error: function() {
-                alert('Failed Getting Relays!');
+                // alert('Failed Getting Relays!');
+                $("#errorAlertTitle").html("Error");
+                $("#errorAlertBody").html('Failed Getting Relays!');
+                $("#errorAlert").modal('show');
             }
         } );
 
