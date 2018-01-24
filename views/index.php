@@ -372,7 +372,10 @@ if ($_SESSION['entityid'] > 0) {
                  });
               },
               error: function() {
-                 alert("Can't Get Template");
+                 $("#errorAlertTitle").html("Error");
+                 $("#errorAlertBody").html("Can't Get Template");
+                 $("#errorAlert").modal('show');
+                 //alert("Can't Get Template");
               }
            });
          }
@@ -445,7 +448,10 @@ if ($_SESSION['entityid'] > 0) {
                     $('#percent-orders').html(orderCount);
                },
                error: function() {
-                  alert("There Was An Error Getting User Orders Count");
+                 $("#errorAlertTitle").html("Error");
+                 $("#errorAlertBody").html("There Was An Error Getting User Orders Count");
+                 $("#errorAlert").modal('show');
+                  //alert("There Was An Error Getting User Orders Count");
                }
             });
 
@@ -475,7 +481,10 @@ if ($_SESSION['entityid'] > 0) {
 
            },
            error: function() {
-              alert("There Was An Error Getting Commitments Count");
+                // alert("There Was An Error Getting Commitments Count");
+                $("#errorAlertTitle").html("Error");
+                $("#errorAlertBody").html("There Was An Error Getting Commitments Count");
+                $("#errorAlert").modal('show');
            }
         });
 
@@ -502,7 +511,10 @@ if ($_SESSION['entityid'] > 0) {
                     $('#percent-commitments').html(commitmentCount);
                },
                error: function() {
-                  alert("There Was An Error Getting Committed Count");
+                  //alert("There Was An Error Getting Committed Count");
+                    $("#errorAlertTitle").html("Error");
+                    $("#errorAlertBody").html("There Was An Error Getting Commitments Count");
+                    $("#errorAlert").modal('show');
                }
             });
 
@@ -549,7 +561,10 @@ if ($_SESSION['entityid'] > 0) {
                     $('#percent-availability').html(availability.length);
                },
                error: function() {
-                  alert("There Was An Error Getting Customer Availability Count");
+                  //alert("There Was An Error Getting Customer Availability Count");
+                    $("#errorAlertTitle").html("Error");
+                    $("#errorAlertBody").html("There Was An Error Getting Customer Availability Count");
+                    $("#errorAlert").modal('show');
                }
             });
 
@@ -596,7 +611,10 @@ if ($_SESSION['entityid'] > 0) {
                     $('#percent-needs').html(needs.length);
                },
                error: function() {
-                  alert("There Was An Error Getting Carrier Needs Count");
+                    // alert("There Was An Error Getting Carrier Needs Count");
+                    $("#errorAlertTitle").html("Error");
+                    $("#errorAlertBody").html("There Was An Error Getting Carrier Needs Count");
+                    $("#errorAlert").modal('show');
                }
             });
 
@@ -2405,6 +2423,25 @@ if ($_SESSION['entitytype'] == 0) {
     <i class="fa fa-circle-o-notch fa-spin-fast"></i>
 </div>
 
+   <div class="modal fade" id="errorAlert" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="false">
+     <div class="modal-dialog modal-md" role="document">
+       <div class="modal-content">
+         <div class="modal-header">
+           <h5 class="modal-title" id="errorAlertTitle"></h5>
+           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+             <span aria-hidden="true">&times;</span>
+           </button>
+         </div>
+         <div id="errorAlertBody" class="modal-body">
+             
+         </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
 <!-- common libraries. required for every page-->
 <script src="vendor/jquery/dist/jquery.min.js"></script>
 <script src="vendor/jquery-pjax/jquery.pjax.js"></script>
@@ -2518,7 +2555,11 @@ if ($_SESSION['entitytype'] == 0) {
     });
 
 $(function() {
-
+    $(document).on('hidden.bs.modal', function (event) {
+      if ($('.modal:visible').length) {
+        $('body').addClass('modal-open');
+      }
+    });
    // Show loading message
    $(".mapcontainer span").html("Loading Customer Needs Locations").css({"color":"blue"});
 
