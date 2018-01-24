@@ -241,7 +241,7 @@ if ($_SESSION['entityid'] > 0) {
 	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.16/b-1.4.2/r-2.2.0/datatables.min.css"/>
 <?php } ?>
 
-    <link rel="stylesheet" href="vendor/jquery-ui/jquery-ui.css">
+    <link rel="stylesheet" href="css/jquery-ui.css">
     <link rel="shortcut icon" href="img/favicon.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="">
