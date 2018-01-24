@@ -150,7 +150,7 @@ foreach ($result as $row) {
             $locationurl = API_HOST_URL . '/locations';
             $locationdata = array(
                         "entityID" => $entityresult, // this will contain the new entities id
-                        "locationTypeID" => 9,
+                        "locationTypeID" => 4,
                         "name" => "Headquarters",
                         "address1" => $row['M-Street'],
                         "address2" => '',
