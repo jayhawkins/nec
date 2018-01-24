@@ -772,6 +772,12 @@ COLLATE = utf8_general_ci
 ENGINE = InnoDB
 AUTO_INCREMENT = 1;
 
+ALTER TABLE order_statuses ADD COLUMN carrierID INT(5) unsigned DEFAULT 0 after orderID;
+ALTER TABLE order_statuses ADD COLUMN documentID INT(5) unsigned DEFAULT 0 after carrierID;
+ALTER TABLE order_statuses ADD COLUMN vinNumber VARCHAR(64) NOT NULL DEFAULT '' after documentID;
+ALTER TABLE order_statuses ADD COLUMN loadingStatus VARCHAR(255) NOT NULL DEFAULT '' after status;
+ALTER TABLE order_statuses ADD COLUMN arrivalEta VARCHAR(64) NOT NULL DEFAULT '' after loadingStatus;
+
 ALTER TABLE `order_statuses`
 	ADD CONSTRAINT `lnk_orders_order_statuses` FOREIGN KEY ( `orderID` )
 	REFERENCES `orders`( `id` )

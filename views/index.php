@@ -241,6 +241,7 @@ if ($_SESSION['entityid'] > 0) {
 	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.16/b-1.4.2/r-2.2.0/datatables.min.css"/>
 <?php } ?>
 
+    <link rel="stylesheet" href="vendor/jquery-ui/jquery-ui.css">
     <link rel="shortcut icon" href="img/favicon.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="">
@@ -2473,7 +2474,7 @@ if ($_SESSION['entitytype'] == 0) {
 <script src="js/tables-dynamic.js"></script>
 <script src="vendor/select2/select2.min.js"></script>map
 <script src="vendor/parsleyjs/dist/parsley.min.js"></script>
-
+<script src="../vendor/jquery-ui/jquery-ui.js"></script>
 
 <!-- page specific js -->
 <!--script src="js/index.js"></script-->
