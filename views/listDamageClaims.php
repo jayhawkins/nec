@@ -38,7 +38,7 @@
 	}
 
 	function verifyAndPost() {
-		//if ( $('#formDamageClaim').parsley().validate() ) {
+		if ( $('#formDamageClaim').parsley().validate() ) {
 			var data,date;
 			var passValidation = false;
 			var type = "";
@@ -151,9 +151,9 @@
 				});
 			}
 			return passValidation;
-		//} else {
-		//	return false;
-		//}
+		} else {
+			return false;
+		}
 	}
 
 	function replaceDocument() {
@@ -283,7 +283,6 @@
 		//To Reload The Ajax
 		//See DataTables.net for more information about the reload method
 		example_table.ajax.reload();
-		myApp.hidePleaseWait();
 	}
 
 	function recordEnableDisable(status) {
@@ -326,8 +325,7 @@
 	}
 
 	function loadBusinessTableAJAX(){
-          myApp.showPleaseWait();
-        var url = '<?php echo API_HOST_URL; ?>' + '/entities?include=entity_types,locations&filter[0]=status,eq,Active&filter[1]=locations.status,eq,Active&filter[2]=locations.name,eq,Headquarters&transform=1';
+        var url = '<?php echo API_HOST_URL; ?>' + '/entities?include=entity_types,locations&filter[]=status,eq,Active&filter[]=locations.status,eq,Active&filter[]=locations.name,eq,Headquarters&order[]=name&transform=1';
         var example_table = $('#business-datatable-table').DataTable({
             retrieve: true,
             processing: true,
@@ -412,30 +410,31 @@
 
     }
 
-    function loadBusinessInsurance(entityID) {
-        var url = '<?php echo API_HOST_URL; ?>' + '/damage_claims?columns=id,name,link,contactName,contactEmail,contactPhone,policyNumber,policyExpirationDate,fileupload,status&filter=entityID,eq,' + entityID + '&order=name&transform=1';
-		if ( ! $.fn.DataTable.isDataTable( '#datatable-table' ) ) {
-            var example_table = $('#datatable-table').DataTable({
-            retrieve: true,
-            processing: true,
-            ajax: {
-                url: url,
-                dataSrc: 'damage_claims'
-            },
-            columns: [
+    function loadBusinessClaims(entityID) {
+        var url = '<?php echo API_HOST_URL; ?>' + '/damage_claims?&filter=entityID,eq,' + entityID + '&transform=1';
+		var example_table = $('#datatable-table').DataTable({
+			retrieve: true,
+			processing: true,
+			ajax: {
+				url: url,
+				dataSrc: 'damage_claims'
+			},
+			columns: [
                 { data: "id", visible: false },
-				{ data: "name" },
-				{ data: "contactName" },
-				{ data: "contactEmail" },
-				{ data: "contactPhone" },
-				{ data: "policyNumber", visible: false },
-				{ data: "policyExpirationDate", visible: false },
+                { data: "entityID", visible: false },
+				{ data: "entityIDAtFault", visible: false },
+				{ data: "vinNumber" },
+				{ data: "damage" },
+				{ data: "estimatedRepairCost", render: $.fn.dataTable.render.number(',', '.', 2, '$') },
+				{ data: "negotiatedRepairCost", render: $.fn.dataTable.render.number(',', '.', 2, '$') },
+				{ data: "documentIDs", visible: false },
+				{ data: "status" },
 				{ data: null,
                     "bSortable": false,
 					"mRender": function (o) {
 					    var buttons = '';
                         if (o.fileupload > '') {
-                            buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-eye-open text\"></i> <span class=\"text\">Upload/View Claim Documents</span></button> &nbsp;';
+                            buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-eye-open text\"></i> <span class=\"text\">Upload/View Claim</span></button> &nbsp;';
                         }
                         buttons += "</div>";
                         return buttons;
@@ -457,21 +456,11 @@
 					}
 				}
 			]
-          });
-
-          example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
-
-          //To Reload The Ajax
-          //See DataTables.net for more information about the reload method
-          example_table.ajax.reload();
-        }
-        else{
-
-            //The URL will change with each "View Commit" button click
-            // Must load new Url each time.
-            var reload_table = $('#datatable-table').DataTable();
-            reload_table.ajax.url(url).load();
-        }
+		});
+		example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
+		//To Reload The Ajax
+		//See DataTables.net for more information about the reload method
+		example_table.ajax.reload();
 
     }
 
@@ -502,7 +491,7 @@ if($_SESSION['entitytype'] != 0){
 		Column sorting, live search, pagination. Built with
 		<a href="http://www.datatables.net/" target="_blank">jQuery DataTables</a>
 		</p -->
-		<button type="button" id="addClaim" class="btn btn-primary pull-xs-right" data-target="#myModal">Add Claim</button>
+		<!--button type="button" id="addClaim" class="btn btn-primary pull-xs-right" data-target="#myModal">Add Claim</button-->
 		<br /><br />
 		<div id="dataTable" class="mt">
 			<table id="datatable-table" class="table table-striped table-hover">
@@ -601,20 +590,22 @@ if($_SESSION['entitytype'] != 0){
              Column sorting, live search, pagination. Built with
              <a href="http://www.datatables.net/" target="_blank">jQuery DataTables</a>
          </p -->
-         <button type="button" id="addInsurance" class="btn btn-primary pull-xs-right" data-target="#myModal">Add Insurance</button>
+         <button type="button" id="addClaim" class="btn btn-primary pull-xs-right" data-target="#myModal">Add Claim</button>
          <br /><br />
          <div id="dataTable" class="mt">
              <table id="datatable-table" class="table table-striped table-hover" width="100%">
                  <thead>
 					<tr>
 					<th>ID</th>
-					<th class="hidden-sm-down">Name</th>
-					<th class="hidden-sm-down">Contact Name</th>
-					<th class="hidden-sm-down">Contact Email</th>
-					<th class="hidden-sm-down">Contact Phone</th>
-					<th class="hidden-sm-down">Policy Number</th>
-					<th class="hidden-sm-down">Policy Expiration Date</th>
-					<th class="hidden-sm-down">Policy File</th>
+					<th class="hidden-sm-down">EntityID</th>
+					<th class="hidden-sm-down">Entity At Fault</th>
+					<th class="hidden-sm-down">VIN Number</th>
+					<th class="hidden-sm-down">Damage</th>
+					<th class="hidden-sm-down">Estimated Cost</th>
+					<th class="hidden-sm-down">Negotiated Cost</th>
+					<th class="hidden-sm-down">Document IDs</th>
+					<th class="hidden-sm-down">Status</th>
+					<th>&nbsp;</th>
 					<th>&nbsp;</th>
 					</tr>
 				</thead>
@@ -678,6 +669,28 @@ if($_SESSION['entitytype'] != 0){
 							</div>
 						</div>
 					</div>
+					<div class="row">
+                        <div class="col-sm-4">
+                          <div class="form-group">
+              <?php if ($_SESSION['entityid'] > 0) { ?>
+                             <input type="hidden" id="entityIDAtFault" name="entityIDAtFault" value="" />
+                             <label for="entityIDAtFault">At Fault</label>
+                             <input type="text" id="entityIDAtFault" name="entityIDAtFault" class="form-control mb-sm" disabled />
+              <?php } else { ?>
+                              <label for="entityIDAtFault">At Fault</label>
+                              <select id="entityIDAtFault" name="entityIDAtFault" data-placeholder="Carrier" class="form-control chzn-select" required="required">
+                                <option selected=selected value=""> -Select Carrier- </option>
+               <?php
+                                foreach($entities->entities->records as $value) {
+                                    $selected = ($value[0] == $entity) ? 'selected=selected':'';
+                                    echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
+                                }
+               ?>
+                              </select>
+               <?php } ?>
+                          </div>
+                        </div>
+                    </div>
 					<div class="row">
 						<div class="col-sm-6">
 							<label for="policyNumber">Claims Documents</label>
@@ -831,7 +844,7 @@ if($_SESSION['entitytype'] != 0){
 		$("#damage").val('');
 		$("#fileupload").val('');
 		$("#fileupload").prop("disabled", false);
-		$("#fileupload").prop("required", true);
+		$("#fileupload").prop("required", false);
 		$("#fileupload").parent().parent().attr("hidden", false);
 		$("#myModal").modal('show');
 	});
@@ -844,9 +857,9 @@ if($_SESSION['entitytype'] != 0){
 			$("#estimatedRepairCost").val(data["estimatedRepairCost"]);
 			$("#negotiatedRepairCost").val(data["negotiatedRepairCost"]);
 			$("#damage").val(data["damage"]);
-			$("#fileupload").prop("disabled", true);
+			$("#fileupload").prop("disabled", false);
 			$("#fileupload").prop("required", false);
-			$("#fileupload").parent().parent().attr("hidden", true);
+			$("#fileupload").parent().parent().attr("hidden", false);
 			$("#docToView").val(data["fileupload"]);
 			$("#myModal").modal('show');
         } else if (this.textContent.indexOf("Upload/View Claim") > -1) {
@@ -938,8 +951,7 @@ if($_SESSION['entitytype'] != 0){
             var entityID = data["id"];
             $("#entityID").val(data["id"]);
 
-            loadBusinessInsurance(entityID);
-            openPolicies();
+            loadBusinessClaims(entityID);
         });
 
 
