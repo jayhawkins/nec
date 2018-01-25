@@ -964,7 +964,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 " </div>";
                 }
 
-                var url = '<?php echo API_HOST_URL . "/order_statuses?filter[]=vinNumber,eq," ?>' + trailer.vinNumber + '&filter[]=carrierID,eq,' + currentCarrier + '&transform=1';
+                var url = '<?php echo API_HOST_URL . "/order_statuses?filter[]=vinNumber,eq," ?>' + trailer.vinNumber + '&filter[]=carrierID,eq,' + currentCarrier + '&order=createdAt,desc&transform=1';
                 var type = "GET";
 
                 $.ajax({
@@ -974,7 +974,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                      success: function(data){
                          //console.log(data.order_statuses[0]);
                          if (data.order_statuses.length > 0) {
-                             $("#statusID").val(data.order_statuses[0].id)
+                             $("#statusID").val(data.order_statuses[0].id);
                              $("#statusAddANote").val(data.order_statuses[0].note);
                              $("#statusTrailerStatus").val(data.order_statuses[0].status);
                              $("#statusCurrentLocation").val(data.order_statuses[0].city + ', ' + data.order_statuses[0].state);
@@ -3163,7 +3163,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 <div class="col-md-12">
                                     <h4>1JJV532D0JL041440</h4>
                                     <ul class="list-inline">
-                                        <li class="list-inline-item btn btn-primary pull-right" id="saveTrailerStatus">Save Changes</li>
                                         <li class="list-inline-item">Notes from prior Carrier:</li>
                                         <li class="list-inline-item" id="statusNotes">N/A</li>
                                     </ul>
@@ -3235,12 +3234,13 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     <div class="col-md-1">&nbsp;</div>
                                     <div class="col-md-3">&nbsp;</div>
                                     <div class="col-md-3">
-                                        <button type="button" id="viewPOD" onclick="viewPOD()" class="btn btn-primary">Download POD &nbsp; <span class="fa fa-download"></span></button>
+                                        <button type="button" id="btnDownloadPOD" class="btn btn-primary">Download POD &nbsp; <span class="fa fa-download"></span></button>
                                     </div>
-                                    <div class="col-md-5">
+                                    <div class="col-md-4">
                                         <button type="button" class="btn btn-outline-light" id="btnPaperClip"><span class="fa fa-lg fa-paperclip"></span></a>
                                         &nbsp;
                                         <button type="button" class="btn btn-primary" id="btnUploadPOD">Upload POD &nbsp; <span class="fa fa-upload"></span></a>
+                                        <button type="button" class="list-inline-item btn btn-primary pull-right" id="saveTrailerStatus">Save Changes</li>
                                     </div>
                                 </div>
                             </div>
@@ -4701,7 +4701,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
         $('#pod-list-table tbody').off('click', 'td button.download-pod').on('click', 'td button.download-pod', function () {
 
-                    var ele = $(this);
+            var ele = $(this);
             var podTable = $("#pod-list-table").DataTable();
             var pod = podTable.row( $(this).parents('tr') ).data();
             var podList = podTable.ajax.json().orders[0].podList;
@@ -5253,6 +5253,74 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             }
         });
 
+        $("#btnDownloadPOD").unbind('click').bind('click',function(){ // Doing it like this because it was double posting document giving me duplicates
+
+            var orderID = $("#statusOrderID").val();
+
+            var url = '<?php echo API_HOST_URL . '/orders/' ?>' + orderID;
+
+            $.ajax({
+                url: url,
+                type: "GET",
+                contentType: "application/json",
+                async: false,
+                success: function(data){
+                    var customerID = data.customerID;
+                    var customerName = "";
+
+                    allEntities.entities.forEach(function(entity){
+
+                        if(customerID == entity.id){
+
+                            customerName = entity.name;
+                        }
+                    });
+
+                    var size = data.needsDataPoints[3].length + ' x ' + data.needsDataPoints[4].width + ' x ' + data.needsDataPoints[0].height;
+
+                    var pod = data.podList[0];
+
+                    var podDataJSON = {
+                        podFormType: customerName,
+                        unitNumber: pod.unitNumber, vinNumber: pod.vinNumber, trailerProNumber: pod.truckProNumber, year: pod.trailerYear,
+                        size: size, type: data.needsDataPoints[5].type, door: data.needsDataPoints[1].door, decals: data.needsDataPoints[14].decals,
+                        originationAddress: data.originationAddress, originationCity: data.originationCity, originationState: data.originationState, originationZipcode: data.originationZip,
+                        destinationAddress: data.destinationAddress, destinationCity: data.destinationCity, destinationState: data.destinationState, destinationZipcode: data.destinationZip,
+                        pickupLocation: data.pickupInformation.pickupLocation, pickupContact: data.pickupInformation.contactPerson,
+                        pickupPhoneNumber: data.pickupInformation.phoneNumber, pickupHours: data.pickupInformation.hoursOfOperation,
+                        deliveryLocation: data.deliveryInformation.deliveryLocation, deliveryContact: data.deliveryInformation.contactPerson,
+                        deliveryPhoneNumber: data.deliveryInformation.phoneNumber, deliveryHours: data.deliveryInformation.hoursOfOperation
+                    };
+
+                    var podURL = '<?php echo HTTP_HOST . '/pod_form_api'; ?>';
+
+                    $.ajax({
+                        url: podURL,
+                        type: "POST",
+                        contentType: "application/json",
+                        responseType: "arraybuffer",
+                        data: JSON.stringify(podDataJSON),
+                        success: function(data){
+
+                            var iframe = $('#download-pdf-container');
+                            if (iframe.length == 0) {
+                                iframe = $('<iframe id="download=pdf-container" style="visibility:hidden;"></iframe>').appendTo('body');
+                            }
+                            iframe.attr('src', '<?php echo HTTP_HOST; ?>/download-pdf/' + data);
+
+                        },
+                        error: function(data){
+                            console.log(JSON.stringify(data));
+                        }
+                    });
+                },
+                error: function(data){
+                    console.log("Could not get Order Information.");
+                }
+            });
+
+        });
+
         $("#activeCarrier").unbind('change').bind('change',function(){ // Doing it like this because it was double posting document giving me duplicates
 
             var vinNumber = $("#displayVinNumber").html();
@@ -5316,7 +5384,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                   loadingStatus: $("#statusLoadingStatus").val(),
                                   arrivalEta: $("#statusArrivalEta").val()
                     };
-
+/* We always create a new status record so we have a history of status changes
                     if (data.order_statuses.length > 0) {
                         type = 'PUT';
                         url = '<?php echo API_HOST_URL . "/order_statuses/" ?>' + data.order_statuses[0].id;
@@ -5327,6 +5395,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         params.createdAt = today;
                         params.updatedAt = today;
                     }
+*/
+                    type = 'POST';
+                    url = '<?php echo API_HOST_URL . "/order_statuses" ?>';
+                    params.createdAt = today;
+                    params.updatedAt = today;
 
                     $.ajax({
                         url: url,
@@ -5334,7 +5407,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         data: JSON.stringify(params),
                         contentType: "application/json",
                         async: false,
-                        success: function(){
+                        success: function(data){
+                            console.log(data);
                             alert('Order Trailer Status Saved!');
                         },
                         error: function(error){
@@ -5380,6 +5454,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 today = mm+'/'+dd+'/'+yyyy;
                 today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
 
+                var statusID = $("#statusID").val();
                 var statusOrderID = $("#statusOrderID").val();
                 var statusCarrierID = $("#statusCarrierID").val();
                 var statusVinNumber = $("#statusVinNumber").val();
@@ -5387,7 +5462,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 var url = '';
 
                 $.ajax({
-                url: '<?php echo API_HOST_URL . "/order_statuses?filter[]=vinNumber,eq," ?>' + statusVinNumber + '&filter[]=carrierID,eq,' + statusCarrierID + '&transform=1',
+                url: '<?php echo API_HOST_URL . "/order_statuses?filter[]=vinNumber,eq," ?>' + statusVinNumber + '&filter[]=carrierID,eq,' + statusCarrierID + '&filter[]=id,eq' + statusID + '&transform=1',
                 type: 'GET',
                 contentType: "application/json",
                 async: false,
@@ -5399,7 +5474,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                     if (data.order_statuses.length > 0) {
                         type = 'PUT';
-                        url = '<?php echo API_HOST_URL . "/order_statuses/" ?>' + data.order_statuses[0].id;
+                        url = '<?php echo API_HOST_URL . "/order_statuses/" ?>' + statusID;
                         params.updatedAt = today;
                     } else {
                         type = 'POST';
