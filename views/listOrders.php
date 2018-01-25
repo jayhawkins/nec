@@ -137,7 +137,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
     function displayOrderStatuses(orderID, carrierID, vinNumber){
 
-        var orderStatusURL = '<?php echo API_HOST_URL; ?>' + '/order_statuses?filter[0]=orderID,eq,' + orderID + '&filter[1]=vinNumber,eq,' + vinNumber + '&filter[2]=carrierID,eq,' + carrierID + '&order=updatedAt,desc&transform=1';
+        var orderStatusURL = '';
+        if(carrierID == "") orderStatusURL = '<?php echo API_HOST_URL; ?>' + '/order_statuses?filter[0]=orderID,eq,' + orderID + '&filter[1]=vinNumber,eq,' + vinNumber + '&order=updatedAt,desc&transform=1';
+        else orderStatusURL = '<?php echo API_HOST_URL; ?>' + '/order_statuses?filter[0]=orderID,eq,' + orderID + '&filter[1]=vinNumber,eq,' + vinNumber + '&filter[2]=carrierID,eq,' + carrierID + '&order=updatedAt,desc&transform=1';
 
         $.get(orderStatusURL, function(data){
             var statuses = data.order_statuses;
@@ -237,7 +239,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                         "           <div class=\"col-md-6\">" +
                                         "               <button type=\"button\" id=\"addNote\" class=\"btn btn-primary\" onclick=\"viewPOD(" + status.documentID + ");\">View POD</button>" +
                                         "           </div>" +
-                                        "       </div>";
+                                        "       </div>" +
+                                        "       <hr>";
                     }
                     statusesList += "       <ul class=\"list-inline\">" +
                                     "           <li class=\"list-inline-item\">Add a Note</li>" +
