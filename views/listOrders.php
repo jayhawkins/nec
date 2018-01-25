@@ -181,12 +181,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     "           <div class=\"col-md-4\">" +
                                     "               <div class=\"row\">" +
                                     "                   <div class=\"col-md-12\">" +
-                                    "                       <span class=\"text-blue\">Trailer Status</span><br>" +
+                                    "                       <span class=\"text-blue\">Trailer Status:</span><br>" +
                                     "                   </div>" +
                                     "               </div>" +
                                     "               <div class=\"row\">" +
                                     "                   <div class=\"col-md-12\">" +
-                                    "                       <span class=\"text-blue\">Loading Status</span><br>" +
+                                    "                       <span class=\"text-blue\">Loading Status:</span><br>" +
                                     "                   </div>" +
                                     "               </div>" +
                                     "               <div class=\"row\">" +
@@ -196,12 +196,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     "               </div>" +
                                     "               <div class=\"row\">" +
                                     "                   <div class=\"col-md-12\">" +
-                                    "                       <span class=\"text-blue\">Date</span><br>" +
+                                    "                       <span class=\"text-blue\">Date:</span><br>" +
                                     "                   </div>" +
                                     "               </div>" +
                                     "               <div class=\"row\">" +
                                     "                   <div class=\"col-md-12\">" +
-                                    "                       <span class=\"text-blue\">Arrival Eta</span><br>" +
+                                    "                       <span class=\"text-blue\">Arrival Eta:</span><br>" +
                                     "                   </div>" +
                                     "               </div>" +
                                     "           </div>" +
