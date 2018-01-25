@@ -234,7 +234,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     "       <hr>" +
                                     "       <div class=\"row\">" +
                                     "           <div class=\"col-md-6\">" +
-                                    "               <button type=\"button\" id=\"addNote\" class=\"btn btn-primary\" onclick=\"viewPOD();\">View POD</button>" +
+                                    "               <button type=\"button\" id=\"addNote\" class=\"btn btn-primary\" onclick=\"viewPOD(" + status.documentID + ");\">View POD</button>" +
                                     "           </div>" +
                                     "       </div>" +
                                     "       <ul class=\"list-inline\">" +
@@ -244,7 +244,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     "       <p>Note: " + status.note + "</p>" +
                                     "   </div>" +
                                     "</div>";
-//                                  viewPOD()
+                            
                     if(index % 3 == 0){
                         statusesList +="</div><div class=\"row\">";
                     }
@@ -2352,8 +2352,13 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
     }
 
-    function viewPOD(){
-	    window.open( '<?php echo HTTP_HOST."/viewdocument" ?>?filename=' + $("#statusFileName").val() + '&entityID=' + $("#statusCarrierID").val(), '_blank');
+    function viewPOD(documentID){        
+    
+        var documentURL = '<?php echo API_HOST_URL; ?>' + '/documents/' + documentID;
+
+        $.get(documentURL, function(data){
+	    window.open( data.documentURL, '_blank');
+        });
     }
 
     function showOrderSummary(){
