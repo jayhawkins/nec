@@ -81,6 +81,7 @@ class Documents
 		$target_directory = $file_location . "/users/".floor($entityID / 65535)."/".$entityID."/";
 		$target_file = $target_directory.$filename;
 		$uploadOk = 1;
+
 		// Check file size
 		if ($fileupload["size"] > 20000000) {
 			// File Too Large
