@@ -237,9 +237,20 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     if(status.documentID > 0){
                         statusesList += "       <div class=\"row\">" +
                                         "           <div class=\"col-md-6\">" +
-                                        "               <button type=\"button\" id=\"addNote\" class=\"btn btn-primary\" onclick=\"viewPOD(" + status.documentID + ");\">View POD</button>" +
-                                        "           </div>" +
-                                        "       </div>" +
+                                        "               <button type=\"button\" id=\"viewPOD\" class=\"btn btn-primary w-100\" onclick=\"viewPOD(" + status.documentID + ");\">View POD</button>" +
+                                        "           </div>";
+                        if(status.hasBeenApproved == 0){
+                            statusesList += "       <div class=\"col-md-6\">" +
+                                            "           <button type=\"button\" id=\"approvePOD\" class=\"btn btn-primary w-100\" onclick=\"approvePOD();\">Approve POD</button>" +
+                                            "       </div>";
+                        }
+                        else{
+                            statusesList += "       <div class=\"col-md-6\">" +
+                                            "           <button type=\"button\" id=\"approvePOD\" class=\"btn btn-primary w-100 disabled\" disabled>Approved</button>" +
+                                            "       </div>";
+                        }
+                        
+                        statusesList += "       </div>" +
                                         "       <hr>";
                     }
                     statusesList += "       <ul class=\"list-inline\">" +
@@ -2619,6 +2630,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         color: red !important;
         font-weight: bold !important;
         font-size: large;
+    }
+    
+    .w-100{
+        width: 100% !important;
     }
  </style>
 
