@@ -231,13 +231,15 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     "               </div>" +
                                     "           </div>" +
                                     "       </div>" +
-                                    "       <hr>" +
-                                    "       <div class=\"row\">" +
-                                    "           <div class=\"col-md-6\">" +
-                                    "               <button type=\"button\" id=\"addNote\" class=\"btn btn-primary\" onclick=\"viewPOD(" + status.documentID + ");\">View POD</button>" +
-                                    "           </div>" +
-                                    "       </div>" +
-                                    "       <ul class=\"list-inline\">" +
+                                    "       <hr>";
+                    if(status.documentID > 0){
+                        statusesList += "       <div class=\"row\">" +
+                                        "           <div class=\"col-md-6\">" +
+                                        "               <button type=\"button\" id=\"addNote\" class=\"btn btn-primary\" onclick=\"viewPOD(" + status.documentID + ");\">View POD</button>" +
+                                        "           </div>" +
+                                        "       </div>";
+                    }
+                    statusesList += "       <ul class=\"list-inline\">" +
                                     "           <li class=\"list-inline-item\">Add a Note</li>" +
                                     "           <li class=\"list-inline-item pad-left-25\"><span class=\"fa fa-pencil text-bright-blue\"></span></li>" +
                                     "       </ul>" +
