@@ -57,9 +57,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
     //console.log(dataPoints);
 
     var entity = <?php echo json_encode($entity); ?>;
-    //alert(JSON.stringify(entity));
-    //console.log(JSON.stringify(entity.entities.records[0][1]));
-
+    
     var entityid = <?php echo $_SESSION['entityid']; ?>;
 
     var allEntities = <?php echo json_encode($allEntities); ?>;
@@ -84,39 +82,42 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
     function verifyAddCarrierCommit(){
         var blnResult = true;   // Assume Good Data
 
-        var strMessage = "The following fields must be entered:\n";
+        var strMessage = "The following fields must be entered:<br>";
 
        if($('#pickupDate').val() == "") {
-           strMessage += "-Pick-Up Date\n";
+           strMessage += "-Pick-Up Date<br>";
            blnResult = false;
        }
        if($('#deliveryDate').val() == "") {
-           strMessage += "-Delivery Date\n";
+           strMessage += "-Delivery Date<br>";
            blnResult = false;
        }
        if($('#carrierID').val() == "") {
-           strMessage += "-Carrier\n";
+           strMessage += "-Carrier<br>";
            blnResult = false;
        }
        if($('#originationCity').val() == "") {
-           strMessage += "-Origination City\n";
+           strMessage += "-Origination City<br>";
            blnResult = false;
        }
        if($('#originationState').val() == "") {
-           strMessage += "-Origination State\n";
+           strMessage += "-Origination State<br>";
            blnResult = false;
        }
        if($('#destinationCity').val() == "") {
-           strMessage += "-Destination City\n";
+           strMessage += "-Destination City<br>";
            blnResult = false;
        }
        if($('#destinationState').val() == "") {
-           strMessage += "-Destination State\n";
+           strMessage += "-Destination State<br>";
            blnResult = false;
        }
 
        if(blnResult == false){
-           alert(strMessage);
+           //alert(strMessage);
+            $("#errorAlertTitle").html("Error");
+            $("#errorAlertBody").html(strMessage);
+            $("#errorAlert").modal('show');
        }
 
        return blnResult;
@@ -129,14 +130,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
           var originationaddress = $("#originationCity").val() + ', ' + $("#originationState").val();
           var destinationaddress = $("#destinationCity").val() + ', ' + $("#destinationState").val();
 
-/*
-          if (originationaddress != $("#originToMatch").val() && destinationaddress != $("#destToMatch").val()) {
-              alert("The commitment for this Available request must be picked up or dropped off at the listed Origination or Destination. Please select a new Origination or Destination address.");
-              //alert($("#originToMatch").val());
-              //alert($("#destToMatch").val());
-              return false;
-          }
-*/
             if(verifyAddCarrierCommit() == true){
                 var result = true;
 
@@ -148,8 +141,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                       entityID: $("#entityID").val(),
                       locationType: "Origination"
                 };
-                //alert(JSON.stringify(params));
-
+                
                 $.ajax({
                    url: '<?php echo HTTP_HOST."/getlocationbycitystatezip" ?>',
                    type: 'POST',
@@ -157,7 +149,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                    contentType: "application/json",
                    async: false,
                    success: function(response){
-                      //alert("Origination " + response);
+                       
                       if (response == "success") {
 
                           var params = {
@@ -168,7 +160,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 entityID: $("#entityID").val(),
                                 locationType: "Destination"
                           };
-                          //alert(JSON.stringify(params));
+                          
                           $.ajax({
                              url: '<?php echo HTTP_HOST."/getlocationbycitystatezip" ?>',
                              type: 'POST',
@@ -177,48 +169,63 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                              async: false,
                              success: function(response){
 
-                                //alert("Destination " + response);
                                 if (response == "success") {
                                 } else {
                                     if (response == "ZERO_RESULTS") {
-                                        alert("Destination Address does not exist!");
+                                        //alert("Destination Address does not exist!");
+                                        $("#errorAlertTitle").html("Error");
+                                        $("#errorAlertBody").html("Destination Address does not exist!");
+                                        $("#errorAlert").modal('show');
                                     } else {
-                                        alert("Destination Address Error: " + JSON.stringify(response));
+                                        //alert("Destination Address Error: " + JSON.stringify(response));
+                                        $("#errorAlertTitle").html("Destination Address Error");
+                                        $("#errorAlertBody").html(JSON.stringify(response));
+                                        $("#errorAlert").modal('show');
                                     }
                                     result = false;
-                                    //alert('Preparation Failed!');
                                 }
                              },
                              error: function(response) {
                                 if (response == "ZERO_RESULTS") {
-                                    alert("Destination Address does not exist!");
+                                    //alert("Destination Address does not exist!");
+                                    $("#errorAlertTitle").html("Error");
+                                    $("#errorAlertBody").html("Destination Address does not exist!");
+                                    $("#errorAlert").modal('show');
                                 } else {
-                                    alert("Destination Address Error: " + JSON.stringify(response));
+                                    //alert("Destination Address Error: " + JSON.stringify(response));
+                                    $("#errorAlertTitle").html("Destination Address Error");
+                                    $("#errorAlertBody").html(JSON.stringify(response));
+                                    $("#errorAlert").modal('show');
                                 }
                                 result = false;
-                                //alert('Failed Searching for Destination Location! - Notify NEC of this failure.');
                              }
                           });
                       } else {
                           if (response == "ZERO_RESULTS") {
                               alert("Origination Address does not exist!");
+                                $("#errorAlertTitle").html("Error");
+                                $("#errorAlertBody").html("Origination Address does not exist!");
+                                $("#errorAlert").modal('show');
                           } else {
-                              alert("Origination Address Error: " + JSON.stringify(response));
+                              //alert("Origination Address Error: " + JSON.stringify(response));
+                                $("#errorAlertTitle").html("Origination Address Error");
+                                $("#errorAlertBody").html(JSON.stringify(response));
+                                $("#errorAlert").modal('show');
                           }
                           result = false;
-                          //alert('Preparation Failed!');
                       }
                    },
                    error: function(response) {
-                      alert("Issue With Origination Address: " + JSON.stringify(response));
+                      //alert("Issue With Origination Address: " + JSON.stringify(response));
+                        $("#errorAlertTitle").html("Issue With Origination Address");
+                        $("#errorAlertBody").html(JSON.stringify(response));
+                        $("#errorAlert").modal('show');
                       result = false;
-                      //alert('Failed Searching for Origination Location! - Notify NEC of this failure.');
                    }
                 });
 
                 if (result) {
                     verifyAndPost(function(data) {
-                      //alert(data);
                       $("#load").html("Commit");
                       $("#load").prop("disabled", false);
                     });
@@ -245,7 +252,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
             },
             error: function() {
-                alert("Unable to get billing Address");
+                //alert("Unable to get billing Address");
+                $("#errorAlertTitle").html("Error");
+                $("#errorAlertBody").html("Unable to get billing Address");
+                $("#errorAlert").modal('show');
             }
          });
 
@@ -338,13 +348,17 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                      contentType: "application/json",
                                      async: false,
                                      success: function(notification){
-                                         //alert("Create from existing: " + notification);
                                         $("#load").html("Commit");
                                         $("#load").prop("disabled", false);
                                          $("#myModalCommit").modal('hide');
                                      },
                                      error: function() {
-                                        alert('Failed creating a new Need from an existing.');
+                                        //alert('Failed creating a new Need from an existing.');
+                                        
+                                        $("#errorAlertTitle").html("Error");
+                                        $("#errorAlertBody").html("Failed creating a new Need from an existing.");
+                                        $("#errorAlert").modal('show');
+                                        
                                         $("#load").html("Commit");
                                         $("#load").prop("disabled", false);
                                         $("#myModalCommit").modal('hide');
@@ -404,7 +418,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
            },
            error: function() {
-              alert("There Was An Error Saving the Status");
+                //alert("There Was An Error Saving the Status");
+                $("#errorAlertTitle").html("Error");
+                $("#errorAlertBody").html("There Was An Error Saving The Status");
+                $("#errorAlert").modal('show');
            }
         });
 
@@ -1652,13 +1669,19 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             }
                         },
                         error: function(){
-                            alert("Could not close availability leg.");
+                            //alert("Could not close availability leg.");
+                            $("#errorAlertTitle").html("Error");
+                            $("#errorAlertBody").html("Could not close availability leg.");
+                            $("#errorAlert").modal('show');
                         }
                     });
                 });
             },
             error: function(){
-                alert("Could not Get customer needs Customer Needs.");
+                // alert("Could not Get customer needs Customer Needs.");
+                $("#errorAlertTitle").html("Error");
+                $("#errorAlertBody").html("Could not get customer needs");
+                $("#errorAlert").modal('show');
             }
         });
 
@@ -1711,7 +1734,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 },
                                 error: function(){
                                     console.log('Error:' + ' ' + vendorAddress + ' ' + vendorCity + ' ' + vendorPrice);
-                                    alert("Could not Create Quickbooks Vendor");
+                                    
+                                    $("#errorAlertTitle").html("Error");
+                                    $("#errorAlertBody").html("Could not create Quickbooks Vendor");
+                                    $("#errorAlert").modal('show');
 
                                 }
                             });
@@ -1750,7 +1776,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 },
                 error: function(){
                     console.log('Error:' + customerName + ' ' + customerAddress + ' ' + customerCity + ' ' + customerPrice);
-                    alert("Could not Create Quickbooks Customer");
+                    
+                    $("#errorAlertTitle").html("Error");
+                    $("#errorAlertBody").html("Could not create Quickbooks Customer");
+                    $("#errorAlert").modal('show');
 
                 }
             });
@@ -1839,10 +1868,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 	            contentType: "application/json",
 	            async: false,
 	            success: function(){
-	                alert("Customer Availability Successfully Completed.");
+                        $("#errorAlertTitle").html("Success");
+                        $("#errorAlertBody").html("Customer Availability Successfully Completed.");
+                        $("#errorAlert").modal('show');
 	            },
 	            error: function(){
-	                alert("Error with adding Order Details.");
+                        $("#errorAlertTitle").html("Error");
+                        $("#errorAlertBody").html("Error with adding Order Details.");
+                        $("#errorAlert").modal('show');
 	            }
 
 	        });
@@ -2142,14 +2175,19 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                                     }
                                                 },
                                                 error: function(){
-                                                    alert("Unable to save to customer_needs_commit");
+                                                    $("#errorAlertTitle").html("Error");
+                                                    $("#errorAlertBody").html("Unable to save to customer_needs_commit");
+                                                    $("#errorAlert").modal('show');
                                                 }
                                             });
 
                                         }
                                     },
                                     error: function(){
-                                        alert("unable to save relay.");
+                                        
+                                        $("#errorAlertTitle").html("Error");
+                                        $("#errorAlertBody").html("unable to save relay.");
+                                        $("#errorAlert").modal('show');
                                     }
                                 });
                             }
@@ -2163,15 +2201,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 type: "PUT",
                                 data: JSON.stringify(statusChange),
                                 success: function(data){
-                                    if(data > 0){
-                                        alert("customer need closed.");
-                                    }
-                                    else{
-
-                                    }
+                                    
                                 },
                                 error: function(){
-                                    alert("Unable to save to customer_needs_commit");
+                                    $("#errorAlertTitle").html("Error");
+                                    $("#errorAlertBody").html("Unable to save to customer_needs_commit");
+                                    $("#errorAlert").modal('show');
                                 }
                             });
 
@@ -2182,19 +2217,26 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         $("#saveCommit").prop("disabled", false);
                         $("#editCommitModal").modal('hide');
                         loadNewCustomerNeedsCommit(id);
-                        alert("Commit Updated");
+                        
+                        $("#errorAlertTitle").html("Success");
+                        $("#errorAlertBody").html("Commit Updated");
+                        $("#errorAlert").modal('show');
                     }
                     else{
                         console.log(data);
                     }
                 },
                 error: function(data){
-                    alert("There Was An Error Updating Commit");
+                    $("#errorAlertTitle").html("Error");
+                    $("#errorAlertBody").html("There Was An Error Updating Commit");
+                    $("#errorAlert").modal('show');
                 }
             });
         }
         else{
-            alert("You must enter at least ONE Trailer.");
+            $("#errorAlertTitle").html("Error");
+            $("#errorAlertBody").html("You must enter at least ONE Trailer.");
+            $("#errorAlert").modal('show');
         }
     }
 
@@ -2360,14 +2402,18 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                                     }
                                                 },
                                                 error: function(){
-                                                    alert("Unable to save to customer_needs_commit");
+                                                    $("#errorAlertTitle").html("Error");
+                                                    $("#errorAlertBody").html("Unable to save to customer_needs_commit");
+                                                    $("#errorAlert").modal('show');
                                                 }
                                             });
 
                                         }
                                     },
                                     error: function(){
-                                        alert("unable to save relay.");
+                                        $("#errorAlertTitle").html("Error");
+                                        $("#errorAlertBody").html("unable to save relay.");
+                                        $("#errorAlert").modal('show');
                                     }
                                 });
                             }
@@ -2380,16 +2426,23 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     $("#saveCommit").prop("disabled", false);
                     $("#editCommitModal").modal('hide');
                     loadNewCustomerNeedsCommit(id);
-                    alert("Commit Added");
+                    
+                    $("#errorAlertTitle").html("Success");
+                    $("#errorAlertBody").html("Commit Added");
+                    $("#errorAlert").modal('show');
                 },
                 error: function(data){
-                    alert("There Was An Error Updating Commit");
+                    $("#errorAlertTitle").html("Error");
+                    $("#errorAlertBody").html("There Was An Error Updating Commit");
+                    $("#errorAlert").modal('show');
                 }
             });
 
         }
         else{
-            alert("You must enter at least ONE Trailer.");
+            $("#errorAlertTitle").html("Error");
+            $("#errorAlertBody").html("You must enter at least ONE Trailer.");
+            $("#errorAlert").modal('show');
         }
     }
 
@@ -2566,7 +2619,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                         }
                                     },
                                     error: function(){
-                                        alert("unable to save relay.");
+                                        $("#errorAlertTitle").html("Error");
+                                        $("#errorAlertBody").html("unable to save relay.");
+                                        $("#errorAlert").modal('show');
                                     }
                                 });
                             }
@@ -2574,7 +2629,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                         closeCustomerCommitLegs(id);
                         $(document.body).css("cursor", "default");
-                        alert("Order Saved.");
+                        
+                        $("#errorAlertTitle").html("Success");
+                        $("#errorAlertBody").html("Order Saved");
+                        $("#errorAlert").modal('show');
+                        
                         getCommitted();
                         closeCommitTransport();
                     }
@@ -2585,12 +2644,16 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 },
                 error: function(data){
 
-                    alert("There Was An Error Saving Order");
+                    $("#errorAlertTitle").html("Error");
+                    $("#errorAlertBody").html("There Was An Error Saving Order");
+                    $("#errorAlert").modal('show');
                 }
             });
         }
         else{
-            alert("You must enter at least ONE Trailer.");
+            $("#errorAlertTitle").html("Error");
+            $("#errorAlertBody").html("You must enter at least ONE Trailer.");
+            $("#errorAlert").modal('show');
         }
 
     }
