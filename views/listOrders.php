@@ -249,7 +249,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                             "           <button type=\"button\" id=\"approvePOD\" class=\"btn btn-primary w-100 disabled\" disabled>Approved</button>" +
                                             "       </div>";
                         }
-                        
+
                         statusesList += "       </div>" +
                                         "       <hr>";
                     }
@@ -260,7 +260,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     "       <p>Note: " + status.note + "</p>" +
                                     "   </div>" +
                                     "</div>";
-                            
+
                     if(index % 3 == 0){
                         statusesList +="</div><div class=\"row\">";
                     }
@@ -703,7 +703,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
         switch(entityType){
             case 0:     // URL for the Admin.
-                url += '/order_details?include=orders,entities&columns=id,carrierID,orderID,pickupInformation,deliveryInformation,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,orders.customerRate,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,orders.qty,orders.customerID,orders.pickupInformation,orders.deliveryInformation,orders.podList,entities.name&filter=orderID,eq,' + orderID + '&transform=1';
+                url += '/order_details?include=orders,entities&columns=id,carrierID,orderID,pickupInformation,deliveryInformation,originationAddress,originationCity,originationState,originationZip,destinationAddress,destinationCity,destinationState,destinationZip,orders.originationCity,orders.originationState,orders.destinationCity,orders.destinationState,orders.distance,orders.status,orders.customerRate,distance,status,transportationMode,qty,carrierRate,pickupDate,deliveryDate,orders.id,orders.orderID,orders.qty,orders.customerID,orders.pickupInformation,orders.deliveryInformation,orders.podList,orders.documentID,entities.name&filter=orderID,eq,' + orderID + '&transform=1';
                 blnShow = true;
                 blnCarrierRate = true;
                 break;
@@ -816,6 +816,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         $("#carrierQty").val(order_details[i].qty);
 
                         $("#orderDetailID").val(order_details[i].id);
+                        $("#documentID").val(order_details[i].orders[0].documentID);
 
                         $.ajax({
                             url: '<?php echo API_HOST_URL . "/locations"; ?>' + '?filter=entityID,eq,' + currentCarrier + '&transform=1',
@@ -1507,6 +1508,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 async: false,
                 success: function(data){
                      var customerID = data.orders[0].customerID;
+
+                     $("#customerID").val(customerID);
+
                      var orderID = data.orders[0].orderID;
 
                      $("#orderNumber").html(orderID);
@@ -2368,8 +2372,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
     }
 
-    function viewPOD(documentID){        
-    
+    function viewPOD(documentID){
+
         var documentURL = '<?php echo API_HOST_URL; ?>' + '/documents/' + documentID;
 
         $.get(documentURL, function(data){
@@ -2631,7 +2635,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         font-weight: bold !important;
         font-size: large;
     }
-    
+
     .w-100{
         width: 100% !important;
     }
@@ -2728,6 +2732,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         </ul>
         <br>
 
+        <input type="hidden" id="customerID" name="customerID" value="" />
 
         <?php
             }
@@ -2826,6 +2831,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                               <li class="list-inline-item"><a href="#" class="btn btn-primary" onclick="saveCurrentOrderDetail();">Save Changes</a></li>
                               <li class="list-inline-item"><a href="#" id="showEditOrder" class="btn btn-secondary" onclick="showEditOrder();"><span class="fa fa-pencil"></span> Edit</a></li>
                             </ul>
+                            <p>&nbsp;</p>
+                            <br />
+                            <ul class="list-inline text-right">
+                              <li class="list-inline-item"><button type="button" class="btn btn-primary" id="btnUploadPO"><span class="fa fa-upload"></span> Upload PO</i></button></li>
+                              <li class="list-inline-item"><button type="button" class="btn btn-secondary" id="btnViewPO" onclick='viewPOD($("#documentID").val());'><span class="fa fa-eye"></span> View</button></li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -2834,6 +2845,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     <div class="row">
                         <div class="col-md-4">
                             <input type="hidden" class="form-control" id="orderDetailID">
+                            <input type="hidden" class="form-control" id="documentID">
                             <h5 class="text-blue">Pick Up Information</h5>
                             <input type="text" class="form-control" id="pickupName" placeholder="Business Name"><br>
                             <input type="text" class="form-control" id="pickupAddress" placeholder="Business Address"><br>
@@ -4059,6 +4071,48 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
     </div>
   </div>
 
+<!-- NEW Upload PO Modal -->
+  <div class="modal fade" id="newUploadPO" tabindex="-1" aria-hidden="true" aria-label="exampleModalCommitLabel">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalCommitLabel"><strong>Upload Purchase Order</strong></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+                <form id="formUploadPO" class="register-form mt-lg">
+                  <input type="hidden" id="statusID" name="statusID" value="" />
+                  <input type="hidden" id="orderID" name="orderID" value="" />
+                  <input type="hidden" id="index" name="index" value="" />
+                  <input type="hidden" id="customerID" name="customerID" value="" />
+                  <div class="row">
+                        <div class="col-sm-6" id="sectionPO">
+                            <label for="filePO">Select Purchase Order File to Upload</label>
+                            <div class="form-group">
+                                <input type="hidden" id="fileName" name="fileName" value="" />
+                                <input type="file" id="filePO" name="filePO" class="form-control-file mb-sm"/>
+                            </div>
+                        </div>
+                  </div>
+                  <hr/>
+                  <div class="row" id="replacePO">
+                      <div class="col-sm-12">
+                        <label for="blnReplacePO"><input type="checkbox" id="blnReplacePO">Replace POD</label>
+                      </div>
+                  </div>
+                </form>
+        </div>
+        <div class="modal-footer">
+           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+           <!--button type="button" class="btn btn-primary btn-md" id="viewPOD" onclick="viewPOD();">View POD</button-->
+           <button type="button" class="btn btn-primary btn-md" id="btnPOUpload">Upload</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 <!-- Original Upload POD Modal -->
   <div class="modal fade" id="uploadPOD" tabindex="-1" aria-hidden="true" aria-label="exampleModalCommitLabel">
     <div class="modal-dialog modal-lg" role="document">
@@ -5071,6 +5125,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             }
         }
 
+        // This is the upload for Proof of Delivery (POD)
         function PODUpload(){
 
             var today = new Date();
@@ -5336,6 +5391,125 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
         });
 
+        // This is the upload function for the Purchase Order (PO)
+        function POUpload(){
+
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth()+1; //January is 0!
+            var yyyy = today.getFullYear();
+            var hours = today.getHours();
+            var min = today.getMinutes();
+            var sec = today.getSeconds();
+
+            if(dd<10) {
+                dd='0'+dd;
+            }
+
+            if(mm<10) {
+                mm='0'+mm;
+            }
+
+            if(hours<10) {
+                hours='0'+hours;
+            }
+
+            if(min<10) {
+                min='0'+min;
+            }
+
+            if(sec<10) {
+                sec='0'+sec;
+            }
+
+            today = mm+'/'+dd+'/'+yyyy;
+            today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+
+            var customerID = $('#customerID').val();
+            var customer = "";
+
+            allEntities.entities.forEach(function(entity){
+
+                if(customerID == entity.id){
+
+                    customer = entity.name;
+                }
+            });
+
+            var formData = new FormData();
+            var fileData = $('#filePO')[0].files[0];
+            formData.append('entityID', customerID);
+            formData.append('name', 'Purchase Order for Order #: ' + $("#orderID").val());
+            formData.append('fileupload', fileData);
+
+            var url = '<?php echo HTTP_HOST."/uploaddocument" ?>';
+            var type = "POST";
+
+            if(fileData != undefined){
+                $.ajax({
+                    url : url,
+                    type : 'POST',
+                    data : formData,
+                    processData: false,  // tell jQuery not to process the data
+                    contentType: false,  // tell jQuery not to set contentType
+                    success : function(data) {
+
+                        var orderID = $('#orderID').val();
+
+                        var orderData = {documentID: data};
+
+                        $.ajax({
+                            url: '<?php echo API_HOST_URL . "/orders/"; ?>' + orderID,
+                            type: 'PUT',
+                            data: JSON.stringify(orderData),
+                            contentType: "application/json",
+                            async: false,
+                            success: function(){
+
+                                alert("Purchase Order Successfully Uploaded.");
+
+                                // Clear Form
+                                $('#orderID').val('');
+                                $("#newUploadPO").modal('hide');
+
+                            },
+                            error: function(error){
+                                alert("Unable to Save Purchase Order List to Orders.");
+                            }
+                        });
+
+                    },
+                    error: function(error){
+                        alert("Unable to Upload Purchase Order File.");
+                    }
+                });
+            }
+            else{
+                alert("You must select a file to upload.");
+            }
+        }
+
+        $("#btnUploadPO").unbind('click').bind('click',function(){ // Doing it like this because it was double posting document giving me duplicates
+
+                $("#newUploadPO").modal("show");
+
+        });
+
+        $("#btnPOUpload").unbind('click').bind('click',function(){ // Doing it like this because it was double posting document giving me duplicates
+
+            //console.log($('#filePO').val());
+
+            // fileName will tell us if we're in Upload Mode or View/Edit Mode
+            if($('#filePO').val() != ""){
+                // We are in Upload mode,
+                // Lets upload PO
+                POUpload();
+            }
+            else{
+                alert("You must select a file.");
+            }
+        });
+
         $("#activeCarrier").unbind('change').bind('change',function(){ // Doing it like this because it was double posting document giving me duplicates
 
             var vinNumber = $("#displayVinNumber").html();
@@ -5522,7 +5696,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         });
 
         $('#saveOrder').off('click').on('click', function(){
-            
+
 /*
             var unitDataList = [];
 
@@ -5657,7 +5831,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                                             phoneNumber: $('#phoneNumber_relay' + relayNumber).val().trim(), hoursOfOperation: $('#hoursOfOperation_relay' + relayNumber).val().trim()};
 
                                     if(destinationCity != "" && destinationState != ""){
-                                     
+
                                             if(relayID == ""){
                                                 url = '<?php echo API_HOST_URL . "/order_details" ?>/';
                                                 type = "POST";
@@ -5680,7 +5854,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                                 type: type,
                                                 data: JSON.stringify(relayData),
                                                 success: function(data){
-                                                    
+
                                                     originationAddress1 = destinationAddress1;
                                                     originationCity = destinationCity;
                                                     originationState = destinationState;
