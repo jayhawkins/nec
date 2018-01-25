@@ -969,6 +969,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                      success: function(data){
                          //console.log(data.order_statuses[0]);
                          if (data.order_statuses.length > 0) {
+                             $("#statusID").val(data.order_statuses[0].id)
                              $("#statusAddANote").val(data.order_statuses[0].note);
                              $("#statusTrailerStatus").val(data.order_statuses[0].status);
                              $("#statusCurrentLocation").val(data.order_statuses[0].city + ', ' + data.order_statuses[0].state);
@@ -976,7 +977,25 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                              $("#statusArrivalEta").val(data.order_statuses[0].arrivalEta);
                              $("#statusOrderID").val(data.order_statuses[0].orderID);
                              $("#statusCarrierID").val(data.order_statuses[0].carrierID);
+                             $("#statusDocumentID").val(data.order_statuses[0].documentID);
                              $("#statusVinNumber").val(data.order_statuses[0].vinNumber);
+
+                             var url = '<?php echo API_HOST_URL ?>/documents?filter[]=id,eq,' + data.order_statuses[0].documentID + '&transform=1';
+                             var type = "GET";
+
+                             $.ajax({
+                                 url: url,
+                                 type: type,
+                                 async: false,
+                                 success: function(data){
+                                     $("#statusFileName").val(data.documents[0].documentID);
+                                 },
+                                 error: function() {
+                                     alert("There Was An Error Retrieving Document Data!");
+                                 }
+                             });
+
+                             $("#statusRecordButtons").css("display", "block");
                          } else {
                              $("#statusAddANote").val('');
                              $("#statusTrailerStatus").val('In Transit');
@@ -985,7 +1004,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                              $("#statusArrivalEta").val('');
                              $("#statusOrderID").val(orderID);
                              $("#statusCarrierID").val(<?php echo $_SESSION['entityid']; ?>);
+                             $("#statusDocumentID").val('');
                              $("#statusVinNumber").val(trailer.vinNumber);
+                             $("#statusRecordButtons").css("display", "none");
                          }
                      },
                      error: function() {
@@ -2332,7 +2353,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
     }
 
     function viewPOD(){
-	    window.open( '<?php echo HTTP_HOST."/viewdocument" ?>?filename=' + $("#fileName").val() + '&entityID=' + $("#customerID").val(), '_blank');
+	    window.open( '<?php echo HTTP_HOST."/viewdocument" ?>?filename=' + $("#statusFileName").val() + '&entityID=' + $("#statusCarrierID").val(), '_blank');
     }
 
     function showOrderSummary(){
@@ -3140,8 +3161,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             </div>
                         </div>
                         <div class="carrier-summary__bottom-container">
+                            <input type="hidden" id="statusID" value="" />
                             <input type="hidden" id="statusOrderID" value="" />
                             <input type="hidden" id="statusCarrierID" value="" />
+                            <input type="hidden" id="statusDocumentID" value="" />
+                            <input type="hidden" id="statusFileName" value="" />
                             <input type="hidden" id="statusVinNumber" value="" />
                             <div class="row">
                                 <div class="col-md-1">
@@ -3196,18 +3220,21 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 </div>
                                 <div class="col-md-1">&nbsp;</div>
                             </div>
-                            <div class="row">
-                                <div class="col-md-1">&nbsp;</div>
-                                <div class="col-md-3">&nbsp;</div>
-                                <div class="col-md-3">
-                                    <a href="#" class="btn btn-primary">Download Pod &nbsp; <span class="fa fa-download"></span></a>
-                                </div>
-                                <div class="col-md-5">
-                                    <a href="#" class="btn btn-outline-light"><span class="fa fa-lg fa-paperclip"></span></a>
-                                    &nbsp;
-                                    <a href="#" class="btn btn-primary">Upload Pod &nbsp; <span class="fa fa-upload"></span></a>
+                            <div id="statusRecordButtons" style="display: none">
+                                <div class="row">
+                                    <div class="col-md-1">&nbsp;</div>
+                                    <div class="col-md-3">&nbsp;</div>
+                                    <div class="col-md-3">
+                                        <button type="button" id="viewPOD" onclick="viewPOD()" class="btn btn-primary">Download POD &nbsp; <span class="fa fa-download"></span></button>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <button type="button" class="btn btn-outline-light" id="btnPaperClip"><span class="fa fa-lg fa-paperclip"></span></a>
+                                        &nbsp;
+                                        <button type="button" class="btn btn-primary" id="btnUploadPOD">Upload POD &nbsp; <span class="fa fa-upload"></span></a>
+                                    </div>
                                 </div>
                             </div>
+
                             <hr>
                             <div class="widget border-radius-5 border-light-blue">
                                 <label for="tracking-notes" class="text-blue">Add a Note</label>
@@ -3965,7 +3992,49 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
     </div>
   </div>
 
-<!-- Upload POD Modal -->
+<!-- NEW Upload POD Modal -->
+  <div class="modal fade" id="newUploadPOD" tabindex="-1" aria-hidden="true" aria-label="exampleModalCommitLabel">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalCommitLabel"><strong>Upload POD</strong></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+                <form id="formUploadPOD" class="register-form mt-lg">
+                  <input type="hidden" id="statusID" name="statusID" value="" />
+                  <input type="hidden" id="orderID" name="orderID" value="" />
+                  <input type="hidden" id="index" name="index" value="" />
+                  <input type="hidden" id="customerID" name="customerID" value="" />
+                  <div class="row">
+                        <div class="col-sm-6" id="sectionPOD">
+                            <label for="filePOD">Select POD File to Upload</label>
+                            <div class="form-group">
+                                <input type="hidden" id="fileName" name="fileName" value="" />
+                                <input type="file" id="filePOD" name="filePOD" class="form-control-file mb-sm"/>
+                            </div>
+                        </div>
+                  </div>
+                  <hr/>
+                  <div class="row" id="replacePOD">
+                      <div class="col-sm-12">
+                        <label for="blnReplacePOD"><input type="checkbox" id="blnReplacePOD">Replace POD</label>
+                      </div>
+                  </div>
+                </form>
+        </div>
+        <div class="modal-footer">
+           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+           <!--button type="button" class="btn btn-primary btn-md" id="viewPOD" onclick="viewPOD();">View POD</button-->
+           <button type="button" class="btn btn-primary btn-md" id="btnUpload">Upload</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Original Upload POD Modal -->
   <div class="modal fade" id="uploadPOD" tabindex="-1" aria-hidden="true" aria-label="exampleModalCommitLabel">
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
@@ -4977,6 +5046,104 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             }
         }
 
+        function PODUpload(){
+
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth()+1; //January is 0!
+            var yyyy = today.getFullYear();
+            var hours = today.getHours();
+            var min = today.getMinutes();
+            var sec = today.getSeconds();
+
+            if(dd<10) {
+                dd='0'+dd;
+            }
+
+            if(mm<10) {
+                mm='0'+mm;
+            }
+
+            if(hours<10) {
+                hours='0'+hours;
+            }
+
+            if(min<10) {
+                min='0'+min;
+            }
+
+            if(sec<10) {
+                sec='0'+sec;
+            }
+
+            today = mm+'/'+dd+'/'+yyyy;
+            today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+
+            var carrierID = $('#podCarrierID').val();
+            var carrier = "";
+
+            allEntities.entities.forEach(function(entity){
+
+                if(carrierID == entity.id){
+
+                    carrier = entity.name;
+                }
+            });
+
+            var formData = new FormData();
+            var fileData = $('#filePOD')[0].files[0];
+            formData.append('entityID', $("#statusCarrierID").val());
+            formData.append('name', $("#statusVinNumber").val());
+            formData.append('fileupload', fileData);
+
+            var url = '<?php echo HTTP_HOST."/uploaddocument" ?>';
+            var type = "POST";
+
+            if(fileData != undefined){
+                $.ajax({
+                    url : url,
+                    type : 'POST',
+                    data : formData,
+                    processData: false,  // tell jQuery not to process the data
+                    contentType: false,  // tell jQuery not to set contentType
+                    success : function(data) {
+
+                        var statusID = $('#statusID').val();
+
+                        var statusData = {documentID: data};
+
+                        $.ajax({
+                            url: '<?php echo API_HOST_URL . "/order_statuses/"; ?>' + statusID,
+                            type: 'PUT',
+                            data: JSON.stringify(statusData),
+                            contentType: "application/json",
+                            async: false,
+                            success: function(){
+
+                                alert("POD Successfully Uploaded.");
+
+                                // Clear Form
+                                $('#statusID').val('');
+                                //$("#uploadPOD").modal('hide');
+                                $("#newUploadPOD").modal('hide');
+
+                            },
+                            error: function(error){
+                                alert("Unable to Save POD List to Orders.");
+                            }
+                        });
+
+                    },
+                    error: function(error){
+                        alert("Unable to Upload POD File.");
+                    }
+                });
+            }
+            else{
+                alert("You must select a file to upload.");
+            }
+        }
+
         function savePODInfo(){
 
             var carrierID = $('#podCarrierID').val();
@@ -4990,7 +5157,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 }
             });
 
-        var orderHistoryTable = $('#order-history-table').DataTable();
+            var orderHistoryTable = $('#order-history-table').DataTable();
             var podTable = $("#pod-list-table").DataTable();
             var podList = podTable.ajax.json().orders[0].podList;
             var index = $('#index').val();
@@ -5056,27 +5223,23 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
         $("#btnUploadPOD").unbind('click').bind('click',function(){ // Doing it like this because it was double posting document giving me duplicates
 
-                console.log($('#fileName').val());
+                $("#newUploadPOD").modal("show");
+
+        });
+
+        $("#btnUpload").unbind('click').bind('click',function(){ // Doing it like this because it was double posting document giving me duplicates
+
+                console.log($('#filePOD').val());
 
             // fileName will tell us if we're in Upload Mode or View/Edit Mode
-            if($('#fileName').val() == ""){
+            if($('#filePOD').val() != ""){
                 // We are in Upload mode,
                 // Lets upload POD
-                uploadPOD();
+                //uploadPOD();
+                PODUpload();
             }
             else{
-                // We are in View/Edit Mode
-                // Now we need to know if we need to replace the POD
-                if($('#blnReplacePOD').is(":checked")){
-                    // We need to replace the POD
-                    // So we upload
-                    uploadPOD();
-                }
-                else{
-                    // Otherwise,
-                    // We save the POD Info
-                    savePODInfo();
-                }
+                alert("You must select a file.");
             }
         });
 
