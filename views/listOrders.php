@@ -539,7 +539,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                                     $("#errorAlertBody").html(data);
                                                     $("#errorAlert").modal('show');
                                                 }
-                                                
+
                                                 $("#editOrder").modal('hide');
 
                                                 var orderDetailTable = $('#order-details-table').DataTable();
@@ -565,7 +565,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                           error: function(data){
                                                 $("#load").html("Save Changes");
                                                 $("#load").prop("disabled", false);
-                                        
+
                                                 $("#errorAlertTitle").html("Notification Error");
                                                 $("#errorAlertBody").html(JSON.stringify(data));
                                                 $("#errorAlert").modal('show');
@@ -575,7 +575,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     } else {
                                         $("#load").html("Save Changes");
                                         $("#load").prop("disabled", false);
-                                        
+
                                         $("#errorAlertTitle").html("Error");
                                         $("#errorAlertBody").html("Editing Order Failed! Please Verify Your Data.");
                                         $("#errorAlert").modal('show');
@@ -584,7 +584,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                  error: function() {
                                     $("#load").html("Save Changes");
                                     $("#load").prop("disabled", false);
-                                        
+
                                     $("#errorAlertTitle").html("Error");
                                     $("#errorAlertBody").html("There Was An Error Editing The Order!");
                                     $("#errorAlert").modal('show');
@@ -1083,7 +1083,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                              $("#statusRecordButtons").css("display", "none");
                          }
                      },
-                     error: function() {                                        
+                     error: function() {
                         $("#errorAlertTitle").html("Error");
                         $("#errorAlertBody").html("There Was An Error Retrieving Order Status Data!");
                         $("#errorAlert").modal('show');
@@ -2335,7 +2335,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             $("#errorAlertTitle").html("Error");
                             $("#errorAlertBody").html("Unable to send notification about status change.");
                             $("#errorAlert").modal('show');
-                            
+
                             $("#saveOrderStatus").html("Save");
                             $("#saveOrderStatus").prop("disabled", false);
                         }
@@ -2345,7 +2345,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     $("#errorAlertTitle").html("Error");
                     $("#errorAlertBody").html("There Was An Error Saving the Status");
                     $("#errorAlert").modal('show');
-                            
+
                      $("#saveOrderStatus").html("Save");
                      $("#saveOrderStatus").prop("disabled", false);
                 }
@@ -2435,7 +2435,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 $("#errorAlertTitle").html("Success");
                 $("#errorAlertBody").html("Trailer Data Successfully Saved.");
                 $("#errorAlert").modal('show');
-                            
+
                 var podListTable = $('#pod-list-table').DataTable();
                 podListTable.ajax.reload();
 
@@ -5354,7 +5354,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 $("#errorAlertTitle").html("Success");
                                 $("#errorAlertBody").html("POD Successfully Uploaded");
                                 $("#errorAlert").modal('show');
-                            
+
                                 var podListTable = $('#pod-list-table').DataTable();
                                 podListTable.ajax.reload();
 
@@ -5544,7 +5544,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     $("#errorAlertTitle").html("Success");
                     $("#errorAlertBody").html("POD Info Successfully Saved.");
                     $("#errorAlert").modal('show');
-                        
+
                     var podListTable = $('#pod-list-table').DataTable();
                     orderHistoryTable.ajax.reload();
                     podListTable.ajax.reload();
@@ -5957,17 +5957,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         contentType: "application/json",
                         async: false,
                         success: function(data){
-<<<<<<< HEAD
                             $("#statusID").val(data);
                             $("#statusAddANote").val('');
                             $("#noStatusRecordsExist").css("display", "none");
                             $("#statusRecordButtons").css("display", "block");
                             alert('Order Trailer Status Saved!');
-=======
-                            $("#errorAlertTitle").html("Success");
-                            $("#errorAlertBody").html("Order Trailer Status Saved.");
-                            $("#errorAlert").modal('show');
->>>>>>> 52526a7a077db20a139797c56ad1feba121a7ba9
                         },
                         error: function(error){
                             $("#errorAlertTitle").html("Error");
@@ -6067,17 +6061,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         contentType: "application/json",
                         async: false,
                         success: function(data){
-<<<<<<< HEAD
                             $("#statusID").val(data);
                             $("#statusAddANote").val('');
                             $("#noStatusRecordsExist").css("display", "none");
                             $("#statusRecordButtons").css("display", "block");
                             alert('Order Trailer Status Saved!');
-=======
-                            $("#errorAlertTitle").html("Success");
-                            $("#errorAlertBody").html("Order Trailer Status Saved!");
-                            $("#errorAlert").modal('show');
->>>>>>> 52526a7a077db20a139797c56ad1feba121a7ba9
                         },
                         error: function(error){
                             $("#errorAlertTitle").html("Error");
@@ -6387,7 +6375,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 $("#saveCommit").prop("disabled", false);
                                 loadNewOrderDetailsAJAX(id);
                                 closeEditOrder();
-                                
+
                                 $("#errorAlertTitle").html("Success");
                                 $("#errorAlertBody").html("Order Updated");
                                 $("#errorAlert").modal('show');
