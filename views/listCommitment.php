@@ -57,7 +57,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
     //console.log(dataPoints);
 
     var entity = <?php echo json_encode($entity); ?>;
-    
+
     var entityid = <?php echo $_SESSION['entityid']; ?>;
 
     var allEntities = <?php echo json_encode($allEntities); ?>;
@@ -141,7 +141,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                       entityID: $("#entityID").val(),
                       locationType: "Origination"
                 };
-                
+
                 $.ajax({
                    url: '<?php echo HTTP_HOST."/getlocationbycitystatezip" ?>',
                    type: 'POST',
@@ -149,7 +149,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                    contentType: "application/json",
                    async: false,
                    success: function(response){
-                       
+
                       if (response == "success") {
 
                           var params = {
@@ -160,7 +160,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 entityID: $("#entityID").val(),
                                 locationType: "Destination"
                           };
-                          
+
                           $.ajax({
                              url: '<?php echo HTTP_HOST."/getlocationbycitystatezip" ?>',
                              type: 'POST',
@@ -354,11 +354,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                      },
                                      error: function() {
                                         //alert('Failed creating a new Need from an existing.');
-                                        
+
                                         $("#errorAlertTitle").html("Error");
                                         $("#errorAlertBody").html("Failed creating a new Need from an existing.");
                                         $("#errorAlert").modal('show');
-                                        
+
                                         $("#load").html("Commit");
                                         $("#load").prop("disabled", false);
                                         $("#myModalCommit").modal('hide');
@@ -704,7 +704,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
         var url = baseUrl + '&satisfy=any&order[]=entityID&order[]=rootCustomerNeedsID&order[]=availableDate,desc&transform=1';
 
-        var relayURL = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,deliveryInformation,pickupInformation,transportationMode,rate,originationAddress1,originationCity,originationState,originationZip,originationNotes,destinationNotes,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,unitData,status,customer_needs_commit.id,customer_needs_commit.entityID,customer_needs_commit.status,customer_needs_commit.pickupDate,customer_needs_commit.deliveryDate,customer_needs_commit.rate,customer_needs_commit.transportation_mode,entities.name,entities.rateType,entities.negotiatedRate&filter[]=rootCustomerNeedsID,eq,' + id + '&filter[]=status,eq,Available&satisfy=all&order[]=id&transform=1';
+        var relayURL = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,deliveryInformation,pickupInformation,transportationMode,rate,originationAddress1,originationCity,originationState,originationZip,originationNotes,destinationNotes,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,unitData,status,customer_needs_commit.id,customer_needs_commit.entityID,customer_needs_commit.status,customer_needs_commit.pickupDate,customer_needs_commit.deliveryDate,customer_needs_commit.rate,customer_needs_commit.transportation_mode,customer_needs_commit.distance,customer_needs_commit.rateType,entities.name,entities.rateType,customer_needs_commit.qty,entities.negotiatedRate&filter[]=rootCustomerNeedsID,eq,' + id + '&filter[]=status,eq,Available&satisfy=all&order[]=id&transform=1';
 
         $.get(url, function(data){
 
@@ -956,7 +956,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 }
 
                 $('#relay_id' + relayNumber).val(customer_needs.id);
-                $('#commit_id' + relayNumber).val(customer_needs.customer_needs_commit.id);
+                $('#commit_id' + relayNumber).val(customer_needs.customer_needs_commit[0].id);
                 $('#entityID_relay' + relayNumber).val(parseInt(customer_needs.customer_needs_commit[0].entities[0].id));
                 $('#address_relay' + relayNumber).val(customer_needs.destinationAddress1);
                 $('#city_relay' + relayNumber).val(customer_needs.destinationCity);
@@ -971,7 +971,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 $('#phoneNumber_relay' + relayNumber).val(customer_needs.deliveryInformation.phoneNumber);
                 $('#hoursOfOperation_relay' + relayNumber).val(customer_needs.deliveryInformation.hoursOfOperation);
 
-
+                var calcRate = 0.00;
+                if (customer_needs.customer_needs_commit[0].entities[0].rateType == "Mileage") {
+                    calcRate = ( customer_needs.customer_needs_commit[0].distance * parseFloat(customer_needs.customer_needs_commit[0].entities[0].negotiatedRate).toFixed(2) ) * customer_needs.customer_needs_commit[0].qty;
+                } else {
+                    calcRate = customer_needs.customer_needs_commit[0].entities[0].negotiatedRate;
+                }
+                //$('#rate_relay' + relayNumber).val('$' + parseFloat(calcRate).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,").toString());
+                $('#rate_relay' + relayNumber).val(parseFloat(calcRate).toFixed(2));
 
 
                 var entid = parseInt(customer_needs.customer_needs_commit[0].entities[0].id);
@@ -1443,7 +1450,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             <div class="form-group">
                                     <label for="notes_relay1">Notes</label>
                                     <textarea class="form-control" id="notes_relay1" rows="3"></textarea>
-                             </div>
+                            </div>
+                            <div class="form-group">
+                                    <label for="rate_relay1">Negotiated Rate</label>
+                                    <input class="form-control" id="rate_relay1" placeholder="" type="text" disabled>
+                            </div>
                     </div>
 
                     <div class="col-sm-12 col-md-6 col-lg-3">
@@ -1494,7 +1505,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             <div class="form-group">
                                     <label for="notes_relay2">Notes</label>
                                     <textarea class="form-control" id="notes_relay2" rows="3"></textarea>
-                             </div>
+                            </div>
+                            <div class="form-group">
+                                    <label for="rate_relay2">Negotiated Rate</label>
+                                    <input class="form-control" id="rate_relay2" placeholder="" type="text" disabled>
+                            </div>
                     </div>
 
                     <div class="col-sm-12 col-md-6 col-lg-3">
@@ -1545,7 +1560,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             <div class="form-group">
                                     <label for="notes_relay3">Notes</label>
                                     <textarea class="form-control" id="notes_relay3" rows="3"></textarea>
-                             </div>
+                            </div>
+                            <div class="form-group">
+                                    <label for="rate_relay3">Negotiated Rate</label>
+                                    <input class="form-control" id="rate_relay3" placeholder="" type="text" disabled>
+                            </div>
                     </div>
 
                     <div class="col-sm-12 col-md-6 col-lg-3">
@@ -1596,7 +1615,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             <div class="form-group">
                                     <label for="notes_relay4">Notes</label>
                                     <textarea class="form-control" id="notes_relay4" rows="3"></textarea>
-                             </div>
+                            </div>
+                            <div class="form-group">
+                                    <label for="rate_relay4">Negotiated Rate</label>
+                                    <input class="form-control" id="rate_relay4" placeholder="" type="text" disabled>
+                            </div>
                     </div>
             </div>
 
@@ -1734,7 +1757,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 },
                                 error: function(){
                                     console.log('Error:' + ' ' + vendorAddress + ' ' + vendorCity + ' ' + vendorPrice);
-                                    
+
                                     $("#errorAlertTitle").html("Error");
                                     $("#errorAlertBody").html("Could not create Quickbooks Vendor");
                                     $("#errorAlert").modal('show');
@@ -1776,7 +1799,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 },
                 error: function(){
                     console.log('Error:' + customerName + ' ' + customerAddress + ' ' + customerCity + ' ' + customerPrice);
-                    
+
                     $("#errorAlertTitle").html("Error");
                     $("#errorAlertBody").html("Could not create Quickbooks Customer");
                     $("#errorAlert").modal('show');
@@ -2112,6 +2135,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                             var relayID = $('#relay_id' + relayNumber).val().trim();
                             var commitID = $('#commit_id' + relayNumber).val().trim();
+                            console.log(commitID);
                             var destinationAddress1 = $('#address_relay' + relayNumber).val().trim();
                             var destinationCity = $('#city_relay' + relayNumber).val().trim();
                             var destinationState = $('#state_relay' + relayNumber).val().trim();
@@ -2154,10 +2178,15 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                                             var pickupDate = $('#pickupDate_relay' + relayNumber).val();
                                             var deliveryDate = $('#deliveryDate_relay' + relayNumber).val();
-
+                                            var rate = $('#rate_relay' + relayNumber).val();
+/*
                                             var commitData = {customerNeedsID: relayID, originationAddress1: originationAddress1, originationCity: originationCity, originationState: originationState, originationZip: originationZip,
                                                             destinationAddress1: destinationAddress1, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, status: "Available",
-                                                            originationLng: "", originationLat: "", destinationLng: "", destinationLat: "", distance: 0, qty: qty, transportation_mode: "", transportation_type: "", updatedAt: today,
+                                                            originationLng: "", originationLat: "", destinationLng: "", destinationLat: "", distance: 0, qty: qty, rate: rate, transportation_mode: "", transportation_type: "", updatedAt: today,
+                                                            pickupDate: pickupDate, deliveryDate: deliveryDate };
+*/
+                                            var commitData = {customerNeedsID: relayID, originationAddress1: originationAddress1, originationCity: originationCity, originationState: originationState, originationZip: originationZip,
+                                                            destinationAddress1: destinationAddress1, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, rate: rate, updatedAt: today,
                                                             pickupDate: pickupDate, deliveryDate: deliveryDate };
 
                                             $.ajax({
@@ -2184,7 +2213,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                         }
                                     },
                                     error: function(){
-                                        
+
                                         $("#errorAlertTitle").html("Error");
                                         $("#errorAlertBody").html("unable to save relay.");
                                         $("#errorAlert").modal('show');
@@ -2201,7 +2230,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 type: "PUT",
                                 data: JSON.stringify(statusChange),
                                 success: function(data){
-                                    
+
                                 },
                                 error: function(){
                                     $("#errorAlertTitle").html("Error");
@@ -2217,7 +2246,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         $("#saveCommit").prop("disabled", false);
                         $("#editCommitModal").modal('hide');
                         loadNewCustomerNeedsCommit(id);
-                        
+
                         $("#errorAlertTitle").html("Success");
                         $("#errorAlertBody").html("Commit Updated");
                         $("#errorAlert").modal('show');
@@ -2426,7 +2455,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     $("#saveCommit").prop("disabled", false);
                     $("#editCommitModal").modal('hide');
                     loadNewCustomerNeedsCommit(id);
-                    
+
                     $("#errorAlertTitle").html("Success");
                     $("#errorAlertBody").html("Commit Added");
                     $("#errorAlert").modal('show');
@@ -2629,11 +2658,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                         closeCustomerCommitLegs(id);
                         $(document.body).css("cursor", "default");
-                        
+
                         $("#errorAlertTitle").html("Success");
                         $("#errorAlertBody").html("Order Saved");
                         $("#errorAlert").modal('show');
-                        
+
                         getCommitted();
                         closeCommitTransport();
                     }

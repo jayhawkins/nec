@@ -276,34 +276,34 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
     }
 
     function confirmApprovePOD(carrierID, vinNumber, documentID, orderDetailID, orderID, statusID){
-    
+
         var orderURL = '<?php echo API_HOST_URL; ?>' + '/orders/' + orderID;
         var orderDetailURL = '<?php echo API_HOST_URL; ?>' + '/order_details/' + orderDetailID;
-        
+
         $.get(orderURL, function(order){
-            
-            var customerID = order.customerID; 
+
+            var customerID = order.customerID;
             $('#approveCustomerID').val(customerID);
-            
+
         });
-        
+
         $.get(orderDetailURL, function(orderDetail){
 
-            var carrierRate = orderDetail.carrierRate;   
+            var carrierRate = orderDetail.carrierRate;
             var qty = orderDetail.qty;
             var cost = carrierRate / qty;
             $('#approveCost').val(Math.round(cost));
 
         });
-        
+
         $('#approveOrderID').val(orderID);
         $('#approveOrderDetailID').val(orderDetailID);
         $('#approveCarrierID').val(carrierID);
         $('#approveDocumentID').val(documentID);
         $('#approveVinNumber').val(vinNumber);
         $('#approveStatusID').val(statusID);
-        
-        $('#approvePODModal').modal('show');    
+
+        $('#approvePODModal').modal('show');
     }
 
     function addVINNumber(){
@@ -3312,7 +3312,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                         <button type="button" class="btn btn-primary" id="btnUploadPOD">Upload POD &nbsp; <span class="fa fa-upload"></span></a>
                                     </div>
                                     <div class="col-md-1">
-                                        <button type="button" class="list-inline-item btn btn-primary pull-right" id="saveTrailerStatusExisting">Save Changes</li>
+                                        <button type="button" class="list-inline-item btn btn-primary pull-right" id="saveTrailerStatusExisting">Update</li>
                                     </div>
                                 </div>
                             </div>
@@ -3323,7 +3323,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     <div class="col-md-1">&nbsp;</div>
                                     <div class="col-md-3">&nbsp;</div>
                                     <div class="col-md-3">
-
+                                        <button type="button" id="btnDownloadPODNotExisting" class="btn btn-primary">Download POD &nbsp; <span class="fa fa-download"></span></button>
                                     </div>
                                     <div class="col-md-3">
 
@@ -4692,19 +4692,19 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             var documentID = $('#approveDocumentID').val();
             var vinNumber = $('#approveVinNumber').val();
             var statusID = $('#approveStatusID').val();
-            
+
             var approvedPOD = {orderID: orderID, orderDetailID: orderDetailID, carrierID: carrierID, customerID: customerID, userID: userid, documentID: documentID,
                 vinNumber: vinNumber, cost: cost, createdAt: today, updatedAt: today};
-            
+
             $.ajax({
                 url: '<?php echo API_HOST_URL . "/approved_pod/"; ?>',
-                type: "POST", 
+                type: "POST",
                 data: JSON.stringify(approvedPOD),
                 contentType: "application/json",
                 async: false,
                 success: function(data){
                     if(data > 0){
-                        
+
                         var orderStatus = {hasBeenApproved: 1, updatedAt: today};
                         $.ajax({
                             url: '<?php echo API_HOST_URL . "/order_statuses/"; ?>'+statusID,
@@ -4714,10 +4714,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             async: false,
                             success: function(data){
                                 if(data > 0){
-                                    
+
                                     var activeCarrier = $("#activeCarrier").val();
                                     displayOrderStatuses(orderID, activeCarrier, vinNumber);
-                                    
+
                                     $('#approveCustomerID').val("");
                                     $('#approveCost').val("");
                                     $('#approveOrderID').val("");
@@ -4739,14 +4739,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 $('#approveVinNumber').val("");
                                 $('#approveStatusID').val("");
                                 $('#approvePODModal').modal('hide');
-                                    
+
                                 $("#errorAlertTitle").html("Error");
                                 $("#errorAlertBody").html("Unable to change the order status");
                                 $("#errorAlert").modal('show');
                             }
-                            
+
                         });
-                        
+
                     }
                 },
                 error: function(){
@@ -4759,13 +4759,13 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     $('#approveVinNumber').val("");
                     $('#approveStatusID').val("");
                     $('#approvePODModal').modal('hide');
-                    
+
                     $("#errorAlertTitle").html("Error");
                     $("#errorAlertBody").html("Unable to Approve POD");
                     $("#errorAlert").modal('show');
                 }
             });
-            
+
         });
 
         $('#order-details-table tbody').off('click').on( 'click', 'button', function () {
@@ -5534,9 +5534,79 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             }
         });
 
+        // We have to handle downloading POD's a little differently depending on if the status record exists or not - This is if it does exist
         $("#btnDownloadPOD").unbind('click').bind('click',function(){ // Doing it like this because it was double posting document giving me duplicates
 
             var orderID = $("#statusOrderID").val();
+
+            var url = '<?php echo API_HOST_URL . '/orders/' ?>' + orderID;
+
+            $.ajax({
+                url: url,
+                type: "GET",
+                contentType: "application/json",
+                async: false,
+                success: function(data){
+                    var customerID = data.customerID;
+                    var customerName = "";
+
+                    allEntities.entities.forEach(function(entity){
+
+                        if(customerID == entity.id){
+
+                            customerName = entity.name;
+                        }
+                    });
+
+                    var size = data.needsDataPoints[3].length + ' x ' + data.needsDataPoints[4].width + ' x ' + data.needsDataPoints[0].height;
+
+                    var pod = data.podList[0];
+
+                    var podDataJSON = {
+                        podFormType: customerName,
+                        unitNumber: pod.unitNumber, vinNumber: pod.vinNumber, trailerProNumber: pod.truckProNumber, year: pod.trailerYear,
+                        size: size, type: data.needsDataPoints[5].type, door: data.needsDataPoints[1].door, decals: data.needsDataPoints[14].decals,
+                        originationAddress: data.originationAddress, originationCity: data.originationCity, originationState: data.originationState, originationZipcode: data.originationZip,
+                        destinationAddress: data.destinationAddress, destinationCity: data.destinationCity, destinationState: data.destinationState, destinationZipcode: data.destinationZip,
+                        pickupLocation: data.pickupInformation.pickupLocation, pickupContact: data.pickupInformation.contactPerson,
+                        pickupPhoneNumber: data.pickupInformation.phoneNumber, pickupHours: data.pickupInformation.hoursOfOperation,
+                        deliveryLocation: data.deliveryInformation.deliveryLocation, deliveryContact: data.deliveryInformation.contactPerson,
+                        deliveryPhoneNumber: data.deliveryInformation.phoneNumber, deliveryHours: data.deliveryInformation.hoursOfOperation
+                    };
+
+                    var podURL = '<?php echo HTTP_HOST . '/pod_form_api'; ?>';
+
+                    $.ajax({
+                        url: podURL,
+                        type: "POST",
+                        contentType: "application/json",
+                        responseType: "arraybuffer",
+                        data: JSON.stringify(podDataJSON),
+                        success: function(data){
+
+                            var iframe = $('#download-pdf-container');
+                            if (iframe.length == 0) {
+                                iframe = $('<iframe id="download=pdf-container" style="visibility:hidden;"></iframe>').appendTo('body');
+                            }
+                            iframe.attr('src', '<?php echo HTTP_HOST; ?>/download-pdf/' + data);
+
+                        },
+                        error: function(data){
+                            console.log(JSON.stringify(data));
+                        }
+                    });
+                },
+                error: function(data){
+                    console.log("Could not get Order Information.");
+                }
+            });
+
+        });
+
+        // We have to handle downloading POD's a little differently depending on if the status record exists or not - This is if it does NOT exist
+        $("#btnDownloadPODNotExisting").unbind('click').bind('click',function(){ // Doing it like this because it was double posting document giving me duplicates
+
+            var orderID = $("#orderID").val();
 
             var url = '<?php echo API_HOST_URL . '/orders/' ?>' + orderID;
 
@@ -5731,6 +5801,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             displayOrderStatuses(orderID, activeCarrier, vinNumber);
         });
 
+        // We have to handle saving Trailer data a little differently depending on if the status record exists or not - This is if it does exist
         $("#saveTrailerStatusExisting").unbind('click').bind('click',function(){ // Doing it like this because it was double posting document giving me duplicates
 
                 var today = new Date();
@@ -5810,7 +5881,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         contentType: "application/json",
                         async: false,
                         success: function(data){
-                            //console.log(data);
+                            $("#statusID").val(data);
+                            $("#statusAddANote").val('');
+                            $("#noStatusRecordsExist").css("display", "none");
+                            $("#statusRecordButtons").css("display", "block");
                             alert('Order Trailer Status Saved!');
                         },
                         error: function(error){
@@ -5827,6 +5901,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
         });
 
+        // We have to handle saving Trailer data a little differently depending on if the status record exists or not - This is if it does NOT exist
         $("#saveTrailerStatusNotExisting").unbind('click').bind('click',function(){ // Doing it like this because it was double posting document giving me duplicates
 
                 var today = new Date();
@@ -5906,7 +5981,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         contentType: "application/json",
                         async: false,
                         success: function(data){
-                            //console.log(data);
+                            $("#statusID").val(data);
+                            $("#statusAddANote").val('');
+                            $("#noStatusRecordsExist").css("display", "none");
+                            $("#statusRecordButtons").css("display", "block");
                             alert('Order Trailer Status Saved!');
                         },
                         error: function(error){
