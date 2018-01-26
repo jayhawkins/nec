@@ -2547,6 +2547,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             var needsdatapoints = needsarray;
 
             var qty = $("#qty").val().trim();
+            var rate = $("#rate").val().trim();
             var customerID = $('#customerID').val();
 /*
             var orderData = {customerID: customerID, carrierIDs: [{carrierID: 0}], orderID: orderID, deliveryInformation: deliveryInformation, pickupInformation: pickupInformation, originationAddress: originationAddress1, originationCity: originationCity, originationState: originationState, originationZip: originationZip,
@@ -2555,7 +2556,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 */
             var orderData = {customerID: customerID, carrierIDs: carrierIDs, orderID: orderID, deliveryInformation: deliveryInformation, pickupInformation: pickupInformation, originationAddress: originationAddress1, originationCity: originationCity, originationState: originationState, originationZip: originationZip,
                         destinationAddress: destinationAddress1,  destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, originationLng: "", originationLat: "", destinationLng: "", destinationLat: "", distance: 0, needsDataPoints: needsdatapoints, podList: unitDataList,
-                        comments: "", createdAt: today, updatedAt: today, qty: qty};
+                        comments: "", createdAt: today, updatedAt: today, qty: qty, customerRate: rate};
 
             var url = '<?php echo API_HOST_URL . "/orders" ?>';
 
