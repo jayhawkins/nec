@@ -80,8 +80,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
     //console.log(dataPoints);
 
     var entity = <?php echo json_encode($entity); ?>;
-    //alert(JSON.stringify(entity));
-    //console.log(JSON.stringify(entity.entities.records[0][1]));
 
     var userid = <?php echo $_SESSION['userid']; ?>;
 
@@ -164,8 +162,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         }
                     });
 
-//                    var dimmed = "dimmed";
-//                    if(key == 0) dimmed = "";
                     var dimmed = "";
 
                     statusesList += "<div class=\"col-md-4\">" +
@@ -264,7 +260,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     "</div>";
 
                     if(index % 3 == 0){
-                        statusesList +="</div><div class=\"row\">";
+                        statusesList +="</div><br><div class=\"row\">";
                     }
                 });
             }
@@ -328,7 +324,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 entityID: $("#entityID").val(),
                 locationType: "Origination"
           };
-          //alert(JSON.stringify(params));
           $.ajax({
              url: '<?php echo HTTP_HOST."/getlocationbycitystatezip" ?>',
              type: 'POST',
@@ -345,7 +340,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                           entityID: $("#entityID").val(),
                           locationType: "Destination"
                     };
-                    //alert(JSON.stringify(params));
                     $.ajax({
                        url: '<?php echo HTTP_HOST."/getlocationbycitystatezip" ?>',
                        type: 'POST',
@@ -356,22 +350,30 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                           if (response == "success") {
                           } else {
                               result = false;
-                              alert('Preparation Failed!');
+                                $("#errorAlertTitle").html("Error");
+                                $("#errorAlertBody").html("Preparation Failed!");
+                                $("#errorAlert").modal('show');
                           }
                        },
                        error: function(response) {
                           result = false;
-                          alert('Failed Searching for Destination Location! - Notify NEC of this failure.');
+                            $("#errorAlertTitle").html("Failed Searching for Destination Location!");
+                            $("#errorAlertBody").html("Notify NEC of this failure.");
+                            $("#errorAlert").modal('show');
                        }
                     });
                 } else {
                     result = false;
-                    alert('Preparation Failed!');
+                    $("#errorAlertTitle").html("Error");
+                    $("#errorAlertBody").html("Preparation Failed!");
+                    $("#errorAlert").modal('show');
                 }
              },
              error: function(response) {
                 result = false;
-                alert('Failed Searching for Origination Location! - Notify NEC of this failure.');
+                $("#errorAlertTitle").html("Failed Searching for Origination Location!");
+                $("#errorAlertBody").html("Notify NEC of this failure.");
+                $("#errorAlert").modal('show');
              }
           });
 
@@ -532,8 +534,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                                 $("#load").html("Save Changes");
                                                 $("#load").prop("disabled", false);
 
-                                                if(entityid > 0) alert(data);
-
+                                                if(entityid > 0){
+                                                    $("#errorAlertTitle").html("Error");
+                                                    $("#errorAlertBody").html(data);
+                                                    $("#errorAlert").modal('show');
+                                                }
+                                                
                                                 $("#editOrder").modal('hide');
 
                                                 var orderDetailTable = $('#order-details-table').DataTable();
@@ -559,20 +565,29 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                           error: function(data){
                                                 $("#load").html("Save Changes");
                                                 $("#load").prop("disabled", false);
-                                                console.log("Notification Error: ", JSON.stringify(data));
+                                        
+                                                $("#errorAlertTitle").html("Notification Error");
+                                                $("#errorAlertBody").html(JSON.stringify(data));
+                                                $("#errorAlert").modal('show');
                                           }
                                       });
 
                                     } else {
                                         $("#load").html("Save Changes");
                                         $("#load").prop("disabled", false);
-                                        alert("Editing Order Failed! Please Verify Your Data.");
+                                        
+                                        $("#errorAlertTitle").html("Error");
+                                        $("#errorAlertBody").html("Editing Order Failed! Please Verify Your Data.");
+                                        $("#errorAlert").modal('show');
                                     }
                                  },
                                  error: function() {
                                     $("#load").html("Save Changes");
                                     $("#load").prop("disabled", false);
-                                    alert("There Was An Error Editing The Order!");
+                                        
+                                    $("#errorAlertTitle").html("Error");
+                                    $("#errorAlertBody").html("There Was An Error Editing The Order!");
+                                    $("#errorAlert").modal('show');
                                  }
                               });
 
@@ -1045,7 +1060,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                      $("#statusFileName").val(data.documents[0].documentID);
                                  },
                                  error: function() {
-                                     alert("There Was An Error Retrieving Document Data!");
+                                    $("#errorAlertTitle").html("Error");
+                                    $("#errorAlertBody").html("There Was An Error Retrieving Document Data!");
+                                    $("#errorAlert").modal('show');
                                  }
                              });
 
@@ -1066,8 +1083,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                              $("#statusRecordButtons").css("display", "none");
                          }
                      },
-                     error: function() {
-                        alert("There Was An Error Retrieving Order Status Data!");
+                     error: function() {                                        
+                        $("#errorAlertTitle").html("Error");
+                        $("#errorAlertBody").html("There Was An Error Retrieving Order Status Data!");
+                        $("#errorAlert").modal('show');
                      }
                 });
 
@@ -1528,7 +1547,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 $("#orderComments").val(comments);
             },
             error: function(data){
-                alert("Unable to retrieve order comments.");
+                $("#errorAlertTitle").html("Error");
+                $("#errorAlertBody").html("Unable to retrieve order comments");
+                $("#errorAlert").modal('show');
             }
         });
     }
@@ -2002,20 +2023,24 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                          getLocationContacts();
                                     },
                                     error: function() {
-                                       alert("There Was An Error Adding Need Contacts!");
+                                        $("#errorAlertTitle").html("Error");
+                                        $("#errorAlertBody").html("There Was An Error Adding Need Contacts!");
+                                        $("#errorAlert").modal('show');
                                     }
                                  });
                             } else {
-                                  alert("There Was An Issue Clearing Need Contacts!");
+                                $("#errorAlertTitle").html("Error");
+                                $("#errorAlertBody").html("There Was An Issue Clearing Need Contacts!");
+                                $("#errorAlert").modal('show');
                             }
                          },
                          error: function() {
-                              alert("There Was An Error Deleting Need Records!");
+                            $("#errorAlertTitle").html("Error");
+                            $("#errorAlertBody").html("There Was An Error Deleting Need Records!");
+                            $("#errorAlert").modal('show');
                          }
                       });
                   }
-
-                  //return passValidation;
               }
 
 
@@ -2086,7 +2111,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                   locations_contacts = data;
              },
              error: function() {
-                alert("There Was An Error Retrieving Location Contacts!");
+                $("#errorAlertTitle").html("Error");
+                $("#errorAlertBody").html("There Was An Error Retrieving Location Contacts!");
+                $("#errorAlert").modal('show');
              }
           });
       }
@@ -2102,10 +2129,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
              type: type,
              async: false,
              success: function(data){
-                  alert(JSON.stringify(data));
+                $("#errorAlertTitle").html("Success");
+                $("#errorAlertBody").html(JSON.stringify(data));
+                $("#errorAlert").modal('show');
              },
              error: function() {
-                alert("There Was An Error Retrieving Location Contacts!");
+                $("#errorAlertTitle").html("Error");
+                $("#errorAlertBody").html("There Was An Error Retrieving Location Contacts!");
+                $("#errorAlert").modal('show');
              }
           });
       }
@@ -2127,10 +2158,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
            contentType: "application/json",
            async: false,
            success: function(){
-               alert("Comment Saved.");
+                $("#errorAlertTitle").html("Success");
+                $("#errorAlertBody").html("Comment Saved");
+                $("#errorAlert").modal('show');
            },
            error: function() {
-               alert("Comment could not save.");
+                $("#errorAlertTitle").html("Error");
+                $("#errorAlertBody").html("Comment could not save.");
+                $("#errorAlert").modal('show');
            }
         });
     }
@@ -2278,7 +2313,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         contentType: "application/json",
                         async:false,
                         success: function(data){
-                            alert(data);
+                            $("#errorAlertTitle").html("Success");
+                            $("#errorAlertBody").html(data);
+                            $("#errorAlert").modal('show');
 
                             // Clear Form
                             $("#id").val('');
@@ -2295,14 +2332,20 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             $("#addOrderStatus").modal('hide');
                         },
                         error: function(error){
-                            alert("Unable to send notification about status change.");
+                            $("#errorAlertTitle").html("Error");
+                            $("#errorAlertBody").html("Unable to send notification about status change.");
+                            $("#errorAlert").modal('show');
+                            
                             $("#saveOrderStatus").html("Save");
                             $("#saveOrderStatus").prop("disabled", false);
                         }
                     });
                 },
                 error: function() {
-                   alert("There Was An Error Saving the Status");
+                    $("#errorAlertTitle").html("Error");
+                    $("#errorAlertBody").html("There Was An Error Saving the Status");
+                    $("#errorAlert").modal('show');
+                            
                      $("#saveOrderStatus").html("Save");
                      $("#saveOrderStatus").prop("disabled", false);
                 }
@@ -2389,8 +2432,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             contentType: "application/json",
             async: false,
             success: function(){
-
-                alert("Trailer Data Successfully Saved.");
+                $("#errorAlertTitle").html("Success");
+                $("#errorAlertBody").html("Trailer Data Successfully Saved.");
+                $("#errorAlert").modal('show');
+                            
                 var podListTable = $('#pod-list-table').DataTable();
                 podListTable.ajax.reload();
 
@@ -2406,7 +2451,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
             },
             error: function(error){
-                alert("Unable to Save Trailer Data to Orders.");
+                $("#errorAlertTitle").html("Error");
+                $("#errorAlertBody").html("Unable to Save Trailer Data to Orders");
+                $("#errorAlert").modal('show');
             }
         });
 
@@ -5304,8 +5351,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             contentType: "application/json",
                             async: false,
                             success: function(){
-
-                                alert("POD Successfully Uploaded.");
+                                $("#errorAlertTitle").html("Success");
+                                $("#errorAlertBody").html("POD Successfully Uploaded");
+                                $("#errorAlert").modal('show');
+                            
                                 var podListTable = $('#pod-list-table').DataTable();
                                 podListTable.ajax.reload();
 
@@ -5321,18 +5370,24 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                             },
                             error: function(error){
-                                alert("Unable to Save POD List to Orders.");
+                                $("#errorAlertTitle").html("Error");
+                                $("#errorAlertBody").html("Unable to save POD list to Orders");
+                                $("#errorAlert").modal('show');
                             }
                         });
 
                     },
                     error: function(error){
-                        alert("Unable to Upload POD File.");
+                        $("#errorAlertTitle").html("Error");
+                        $("#errorAlertBody").html("Unable to Upload POD File.");
+                        $("#errorAlert").modal('show');
                     }
                 });
             }
             else{
-                alert("You must select a file to upload.");
+                $("#errorAlertTitle").html("Error");
+                $("#errorAlertBody").html("You must select a file to upload.");
+                $("#errorAlert").modal('show');
             }
         }
 
@@ -5410,8 +5465,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             contentType: "application/json",
                             async: false,
                             success: function(){
-
-                                alert("POD Successfully Uploaded.");
+                                $("#errorAlertTitle").html("Success");
+                                $("#errorAlertBody").html("POD Successfully Uploaded.");
+                                $("#errorAlert").modal('show');
 
                                 // Clear Form
                                 $('#statusID').val('');
@@ -5420,18 +5476,24 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                             },
                             error: function(error){
-                                alert("Unable to Save POD List to Orders.");
+                                $("#errorAlertTitle").html("Error");
+                                $("#errorAlertBody").html("Unable to Save POD List to Orders.");
+                                $("#errorAlert").modal('show');
                             }
                         });
 
                     },
                     error: function(error){
-                        alert("Unable to Upload POD File.");
+                        $("#errorAlertTitle").html("Error");
+                        $("#errorAlertBody").html("Unable to Upload POD File.");
+                        $("#errorAlert").modal('show');
                     }
                 });
             }
             else{
-                alert("You must select a file to upload.");
+                $("#errorAlertTitle").html("Error");
+                $("#errorAlertBody").html("You must select a file to upload.");
+                $("#errorAlert").modal('show');
             }
         }
 
@@ -5479,8 +5541,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 contentType: "application/json",
                 async: false,
                 success: function(){
-
-                    alert("POD Info Successfully Saved.");
+                    $("#errorAlertTitle").html("Success");
+                    $("#errorAlertBody").html("POD Info Successfully Saved.");
+                    $("#errorAlert").modal('show');
+                        
                     var podListTable = $('#pod-list-table').DataTable();
                     orderHistoryTable.ajax.reload();
                     podListTable.ajax.reload();
@@ -5497,7 +5561,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                 },
                 error: function(error){
-                    alert("Unable to Save POD List to Orders.");
+                    $("#errorAlertTitle").html("Error");
+                    $("#errorAlertBody").html("Unable to Save POD List to Orders.");
+                    $("#errorAlert").modal('show');
                 }
             });
 
@@ -5520,8 +5586,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
         $("#btnUpload").unbind('click').bind('click',function(){ // Doing it like this because it was double posting document giving me duplicates
 
-                console.log($('#filePOD').val());
-
             // fileName will tell us if we're in Upload Mode or View/Edit Mode
             if($('#filePOD').val() != ""){
                 // We are in Upload mode,
@@ -5530,7 +5594,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 PODUpload();
             }
             else{
-                alert("You must select a file.");
+                $("#errorAlertTitle").html("Error");
+                $("#errorAlertBody").html("You must select a file.");
+                $("#errorAlert").modal('show');
             }
         });
 
@@ -5677,7 +5743,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             async: false,
                             success: function(){
 
-                                alert("Purchase Order Successfully Uploaded.");
+                                $("#errorAlertTitle").html("Success");
+                                $("#errorAlertBody").html("Purchase Order Successfully Uploaded");
+                                $("#errorAlert").modal('show');
 
                                 // Clear Form
                                 $('#orderID').val('');
@@ -5685,18 +5753,24 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                             },
                             error: function(error){
-                                alert("Unable to Save Purchase Order List to Orders.");
+                                $("#errorAlertTitle").html("Error");
+                                $("#errorAlertBody").html("Unable to Save Purchase Order List to Orders.");
+                                $("#errorAlert").modal('show');
                             }
                         });
 
                     },
                     error: function(error){
-                        alert("Unable to Upload Purchase Order File.");
+                        $("#errorAlertTitle").html("Error");
+                        $("#errorAlertBody").html("Unable to Upload Purchase Order File.");
+                        $("#errorAlert").modal('show');
                     }
                 });
             }
             else{
-                alert("You must select a file to upload.");
+                $("#errorAlertTitle").html("Error");
+                $("#errorAlertBody").html("You must select a file to upload.");
+                $("#errorAlert").modal('show');
             }
         }
 
@@ -5717,7 +5791,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 POUpload();
             }
             else{
-                alert("You must select a file.");
+                $("#errorAlertTitle").html("Error");
+                $("#errorAlertBody").html("You must select a file.");
+                $("#errorAlert").modal('show');
             }
         });
 
@@ -5810,18 +5886,23 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         contentType: "application/json",
                         async: false,
                         success: function(data){
-                            //console.log(data);
-                            alert('Order Trailer Status Saved!');
+                            $("#errorAlertTitle").html("Success");
+                            $("#errorAlertBody").html("Order Trailer Status Saved.");
+                            $("#errorAlert").modal('show');
                         },
                         error: function(error){
-                            alert("Unable to Save Order Status Data.");
+                            $("#errorAlertTitle").html("Error");
+                            $("#errorAlertBody").html("Unable to Save Order Status Data.");
+                            $("#errorAlert").modal('show');
                         }
                     });
 
 
                 },
                 error: function(error){
-                    alert("Unable to locate Order Status Data.");
+                    $("#errorAlertTitle").html("Error");
+                    $("#errorAlertBody").html("Unable to locate Order Status Data");
+                    $("#errorAlert").modal('show');
                 }
             });
 
@@ -5906,18 +5987,23 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         contentType: "application/json",
                         async: false,
                         success: function(data){
-                            //console.log(data);
-                            alert('Order Trailer Status Saved!');
+                            $("#errorAlertTitle").html("Success");
+                            $("#errorAlertBody").html("Order Trailer Status Saved!");
+                            $("#errorAlert").modal('show');
                         },
                         error: function(error){
-                            alert("Unable to Save Order Status Data.");
+                            $("#errorAlertTitle").html("Error");
+                            $("#errorAlertBody").html("Unable to Save Order Status Data.");
+                            $("#errorAlert").modal('show');
                         }
                     });
 
 
                 },
                 error: function(error){
-                    alert("Unable to locate Order Status Data.");
+                    $("#errorAlertTitle").html("Error");
+                    $("#errorAlertBody").html("Unable to locate Order Status Data.");
+                    $("#errorAlert").modal('show');
                 }
             });
 
@@ -5988,17 +6074,23 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         contentType: "application/json",
                         async: false,
                         success: function(){
-                            alert('Trailer Note Saved!');
+                            $("#errorAlertTitle").html("Success");
+                            $("#errorAlertBody").html("Trailer Note Saved!");
+                            $("#errorAlert").modal('show');
                         },
                         error: function(error){
-                            alert("Unable to Save Trailer Status Note Data.");
+                            $("#errorAlertTitle").html("Error");
+                            $("#errorAlertBody").html("Unable to Save Trailer Status Note Data.");
+                            $("#errorAlert").modal('show');
                         }
                     });
 
 
                 },
                 error: function(error){
-                    alert("Unable to locate Trailer Status Note.");
+                    $("#errorAlertTitle").html("Error");
+                    $("#errorAlertBody").html("Unable to locate Trailer Status Note.");
+                    $("#errorAlert").modal('show');
                 }
             });
 
@@ -6171,7 +6263,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                                     pickupInformation = deliveryInformation;
                                                 },
                                                 error: function(){
-                                                    alert("Unable to save to order_details");
+                                                    $("#errorAlertTitle").html("Error");
+                                                    $("#errorAlertBody").html("Unable to save to order detail");
+                                                    $("#errorAlert").modal('show');
                                                 }
                                             });
 
@@ -6185,11 +6279,15 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                             type: "DELETE",
                                             success: function(data){
                                                 if(data > 0){
-                                                    alert("order detail closed.");
+                                                    $("#errorAlertTitle").html("Message");
+                                                    $("#errorAlertBody").html("Order Detail Closed");
+                                                    $("#errorAlert").modal('show');
                                                 }
                                             },
                                             error: function(){
-                                                alert("Unable to save to order_details");
+                                                $("#errorAlertTitle").html("Error");
+                                                $("#errorAlertBody").html("Unable to save to order detail");
+                                                $("#errorAlert").modal('show');
                                             }
                                         });
 
@@ -6201,23 +6299,24 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 $("#saveCommit").prop("disabled", false);
                                 loadNewOrderDetailsAJAX(id);
                                 closeEditOrder();
-                                alert("Order Updated");
+                                
+                                $("#errorAlertTitle").html("Success");
+                                $("#errorAlertBody").html("Order Updated");
+                                $("#errorAlert").modal('show');
                             }
                             else{
                                 console.log(data);
                             }
                         },
                         error: function(data){
-                            alert("There Was An Error Updating Commit");
+                            $("#errorAlertTitle").html("Error");
+                            $("#errorAlertBody").html("There was an error updating the order");
+                            $("#errorAlert").modal('show');
                         }
                     });
 
                 });
 
-            //}
-//            else{
-//                alert("You must enter at least ONE Trailer.");
-//            }
         });
 
     });
@@ -6445,13 +6544,17 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     contentType: "application/json",
                     async: false,
                     success: function(){
-                        alert("OrderDetail Saved");
+                        $("#errorAlertTitle").html("Success");
+                        $("#errorAlertBody").html("Order Detail Saved");
+                        $("#errorAlert").modal('show');
 
                         var orderID = $("#orderID").val();
                         loadNewOrderDetailsAJAX(orderID);
                     },
                     error: function(error){
-                        alert("Unable to Order Detail");
+                        $("#errorAlertTitle").html("Error");
+                        $("#errorAlertBody").html("Unable to save Order Detail");
+                        $("#errorAlert").modal('show');
                     }
                 });
 
