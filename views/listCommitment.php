@@ -965,21 +965,26 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 $('#notes_relay' + relayNumber).val(customer_needs.destinationNotes);
                 $('#pickupDate_relay' + relayNumber).val(customer_needs.customer_needs_commit[0].pickupDate);
                 $('#deliveryDate_relay' + relayNumber).val(customer_needs.customer_needs_commit[0].deliveryDate);
+                $('#rate_relay' + relayNumber).val();
 
                 $('#deliveryLocation_relay' + relayNumber).val(customer_needs.deliveryInformation.deliveryLocation);
                 $('#contactPerson_relay' + relayNumber).val(customer_needs.deliveryInformation.contactPerson);
                 $('#phoneNumber_relay' + relayNumber).val(customer_needs.deliveryInformation.phoneNumber);
                 $('#hoursOfOperation_relay' + relayNumber).val(customer_needs.deliveryInformation.hoursOfOperation);
 
-                var calcRate = 0.00;
-                if (customer_needs.customer_needs_commit[0].entities[0].rateType == "Mileage") {
-                    calcRate = ( customer_needs.customer_needs_commit[0].distance * parseFloat(customer_needs.customer_needs_commit[0].entities[0].negotiatedRate).toFixed(2) ) * customer_needs.customer_needs_commit[0].qty;
-                } else {
-                    calcRate = customer_needs.customer_needs_commit[0].entities[0].negotiatedRate;
+                if(customer_needs.customer_needs_commit[0].rate == 0){
+                    var calcRate = 0.00;
+                    if (customer_needs.customer_needs_commit[0].entities[0].rateType == "Mileage") {
+                        calcRate = ( customer_needs.customer_needs_commit[0].distance * parseFloat(customer_needs.customer_needs_commit[0].entities[0].negotiatedRate).toFixed(2) ) * customer_needs.customer_needs_commit[0].qty;
+                    } else {
+                        calcRate = customer_needs.customer_needs_commit[0].entities[0].negotiatedRate;
+                    }
+                    //$('#rate_relay' + relayNumber).val('$' + parseFloat(calcRate).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,").toString());
+                    $('#rate_relay' + relayNumber).val(parseFloat(calcRate).toFixed(2));
                 }
-                //$('#rate_relay' + relayNumber).val('$' + parseFloat(calcRate).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,").toString());
-                $('#rate_relay' + relayNumber).val(parseFloat(calcRate).toFixed(2));
-
+                else{
+                    $('#rate_relay' + relayNumber).val(parseFloat(customer_needs.customer_needs_commit[0].rate).toFixed(2));
+                }
 
                 var entid = parseInt(customer_needs.customer_needs_commit[0].entities[0].id);
                 var entname = customer_needs.customer_needs_commit[0].entities[0].name;
@@ -987,11 +992,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 carrier[entid] = entname;
 
                 if (carrierIDs.indexOf(carrier) === -1) carrierIDs.push(carrier);
-
-
-
-
-
+                
                 if(relayNumber == 4) return false;
 
             });
@@ -2624,13 +2625,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     var pickupDate = $('#pickupDate_relay' + relayNumber).val();
                                     var deliveryDate = $('#deliveryDate_relay' + relayNumber).val();
                                     var entityID = $('#entityID_relay' + relayNumber).val();
+                                    var carrierRate = $('#rate_relay' + relayNumber).val();
 /*
                                     relayData = {carrierID: 0, orderID: data, pickupInformation: pickupInformation, originationAddress: originationAddress1, originationCity: originationCity, originationState: originationState, originationZip: originationZip,
                                         deliveryInformation: deliveryInformation, destinationAddress: destinationAddress1, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, carrierRate: 0.00, transportationMode: "",
                                         qty: qty, createdAt: today, updatedAt: today, needsDataPoints: needsdatapoints, status: "Open", pickupDate: pickupDate, deliveryDate: deliveryDate};
 */
                                     relayData = {carrierID: entityID, orderID: data, pickupInformation: pickupInformation, originationAddress: originationAddress1, originationCity: originationCity, originationState: originationState, originationZip: originationZip,
-                                        deliveryInformation: deliveryInformation, destinationAddress: destinationAddress1, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, carrierRate: 0.00, transportationMode: "",
+                                        deliveryInformation: deliveryInformation, destinationAddress: destinationAddress1, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, carrierRate: carrierRate, transportationMode: "",
                                         qty: qty, createdAt: today, updatedAt: today, needsDataPoints: needsdatapoints, status: "Open", pickupDate: pickupDate, deliveryDate: deliveryDate};
 
                                 $.ajax({
