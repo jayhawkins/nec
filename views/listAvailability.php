@@ -124,11 +124,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
 
           if (originationaddress != $("#originToMatch").val() && destinationaddress != $("#destToMatch").val()) {
               //alert("The commitment for this Availablility must be picked up at " + $("#originToMatch").val() + " or dropped off at " + $("#destToMatch").val() + ". Please make a valid selection.");
-              
+
                 $("#errorAlertTitle").html("Error");
                 $("#errorAlertBody").html("The commitment for this Availablility must be picked up at " + $("#originToMatch").val() + " or dropped off at " + $("#destToMatch").val() + ". Please make a valid selection.");
                 $("#errorAlert").modal('show');
-            
+
               return false;
           }
 
@@ -143,7 +143,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
               //$("#relayMessage").html("<strong>" + $("#ocity").val() + " or " + $("#dcity").val() + " must have be in at least one relay</strong>");
               //$("#relayDialog").modal('show');
               //alert("Check the current relays. " + $("#ocity").val() + " or " + $("#dcity").val() + " must be specified in at least one relay");
-              
+
                 $("#errorAlertTitle").html("Error");
                 $("#errorAlertBody").html("Check the current relays. " + $("#ocity").val() + " or " + $("#dcity").val() + " must be specified in at least one relay");
                 $("#errorAlert").modal('show');
@@ -364,7 +364,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                      error: function() {
                                         //alert('Failed creating a new Need from an existing.');
                                         $("#myModalCommit").modal('hide');
-                                        
+
                                         $("#errorAlertTitle").html("Error");
                                         $("#errorAlertBody").html("Failed creating a new Need from an existing.");
                                         $("#errorAlert").modal('show');
@@ -2109,7 +2109,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
         var div = $('<div/>')
             .addClass( 'loading' )
             .text( 'Loading...' );
-        var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=customer_needs_commit,entities&filter[]=rootCustomerNeedsID,eq,'+d.id+'&transform=1';
+        var url = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=customer_needs_commit,entities&filter[]=rootCustomerNeedsID,eq,'+d.id+'&filter[]=customer_needs_commit.status,eq,Available&transform=1';
         var params = {id: d.id};
         $.ajax({
            url: url,
