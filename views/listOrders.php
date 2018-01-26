@@ -83,6 +83,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
     //alert(JSON.stringify(entity));
     //console.log(JSON.stringify(entity.entities.records[0][1]));
 
+    var userid = <?php echo $_SESSION['userid']; ?>;
+
     var entityid = <?php echo $_SESSION['entityid']; ?>;
 
     var allEntities = <?php echo json_encode($allEntities); ?>;
@@ -241,7 +243,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                         "           </div>";
                         if(status.hasBeenApproved == 0){
                             statusesList += "       <div class=\"col-md-6\">" +
-                                            "           <button type=\"button\" id=\"approvePOD\" class=\"btn btn-primary w-100\" onclick=\"approvePOD();\">Approve POD</button>" +
+                                            "           <button type=\"button\" id=\"approvePOD\" class=\"btn btn-primary w-100\" onclick=\"confirmApprovePOD(" + status.carrierID + ", '" + vinNumber + "'," + status.documentID + ", " + status.orderDetailID + ", " + orderID + ", " + status.id + ");\">Approve POD</button>" +
                                             "       </div>";
                         }
                         else{
@@ -271,6 +273,37 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             $("#statusesList").empty().html(statusesList);
 
         });
+    }
+
+    function confirmApprovePOD(carrierID, vinNumber, documentID, orderDetailID, orderID, statusID){
+    
+        var orderURL = '<?php echo API_HOST_URL; ?>' + '/orders/' + orderID;
+        var orderDetailURL = '<?php echo API_HOST_URL; ?>' + '/order_details/' + orderDetailID;
+        
+        $.get(orderURL, function(order){
+            
+            var customerID = order.customerID; 
+            $('#approveCustomerID').val(customerID);
+            
+        });
+        
+        $.get(orderDetailURL, function(orderDetail){
+
+            var carrierRate = orderDetail.carrierRate;   
+            var qty = orderDetail.qty;
+            var cost = carrierRate / qty;
+            $('#approveCost').val(Math.round(cost));
+
+        });
+        
+        $('#approveOrderID').val(orderID);
+        $('#approveOrderDetailID').val(orderDetailID);
+        $('#approveCarrierID').val(carrierID);
+        $('#approveDocumentID').val(documentID);
+        $('#approveVinNumber').val(vinNumber);
+        $('#approveStatusID').val(statusID);
+        
+        $('#approvePODModal').modal('show');    
     }
 
     function addVINNumber(){
@@ -4532,6 +4565,42 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
     </div>
   </div>
 
+<!-- Approve POD -->
+<div class="modal fade" id="approvePODModal" tabindex="-1" aria-hidden="true" aria-label="exampleModalCommitLabel">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalCommitLabel"><strong>Approve POD</strong></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body"><form id="formUploadPOD" class="register-form mt-lg">
+            <input id="approveOrderID" name="approveOrderID" type="hidden">
+            <input id="approveOrderDetailID" name="approveOrderDetailID" type="hidden">
+            <input id="approveCarrierID" name="approveCarrierID" type="hidden">
+            <input id="approveCustomerID" name="approveCustomerID" type="hidden">
+            <input id="approveStatusID" name="approveStatusID" type="hidden">
+            <input id="approveDocumentID" name="approveDocumentID" type="hidden">
+            <input id="approveVinNumber" name="approveVinNumber" type="hidden">
+                  <div class="row">
+                        <div class="col-sm-3">
+                            <label for="approveCost">Customer will be invoiced:</label>
+                        </div>
+                        <div class="col-sm-9">
+                            <input type="text" id="approveCost" name="approveCost" class="form-control mb-sm" placeholder="Cost" />
+                        </div>
+                  </div>
+                </form>
+        </div>
+        <div class="modal-footer">
+           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+           <button type="button" class="btn btn-primary"  id="btnApprovePOD">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 <!-- Missing Trailer Data -->
 <div class="modal fade" id="trailer-data-missing" tabindex="-1" aria-hidden="true" aria-label="exampleModalCommitLabel">
     <div class="modal-dialog modal-lg" role="document">
@@ -4585,6 +4654,118 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         $("#ordersTabs li").off('click').on('click', function(){
             $("#ordersTabs li").removeAttr('id');
             $(this).attr('id', 'current');
+        });
+
+        $("#btnApprovePOD").off('click').on('click', function(){
+            var today = new Date();
+                var dd = today.getDate();
+                var mm = today.getMonth()+1; //January is 0!
+                var yyyy = today.getFullYear();
+                var hours = today.getHours();
+                var min = today.getMinutes();
+                var sec = today.getSeconds();
+
+                if(dd<10) {
+                    dd='0'+dd;
+                }
+
+                if(mm<10) {
+                    mm='0'+mm;
+                }
+
+                if(hours<10) {
+                    hours='0'+hours;
+                }
+
+                if(min<10) {
+                    min='0'+min;
+                }
+
+                today = mm+'/'+dd+'/'+yyyy;
+                today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+
+            var customerID = $('#approveCustomerID').val();
+            var cost = $('#approveCost').val();
+            var orderID = $('#approveOrderID').val();
+            var orderDetailID = $('#approveOrderDetailID').val();
+            var carrierID = $('#approveCarrierID').val();
+            var documentID = $('#approveDocumentID').val();
+            var vinNumber = $('#approveVinNumber').val();
+            var statusID = $('#approveStatusID').val();
+            
+            var approvedPOD = {orderID: orderID, orderDetailID: orderDetailID, carrierID: carrierID, customerID: customerID, userID: userid, documentID: documentID,
+                vinNumber: vinNumber, cost: cost, createdAt: today, updatedAt: today};
+            
+            $.ajax({
+                url: '<?php echo API_HOST_URL . "/approved_pod/"; ?>',
+                type: "POST", 
+                data: JSON.stringify(approvedPOD),
+                contentType: "application/json",
+                async: false,
+                success: function(data){
+                    if(data > 0){
+                        
+                        var orderStatus = {hasBeenApproved: 1, updatedAt: today};
+                        $.ajax({
+                            url: '<?php echo API_HOST_URL . "/order_statuses/"; ?>'+statusID,
+                            type: "PUT",
+                            data: JSON.stringify(orderStatus),
+                            contentType: "application/json",
+                            async: false,
+                            success: function(data){
+                                if(data > 0){
+                                    
+                                    var activeCarrier = $("#activeCarrier").val();
+                                    displayOrderStatuses(orderID, activeCarrier, vinNumber);
+                                    
+                                    $('#approveCustomerID').val("");
+                                    $('#approveCost').val("");
+                                    $('#approveOrderID').val("");
+                                    $('#approveOrderDetailID').val("");
+                                    $('#approveCarrierID').val("");
+                                    $('#approveDocumentID').val("");
+                                    $('#approveVinNumber').val("");
+                                    $('#approveStatusID').val("");
+                                    $('#approvePODModal').modal('hide');
+                                }
+                            },
+                            error: function(){
+                                $('#approveCustomerID').val("");
+                                $('#approveCost').val("");
+                                $('#approveOrderID').val("");
+                                $('#approveOrderDetailID').val("");
+                                $('#approveCarrierID').val("");
+                                $('#approveDocumentID').val("");
+                                $('#approveVinNumber').val("");
+                                $('#approveStatusID').val("");
+                                $('#approvePODModal').modal('hide');
+                                    
+                                $("#errorAlertTitle").html("Error");
+                                $("#errorAlertBody").html("Unable to change the order status");
+                                $("#errorAlert").modal('show');
+                            }
+                            
+                        });
+                        
+                    }
+                },
+                error: function(){
+                    $('#approveCustomerID').val("");
+                    $('#approveCost').val("");
+                    $('#approveOrderID').val("");
+                    $('#approveOrderDetailID').val("");
+                    $('#approveCarrierID').val("");
+                    $('#approveDocumentID').val("");
+                    $('#approveVinNumber').val("");
+                    $('#approveStatusID').val("");
+                    $('#approvePODModal').modal('hide');
+                    
+                    $("#errorAlertTitle").html("Error");
+                    $("#errorAlertBody").html("Unable to Approve POD");
+                    $("#errorAlert").modal('show');
+                }
+            });
+            
         });
 
         $('#order-details-table tbody').off('click').on( 'click', 'button', function () {
