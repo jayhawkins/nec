@@ -3354,9 +3354,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                         <button type="button" id="btnDownloadPOD" class="btn btn-primary">Download POD &nbsp; <span class="fa fa-download"></span></button>
                                     </div>
                                     <div class="col-md-3">
-                                        <button type="button" class="btn btn-outline-light" id="btnPaperClip"><span class="fa fa-lg fa-paperclip"></span></a>
+                                        <button type="button" class="btn btn-outline-light" id="btnPaperClip"><span class="fa fa-lg fa-paperclip"></span></button>
                                         &nbsp;
-                                        <button type="button" class="btn btn-primary" id="btnUploadPOD">Upload POD &nbsp; <span class="fa fa-upload"></span></a>
+                                        <button type="button" class="btn btn-primary" id="btnUploadPOD">Upload POD &nbsp; <span class="fa fa-upload"></span></button>
                                     </div>
                                     <div class="col-md-1">
                                         <button type="button" class="list-inline-item btn btn-primary pull-right" id="saveTrailerStatusExisting">Update</li>
@@ -4165,12 +4165,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             </div>
                         </div>
                   </div>
-                  <hr/>
+                  <!--<hr/>
                   <div class="row" id="replacePOD">
                       <div class="col-sm-12">
                         <label for="blnReplacePOD"><input type="checkbox" id="blnReplacePOD">Replace POD</label>
                       </div>
-                  </div>
+                  </div>-->
                 </form>
         </div>
         <div class="modal-footer">
