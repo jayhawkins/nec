@@ -274,20 +274,15 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
     function confirmApprovePOD(carrierID, vinNumber, documentID, orderDetailID, orderID, statusID){
 
         var orderURL = '<?php echo API_HOST_URL; ?>' + '/orders/' + orderID;
-        var orderDetailURL = '<?php echo API_HOST_URL; ?>' + '/order_details/' + orderDetailID;
 
         $.get(orderURL, function(order){
 
             var customerID = order.customerID;
             $('#approveCustomerID').val(customerID);
-
-        });
-
-        $.get(orderDetailURL, function(orderDetail){
-
-            var carrierRate = orderDetail.carrierRate;
-            var qty = orderDetail.qty;
-            var cost = carrierRate / qty;
+            
+            var customerRate = order.customerRate;
+            var qty = order.qty;
+            var cost = customerRate / qty;
             $('#approveCost').val(Math.round(cost));
 
         });
