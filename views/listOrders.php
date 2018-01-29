@@ -2824,7 +2824,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
         <?php
             }
-            else{
+            else if($_SESSION['entitytype'] == 2){
                 ?>
         <ul class="text-summary">
             <li>Order # <p id="orderNumber" style="display: inline;"></p></li>
@@ -3015,7 +3015,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             </div>
             <?php
                 }
-                else{
+                else if($_SESSION['entitytype'] == 2){
                     ?>
 
             <div class="col-md-9">
@@ -3269,7 +3269,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
             <?php
                 }
-                else{
+                else if($_SESSION['entitytype'] == 2){
                     ?>
                     <!-- start right column content -->
                     <div class="col-md-9">
@@ -3385,8 +3385,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                             <hr>
                             <div class="widget border-radius-5 border-light-blue">
-                                <label for="tracking-notes" class="text-blue">Add a Note</label>
+                                <label for="statusAddANote" class="text-blue">Add a Note</label>
                                 <textarea class="form-control" id="statusAddANote" rows="3"></textarea><br>
+                                <label for="blnShowCustomer" class="text-blue"><input type="checkbox" id="blnShowCustomer">Share with Customer</label><br>
                                 <button type="button" id="addNote" class="btn btn-primary">Add Note</button>
                             </div>
                         </div>
