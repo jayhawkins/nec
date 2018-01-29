@@ -792,8 +792,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             var trailerList = "<div class=\"row trailer-row__border-bot trailer-row__notselected\"><div class=\"col-md-12\"><h4>Trailer List</h4><div class=\"fa fa-lg fa-refresh text-blue\" style=\"float: right; position: relative; top: -25px;\"></div><br></div></div>";
             var activeCarriers = "<option value=\"\">*Select Carrier...</option>";
 
+            var currentCarrier = '';
             for(var i = 0; i < order_details.length; i++){
-                var currentCarrier = order_details[i].carrierID;
+                currentCarrier = order_details[i].carrierID;
                 var entityName = "";
 
                 if(carriers.indexOf(currentCarrier) == -1) carriers.push(currentCarrier);
@@ -1001,7 +1002,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 if(trailer.unitNumber == null || trailer.unitNumber == "") trailer.unitNumber = "N/A";
 
                 if(key == 0){
-                    trailerList += "<div class=\"row trailer-row trailer-row__border-top trailer-row__selected\" onclick=\"displayTrailer(this, '" + trailer.vinNumber + "')\">" +
+                    trailerList += "<div class=\"row trailer-row trailer-row__border-top trailer-row__selected\" onclick=\"displayTrailer(this, '" + trailer.vinNumber + "', '" + currentCarrier + "')\">" +
                                 "       <div class=\"col-md-12\">" +
                                 "           <h4>Vin#: " + trailer.vinNumber + "</h4>" +
                                 "           <div class=\"text-blue\">Unit #:" +
@@ -1016,7 +1017,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         displayOrderStatuses(orderID, '', trailer.vinNumber);
                 }
                 else{
-                    trailerList += "<div class=\"row trailer-row trailer-row__border-bot trailer-row__notselected\" onclick=\"displayTrailer(this, '" + trailer.vinNumber + "')\">" +
+                    trailerList += "<div class=\"row trailer-row trailer-row__border-bot trailer-row__notselected\" onclick=\"displayTrailer(this, '" + trailer.vinNumber + "', '" + currentCarrier + "')\">" +
                                 "       <div class=\"col-md-12\">" +
                                 "           <h4>Vin#: " + trailer.vinNumber + "</h4>" +
                                 "           <div class=\"text-blue\">Unit #:" +
@@ -2823,7 +2824,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
         <?php
             }
-            else{
+            else if($_SESSION['entitytype'] == 2){
                 ?>
         <ul class="text-summary">
             <li>Order # <p id="orderNumber" style="display: inline;"></p></li>
@@ -3014,7 +3015,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             </div>
             <?php
                 }
-                else{
+                else if($_SESSION['entitytype'] == 2){
                     ?>
 
             <div class="col-md-9">
@@ -3268,7 +3269,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
             <?php
                 }
-                else{
+                else if($_SESSION['entitytype'] == 2){
                     ?>
                     <!-- start right column content -->
                     <div class="col-md-9">
@@ -3384,8 +3385,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                             <hr>
                             <div class="widget border-radius-5 border-light-blue">
-                                <label for="tracking-notes" class="text-blue">Add a Note</label>
+                                <label for="statusAddANote" class="text-blue">Add a Note</label>
                                 <textarea class="form-control" id="statusAddANote" rows="3"></textarea><br>
+                                <label for="blnShowCustomer" class="text-blue"><input type="checkbox" id="blnShowCustomer">Share with Customer</label><br>
                                 <button type="button" id="addNote" class="btn btn-primary">Add Note</button>
                             </div>
                         </div>
@@ -6528,12 +6530,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             $(element).addClass('trailer-row__selected');
         }
 
-        function displayTrailer(element, vinNumber){
+        function displayTrailer(element, vinNumber, carrierID){
             switchTrailerSelect(element);
 
             $("#displayVinNumber").html(vinNumber);
-
-            var activeCarrier = $("#activeCarrier").val();
+            var activeCarrier = carrierID;
             var orderID = $("#orderID").val();
 
             displayOrderStatuses(orderID, activeCarrier, vinNumber);
