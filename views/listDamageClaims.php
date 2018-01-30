@@ -2,10 +2,17 @@
 	session_start();
 	require '../../nec_config.php';
 	require '../lib/common.php';
+        
+        
+$allEntities = '';
+$allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=id,name&order=name&filter[]=id,gt,0'));
+
 ?>
 
 <script src="vendor/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
 <script>
+
+    var entityid = <?php echo $_SESSION['entityid']; ?>;
 
 	var myApp;
 	myApp = myApp || (function () {
@@ -70,7 +77,7 @@
 				url = '<?php echo API_HOST_URL . "/damage_claims" ?>/' + $("#id").val();
 				type = "PUT";
 				date = today;
-				data = {id: $("#id").val(), entityID: $("#entityID").val(), vinNumber: $("#vinNumber").val(), estimatedRepairCost: $("#estimatedRepairCost").val(), negotiatedRepairCost: $("#negotiatedRepairCost").val(), damage: $("#damage").val(), updatedAt: date};
+				data = {id: $("#id").val(), entityID: $("#entityID").val(), entityAtFaultID: $("#entityAtFaultID").val(), vinNumber: $("#vinNumber").val(), estimatedRepairCost: $("#estimatedRepairCost").val(), negotiatedRepairCost: $("#negotiatedRepairCost").val(), damage: $("#damage").val(), updatedAt: date};
 				$.ajax({
 					url: url,
 					type: type,
@@ -79,15 +86,17 @@
 					async: false,
 					success: function(data){
 						if (data > 0) {
-							$("#myModal").modal('hide');
-							loadTableAJAX();
+							$("#claimsModal").modal('hide');
+                                                        
+                                                        if(entityid > 0) loadTableAJAX();
+                                                        else loadBusinessClaims($("#entityID").val());
+                                                        
 							$("#id").val('');
-							$("#entityID").val('');
+                                                        $("#entityAtFaultID").val('');
 							$("#vinNumber").val('');
 							$("#estimatedRepairCost").val('');
 							$("#nogotiatedRepairCost").val('');
 							$("#damage").val('');
-							$("#fileupload").val('');
 							passValidation = true;
 						} else {
 							alert("Adding Damage Claim Failed!");
@@ -100,55 +109,57 @@
 
 			} else {
 
-				url = '<?php echo HTTP_HOST."/uploaddocument" ?>';
-				type = "POST";
-				var formData = new FormData();
-				formData.append('fileupload', $('#fileupload')[0].files[0]);
-				formData.append('entityID', $("#entityID").val());
-				formData.append('name', 'Damage Claim for: ' + $("#vinNumber").val() + ' - ' + $('#fileupload')[0].files[0].name);
-				$.ajax({
-					url : url,
-					type : 'POST',
-					data : formData,
-					processData: false,  // tell jQuery not to process the data
-					contentType: false,  // tell jQuery not to set contentType
-					success : function(data) {
-						// update listDamageClaims
-						url = '<?php echo API_HOST_URL . "/damage_claims" ?>';
-						type = "POST";
-						var files = $('#fileupload').prop("files");
-						var fileNames = $.map(files, function(val) { return val.name; }).join(',');
-						date = today;
-						data = {entityID: $("#entityID").val(), vinNumber: $("#vinNumber").val(), estimatedRepairCost: $("#estimatedRepairCost").val(), negotiatedRepairCost: $("#negotiatedRepairCost").val(), damage: $("#damage").val(), status: "Active", createdAt: date, updatedAt: date};
-						$.ajax({
-							url: url,
-							type: type,
-							data: JSON.stringify(data),
-							contentType: "application/json",
-							async: false,
-							success: function(data){
-								if (data > 0) {
-									$("#myModal").modal('hide');
-									loadTableAJAX();
-									$("#id").val('');
-									$("#entityID").val('');
-									$("#vinNumber").val('');
-									$("#estimatedRepairCost").val('');
-									$("#negotiatedRepairCost").val('');
-									$("#damage").val('');
-									$("#fileupload").val('');
-									passValidation = true;
-								} else {
-									alert("Adding Damage Claim Failed!");
-								}
-							},
-							error: function() {
-								alert("There Was An Error Adding Damage Claim!");
-							}
-						});
-						//console.log('listDamageClaim updated');
-					}
-				});
+                                // update listDamageClaims
+                                url = '<?php echo API_HOST_URL . "/damage_claims" ?>';
+                                type = "POST";
+                                
+                                date = today;
+                                data = {entityID: $("#entityID").val(), entityAtFaultID: $("#entityAtFaultID").val(), vinNumber: $("#vinNumber").val(), estimatedRepairCost: $("#estimatedRepairCost").val(), negotiatedRepairCost: $("#negotiatedRepairCost").val(), damage: $("#damage").val(), documentIDs: [], status: "Active", createdAt: date, updatedAt: date};
+                                $.ajax({
+                                        url: url,
+                                        type: type,
+                                        data: JSON.stringify(data),
+                                        contentType: "application/json",
+                                        async: false,
+                                        success: function(data){
+                                                if (data > 0) {
+                                                        $("#claimsModal").modal('hide');
+                                                        
+                                                        if(entityid > 0) loadTableAJAX();
+                                                        else loadBusinessClaims($("#entityID").val());
+                                                        
+                                                        $("#id").val('');
+                                                        $("#entityAtFaultID").val('');
+                                                        $("#vinNumber").val('');
+                                                        $("#estimatedRepairCost").val('');
+                                                        $("#negotiatedRepairCost").val('');
+                                                        $("#damage").val('');
+                                                        $("#fileupload").val('');
+                                                        passValidation = true;
+                                                } else {
+                                                        alert("Adding Damage Claim Failed!");
+                                                }
+                                        },
+                                        error: function() {
+                                                alert("There Was An Error Adding Damage Claim!");
+                                        }
+                                });
+                                
+//				url = '<?php echo HTTP_HOST."/uploaddocument" ?>';
+//				type = "POST";
+//				var formData = new FormData();
+//				formData.append('fileupload', $('#fileupload')[0].files[0]);
+//				formData.append('entityID', $("#entityID").val());
+//				formData.append('name', 'Damage Claim for: ' + $("#vinNumber").val() + ' - ' + $('#fileupload')[0].files[0].name);
+//				$.ajax({
+//					url : url,
+//					type : 'POST',
+//					data : formData,
+//					processData: false,  // tell jQuery not to process the data
+//					contentType: false,  // tell jQuery not to set contentType
+//					success : function(data) {
+//					}
+//				});
 			}
 			return passValidation;
 		} else {
@@ -244,7 +255,7 @@
 			columns: [
                 { data: "id", visible: false },
                 { data: "entityID", visible: false },
-				{ data: "entityIDAtFault", visible: false },
+				{ data: "entityAtFaultID", visible: false },
 				{ data: "vinNumber" },
 				{ data: "damage" },
 				{ data: "estimatedRepairCost", render: $.fn.dataTable.render.number(',', '.', 2, '$') },
@@ -325,7 +336,7 @@
 	}
 
 	function loadBusinessTableAJAX(){
-        var url = '<?php echo API_HOST_URL; ?>' + '/entities?include=entity_types,locations&filter[]=status,eq,Active&filter[]=locations.status,eq,Active&filter[]=locations.name,eq,Headquarters&order[]=name&transform=1';
+        var url = '<?php echo API_HOST_URL; ?>' + '/entities?include=entity_types,locations&filter[]=status,eq,Active&filter[]=locations.status,eq,Active&filter[]=locations.name,eq,Headquarters&filter[]=id,gt,0&order[]=name&transform=1';
         var example_table = $('#business-datatable-table').DataTable({
             retrieve: true,
             processing: true,
@@ -393,7 +404,7 @@
                         myApp.hidePleaseWait();
 
                         var buttons = '<div class="pull-right text-nowrap">';
-                        buttons += '<button class=\"btn btn-primary btn-xs view-contacts\" role=\"button\"><i class=\"glyphicon glyphicon-eye-open text\"></i> <span class=\"text\">View Claims</span></button>';
+                        buttons += '<button class=\"btn btn-primary btn-xs view-claims\" role=\"button\"><i class=\"glyphicon glyphicon-eye-open text\"></i> <span class=\"text\">View Claims</span></button>';
 
                         buttons += "</div>";
                         return buttons;
@@ -410,59 +421,71 @@
 
     }
 
-    function loadBusinessClaims(entityID) {
-        var url = '<?php echo API_HOST_URL; ?>' + '/damage_claims?&filter=entityID,eq,' + entityID + '&transform=1';
-		var example_table = $('#datatable-table').DataTable({
-			retrieve: true,
-			processing: true,
-			ajax: {
-				url: url,
-				dataSrc: 'damage_claims'
-			},
-			columns: [
-                { data: "id", visible: false },
-                { data: "entityID", visible: false },
-				{ data: "entityIDAtFault", visible: false },
-				{ data: "vinNumber" },
-				{ data: "damage" },
-				{ data: "estimatedRepairCost", render: $.fn.dataTable.render.number(',', '.', 2, '$') },
-				{ data: "negotiatedRepairCost", render: $.fn.dataTable.render.number(',', '.', 2, '$') },
-				{ data: "documentIDs", visible: false },
-				{ data: "status" },
-				{ data: null,
-                    "bSortable": false,
-					"mRender": function (o) {
-					    var buttons = '';
-                        if (o.fileupload > '') {
-                            buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-eye-open text\"></i> <span class=\"text\">Upload/View Claim</span></button> &nbsp;';
-                        }
-                        buttons += "</div>";
-                        return buttons;
-                    }
-				},
-				{
-					data: null,
-					"bSortable": false,
-					"mRender": function (o) {
-					    var buttons = '<div class="pull-right text-nowrap">';
-                        buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text\"></i> <span class=\"text\">Edit</span></button>';
-						if (o.status == "Active") {
-							buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text\"></i> <span class=\"text\">Disable</span></button>";
-						} else {
-							buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text\"></i> <span class=\"text\">Enable</span></button>";
-						}
-						buttons += '</div>';
-						return buttons;
-					}
-				}
-			]
-		});
-		example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
-		//To Reload The Ajax
-		//See DataTables.net for more information about the reload method
-		example_table.ajax.reload();
+        function loadBusinessClaims(entityID) {
 
-    }
+            var url = '<?php echo API_HOST_URL; ?>' + '/damage_claims?&filter=entityID,eq,' + entityID + '&transform=1';
+            if ( ! $.fn.DataTable.isDataTable( '#datatable-table' ) ) {
+                var example_table = $('#datatable-table').DataTable({
+                    retrieve: true,
+                    processing: true,
+                    ajax: {
+                            url: url,
+                            dataSrc: 'damage_claims'
+                    },
+                    columns: [
+                        { data: "id", visible: false },
+                        { data: "entityID", visible: false },
+                        { data: "entityAtFaultID", visible: false },
+                        { data: "vinNumber" },
+                        { data: "damage" },
+                        { data: "estimatedRepairCost", render: $.fn.dataTable.render.number(',', '.', 2, '$') },
+                        { data: "negotiatedRepairCost", render: $.fn.dataTable.render.number(',', '.', 2, '$') },
+                        { data: "documentIDs", visible: false },
+                        { data: "status" },
+                        /*{ data: null,
+                            "bSortable": false,
+                            "mRender": function (o) {
+                                var buttons = '';
+                                if (o.fileupload > '') {
+                                    buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-eye-open text\"></i> <span class=\"text\">Upload/View Claim</span></button> &nbsp;';
+                                }
+                                buttons += "";
+                                return buttons;
+                            }
+                        },*/
+                        { data: null,
+                            "bSortable": false,
+                            "mRender": function (o) {
+                                var buttons = '<div class="pull-right text-nowrap">';
+                                
+                                buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-eye-open text\"></i> <span class=\"text\">Upload/View Claim</span></button> &nbsp;';
+                                buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text\"></i> <span class=\"text\">Edit</span></button>';
+                                
+    if (o.status == "Active") {
+                                        buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text\"></i> <span class=\"text\">Disable</span></button>";
+                                } else {
+                                        buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text\"></i> <span class=\"text\">Enable</span></button>";
+                                }
+                                buttons += '</div>';
+                                return buttons;
+                            }
+                        }
+                    ]
+                });
+                example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
+                //To Reload The Ajax
+                //See DataTables.net for more information about the reload method
+                example_table.ajax.reload();
+            }
+            else{
+
+                //The URL will change with each "View Commit" button click
+                // Must load new Url each time.
+                var reload_table = $('#datatable-table').DataTable();
+                reload_table.ajax.url(url).load();
+            }
+
+        }
 
 	function viewDocumentHold() {
 		window.open($("#docToView").val(), '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
@@ -520,7 +543,8 @@ if($_SESSION['entitytype'] != 0){
 
 <?php
 
-} else {
+} 
+else {
 
 ?>
 
@@ -571,7 +595,7 @@ if($_SESSION['entitytype'] != 0){
  </section>
  </div>
 
- <div id="business-contacts" style="display: none;">
+ <div id="business-claims" style="display: none;">
  <ol class="breadcrumb">
    <li>ADMIN</li>
    <li class="active">Damage Claim Maintenance</li>
@@ -581,8 +605,8 @@ if($_SESSION['entitytype'] != 0){
          <h4><span class="fw-semi-bold">Damage Claim</span></h4>
          <div class="widget-controls">
              <!--<a data-widgster="expand" title="Expand" href="#"><i class="glyphicon glyphicon-chevron-up"></i></a>
-             <a data-widgster="collapse" title="Collapse" href="#"><i class="glyphicon glyphicon-chevron-down"></i></a>>
-             <a data-widgster="close" title="Close" href="Javascript:closeClaim()"><i class="glyphicon glyphicon-remove"></i></a-->
+             <a data-widgster="collapse" title="Collapse" href="#"><i class="glyphicon glyphicon-chevron-down"></i></a>-->
+             <a data-widgster="close" title="Close" href="Javascript:closeClaims()"><i class="glyphicon glyphicon-remove"></i></a>
          </div>
      </header>
      <div class="widget-body">
@@ -594,21 +618,20 @@ if($_SESSION['entitytype'] != 0){
          <br /><br />
          <div id="dataTable" class="mt">
              <table id="datatable-table" class="table table-striped table-hover" width="100%">
-                 <thead>
-					<tr>
-					<th>ID</th>
-					<th class="hidden-sm-down">EntityID</th>
-					<th class="hidden-sm-down">Entity At Fault</th>
-					<th class="hidden-sm-down">VIN Number</th>
-					<th class="hidden-sm-down">Damage</th>
-					<th class="hidden-sm-down">Estimated Cost</th>
-					<th class="hidden-sm-down">Negotiated Cost</th>
-					<th class="hidden-sm-down">Document IDs</th>
-					<th class="hidden-sm-down">Status</th>
-					<th>&nbsp;</th>
-					<th>&nbsp;</th>
-					</tr>
-				</thead>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th class="hidden-sm-down">EntityID</th>
+                            <th class="hidden-sm-down">Entity At Fault</th>
+                            <th class="hidden-sm-down">VIN Number</th>
+                            <th class="hidden-sm-down">Damage</th>
+                            <th class="hidden-sm-down">Estimated Cost</th>
+                            <th class="hidden-sm-down">Negotiated Cost</th>
+                            <th class="hidden-sm-down">Document IDs</th>
+                            <th class="hidden-sm-down">Status</th>
+                            <th>&nbsp;</th>
+                        </tr>
+                    </thead>
                  <tbody>
                       <!-- loadTableAJAX() is what populates this area -->
                  </tbody>
@@ -621,8 +644,8 @@ if($_SESSION['entitytype'] != 0){
  }
  ?>
 
-<!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<!-- Claim Modal -->
+<div class="modal fade" id="claimsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -631,9 +654,9 @@ if($_SESSION['entitytype'] != 0){
 					<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
-			<div class="modal-body">
-				<form id="formDamageClaim" class="register-form mt-lg" action="<?php echo HTTP_HOST."/uploaddocument" ?>" method="POST" enctype="multipart/form-data">
-					<input type="hidden" id="entityID" name="entityID" value="<?php echo $_SESSION['entityid']; ?>" />
+			<div class="v">
+				<form id="formDamageClaim" class="register-form mt-lg" action="" method="POST" enctype="multipart/form-data">
+					<input type="hidden" id="entityID" name="entityID" />
 					<input type="hidden" id="id" name="id" value="" />
 					<div class="row">
 						<div class="col-sm-3">
@@ -645,20 +668,32 @@ if($_SESSION['entitytype'] != 0){
 						<div class="col-sm-3">
 							<label for="estimatedRepairCost">Estimated Repair Cost</label>
 							<div class="form-group">
-								<input type="text" id="estimatedRepairCost" name="estimatedRepairCost" class="form-control mb-sm" placeholder="* $$$$.&cent;&cent;" />
+								<input type="text" id="estimatedRepairCost" name="estimatedRepairCost" class="form-control mb-sm" placeholder="* ex: 2000.00" />
 							</div>
 						</div>
 						<div class="col-sm-3">
 							<label for="negotiatedRepairCost">Negotiated Repair Cost</label>
 							<div class="form-group">
-								<input type="text" id="negotiatedRepairCost" name="negotiatedRepairCost" class="form-control mb-sm" placeholder="* $$$$.&cent;&cent;" />
+								<input type="text" id="negotiatedRepairCost" name="negotiatedRepairCost" class="form-control mb-sm" placeholder="* ex: 2000.00" />
 							</div>
 						</div>
 						<div class="col-sm-3">
-							<label for=""></label>
-							<div class="form-group">
-
-							</div>
+                                                    <div class="form-group">
+                                        <?php if ($_SESSION['entityid'] > 0) { ?>
+                                                       <input type="hidden" id="entityAtFaultID" name="entityAtFaultID" value="" />
+                                        <?php } else { ?>
+                                                        <label for="entityAtFaultID">At Fault</label>
+                                                        <select id="entityAtFaultID" name="entityAtFaultID" data-placeholder="Carrier" class="form-control chzn-select" required="required">
+                                                          <option selected=selected value=""> -Select Business- </option>
+                                         <?php
+                                                          foreach($allEntities->entities->records as $value) {
+                                                              $selected = ($value[0] == $entity) ? 'selected=selected':'';
+                                                              echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
+                                                          }
+                                         ?>
+                                                        </select>
+                                         <?php } ?>
+                                                    </div>
 						</div>
 					</div>
 					<div class="row">
@@ -669,38 +704,7 @@ if($_SESSION['entitytype'] != 0){
 							</div>
 						</div>
 					</div>
-					<div class="row">
-                        <div class="col-sm-4">
-                          <div class="form-group">
-              <?php if ($_SESSION['entityid'] > 0) { ?>
-                             <input type="hidden" id="entityIDAtFault" name="entityIDAtFault" value="" />
-                             <label for="entityIDAtFault">At Fault</label>
-                             <input type="text" id="entityIDAtFault" name="entityIDAtFault" class="form-control mb-sm" disabled />
-              <?php } else { ?>
-                              <label for="entityIDAtFault">At Fault</label>
-                              <select id="entityIDAtFault" name="entityIDAtFault" data-placeholder="Carrier" class="form-control chzn-select" required="required">
-                                <option selected=selected value=""> -Select Carrier- </option>
-               <?php
-                                foreach($entities->entities->records as $value) {
-                                    $selected = ($value[0] == $entity) ? 'selected=selected':'';
-                                    echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
-                                }
-               ?>
-                              </select>
-               <?php } ?>
-                          </div>
-                        </div>
-                    </div>
-					<div class="row">
-						<div class="col-sm-6">
-							<label for="policyNumber">Claims Documents</label>
-							<div class="form-group">
-
-							</div>
-						</div>
-					</div>
-					<hr />
-					<div class="row">
+<!--					<div class="row">
 						<div class="col-sm-12">
 							<label for="fileupload">Claim File Upload</label>
 							<div class="form-group">
@@ -709,7 +713,7 @@ if($_SESSION['entitytype'] != 0){
 								onchange="validateFile(this);" />
 							</div>
 						</div>
-					</div>
+					</div>-->
 				</form>
 			</div>
 			<div class="modal-footer">
@@ -779,44 +783,59 @@ if($_SESSION['entitytype'] != 0){
 	</div>
 </div>
 <div class="modal fade" id="viewPolicy" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-	<div class="modal-dialog modal-lg" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="enableDialogLabel">View Claim</h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
-			</div>
-			<div class="modal-body">
-                <div class="row">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="enableDialogLabel">View Claim Files</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
                 <form>
-                    <input type="hidden" id="entityID" value="<?php echo $_SESSION['entityid']; ?>" />
-                    <input type="hidden" id="replaceID" name="replaceID" value="" />
-                    <input type="hidden" id="docToView" value="" />
-                    <div id="divUploadPolicyFile" class="col-md-7">
-                        <label for="updatePolicyFile">Update Claim File</label>
-                        <div class="form-group">
-                            <input type="file" id="updateClaimFile" name="updateClaimFile" class="form-control mb-sm" placeholder="Update Claim" data-filesize="20000000"
-                            data-filetype="image/bmp,image/gif,image/jpeg,application/zip,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/rtf"
-                            onchange="validateFile(this);" />
+                    <input type="hidden" id="claimID" name="claimID" value="" />
+                    <input type="hidden" id="documentIDs" value="" />
+                    <div class="row">
+                        <div class="col-md-5">
+                            <label for="filClaimFile">Claim File To Upload</label>
+                            <div class="form-group">
+                                <input type="file" id="filClaimFile" name="filClaimFile" class="form-control mb-sm" placeholder="Update Claim" data-filesize="20000000"
+                                data-filetype="image/bmp,image/gif,image/jpeg,application/zip,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/rtf"
+                                onchange="validateFile(this);" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="fileType">File Type</label>
+                            <div class="form-group">
+                                <select id="fileType" name="fileType" class="form-control mb-sm">
+                                    <option value="">Select an option</option>
+                                    <option value="Delivery Receipt">Delivery Receipt</option>
+                                    <option value="Proof Of Estimate">Proof Of Estimate</option>
+                                    <option value="Repair Bill">Repair Bill</option>
+                                    <option value="Photo Of Damage">Photo Of Damage</option>
+                                    <option value="Photo Of Repair">Photo Of Repair</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="btnView">&nbsp;</label>
+                            <div class="form-group">
+                                <button type="button" class="btn btn-primary pull-right" id="btnUploadFile">Upload File</button>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-5 pull-right">
-                        <label for="btnView">&nbsp;</label>
-                        <div class="form-group">
-                            <button type="button" class="btn btn-primary" id="btnReplace">Upload/View Claim</button>
-                            <button type="button" class="btn btn-primary" id="btnView">View Claim</button>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label for="updatePolicyFile">Files Uploaded</label>
+                            <div id="uploadedFiles" class="form-group">
+                                
+                            </div>
                         </div>
                     </div>
                 </form>
-                </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="btnSave">Save</button>
-            </div>
-		</div>
-	</div>
+        </div>
+    </div>
 </div>
 
 <?php
@@ -846,8 +865,9 @@ if($_SESSION['entitytype'] != 0){
 		$("#fileupload").prop("disabled", false);
 		$("#fileupload").prop("required", false);
 		$("#fileupload").parent().parent().attr("hidden", false);
-		$("#myModal").modal('show');
+		$("#claimsModal").modal('show');
 	});
+        
 	$('#datatable-table tbody').on( 'click', 'button', function () {
 		var data = table.row( $(this).parents('tr') ).data();
 		if (this.textContent.indexOf("Edit") > -1) {
@@ -916,21 +936,28 @@ if($_SESSION['entitytype'] != 0){
 
 <?php
 
-} else {
+} 
+else {
 
 ?>
 
 <script>
 
-        function openPolicies(){
+        function loadFileUploadDiv(){
+                        
+            
+            $('#uploadedFiles').html();
+        }
+
+        function openClaims(){
             $("#business-list").css("display", "none");
-            $("#business-contacts").css("display", "block");
+            $("#business-claims").css("display", "block");
         }
 
 
-        function closePolicies(){
+        function closeClaims(){
             var businesstable = $("#business-datatable-table").DataTable();
-            $("#business-contacts").css("display", "none");
+            $("#business-claims").css("display", "none");
             $("#business-list").css("display", "block");
             businesstable.ajax.reload();
         }
@@ -952,23 +979,13 @@ if($_SESSION['entitytype'] != 0){
             $("#entityID").val(data["id"]);
 
             loadBusinessClaims(entityID);
+            openClaims();
         });
 
 
         $("#addClaim").click(function(){
               $("#id").val('');
-              $("#entityID").val($("#entityID").val());
-              $("#contactTypeID").val('');
-              $("#firstName").val('');
-              $("#lastName").val('');
-              $("#title").val('');
-              $("#emailAddress").val('');
-              $("#primaryPhone").val('');
-              $("#primaryPhoneExt").val('');
-              $("#secondaryPhone").val('');
-              $("#fax").val('');
-              $("#contactRating").val('');
-              $("#myModal").modal('show');
+              $("#claimsModal").modal('show');
         });
 
         $('#datatable-table tbody').on( 'click', 'button', function () {
@@ -976,23 +993,20 @@ if($_SESSION['entitytype'] != 0){
             var data = table.row( $(this).parents('tr') ).data();
             if (this.textContent.indexOf("Edit") > -1) {
                 $("#id").val(data["id"]);
-                $("#entityID").val($("#entityID").val());
-                $("#name").val(data["name"]);
-                $("#contactName").val(data["contactName"]);
-                $("#contactEmail").val(data["contactEmail"]);
-                $("#contactPhone").val(data["contactPhone"]);
-                $("#policyNumber").val(data["policyNumber"]);
-                $("#fileupload").prop("disabled", true);
-                $("#fileupload").prop("required", false);
-                $("#fileupload").parent().parent().attr("hidden", true);
-                $("#policyExpirationDate").val(data["policyExpirationDate"]);
-                $("#docToView").val(data["fileupload"]);
-                $("#myModal").modal('show');
+                $("#entityAtFaultID").val(data["entityAtFaultID"]);
+                $("#vinNumber").val(data["vinNumber"]);
+                $("#damage").val(data["damage"]);
+                $("#estimatedRepairCost").val(data["estimatedRepairCost"]);
+                $("#negotiatedRepairCost").val(data["negotiatedRepairCost"]);
+                $("#claimsModal").modal('show');
             } else if (this.textContent.indexOf("Upload/View Claim") > -1) {
-                $("#replaceID").val(data['id']);
-                $("#docToView").val(data['fileupload']);
-                $("#divUploadPolicyFile").hide();
-                $("#btnSave").hide();
+                $("#claimID").val(data['id']);
+                $("#documentIDs").val(data['documentIDs']);
+                $('#fileType').val("");
+                $('#filClaimFile').val("");
+                
+                //loadFileUploadDiv();
+                
                 $("#viewPolicy").modal('show');
             } else {
                 $("#id").val(data["id"]);
@@ -1009,6 +1023,96 @@ if($_SESSION['entitytype'] != 0){
 
         } );
 
+        $('#btnUploadFile').off('click').on('click', function(){
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth()+1; //January is 0!
+            var yyyy = today.getFullYear();
+            var hours = today.getHours();
+            var min = today.getMinutes();
+            var sec = today.getSeconds();
+            var url = "";
+            if(dd<10) {
+                    dd='0'+dd;
+            }
+            if(mm<10) {
+                    mm='0'+mm;
+            }
+            if(hours<10) {
+                    hours='0'+hours;
+            }
+            if(min<10) {
+                    min='0'+min;
+            }
+            today = mm+'/'+dd+'/'+yyyy;
+            today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+            
+            var file = $('#filClaimFile')[0].files[0];
+            var fileType = $('#fileType').val();
+           
+            if(fileType == "" || file == undefined || file == ""){
+                
+                $("#errorAlertTitle").html("Error");
+                $("#errorAlertBody").html("Please Make sure you are selecting a file and a file type.");
+                $("#errorAlert").modal('show');
+            }
+            else{
+
+                var url = '<?php echo HTTP_HOST."/uploaddocument" ?>';
+                var formData = new FormData();
+                formData.append('fileupload', $('#filClaimFile')[0].files[0]);
+                formData.append('entityID', $("#entityID").val());
+                formData.append('name', $('#fileType').val() + ' for: ' + $("#vinNumber").val() + ' - ' + $('#filClaimFile')[0].files[0].name);
+
+                $.ajax({
+                        url : url,
+                        type : 'POST',
+                        data : formData,
+                        processData: false,  // tell jQuery not to process the data
+                        contentType: false,  // tell jQuery not to set contentType
+                        success : function(data) {
+                            console.log("Document Uploaded");
+                            var documentIDs = [];
+
+                            if($('#documentIDs').val() != "" && $('#documentIDs').val() != []) documentIDs = $('#documentIDs').val();
+
+                            var newDocument = {documentID: data, documentType: fileType};
+                            
+                            documentIDs.push(newDocument);
+                            
+                            url = '<?php echo API_HOST_URL . "/damage_claims" ?>/' + $("#claimID").val();
+                            type = "PUT";
+                            var claimData = {documentIDs: documentIDs, updatedAt: today};
+                            
+                            $.ajax({
+                                url: url,
+                                type: type,
+                                data: JSON.stringify(claimData),
+                                contentType: "application/json",
+                                async: false,
+                                success: function(data){
+                                    if (data > 0) {
+                                        $('#documentIDs').val(documentIDs);
+                                    } else {
+                                        alert("Adding Damage Claim Failed!");
+                                    }
+                                },
+                                error: function() {
+                                    alert("There Was An Error Adding Damage Claim!");
+                                }
+                            });
+                        },
+                        error: function(error){
+                            $("#errorAlertTitle").html("Error");
+                            $("#errorAlertBody").html(error.responseText);
+                            $("#errorAlert").modal('show');
+                        }
+                });
+
+            }
+            
+        });
+        
         $("#btnReplace").unbind('click').bind('click',function(){
             $("#divUploadPolicyFile").show();
             $("#btnSave").show();
