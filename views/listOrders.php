@@ -3382,7 +3382,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             <div class="widget border-radius-5 border-light-blue">
                                 <label for="statusAddANote" class="text-blue">Add a Note</label>
                                 <textarea class="form-control" id="statusAddANote" rows="3"></textarea><br>
-                                <label for="blnShowCustomer" class="text-blue"><input type="checkbox" id="blnShowCustomer">Share with Customer</label><br>
+                                <label for="blnShowCustomer" class="text-blue"><input type="checkbox" id="blnShowCustomer" value="true">Share with Customer</label><br>
                                 <button type="button" id="addNote" class="btn btn-primary">Add Note</button>
                             </div>
                         </div>
@@ -6117,7 +6117,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 var statusVinNumber = $("#statusVinNumber").val();
                 var type = 'POST';
                 var url = '';
-
+                
                 $.ajax({
                 url: '<?php echo API_HOST_URL . "/order_statuses?filter[]=vinNumber,eq," ?>' + statusVinNumber + '&filter[]=carrierID,eq,' + statusCarrierID + '&filter[]=id,eq' + statusID + '&transform=1',
                 type: 'GET',
@@ -6126,8 +6126,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 success: function(data){
 
                     var citystate = $("#statusCurrentLocation").val().split(',');
-
-                    var params = {note: $("#statusAddANote").val()};
+                    var params = {showToCustomer: $("#blnShowCustomer").is(':checked'), note: $("#statusAddANote").val()};
 
                     if (data.order_statuses.length > 0) {
                         type = 'PUT';
