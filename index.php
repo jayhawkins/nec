@@ -602,6 +602,7 @@ $app->route('GET|POST /availabilitymatching/@id', function($id) {
         print_r($matchingresult);
     }
 });
+
 /*****************************************************************************/
 // Ducument Upload
 /*****************************************************************************/
@@ -739,6 +740,60 @@ $app->route('POST /indexgetavailability', function() {
     echo $return;
 });
 */
+
+/*****************************************************************************/
+// Reporting Processes
+/*****************************************************************************/
+$app->route('POST /getundeliveredtrailers', function() {
+    $reports = Flight::reports();
+    $db = Flight::db();
+    $result = $reports->getundeliveredtrailers($db);
+    if ($result) {
+        print_r($result);
+        //echo "success";
+    } else {
+        print_r($result);
+    }
+});
+
+$app->route('POST /getundeliveredtrailerscsv', function() {
+    $reports = Flight::reports();
+    $db = Flight::db();
+    $result = $reports->getundeliveredtrailerscsv($db);
+    if ($result) {
+        print_r($result);
+        //echo "success";
+    } else {
+        print_r($result);
+    }
+});
+
+$app->route('POST /getarsummary', function() {
+    $reports = Flight::reports();
+    $db = Flight::db();
+    $result = $reports->getarsummary($db);
+        echo $result;
+        die();
+    if ($result) {
+        print_r($result);
+        //echo "success";
+    } else {
+        print_r($result);
+    }
+});
+
+$app->route('POST /getarsummarycsv', function() {
+    $reports = Flight::reports();
+    $db = Flight::db();
+    $result = $reports->getarsummarycsv($db);
+    if ($result) {
+        print_r($result);
+        //echo "success";
+    } else {
+        print_r($result);
+    }
+});
+
 
 /*****************************************************************************/
 // POD API Process
