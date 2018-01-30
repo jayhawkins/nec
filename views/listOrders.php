@@ -274,20 +274,15 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
     function confirmApprovePOD(carrierID, vinNumber, documentID, orderDetailID, orderID, statusID){
 
         var orderURL = '<?php echo API_HOST_URL; ?>' + '/orders/' + orderID;
-        var orderDetailURL = '<?php echo API_HOST_URL; ?>' + '/order_details/' + orderDetailID;
 
         $.get(orderURL, function(order){
 
             var customerID = order.customerID;
             $('#approveCustomerID').val(customerID);
-
-        });
-
-        $.get(orderDetailURL, function(orderDetail){
-
-            var carrierRate = orderDetail.carrierRate;
-            var qty = orderDetail.qty;
-            var cost = carrierRate / qty;
+            
+            var customerRate = order.customerRate;
+            var qty = order.qty;
+            var cost = customerRate / qty;
             $('#approveCost').val(Math.round(cost));
 
         });
@@ -3355,9 +3350,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                         <button type="button" id="btnDownloadPOD" class="btn btn-primary">Download POD &nbsp; <span class="fa fa-download"></span></button>
                                     </div>
                                     <div class="col-md-3">
-                                        <button type="button" class="btn btn-outline-light" id="btnPaperClip"><span class="fa fa-lg fa-paperclip"></span></a>
+                                        <button type="button" class="btn btn-outline-light" id="btnPaperClip"><span class="fa fa-lg fa-paperclip"></span></button>
                                         &nbsp;
-                                        <button type="button" class="btn btn-primary" id="btnUploadPOD">Upload POD &nbsp; <span class="fa fa-upload"></span></a>
+                                        <button type="button" class="btn btn-primary" id="btnUploadPOD">Upload POD &nbsp; <span class="fa fa-upload"></span></button>
                                     </div>
                                     <div class="col-md-1">
                                         <button type="button" class="list-inline-item btn btn-primary pull-right" id="saveTrailerStatusExisting">Update</li>
@@ -3387,7 +3382,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             <div class="widget border-radius-5 border-light-blue">
                                 <label for="statusAddANote" class="text-blue">Add a Note</label>
                                 <textarea class="form-control" id="statusAddANote" rows="3"></textarea><br>
-                                <label for="blnShowCustomer" class="text-blue"><input type="checkbox" id="blnShowCustomer">Share with Customer</label><br>
+                                <label for="blnShowCustomer" class="text-blue"><input type="checkbox" id="blnShowCustomer" value="true">Share with Customer</label><br>
                                 <button type="button" id="addNote" class="btn btn-primary">Add Note</button>
                             </div>
                         </div>
@@ -4166,12 +4161,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             </div>
                         </div>
                   </div>
-                  <hr/>
+                  <!--<hr/>
                   <div class="row" id="replacePOD">
                       <div class="col-sm-12">
                         <label for="blnReplacePOD"><input type="checkbox" id="blnReplacePOD">Replace POD</label>
                       </div>
-                  </div>
+                  </div>-->
                 </form>
         </div>
         <div class="modal-footer">
@@ -6122,7 +6117,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 var statusVinNumber = $("#statusVinNumber").val();
                 var type = 'POST';
                 var url = '';
-
+                
                 $.ajax({
                 url: '<?php echo API_HOST_URL . "/order_statuses?filter[]=vinNumber,eq," ?>' + statusVinNumber + '&filter[]=carrierID,eq,' + statusCarrierID + '&filter[]=id,eq' + statusID + '&transform=1',
                 type: 'GET',
@@ -6131,8 +6126,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 success: function(data){
 
                     var citystate = $("#statusCurrentLocation").val().split(',');
-
-                    var params = {note: $("#statusAddANote").val()};
+                    var params = {showToCustomer: $("#blnShowCustomer").is(':checked'), note: $("#statusAddANote").val()};
 
                     if (data.order_statuses.length > 0) {
                         type = 'PUT';

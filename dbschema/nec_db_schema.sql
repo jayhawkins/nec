@@ -16,6 +16,26 @@ CREATE DATABASE IF NOT EXISTS `nec` CHARACTER SET utf8 COLLATE utf8_general_ci;
 USE `nec`;
 -- ---------------------------------------------------------
 
+-- CREATE TABLE "approved_pod" ---------------------------------
+CREATE TABLE `approved_pod` (
+	`id` Int( 11 ) UNSIGNED AUTO_INCREMENT NOT NULL,
+	`orderID` Int( 11 ) UNSIGNED NOT NULL,
+	`orderDetailID` Int( 11 ) NULL,
+	`carrierID` Int( 11 ) UNSIGNED NOT NULL,
+	`customerID` Int( 11 ) UNSIGNED NOT NULL,
+	`userID` Int( 11 ) UNSIGNED NOT NULL,
+	`documentID` Int( 5 ) UNSIGNED NOT NULL,
+	`vinNumber` VarChar( 64 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	`cost` Decimal( 13, 2 ) NOT NULL DEFAULT '0.00',
+	`hasBeenInvoiced` TinyInt( 1 ) NOT NULL DEFAULT '0',
+	`createdAt` DateTime NOT NULL,
+	`updatedAt` DateTime NOT NULL,
+	CONSTRAINT `unique_id` UNIQUE( `id` ) )
+CHARACTER SET = utf8
+COLLATE = utf8_general_ci
+ENGINE = InnoDB
+AUTO_INCREMENT = 3;
+
 -- CREATE TABLE "carrier_needs" --------------------------------
 CREATE TABLE IF NOT EXISTS `carrier_needs` (
 	`id` Int( 11 ) UNSIGNED AUTO_INCREMENT NOT NULL,
@@ -777,7 +797,8 @@ ALTER TABLE order_statuses ADD COLUMN documentID INT(5) unsigned DEFAULT 0 after
 ALTER TABLE order_statuses ADD COLUMN vinNumber VARCHAR(64) NOT NULL DEFAULT '' after documentID;
 ALTER TABLE order_statuses ADD COLUMN loadingStatus VARCHAR(255) NOT NULL DEFAULT '' after status;
 ALTER TABLE order_statuses ADD COLUMN arrivalEta VARCHAR(64) NOT NULL DEFAULT '' after loadingStatus;
-ALTER TABLE order_statuses ADD COLUMN hasBeenApproved tinyint(1) NOT NULL DEFAULT 0 after note;
+ALTER TABLE order_statuses ADD COLUMN showToCustomer tinyint(1) NOT NULL DEFAULT 0 after note;
+ALTER TABLE order_statuses ADD COLUMN hasBeenApproved tinyint(1) NOT NULL DEFAULT 0 after showToCustomer;
 
 ALTER TABLE `order_statuses`
 	ADD CONSTRAINT `lnk_orders_order_statuses` FOREIGN KEY ( `orderID` )
@@ -793,6 +814,48 @@ ALTER TABLE `order_statuses`
 -- -------------------------------------------------------------
 -- ---------------------------------------------------------
 
+-- CREATE TABLE "approved_pod" ------------------------------------
+-- CREATE TABLE "approved_pod" ----------------------------------------
+CREATE TABLE `approved_pod` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `orderID` int(11) unsigned NOT NULL,
+  `orderDetailID` int(11) DEFAULT NULL,
+  `carrierID` int(11) unsigned NOT NULL,
+  `customerID` int(11) unsigned NOT NULL,
+  `userID` int(11) unsigned NOT NULL,
+  `documentID` int(5) unsigned NOT NULL,
+  `vinNumber` varchar(64) NOT NULL DEFAULT '',
+  `cost` decimal(13,2) NOT NULL DEFAULT '0.00',
+  `hasBeenInvoiced` tinyint(1) NOT NULL DEFAULT '0',
+  `qbInvoiceNumber` varchar(255) NOT NULL DEFAULT '',
+  `qbInvoiceStatus` varchar(255) NOT NULL DEFAULT '',
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime NOT NULL,
+  UNIQUE KEY `unique_id` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+
+-- -------------------------------------------------------------
+-- ---------------------------------------------------------
+
+-- CREATE TABLE "damage_claims" ------------------------------------
+-- CREATE TABLE "damage_claims" ----------------------------------------
+CREATE TABLE `damage_claims` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `entityID` int(11) unsigned NOT NULL,
+  `entityAtFaultID` int(11) unsigned NOT NULL,
+  `vinNumber` varchar(64) NOT NULL DEFAULT '',
+  `damage` varchar(255) NOT NULL DEFAULT '',
+  `estimatedRepairCost` decimal(13,2) NOT NULL DEFAULT 0.00,
+  `negotiatedRepairCost` decimal(13,2) NOT NULL DEFAULT 0.00,
+  `documentIDs` JSON NOT NULL,
+  `status` varchar(64) NOT NULL DEFAULT '',
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime NOT NULL,
+  UNIQUE KEY `unique_id` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+
+-- -------------------------------------------------------------
+-- ---------------------------------------------------------
 
 -- CREATE TABLE "customer_needs_notes" ------------------------------------
 -- CREATE TABLE "customer_needs_notes" ----------------------------------------
@@ -1148,7 +1211,7 @@ ALTER TABLE `configuration_data_point_values`
 	ON DELETE No Action
 	ON UPDATE No Action;
 
-ALTER TABLE orders 
+ALTER TABLE orders
 DROP FOREIGN KEY lnk_documents_orders;
 
 ALTER TABLE customer_needs ADD COLUMN originationNotes VarChar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT "" AFTER originationZip;

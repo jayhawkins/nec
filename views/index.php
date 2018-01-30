@@ -8,20 +8,16 @@ if ($_SESSION['userid'] <= 0 || $_SESSION['userid'] == "") {
 $needsMenuAccessList = array(0,1,2,4);
 $availabilityMenuAccessList = array(0,1,2,4);
 $ordersMenuAccessList = array(0,1,2,3,4,5);
-
-//$invoicingMenuAccessList = array(0,1,2,3);
 $claimsMenuAccessList = array(0,1,2,3,4);
-//$collectionsMenuAccessList = array(0,1,2,4);
-
 $invoicingMenuAccessList = array(0);
-$collectionsMenuAccessList = array(0);
-
+$collectionsMenuAccessList = array();
 $profilesMenuAccessList = array(0,1);
 $myneedsMenuAccessList = array(0,1,2,4);
 $myavailabilityMenuAccessList = array(0,1,2,3,4);
 $mapsMenuAccessList = array(0,1,2);
 //$settingsMenuAccessList = array(0,1,2);
 $settingsMenuAccessList = array(0);
+$reportsMenuAccessList = array(0);
 
 // Get States
 $stateargs = array(
@@ -1500,7 +1496,7 @@ if ($_SESSION['entityid'] > 0) {
                     <span class="icon">
                         <i class="fa fa-dollar"></i>
                     </span>
-                    <i><strong>Invoicing</strong></i>
+                    <i></i>Invoicing</i>
                 </a>
             </li>
 <?php
@@ -1532,6 +1528,26 @@ if ($_SESSION['entityid'] > 0) {
                     </span>
                     <i><strong>Collections</strong></i>
                 </a>
+            </li>
+
+<?php
+    }
+
+    if ( ($_SESSION['entityid'] == 0 ) && in_array($_SESSION['usertypeid'], $reportsMenuAccessList) ) {
+ ?>
+
+            <li><a class="collapsed" href="#sidebar-sub-levels" data-toggle="collapse" data-parent="#sidebar-levels">
+                    <span class="icon">
+                        <i class="fa fa-list"></i>
+                    </span>
+                      Reporting
+                      <i class="toggle fa fa-angle-down"></i>
+                </a>
+              <ul id="sidebar-sub-levels" class="collapse">
+                  <li><a href="#" onclick="ajaxFormCall('listReportsUndelivered');">Undelivered Relays</a></li>
+                  <li><a href="#" onclick="ajaxFormCall('listReportsARSummary');">A/R Summary</a></li>
+                  <li><a href="#" onclick="ajaxFormCall('listReportsARDetail');">A/R Detail</a></li>
+              </ul>
             </li>
 
 <?php
@@ -2433,7 +2449,7 @@ if ($_SESSION['entitytype'] == 0) {
            </button>
          </div>
          <div id="errorAlertBody" class="modal-body">
-             
+
          </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

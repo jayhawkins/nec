@@ -37,6 +37,7 @@ require 'models/LocationsContacts.php';
 require 'models/Members.php';
 require 'models/MessageCenter.php';
 require 'models/Orders.php';
+require 'models/Reports.php';
 require 'models/States.php';
 require 'models/Users.php';
 
@@ -53,6 +54,7 @@ Flight::register('locationsContacts', 'LocationsContacts' );
 Flight::register('members', 'Members');
 Flight::register('messagecenter', 'MessageCenter');
 Flight::register('orders', 'Orders');
+Flight::register('reports', 'Reports');
 Flight::register('states','States');
 Flight::register('users', 'Users');
 
