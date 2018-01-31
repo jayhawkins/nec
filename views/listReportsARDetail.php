@@ -12,7 +12,8 @@ require '../lib/common.php';
       function loadTableAJAX() {
 
         if ($("#startDate").val() > '') {
-            // Do nothing - use the dates selected
+            $("#startDate").val($("#startDate").val());
+            $("#endDate").val($("#endDate").val());
         } else {
             var today = new Date();
             var yyyy = today.getFullYear();
@@ -41,9 +42,8 @@ require '../lib/common.php';
             endday = yyyy+'-'+mm+'-'+enddd;
             $("#startDate").val(today);
             $("#endDate").val(endday);
-            console.log('in here');
         }
-console.log($("#startDate").val());
+
         url = '<?php echo HTTP_HOST."/getardetail" ?>';
         var params = {
                       startDate: $("#startDate").val(),
@@ -177,14 +177,14 @@ console.log($("#startDate").val());
     } );
 
     // We have to reload when dates change
-    $("#startDate").bind('change',function(){ // Doing it like this because it was double posting document giving me duplicates
+    $("#startDate").unbind('change').bind('change',function(){ // Doing it like this because it was double posting document giving me duplicates
 
         loadTableAJAX();
 
     });
 
     // We have to reload when dates change
-    $("#endDate").bind('change',function(){ // Doing it like this because it was double posting document giving me duplicates
+    $("#endDate").unbind('change').bind('change',function(){ // Doing it like this because it was double posting document giving me duplicates
 
         loadTableAJAX();
 
