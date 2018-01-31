@@ -103,10 +103,10 @@ console.log(params);
              <a href="http://www.datatables.net/" target="_blank">jQuery DataTables</a>
          </p -->
          <div class="col-sm-12">
-            <div id="sandbox-container" class="input-group col-sm-3 date datepicker">
+            <div id="sbStart" class="input-group col-sm-3 date datepicker">
                <input type="text" id="startDate" name="startDate" class="form-control" placeholder="Start Date" required="required" value=""><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
             </div>
-            <div id="sandbox-container" class="input-group col-sm-3 date datepicker">
+            <div id="sbEnd" class="input-group col-sm-3 date datepicker">
                <input type="text" id="endDate" name="endDate" class="form-control" placeholder="End Date" required="required" value=""><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
             </div>
             <div class="form-group col-sm-6">
@@ -178,17 +178,19 @@ console.log(params);
     } );
 
     // We have to reload when dates change
-    $("#startDate").unbind('changeDate').bind('changeDate',function(){ // Doing it like this because it was double posting document giving me duplicates
-
+    $('#sbStart').datepicker().on('changeDate', function (ev) {
+        $('#startDate').change();
+    });
+    $("#startDate").unbind('change').bind('change',function(){ // Doing it like this because it was double posting document giving me duplicates
         loadTableAJAX();
-
     });
 
     // We have to reload when dates change
-    $("#endDate").unbind('changeDate').bind('changeDate',function(){ // Doing it like this because it was double posting document giving me duplicates
-
+    $('#sbEnd').datepicker().on('changeDate', function (ev) {
+        $('#endDate').change();
+    });
+    $("#endDate").unbind('change').bind('change',function(){ // Doing it like this because it was double posting document giving me duplicates
         loadTableAJAX();
-
     });
 
     // We have to handle downloading the report as a .csv file
