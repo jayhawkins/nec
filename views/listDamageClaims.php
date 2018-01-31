@@ -267,7 +267,7 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
 	}
 
 	function loadTableAJAX() {
-            var url = '<?php echo API_HOST_URL; ?>' + '/damage_claims?&filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&transform=1';
+            var url = '<?php echo API_HOST_URL; ?>' + '/damage_claims?filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&transform=1';
             var example_table = $('#datatable-table').DataTable({
                 retrieve: true,
                 processing: true,
@@ -431,7 +431,7 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
 
         function loadBusinessClaims(entityID) {
 
-            var url = '<?php echo API_HOST_URL; ?>' + '/damage_claims?&filter=entityID,eq,' + entityID + '&transform=1';
+            var url = '<?php echo API_HOST_URL; ?>' + '/damage_claims?filter=entityID,eq,' + entityID + '&transform=1';
             if ( ! $.fn.DataTable.isDataTable( '#datatable-table' ) ) {
                 var example_table = $('#datatable-table').DataTable({
                     retrieve: true,
