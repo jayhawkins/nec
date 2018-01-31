@@ -177,14 +177,14 @@ console.log($("#startDate").val());
     } );
 
     // We have to reload when dates change
-    $("#startDate").unbind('change').bind('change',function(){ // Doing it like this because it was double posting document giving me duplicates
+    $("#startDate").bind('change',function(){ // Doing it like this because it was double posting document giving me duplicates
 
         loadTableAJAX();
 
     });
 
     // We have to reload when dates change
-    $("#endDate").unbind('change').bind('change',function(){ // Doing it like this because it was double posting document giving me duplicates
+    $("#endDate").bind('change',function(){ // Doing it like this because it was double posting document giving me duplicates
 
         loadTableAJAX();
 
@@ -210,7 +210,7 @@ console.log($("#startDate").val());
                 type: "POST",
                 contentType: "application/json",
                 responseType: "arraybuffer",
-                data: JSON.stringify(params),
+                data: params,
                 success: function(data){
                     var element = document.createElement('a');
                     element.setAttribute('href', "data:application/octet-stream;charset=utf-8;base64,"+btoa(data.replace(/\n/g, '\r\n')));
