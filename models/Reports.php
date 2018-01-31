@@ -245,7 +245,7 @@ class Reports
 
                     $returnArray .= json_encode(array('orderID' => $orderID, 'customerName' => $customerName, 'carrierName' => $carrierName, 'costToCustomer' => $costToCustomer, 'costToCarrier' => $costToCarrier, 'qbInvoiceNumber' => $qbInvoiceNumber, 'qbStatus' => $qbInvoiceStatus));
 
-                    if ($c < count($approvedPodData)) {
+                    if ($c < count($approvedPodData) - 1) {
                         $returnArray .= ",";
                     }
               }
