@@ -11,33 +11,37 @@ require '../lib/common.php';
 
       function loadTableAJAX() {
 
-        var today = new Date();
-        var yyyy = today.getFullYear();
-        var dd = today.getDate();
-        var mm = today.getMonth()+1; //January is 0!
+        if ($("#startDate").val() > '') {
+            // Do nothing - use the dates selected
+        } else {
+            var today = new Date();
+            var yyyy = today.getFullYear();
+            var dd = today.getDate();
+            var mm = today.getMonth()+1; //January is 0!
 
-        var month = today.getMonth();
-        var enddate = new Date(yyyy, month + 1, 0);
-        var enddd = enddate.getDate();
+            var month = today.getMonth();
+            var enddate = new Date(yyyy, month + 1, 0);
+            var enddd = enddate.getDate();
 
-        if(dd<10) {
-            dd='0'+dd;
+            if(dd<10) {
+                dd='0'+dd;
+            }
+
+            if(mm<10) {
+                mm='0'+mm;
+            }
+
+            if(enddd<10) {
+                enddd='0'+enddd;
+            }
+
+            //today = mm+'/'+dd+'/'+yyyy;
+            //endday = mm+'/'+enddd+'/'+yyyy;
+            today = yyyy+'-'+mm+'-'+dd;
+            endday = yyyy+'-'+mm+'-'+enddd;
+            $("#startDate").val(today);
+            $("#endDate").val(endday);
         }
-
-        if(mm<10) {
-            mm='0'+mm;
-        }
-
-        if(enddd<10) {
-            enddd='0'+enddd;
-        }
-
-        //today = mm+'/'+dd+'/'+yyyy;
-        //endday = mm+'/'+enddd+'/'+yyyy;
-        today = yyyy+'-'+mm+'-'+dd;
-        endday = yyyy+'-'+mm+'-'+enddd;
-        $("#startDate").val(today);
-        $("#endDate").val(endday);
 
         url = '<?php echo HTTP_HOST."/getardetail" ?>';
         var params = {
