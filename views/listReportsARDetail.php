@@ -50,7 +50,7 @@ console.log(endDate);
                       startDate: startDate,
                       endDate: endDate
                 };
-
+console.log(params);
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
             processing: true,
