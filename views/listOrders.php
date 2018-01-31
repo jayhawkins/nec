@@ -279,7 +279,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
             var customerID = order.customerID;
             $('#approveCustomerID').val(customerID);
-            
+
             var customerRate = order.customerRate;
             var qty = order.qty;
             var cost = customerRate / qty;
@@ -778,7 +778,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
             var carriers = [];
             var trailers = order_details[0].orders[0].podList;
-
+console.log(trailers);
             // Get the Carrier Rate
             var displayCustomerRate = order_details[0].orders[0].customerRate;
             var displayCarrierTotal = 0;
@@ -1044,6 +1044,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                              $("#statusCarrierID").val(data.order_statuses[0].carrierID);
                              $("#statusDocumentID").val(data.order_statuses[0].documentID);
                              $("#statusVinNumber").val(data.order_statuses[0].vinNumber);
+                             $("#statusUnitNumber").val(data.order_statuses[0].unitNumber);
 
                              var url = '<?php echo API_HOST_URL ?>/documents?filter[]=id,eq,' + data.order_statuses[0].documentID + '&transform=1';
                              var type = "GET";
@@ -1075,6 +1076,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                              $("#statusCarrierID").val(<?php echo $_SESSION['entityid']; ?>);
                              $("#statusDocumentID").val('');
                              $("#statusVinNumber").val(trailer.vinNumber);
+                             $("#statusUnitNumber").val(trailer.unitNumber);
                              $("#noStatusRecordsExist").css("display", "block");
                              $("#statusRecordButtons").css("display", "none");
                          }
@@ -3287,6 +3289,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             <input type="hidden" id="statusDocumentID" value="" />
                             <input type="hidden" id="statusFileName" value="" />
                             <input type="hidden" id="statusVinNumber" value="" />
+                            <input type="hidden" id="statusUnitNumber" value="" />
                             <div class="row">
                                 <div class="col-md-1">
                                     <div class="carrier-logo carrier-logo__buds"></div>
@@ -5436,7 +5439,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             var formData = new FormData();
             var fileData = $('#filePOD')[0].files[0];
             formData.append('entityID', $("#statusCarrierID").val());
-            formData.append('name', $("#statusVinNumber").val());
+            formData.append('name', 'Identifier: ' + $("#statusUnitNumber").val() + ' - ' + $("#statusVinNumber").val());
             formData.append('fileupload', fileData);
 
             var url = '<?php echo HTTP_HOST."/uploaddocument" ?>';
@@ -5908,6 +5911,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 var statusOrderDetailID = $("#statusOrderDetailID").val();
                 var statusCarrierID = $("#statusCarrierID").val();
                 var statusVinNumber = $("#statusVinNumber").val();
+                var statusUnitNumber = $("#statusUnitNumber").val();
                 var type = 'POST';
                 var url = '';
 
@@ -5924,6 +5928,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                   orderDetailID: statusOrderDetailID,
                                   carrierID: statusCarrierID,
                                   vinNumber: statusVinNumber,
+                                  unitNumber: statusUnitNumber,
                                   status: $("#statusTrailerStatus").val(),
                                   city: citystate[0],
                                   state: citystate[1],
@@ -6012,6 +6017,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 var statusOrderDetailID = $("#statusOrderDetailID").val();
                 var statusCarrierID = $("#statusCarrierID").val();
                 var statusVinNumber = $("#statusVinNumber").val();
+                var statusUnitNumber = $("#statusUnitNumber").val();
                 var type = 'POST';
                 var url = '';
 
@@ -6028,6 +6034,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                   orderDetailID: statusOrderDetailID,
                                   carrierID: statusCarrierID,
                                   vinNumber: statusVinNumber,
+                                  unitNumber: statusUnitNumber,
                                   status: $("#statusTrailerStatus").val(),
                                   city: citystate[0],
                                   state: citystate[1],
@@ -6117,7 +6124,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 var statusVinNumber = $("#statusVinNumber").val();
                 var type = 'POST';
                 var url = '';
-                
+
                 $.ajax({
                 url: '<?php echo API_HOST_URL . "/order_statuses?filter[]=vinNumber,eq," ?>' + statusVinNumber + '&filter[]=carrierID,eq,' + statusCarrierID + '&filter[]=id,eq' + statusID + '&transform=1',
                 type: 'GET',

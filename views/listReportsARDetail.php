@@ -55,8 +55,11 @@ require '../lib/common.php';
                 dataSrc: 'approved_pod'
             },
             columns: [
+                { data: "orderID" },
                 { data: "customerName" },
                 { data: "carrierName" },
+                { data: "costToCustomer" },
+                { data: "costToCarrier" },
                 { data: "qbInvoiceNumber" },
                 { data: "qbStatus" }
             ]
@@ -110,8 +113,11 @@ require '../lib/common.php';
              <table id="datatable-table" class="table table-striped table-hover" width="100%">
                  <thead>
                  <tr>
+                     <th class="hidden-sm-down">Order ID</th>
                      <th class="hidden-sm-down">Customer Name</th>
                      <th class="hidden-sm-down text-nowrap">Carrier Name</th>
+                     <th class="hidden-sm-down">Cost to Customer</th>
+                     <th class="hidden-sm-down">Cost to Carrier</th>
                      <th class="hidden-sm-down text-nowrap">QB Invoice #</th>
                      <th class="hidden-sm-down text-nowrap">QB Status</th>
                  </tr>

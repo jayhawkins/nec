@@ -23,7 +23,9 @@ require '../lib/common.php';
             },
             columns: [
                 { data: "orderID" },
-                { data: "name"},
+                { data: "customerName"},
+                { data: "carrierName"},
+                { data: "unitNumber" },
                 { data: "vinNumber" },
                 { data: null,
                         "bSortable": true,
@@ -78,9 +80,11 @@ require '../lib/common.php';
                  <thead>
                  <tr>
                      <th class="hidden-sm-down">Order ID</th>
-                     <th class="hidden-sm-down text-nowrap" width="25%">Carrier</th>
+                     <th class="hidden-sm-down text-nowrap" width="20%">Customer</th>
+                     <th class="hidden-sm-down text-nowrap" width="20%">Carrier</th>
+                     <th class="hidden-sm-down text-nowrap">Unit Number</th>
                      <th class="hidden-sm-down text-nowrap">VIN</th>
-                     <th class="hidden-sm-down text-nowrap">Last Reported Location</th>
+                     <th class="hidden-sm-down text-nowrap">Last Location</th>
                      <th class="hidden-sm-down">Trailer Status</th>
                  </tr>
                  </thead>
