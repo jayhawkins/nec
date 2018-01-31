@@ -26,6 +26,7 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
 			},
 		};
 	})();
+        
 	function validateFile(file) {
 	    if (file) {
             var ext = $(file).val().split(".");
@@ -48,9 +49,11 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
 
             var documentURL = '<?php echo API_HOST_URL; ?>' + '/documents/' + documentID;
 
-            $.get(documentURL, function(data){
+            $.get(documentURL, function(data){               
+                
                 window.open( data.documentURL, '_blank');
             });
+    
         }
         
         function loadFileUploadDiv(){
@@ -59,7 +62,7 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
                 var jsnDocuments = JSON.parse($('#documentIDs').val());
                 var viewDocumentsButtons = "";
                 $.each(jsnDocuments, function(key, document){
-                    viewDocumentsButtons += '<button class=\"btn btn-primary mg-top-5\" onclick=\"viewPOD(' + document.documentID + ')\">' + document.documentType + ': ' + document.documentName + '</button> &nbsp;';
+                    viewDocumentsButtons += '<a class=\"btn btn-primary mg-top-5\" href=\"#\" onclick=\"viewPOD(' + document.documentID + ')\">' + document.documentType + ': ' + document.documentName + '</a> &nbsp;';
 
                 });
 
@@ -483,11 +486,6 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
             }
 
         }
-
-	function viewDocumentHold() {
-		window.open($("#docToView").val(), '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
-	}
-
 </script>
 
 <style>
@@ -990,35 +988,6 @@ if($_SESSION['entitytype'] != 0){
             
         });
         
-	$("#btnReplace").unbind('click').bind('click',function(){
-	    $("#divUploadClaimFile").show();
-        $("#btnSave").show();
-	});
-
-	$("#btnView").unbind('click').bind('click',function(){
-	    window.open( '<?php echo HTTP_HOST."/viewdocument" ?>?filename=' + $("#docToView").val() + '&entityID=' + $("#entityID").val(), '_blank');
-	    /*
-	    url = '<?php echo HTTP_HOST."/viewclaim" ?>';
-        type = "POST";
-        data = {'filename': $('#docToView').val(), 'entityID': $("#entityID").val()};
-        $.ajax({
-            url : url,
-            type : type,
-            data : JSON.stringify(data),
-            contentType: "application/json",
-            success : function(data) {
-
-            }
-        });
-        */
-	});
-
-	$("#btnSave").unbind('click').bind('click',function(){ // Doing it like this because it was double posting document giving me duplicates
-	    replaceDocument();
-	    return false;
-	});
-
-
 </script>
 
 <?php
@@ -1160,8 +1129,8 @@ else {
                             
                             documentIDs.push(newDocument);
                             
-                            url = '<?php echo API_HOST_URL . "/damage_claims" ?>/' + $("#claimID").val();
-                            type = "PUT";
+                            var url = '<?php echo API_HOST_URL . "/damage_claims" ?>/' + $("#claimID").val();
+                            var type = "PUT";
                             var claimData = {documentIDs: documentIDs, updatedAt: today};
                             
                             $.ajax({
@@ -1197,34 +1166,6 @@ else {
             
         });
         
-        $("#btnReplace").unbind('click').bind('click',function(){
-            $("#divUploadPolicyFile").show();
-            $("#btnSave").show();
-        });
-
-        $("#btnView").unbind('click').bind('click',function(){
-            window.open( '<?php echo HTTP_HOST."/viewdocument" ?>?filename=' + $("#docToView").val() + '&entityID=' + $("#entityID").val(), '_blank');
-            /*
-            url = '<?php echo HTTP_HOST."/viewclaim" ?>';
-            type = "POST";
-            data = {'filename': $('#docToView').val(), 'entityID': $("#entityID").val()};
-            $.ajax({
-                url : url,
-                type : type,
-                data : JSON.stringify(data),
-                contentType: "application/json",
-                success : function(data) {
-
-                }
-            });
-            */
-        });
-
-        $("#btnSave").unbind('click').bind('click',function(){ // Doing it like this because it was double posting document giving me duplicates
-            replaceDocument();
-            return false;
-        });
-
  </script>
 
 <?php
