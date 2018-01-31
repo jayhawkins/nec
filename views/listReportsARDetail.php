@@ -51,7 +51,7 @@ require '../lib/common.php';
             ajax: {
                 url: url,
                 type: 'POST',
-                data: JSON.stringify(params),
+                data: params,
                 dataSrc: 'approved_pod'
             },
             columns: [
