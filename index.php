@@ -809,9 +809,11 @@ $app->route('POST /getardetail', function() {
 });
 
 $app->route('POST /getardetailcsv', function() {
+    $startDate = Flight::request()->data->startDate;
+    $endDate = Flight::request()->data->endDate;
     $reports = Flight::reports();
     $db = Flight::db();
-    $result = $reports->getardetailcsv($db);
+    $result = $reports->getardetailcsv($db,$startDate,$endDate);
     if ($result) {
         print_r($result);
         //echo "success";

@@ -256,4 +256,47 @@ class Reports
           }
     }
 
+    public function getardetailcsv(&$db,$startDate,$endDate) {
+
+          $data = "Order ID,Customer Name,Carrier Name,Cost To Customer,Cost To Carrier,QB Invoice #,QB Status\n";
+
+          $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
+
+          /* Get approved_pod records */
+          $result = $dbhandle->query("SELECT approved_pod.orderID, approved_pod.carrierID, approved_pod.cost, approved_pod.qbInvoiceNumber, approved_pod.qbInvoiceStatus, entities.name
+                                     FROM approved_pod
+                                     JOIN `orders` on orders.id = approved_pod.orderDetailID
+                                     LEFT JOIN `entities` on entities.id = approved_pod.customerID
+                                     WHERE approved_pod.createdAt BETWEEN '" . $startDate . "' AND '" . $endDate . "'");
+
+          if (count($result) > 0) {
+              $approvedPodData = $result->fetchAll();
+              for ($c = 0; $c < count($approvedPodData); $c++) {
+                    $orderID = $approvedPodData[$c]['orderID'];
+                    $costToCustomer = $approvedPodData[$c]['cost'];
+                    $costToCarrier = $approvedPodData[$c]['cost'];
+                    $customerName = $approvedPodData[$c]['name'];
+                    $qbInvoiceNumber = $approvedPodData[$c]['qbInvoiceNumber'];
+                    $qbInvoiceStatus = $approvedPodData[$c]['qbInvoiceStatus'];
+
+                    /* Get carrier name for approved_pod record */
+                    $entitiesResult = $dbhandle->query("SELECT name FROM entities WHERE id = '" . $approvedPodData[$c]['qbInvoiceStatus'] . "'");
+
+                    $entitiesData = $entitiesResult->fetchAll();
+                    for ($e = 0; $e < count($entitiesData); $e++) {
+                        $carrierName = $entitiesData[$e]['name'];
+                    }
+
+                    $data .= $orderID.",".$customerName.",".$carrerName.",".$costToCustomer.",".$costToCarrier.",".$qbInvoiceNumber.",".$qbInvoiceStatus."\n";
+
+              }
+          }
+
+          if ($data) {
+              echo $data;
+          } else {
+              echo '{}';
+          }
+    }
+
 }
