@@ -100,6 +100,7 @@ class Reports
 
           /* Previous Week */
           $result = $dbhandle->query("SELECT * FROM approved_pod
+                                        JOIN `orders` on orders.id = approved_pod.orderDetailID
                                         WHERE createdAt >= CURDATE() - INTERVAL DAYOFWEEK(CURDATE())+6 DAY
                                         AND createdAt < CURDATE() - INTERVAL DAYOFWEEK(CURDATE())-1 DAY");
 
@@ -115,7 +116,9 @@ class Reports
           $returnArray .= "," . json_encode(array('weekTitle' => 'Previous Week', 'revenue' => $previousRevenue, 'payout' => $previousPayout, 'difference' => $previousDifference));
 
           /* This Month */
-          $result = $dbhandle->query("SELECT * FROM approved_pod WHERE MONTH(`createdAt`)=MONTH(NOW()) AND YEAR(`createdAt`)=YEAR(NOW())");
+          $result = $dbhandle->query("SELECT * FROM approved_pod
+                                      JOIN `orders` on orders.id = approved_pod.orderDetailID
+                                      WHERE MONTH(`createdAt`)=MONTH(NOW()) AND YEAR(`createdAt`)=YEAR(NOW())");
 
           if (count($result) > 0) {
               $monthData = $result->fetchAll();
@@ -171,6 +174,7 @@ class Reports
 
           /* Previous Week */
           $result = $dbhandle->query("SELECT * FROM approved_pod
+                                        JOIN `orders` on orders.id = approved_pod.orderDetailID
                                         WHERE createdAt >= CURDATE() - INTERVAL DAYOFWEEK(CURDATE())+6 DAY
                                         AND createdAt < CURDATE() - INTERVAL DAYOFWEEK(CURDATE())-1 DAY");
 
@@ -186,7 +190,9 @@ class Reports
           $data .= "Previous Week,".$previousRevenue.",".$previousPayout.",".$previousDifference."\n";
 
           /* This Month */
-          $result = $dbhandle->query("SELECT * FROM approved_pod WHERE MONTH(`createdAt`)=MONTH(NOW()) AND YEAR(`createdAt`)=YEAR(NOW())");
+          $result = $dbhandle->query("SELECT * FROM approved_pod
+                                      JOIN `orders` on orders.id = approved_pod.orderDetailID
+                                      WHERE MONTH(`createdAt`)=MONTH(NOW()) AND YEAR(`createdAt`)=YEAR(NOW())");
 
           if (count($result) > 0) {
               $monthData = $result->fetchAll();
