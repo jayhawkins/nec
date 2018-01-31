@@ -10,7 +10,7 @@ require '../lib/common.php';
  <script>
 
       function loadTableAJAX() {
-console.log($("#startDate").val());
+
         if ($("#startDate").val() > '') {
             // Do nothing - use the dates selected
         } else {
@@ -41,8 +41,9 @@ console.log($("#startDate").val());
             endday = yyyy+'-'+mm+'-'+enddd;
             $("#startDate").val(today);
             $("#endDate").val(endday);
+            console.log('in here');
         }
-
+console.log($("#startDate").val());
         url = '<?php echo HTTP_HOST."/getardetail" ?>';
         var params = {
                       startDate: $("#startDate").val(),
