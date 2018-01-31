@@ -41,10 +41,13 @@ require '../lib/common.php';
             $("#endDate").val(endday);
         }
 
+        var startDate = $("#startDate").val();
+        var endDate = $("#endDate").val();
+
         url = '<?php echo HTTP_HOST."/getardetail" ?>';
         var params = {
-                      startDate: $("#startDate").val(),
-                      endDate: $("#endDate").val()
+                      startDate: startDate,
+                      endDate: endDate
                 };
 
         var example_table = $('#datatable-table').DataTable({
