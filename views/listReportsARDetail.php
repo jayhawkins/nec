@@ -10,7 +10,7 @@ require '../lib/common.php';
  <script>
 
       function loadTableAJAX() {
-
+console.log($("#startDate").val());
         if ($("#startDate").val() > '') {
             // Do nothing - use the dates selected
         } else {
