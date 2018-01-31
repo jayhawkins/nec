@@ -11,10 +11,7 @@ require '../lib/common.php';
 
       function loadTableAJAX() {
 
-        if ($("#startDate").val() > '') {
-            $("#startDate").val($("#startDate").val());
-            $("#endDate").val($("#endDate").val());
-        } else {
+        if ($("#startDate").val() == '') {
             var today = new Date();
             var yyyy = today.getFullYear();
             var dd = today.getDate();
@@ -103,10 +100,10 @@ require '../lib/common.php';
          </p -->
          <div class="col-sm-12">
             <div id="sandbox-container" class="input-group col-sm-3 date datepicker">
-               <input type="text" id="startDate" name="startDate" class="form-control" placeholder="Start Date" required="required"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+               <input type="text" id="startDate" name="startDate" class="form-control" placeholder="Start Date" required="required" value=""><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
             </div>
             <div id="sandbox-container" class="input-group col-sm-3 date datepicker">
-               <input type="text" id="endDate" name="endDate" class="form-control" placeholder="End Date" required="required"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+               <input type="text" id="endDate" name="endDate" class="form-control" placeholder="End Date" required="required" value=""><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
             </div>
             <div class="form-group col-sm-6">
                 <button type="button" id="downloadCSVButton" class="btn btn-primary pull-right">Download CSV</button>
