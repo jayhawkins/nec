@@ -43,12 +43,11 @@ require '../lib/common.php';
 
         var startDate = $("#startDate").val();
         var endDate = $("#endDate").val();
-console.log(startDate);
-console.log(endDate);
+
         url = '<?php echo HTTP_HOST."/getardetail" ?>';
         var params = {
-                      startDate: startDate,
-                      endDate: endDate
+                      "startDate": startDate,
+                      "endDate": endDate
                 };
 console.log(params);
         var example_table = $('#datatable-table').DataTable({
@@ -57,7 +56,7 @@ console.log(params);
             ajax: {
                 url: url,
                 type: 'POST',
-                data: JSON.stringify(params),
+                data: params,
                 dataSrc: 'approved_pod'
             },
             columns: [
@@ -213,7 +212,7 @@ console.log(params);
                 type: "POST",
                 contentType: "application/json",
                 responseType: "arraybuffer",
-                data: JSON.stringify(params),
+                data: params,
                 success: function(data){
                     var element = document.createElement('a');
                     element.setAttribute('href', "data:application/octet-stream;charset=utf-8;base64,"+btoa(data.replace(/\n/g, '\r\n')));
