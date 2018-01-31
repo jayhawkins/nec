@@ -794,6 +794,32 @@ $app->route('POST /getarsummarycsv', function() {
     }
 });
 
+$app->route('POST /getardetail', function() {
+    $startDate = Flight::request()->data->startDate;
+    $endDate = Flight::request()->data->endDate;
+    $reports = Flight::reports();
+    $db = Flight::db();
+    $result = $reports->getardetail($db,$startDate,$endDate);
+    if ($result) {
+        print_r($result);
+        //echo "success";
+    } else {
+        print_r($result);
+    }
+});
+
+$app->route('POST /getardetailcsv', function() {
+    $reports = Flight::reports();
+    $db = Flight::db();
+    $result = $reports->getardetailcsv($db);
+    if ($result) {
+        print_r($result);
+        //echo "success";
+    } else {
+        print_r($result);
+    }
+});
+
 
 /*****************************************************************************/
 // POD API Process

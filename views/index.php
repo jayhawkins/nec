@@ -17,7 +17,7 @@ $myavailabilityMenuAccessList = array(0,1,2,3,4);
 $mapsMenuAccessList = array(0,1,2);
 //$settingsMenuAccessList = array(0,1,2);
 $settingsMenuAccessList = array(0);
-$reportsMenuAccessList = array(0);
+$reportsMenuAccessList = array(0,1,2);
 
 // Get States
 $stateargs = array(
@@ -1544,7 +1544,7 @@ if ($_SESSION['entityid'] > 0) {
                       <i class="toggle fa fa-angle-down"></i>
                 </a>
               <ul id="sidebar-sub-levels" class="collapse">
-                  <li><a href="#" onclick="ajaxFormCall('listReportsUndelivered');">Undelivered Relays</a></li>
+                  <li><a href="#" onclick="ajaxFormCall('listReportsUndelivered');">Undelivered Reports</a></li>
                   <li><a href="#" onclick="ajaxFormCall('listReportsARSummary');">A/R Summary</a></li>
                   <li><a href="#" onclick="ajaxFormCall('listReportsARDetail');">A/R Detail</a></li>
               </ul>

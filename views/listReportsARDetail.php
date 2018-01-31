@@ -11,7 +11,39 @@ require '../lib/common.php';
 
       function loadTableAJAX() {
 
-        url = '<?php echo HTTP_HOST."/getundeliveredtrailers" ?>';
+        var today = new Date();
+        var yyyy = today.getFullYear();
+        var dd = today.getDate();
+        var mm = today.getMonth()+1; //January is 0!
+
+        var month = today.getMonth();
+        var enddate = new Date(yyyy, month + 1, 0);
+        var enddd = enddate.getDate();
+
+        if(dd<10) {
+            dd='0'+dd;
+        }
+
+        if(mm<10) {
+            mm='0'+mm;
+        }
+
+        if(enddd<10) {
+            enddd='0'+enddd;
+        }
+
+        //today = mm+'/'+dd+'/'+yyyy;
+        //endday = mm+'/'+enddd+'/'+yyyy;
+        today = yyyy+'-'+mm+'-'+dd;
+        endday = yyyy+'-'+mm+'-'+enddd;
+        $("#startDate").val(today);
+        $("#endDate").val(endday);
+
+        url = '<?php echo HTTP_HOST."/getardetail" ?>';
+        var params = {
+                      startDate: $("#startDate").val(),
+                      endDate: $("#endDate").val()
+                };
 
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
@@ -19,27 +51,17 @@ require '../lib/common.php';
             ajax: {
                 url: url,
                 type: 'POST',
-                dataSrc: 'order_details'
+                data: JSON.stringify(params),
+                dataSrc: 'approved_pod'
             },
             columns: [
                 { data: "orderID" },
-                { data: "customerName"},
-                { data: "carrierName"},
-                { data: "unitNumber" },
-                { data: "vinNumber" },
-                { data: null,
-                        "bSortable": true,
-                        "mRender" : function(o) {
-                            if (o.city) {
-                                var location = o.city + ', ' + o.state;
-                            } else {
-                                var location = '';
-                            }
-
-                            return location;
-                        }
-                },
-                { data: "statusesstatus"}
+                { data: "customerName" },
+                { data: "carrierName" },
+                { data: "costToCustomer" },
+                { data: "costToCarrier" },
+                { data: "qbInvoiceNumber" },
+                { data: "qbStatus" }
             ]
           });
 
@@ -53,14 +75,16 @@ require '../lib/common.php';
 
  </script>
 
+ <script src="vendor/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
+
  <ol class="breadcrumb">
    <li>ADMIN</li>
    <li>Reporting</li>
-   <li class="active">Undelivered Relays</li>
+   <li class="active">A/R Summary Detail</li>
  </ol>
  <section class="widget">
      <header>
-         <h4><span class="fw-semi-bold">Undelivered Trailer Relays</span></h4>
+         <h4><span class="fw-semi-bold">A/R Summary Detail</span></h4>
          <div class="widget-controls">
              <a data-widgster="expand" title="Expand" href="#"><i class="glyphicon glyphicon-chevron-up"></i></a>
              <a data-widgster="collapse" title="Collapse" href="#"><i class="glyphicon glyphicon-chevron-down"></i></a>
@@ -72,7 +96,17 @@ require '../lib/common.php';
              Column sorting, live search, pagination. Built with
              <a href="http://www.datatables.net/" target="_blank">jQuery DataTables</a>
          </p -->
-         <button type="button" id="downloadCSVButton" class="btn btn-primary pull-right">Download CSV</button>
+         <div class="col-sm-12">
+            <div id="sandbox-container" class="input-group col-sm-3 date datepicker">
+               <input type="text" id="startDate" name="startDate" class="form-control" placeholder="Start Date" required="required"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+            </div>
+            <div id="sandbox-container" class="input-group col-sm-3 date datepicker">
+               <input type="text" id="endDate" name="endDate" class="form-control" placeholder="End Date" required="required"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+            </div>
+            <div class="form-group col-sm-6">
+                <button type="button" id="downloadCSVButton" class="btn btn-primary pull-right">Download CSV</button>
+            </div>
+         </div>
          <a id="downloadCSV"></a>
          <br /><br />
          <div id="dataTable" class="mt">
@@ -80,12 +114,12 @@ require '../lib/common.php';
                  <thead>
                  <tr>
                      <th class="hidden-sm-down">Order ID</th>
-                     <th class="hidden-sm-down text-nowrap" width="20%">Customer</th>
-                     <th class="hidden-sm-down text-nowrap" width="20%">Carrier</th>
-                     <th class="hidden-sm-down text-nowrap">Unit Number</th>
-                     <th class="hidden-sm-down text-nowrap">VIN</th>
-                     <th class="hidden-sm-down text-nowrap">Last Location</th>
-                     <th class="hidden-sm-down">Trailer Status</th>
+                     <th class="hidden-sm-down">Customer Name</th>
+                     <th class="hidden-sm-down text-nowrap">Carrier Name</th>
+                     <th class="hidden-sm-down">Cost to Customer</th>
+                     <th class="hidden-sm-down">Cost to Carrier</th>
+                     <th class="hidden-sm-down text-nowrap">QB Invoice #</th>
+                     <th class="hidden-sm-down text-nowrap">QB Status</th>
                  </tr>
                  </thead>
                  <tbody>
@@ -99,6 +133,12 @@ require '../lib/common.php';
  <script>
 
     loadTableAJAX();
+
+    $('.datepicker').datepicker({
+        autoclose: true,
+        todayHighlight: true,
+        format: "yyyy-mm-dd"
+    });
 
     var table = $("#datatable-table").DataTable();
 
@@ -140,7 +180,7 @@ require '../lib/common.php';
 
     function downloadTemplateClick() {
 
-            url = '<?php echo HTTP_HOST."/getundeliveredtrailerscsv" ?>';
+            url = '<?php echo HTTP_HOST."/getardetailcsv" ?>';
 
             $.ajax({
                 url: url,
@@ -150,15 +190,15 @@ require '../lib/common.php';
                 success: function(data){
                     var element = document.createElement('a');
                     element.setAttribute('href', "data:application/octet-stream;charset=utf-8;base64,"+btoa(data.replace(/\n/g, '\r\n')));
-                    element.setAttribute('download', "carrier_needs_bulk_import_template.csv");
+                    element.setAttribute('download', "ar_summary_detail_report.csv");
                     //$("#downloadTemplate").attr("href","data:application/octet-stream;charset=utf-8;base64,"+btoa(data.replace(/\n/g, '\r\n')));
-                    //$("#downloadTemplate").attr("download","carrier_needs_bulk_import_template.csv");
+                    //$("#downloadTemplate").attr("download","ar_summary_detail_report.csv");
                     document.body.appendChild(element);
                     element.click();
                     document.body.removeChild(element);
                 },
                 error: function() {
-                    alert('Failed to Download Undelivered Trailers Report');
+                    alert('Failed to Download A/R Summary Detail Report');
                 }
             });
 
