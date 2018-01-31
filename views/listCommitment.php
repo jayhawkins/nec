@@ -972,6 +972,40 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 $('#phoneNumber_relay' + relayNumber).val(customer_needs.deliveryInformation.phoneNumber);
                 $('#hoursOfOperation_relay' + relayNumber).val(customer_needs.deliveryInformation.hoursOfOperation);
 
+                var currentCarrier = parseInt(customer_needs.customer_needs_commit[0].entities[0].id);
+
+                $.ajax({
+                    url: '<?php echo API_HOST_URL . "/locations"; ?>' + '?filter=entityID,eq,' + currentCarrier + '&transform=1',
+                    contentType: "application/json",
+                    success: function (json) {
+                        
+                        console.log(json);
+                        var locations = json.locations;
+                        var locationdata = [];
+                        $.each(locations, function(key, location){
+                            var value = location.address1;
+                            var label = location.address1 + ', ' + location.city + ', ' + location.state + ' ' + location.zip;
+                            var id = location.id
+                            var city = location.city;
+                            var state = location.state;
+                            var zip = location.zip;
+                            var entry = {id: id, value: value, label: label, city: city, state: state, zip: zip};
+                            locationdata.push(entry);
+                        });
+                        
+                        $('#address_relay' + relayNumber).autocomplete({
+                            source: locationdata,
+                            minLength: 0,
+                            select: function (event, ui) {
+                                $('#city_relay' + relayNumber).val(ui.item.city);
+                                $('#state_relay' + relayNumber).val(ui.item.state);
+                                $('#zip_relay' + relayNumber).val(ui.item.zip);
+                            }
+                        });
+                    }
+                });
+
+
                 if(customer_needs.customer_needs_commit[0].rate == 0){
                     var calcRate = 0.00;
                     if (customer_needs.customer_needs_commit[0].entities[0].rateType == "Mileage") {
@@ -1074,7 +1108,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         background: url('../img/details_close.png') no-repeat center center;
         cursor: pointer;
     }
-
+    
+    ul.ui-autocomplete {
+        z-index: 1100;
+    }
  </style>
 
  <ol class="breadcrumb">
@@ -1407,7 +1444,19 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         <h4>Relay Address 1</h4>
                             <input class="form-control" id="relay_id1" placeholder="" type="hidden">
                             <input class="form-control" id="commit_id1" placeholder="" type="hidden">
-                            <input class="form-control" id="entityID_relay1" placeholder="" type="hidden">
+                            <!--<input class="form-control" id="entityID_relay1" placeholder="" type="hidden">-->
+                            <div class="form-group">
+                                <label for="entityID_relay1">Carrier</label>
+                                <select id="entityID_relay1" name="entityID_relay1" data-placeholder="Carrier" class="form-control chzn-select" required="required" onchange="populateAutocomplete(this, 1);">
+                                    <option selected=selected value=""> -Select Carrier- </option>
+                    <?php
+                                     foreach($entities->entities->records as $value) {
+                                         $selected = ($value[0] == $entity) ? 'selected=selected':'';
+                                         echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
+                                     }
+                    ?>
+                                </select>
+                            </div>
                             <div class="form-group">
                                     <label for="deliveryLocation_relay1">Location</label>
                                     <input class="form-control" id="deliveryLocation_relay1" placeholder="" type="text">
@@ -1449,6 +1498,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     <input class="form-control" id="zip_relay1" placeholder="" type="text">
                             </div>
                             <div class="form-group">
+                                <button type="button" class="btn btn-secondary" onclick="saveRelayAddressToCarrier(1);">Save Address To Carrier</button>
+                            </div>
+                            <div class="form-group">
                                     <label for="notes_relay1">Notes</label>
                                     <textarea class="form-control" id="notes_relay1" rows="3"></textarea>
                             </div>
@@ -1462,7 +1514,19 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         <h4>Relay Address 2</h4>
                             <input class="form-control" id="relay_id2" placeholder="" type="hidden">
                             <input class="form-control" id="commit_id2" placeholder="" type="hidden">
-                            <input class="form-control" id="entityID_relay2" placeholder="" type="hidden">
+                            <!--<input class="form-control" id="entityID_relay2" placeholder="" type="hidden">-->
+                            <div class="form-group">
+                            <label for="entityID_relay2">Carrier</label>
+                                <select id="entityID_relay2" name="entityID_relay2" data-placeholder="Carrier" class="form-control chzn-select" required="required" onchange="populateAutocomplete(this, 2);">
+                                    <option selected=selected value=""> -Select Carrier- </option>
+                    <?php
+                                     foreach($entities->entities->records as $value) {
+                                         $selected = ($value[0] == $entity) ? 'selected=selected':'';
+                                         echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
+                                     }
+                    ?>
+                                </select>
+                            </div>
                             <div class="form-group">
                                     <label for="deliveryLocation_relay2">Location</label>
                                     <input class="form-control" id="deliveryLocation_relay2" placeholder="" type="text">
@@ -1504,6 +1568,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     <input class="form-control" id="zip_relay2" placeholder="" type="text">
                             </div>
                             <div class="form-group">
+                                <button type="button" class="btn btn-secondary" onclick="saveRelayAddressToCarrier(2);">Save Address To Carrier</button>
+                            </div>
+                            <div class="form-group">
                                     <label for="notes_relay2">Notes</label>
                                     <textarea class="form-control" id="notes_relay2" rows="3"></textarea>
                             </div>
@@ -1517,7 +1584,19 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         <h4>Relay Address 3</h4>
                             <input class="form-control" id="relay_id3" placeholder="" type="hidden">
                             <input class="form-control" id="commit_id3" placeholder="" type="hidden">
-                            <input class="form-control" id="entityID_relay3" placeholder="" type="hidden">
+                            <!--<input class="form-control" id="entityID_relay3" placeholder="" type="hidden">-->
+                            <div class="form-group">
+                            <label for="entityID_relay3">Carrier</label>
+                                <select id="entityID_relay3" name="entityID_relay3" data-placeholder="Carrier" class="form-control chzn-select" required="required" onchange="populateAutocomplete(this, 3);">
+                                    <option selected=selected value=""> -Select Carrier- </option>
+                    <?php
+                                     foreach($entities->entities->records as $value) {
+                                         $selected = ($value[0] == $entity) ? 'selected=selected':'';
+                                         echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
+                                     }
+                    ?>
+                                </select>
+                            </div>
                             <div class="form-group">
                                     <label for="deliveryLocation_relay3">Location</label>
                                     <input class="form-control" id="deliveryLocation_relay3" placeholder="" type="text">
@@ -1559,6 +1638,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     <input class="form-control" id="zip_relay3" placeholder="" type="text">
                             </div>
                             <div class="form-group">
+                                <button type="button" class="btn btn-secondary" onclick="saveRelayAddressToCarrier(3);">Save Address To Carrier</button>
+                            </div>
+                            <div class="form-group">
                                     <label for="notes_relay3">Notes</label>
                                     <textarea class="form-control" id="notes_relay3" rows="3"></textarea>
                             </div>
@@ -1572,7 +1654,19 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         <h4>Relay Address 4</h4>
                             <input class="form-control" id="relay_id4" placeholder="" type="hidden">
                             <input class="form-control" id="commit_id4" placeholder="" type="hidden">
-                            <input class="form-control" id="entityID_relay4" placeholder="" type="hidden">
+                            <!--<input class="form-control" id="entityID_relay4" placeholder="" type="hidden">-->
+                            <div class="form-group">
+                            <label for="entityID_relay4">Carrier</label>
+                                <select id="entityID_relay4" name="entityID_relay4" data-placeholder="Carrier" class="form-control chzn-select" required="required" onchange="populateAutocomplete(this, 4);">
+                                    <option selected=selected value=""> -Select Carrier- </option>
+                    <?php
+                                     foreach($entities->entities->records as $value) {
+                                         $selected = ($value[0] == $entity) ? 'selected=selected':'';
+                                         echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
+                                     }
+                    ?>
+                                </select>
+                            </div>
                             <div class="form-group">
                                     <label for="deliveryLocation_relay4">Location</label>
                                     <input class="form-control" id="deliveryLocation_relay4" placeholder="" type="text">
@@ -1612,6 +1706,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             <div class="form-group">
                                     <label for="zip_relay4">Zip</label>
                                     <input class="form-control" id="zip_relay4" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                <button type="button" class="btn btn-secondary" onclick="saveRelayAddressToCarrier(4);">Save Address To Carrier</button>
                             </div>
                             <div class="form-group">
                                     <label for="notes_relay4">Notes</label>
@@ -2136,7 +2233,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                             var relayID = $('#relay_id' + relayNumber).val().trim();
                             var commitID = $('#commit_id' + relayNumber).val().trim();
-                            console.log(commitID);
+                            
                             var destinationAddress1 = $('#address_relay' + relayNumber).val().trim();
                             var destinationCity = $('#city_relay' + relayNumber).val().trim();
                             var destinationState = $('#state_relay' + relayNumber).val().trim();
@@ -2177,6 +2274,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                             if(type == "POST") relayID = data;
                                             else url += commitID;
 
+                                            var entityID = $('#entityID_relay' + relayNumber).val();
                                             var pickupDate = $('#pickupDate_relay' + relayNumber).val();
                                             var deliveryDate = $('#deliveryDate_relay' + relayNumber).val();
                                             var rate = $('#rate_relay' + relayNumber).val();
@@ -2186,7 +2284,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                                             originationLng: "", originationLat: "", destinationLng: "", destinationLat: "", distance: 0, qty: qty, rate: rate, transportation_mode: "", transportation_type: "", updatedAt: today,
                                                             pickupDate: pickupDate, deliveryDate: deliveryDate };
 */
-                                            var commitData = {customerNeedsID: relayID, originationAddress1: originationAddress1, originationCity: originationCity, originationState: originationState, originationZip: originationZip,
+                                            var commitData = {customerNeedsID: relayID, entityID: entityID, originationAddress1: originationAddress1, originationCity: originationCity, originationState: originationState, originationZip: originationZip,
                                                             destinationAddress1: destinationAddress1, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, rate: rate, updatedAt: today,
                                                             pickupDate: pickupDate, deliveryDate: deliveryDate };
 
@@ -2408,11 +2506,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                         if(data > 0){
 
                                             var relayID = data;
-
+                                            
+                                            var entityID = $('#entityID_relay' + relayNumber).val();
                                             var pickupDate = $('#pickupDate_relay' + relayNumber).val();
                                             var deliveryDate = $('#deliveryDate_relay' + relayNumber).val();
 
-                                            var commitData = {customerNeedsID: relayID, originationAddress1: originationAddress1, originationCity: originationCity, originationState: originationState, originationZip: originationZip,
+                                            var commitData = {customerNeedsID: relayID, entityID: entityID, originationAddress1: originationAddress1, originationCity: originationCity, originationState: originationState, originationZip: originationZip,
                                                             destinationAddress1: destinationAddress1, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, status: "Available",
                                                             originationLng: "", originationLat: "", destinationLng: "", destinationLat: "", distance: 0, qty: qty, transportation_mode: transportationMode, transportation_type: "", createdAt: today, updatedAt: today,
                                                             pickupDate: pickupDate, deliveryDate: deliveryDate };
@@ -2483,7 +2582,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             }
             else{
                 addCommitment();
-                console.log("This is adding a Commitment.");
             }
 
     }
@@ -2696,6 +2794,111 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
         $('#commitModalTitle').append("Add Commitment");
         $("#editCommitModal").modal('show');
+    }
+
+    function populateAutocomplete(select, relayNumber){
+        var currentCarrier = $(select).val();
+        
+        $.ajax({
+            url: '<?php echo API_HOST_URL . "/locations"; ?>' + '?filter=entityID,eq,' + currentCarrier + '&transform=1',
+            contentType: "application/json",
+            success: function (json) {
+
+                var locations = json.locations;
+                var locationdata = [];
+                $.each(locations, function(key, location){
+                    var value = location.address1;
+                    var label = location.address1 + ', ' + location.city + ', ' + location.state + ' ' + location.zip;
+                    var id = location.id
+                    var city = location.city;
+                    var state = location.state;
+                    var zip = location.zip;
+                    var entry = {id: id, value: value, label: label, city: city, state: state, zip: zip};
+                    locationdata.push(entry);
+                });
+
+                $('#address_relay' + relayNumber).autocomplete({
+                    source: locationdata,
+                    minLength: 0,
+                    select: function (event, ui) {
+                        $('#city_relay' + relayNumber).val(ui.item.city);
+                        $('#state_relay' + relayNumber).val(ui.item.state);
+                        $('#zip_relay' + relayNumber).val(ui.item.zip);
+                    }
+                });
+            }
+        });
+    }
+
+    function saveRelayAddressToCarrier(relayNumber){
+    
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth()+1; //January is 0!
+        var yyyy = today.getFullYear();
+        var hours = today.getHours();
+        var min = today.getMinutes();
+        var sec = today.getSeconds();
+
+        if(dd<10) {
+            dd='0'+dd;
+        }
+
+        if(mm<10) {
+            mm='0'+mm;
+        }
+
+        if(hours<10) {
+            hours='0'+hours;
+        }
+
+        if(min<10) {
+            min='0'+min;
+        }
+
+        today = mm+'/'+dd+'/'+yyyy;
+        today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+
+        var entityID = $('#entityID_relay' + relayNumber).val();        
+        var address = $('#address_relay' + relayNumber).val();
+        var city = $('#city_relay' + relayNumber).val();
+        var state = $('#state_relay' + relayNumber).val();
+        var zip = $('#zip_relay' + relayNumber).val();
+        
+        var locationData = {entityID: entityID, locationTypeID: 3, name: "", address1: address, address2: "",
+        city: city, state: state, zip: zip, latitude: 0.00, longitude: 0.00, timeZone: "", status: "Active", 
+        createdAt: today, updatedAt: today};
+        
+        $.ajax({
+            url: '<?php echo API_HOST_URL . "/locations"; ?>',
+            type: 'POST',
+            data: JSON.stringify(locationData),
+            contentType: "application/json",
+            async: false,
+            success: function (data) {
+                if(data > 0){
+                    var entitySelect = $('#entityID_relay' + relayNumber);
+                    populateAutocomplete(entitySelect, relayNumber);
+                    
+                    $("#errorAlertTitle").html("Success");
+                    $("#errorAlertBody").html("Address Saved");
+                    $("#errorAlert").modal('show');
+
+                }
+                else{                    
+                    $("#errorAlertTitle").html("Error");
+                    $("#errorAlertBody").html("Unable to Save Address");
+                    $("#errorAlert").modal('show');
+                }
+            },
+            error: function(){                
+                $("#errorAlertTitle").html("Error");
+                $("#errorAlertBody").html("Unable to Save Address");
+                $("#errorAlert").modal('show');
+            }
+        });
+        
+        
     }
 
  </script>
