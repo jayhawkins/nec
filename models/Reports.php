@@ -118,7 +118,7 @@ class Reports
           /* This Month */
           $result = $dbhandle->query("SELECT * FROM approved_pod
                                       JOIN `orders` on orders.id = approved_pod.orderDetailID
-                                      WHERE MONTH(`approved_pod.createdAt`)=MONTH(NOW()) AND YEAR(`approved_pod.createdAt`)=YEAR(NOW())");
+                                      WHERE MONTH(approved_pod.createdAt)=MONTH(NOW()) AND YEAR(approved_pod.createdAt)=YEAR(NOW())");
 
           if (count($result) > 0) {
               $monthData = $result->fetchAll();
@@ -192,7 +192,7 @@ class Reports
           /* This Month */
           $result = $dbhandle->query("SELECT * FROM approved_pod
                                       JOIN `orders` on orders.id = approved_pod.orderDetailID
-                                      WHERE MONTH(`approved_pod.createdAt`)=MONTH(NOW()) AND YEAR(`approved_pod.createdAt`)=YEAR(NOW())");
+                                      WHERE MONTH(approved_pod.createdAt)=MONTH(NOW()) AND YEAR(approved_pod.createdAt)=YEAR(NOW())");
 
           if (count($result) > 0) {
               $monthData = $result->fetchAll();
