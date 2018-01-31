@@ -171,6 +171,20 @@ require '../lib/common.php';
 
     } );
 
+    // We have to reload when dates change
+    $("#startDate").unbind('change').bind('change',function(){ // Doing it like this because it was double posting document giving me duplicates
+
+        loadTableAJAX();
+
+    });
+
+    // We have to reload when dates change
+    $("#endDate").unbind('change').bind('change',function(){ // Doing it like this because it was double posting document giving me duplicates
+
+        loadTableAJAX();
+
+    });
+
     // We have to handle downloading the report as a .csv file
     $("#downloadCSVButton").unbind('click').bind('click',function(){ // Doing it like this because it was double posting document giving me duplicates
 
