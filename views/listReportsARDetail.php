@@ -47,7 +47,7 @@ console.log(startDate);
 console.log(endDate);
         url = '<?php echo HTTP_HOST."/getardetail" ?>';
         var params = {
-                      startDate: '2018-01-01',
+                      startDate: startDate,
                       endDate: endDate
                 };
 console.log(params);
@@ -86,11 +86,11 @@ console.log(params);
  <ol class="breadcrumb">
    <li>ADMIN</li>
    <li>Reporting</li>
-   <li class="active">A/R Summary Detail</li>
+   <li class="active">A/R Detail</li>
  </ol>
  <section class="widget">
      <header>
-         <h4><span class="fw-semi-bold">A/R Summary Detail</span></h4>
+         <h4><span class="fw-semi-bold">A/R Detail</span></h4>
          <div class="widget-controls">
              <a data-widgster="expand" title="Expand" href="#"><i class="glyphicon glyphicon-chevron-up"></i></a>
              <a data-widgster="collapse" title="Collapse" href="#"><i class="glyphicon glyphicon-chevron-down"></i></a>
@@ -178,14 +178,14 @@ console.log(params);
     } );
 
     // We have to reload when dates change
-    $("#startDate").unbind('change').bind('change',function(){ // Doing it like this because it was double posting document giving me duplicates
+    $("#startDate").unbind('changeDate').bind('changeDate',function(){ // Doing it like this because it was double posting document giving me duplicates
 
         loadTableAJAX();
 
     });
 
     // We have to reload when dates change
-    $("#endDate").unbind('change').bind('change',function(){ // Doing it like this because it was double posting document giving me duplicates
+    $("#endDate").unbind('changeDate').bind('changeDate',function(){ // Doing it like this because it was double posting document giving me duplicates
 
         loadTableAJAX();
 
