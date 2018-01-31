@@ -57,7 +57,7 @@ console.log(params);
             ajax: {
                 url: url,
                 type: 'POST',
-                data: params,
+                data: JSON.stringify(params),
                 dataSrc: 'approved_pod'
             },
             columns: [
@@ -213,7 +213,7 @@ console.log(params);
                 type: "POST",
                 contentType: "application/json",
                 responseType: "arraybuffer",
-                data: params,
+                data: JSON.stringify(params),
                 success: function(data){
                     var element = document.createElement('a');
                     element.setAttribute('href', "data:application/octet-stream;charset=utf-8;base64,"+btoa(data.replace(/\n/g, '\r\n')));
