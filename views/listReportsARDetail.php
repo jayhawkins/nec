@@ -45,10 +45,8 @@ require '../lib/common.php';
         var endDate = $("#endDate").val();
 
         url = '<?php echo HTTP_HOST."/getardetail" ?>';
-        var params = {
-                      "startDate": startDate,
-                      "endDate": endDate
-                };
+        var params = {startDate: startDate,
+                      endDate: endDate};
 console.log(params);
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
@@ -56,7 +54,7 @@ console.log(params);
             ajax: {
                 url: url,
                 type: 'POST',
-                data: params,
+                data: {json: params},
                 dataSrc: 'approved_pod'
             },
             columns: [
