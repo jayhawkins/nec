@@ -43,7 +43,8 @@ require '../lib/common.php';
 
         var startDate = $("#startDate").val();
         var endDate = $("#endDate").val();
-
+console.log(startDate);
+console.log(endDate);
         url = '<?php echo HTTP_HOST."/getardetail" ?>';
         var params = {
                       startDate: startDate,
