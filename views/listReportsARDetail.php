@@ -181,12 +181,17 @@ require '../lib/common.php';
     function downloadTemplateClick() {
 
             url = '<?php echo HTTP_HOST."/getardetailcsv" ?>';
+            var params = {
+                      startDate: $("#startDate").val(),
+                      endDate: $("#endDate").val()
+            };
 
             $.ajax({
                 url: url,
                 type: "POST",
                 contentType: "application/json",
                 responseType: "arraybuffer",
+                data: JSON.stringify(params),
                 success: function(data){
                     var element = document.createElement('a');
                     element.setAttribute('href', "data:application/octet-stream;charset=utf-8;base64,"+btoa(data.replace(/\n/g, '\r\n')));
