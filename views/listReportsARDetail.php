@@ -47,7 +47,7 @@ console.log(startDate);
 console.log(endDate);
         url = '<?php echo HTTP_HOST."/getardetail" ?>';
         var params = {
-                      startDate: startDate,
+                      startDate: '2018-01-01',
                       endDate: endDate
                 };
 console.log(params);
