@@ -8,6 +8,7 @@ class Reports
           $result = $dbhandle->query("select *, order_statuses.status as statusesstatus
                                      from order_details
                                      join order_statuses on order_statuses.orderDetailID = order_details.id
+                                     left join orders on order.id = order_details.orderID
                                      left join entities on entities.id = order_details.carrierID
                                      where order_details.status = 'Open'");
 
@@ -161,6 +162,54 @@ class Reports
 
           if (!empty($data)) {
               echo $data;
+          } else {
+              echo '{}';
+          }
+    }
+
+    public function getardetail(&$db,$startDate,$endDate) {
+
+          $returnArray = "";
+
+          $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
+
+          /* Get approved_pod records */
+          $result = $dbhandle->query("SELECT approved_pod.carrierID, approved_pod.cost, approved_pod.qbInvoiceNumber, approved_pod.qbInvoiceStatus, entities.name
+                                     FROM approved_pod
+                                     JOIN `orders` on orders.id = approved_pod.orderDetailID
+                                     LEFT JOIN `entities` on entities.id = approved_pod.customerID
+                                     WHERE approved_pod.createdAt BETWEEN '" . $startDate . "' AND '" . $endDate . "'");
+
+          $approvedPodData = $result->fetchAll();
+          for ($c = 0; $c < count($approvedPodData); $c++) {
+                $cost = $approvedPodData[$c]['cost'];
+                $customerName = $approvedPodData[$c]['name'];
+                $qbInvoiceNumber = $approvedPodData[$c]['qbInvoiceNumber'];
+                $qbInvoiceStatus = $approvedPodData[$c]['qbInvoiceStatus'];
+
+                /* Get carrier name for approved_pod record */
+                $entitiesResult = $dbhandle->query("SELECT name
+                                            FROM entities
+                                            WHERE id = '" . $approvedPodData[$c]['qbInvoiceStatus'] . "'");
+
+                $entitiesData = $entitiesResult->fetchAll();
+                for ($e = 0; $e < count($entitiesData); $e++) {
+                    $carrierName = $entitiesData[$e]['name'];
+                }
+
+                $returnArray .= json_encode(array('customerName' => $customerName, 'carrierName' => $carrierName, 'qbInvoiceNumber' => $qbInvoiceNumber, 'qbStatus' => $qbStatus));
+
+                if ($c < count($approvedPodData)) {
+                    $returnArray .= ",";
+                }
+          }
+
+          //$returnArray = json_encode(array('customerName' => "Trailers Galore", 'carrierName' => "Mac Truck", 'qbInvoiceNumber' => "QBNUMBER", 'qbStatus' => "Paid"));
+
+          $return = "{ \"approved_pod\": [".$returnArray."]}";
+
+          if ($return) {
+              echo $return;
           } else {
               echo '{}';
           }
