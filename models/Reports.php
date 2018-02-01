@@ -294,7 +294,7 @@ class Reports
                         $carrierName = $entitiesData[$e]['name'];
                     }
 
-                    $data .= $orderID.",".$customerName.",".$carrerName.",".$costToCustomer.",".$costToCarrier.",".$qbInvoiceNumber.",".$qbInvoiceStatus."\n";
+                    $data .= $orderID.",".$customerName.",".$carrierName.",".$costToCustomer.",".$costToCarrier.",".$qbInvoiceNumber.",".$qbInvoiceStatus."\n";
 
               }
           }
