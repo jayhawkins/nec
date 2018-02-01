@@ -47,14 +47,18 @@ require '../lib/common.php';
         url = '<?php echo HTTP_HOST."/getardetail" ?>';
         var params = {startDate: startDate,
                       endDate: endDate};
-console.log(params);
+
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
             processing: true,
             ajax: {
                 url: url,
                 type: 'POST',
-                data: {json: params},
+                data: function(d) {
+                    d.startDate = $("#startDate").val();
+                    d.endDate = $("#endDate").val();
+                    return;
+                },
                 dataSrc: 'approved_pod'
             },
             columns: [
@@ -106,7 +110,10 @@ console.log(params);
             <div id="sbEnd" class="input-group col-sm-3 date datepicker">
                <input type="text" id="endDate" name="endDate" class="form-control" placeholder="End Date" required="required" value=""><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
             </div>
-            <div class="form-group col-sm-6">
+            <div class="form-group col-sm-2">
+                <button type="button" id="submitButton" class="btn btn-primary">Submit</button>
+            </div>
+            <div class="form-group col-sm-4">
                 <button type="button" id="downloadCSVButton" class="btn btn-primary pull-right">Download CSV</button>
             </div>
          </div>
@@ -174,6 +181,7 @@ console.log(params);
 
     } );
 
+/*
     // We have to reload when dates change
     $('#sbStart').datepicker().on('changeDate', function (ev) {
         $('#startDate').change();
@@ -189,12 +197,16 @@ console.log(params);
     $("#endDate").unbind('change').bind('change',function(){ // Doing it like this because it was double posting document giving me duplicates
         loadTableAJAX();
     });
+*/
+
+    // Submit to run report with new date selections
+    $("#submitButton").unbind('click').bind('click',function(){ // Doing it like this because it was double posting document giving me duplicates
+        loadTableAJAX();
+    });
 
     // We have to handle downloading the report as a .csv file
     $("#downloadCSVButton").unbind('click').bind('click',function(){ // Doing it like this because it was double posting document giving me duplicates
-
         downloadTemplateClick();
-
     });
 
     function downloadTemplateClick() {
