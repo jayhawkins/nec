@@ -859,7 +859,16 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             '<input id="qty" name="qty" class="form-control" value="'+customer_needs.qty+'">'+
                             '</div>'+
                             '</div>';
+                    
+                    
+            var dpli = '<div class="form-group row">' +
+                        '   <div class="col-sm-2">' +
+                            '<label for="qty">Quantity</label>'+
+                            '<input id="qty" name="qty" class="form-control" value="'+customer_needs.qty+'">'+
+                        '   </div>';
 
+            var itemIndex = 1;
+            
             for (var i = 0; i < dataPoints.object_type_data_points.length; i++) {
                 var selected = '';
                 var value = '';
@@ -875,18 +884,16 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 });
 
                 if(dataPoints.object_type_data_points[i].title == "Decals"){
-                    dpli += '<div class="form-group row">' +
-                            '<label for="decals" class="col-sm-3 col-form-label">Decals</label>'+
-                            '<div class="col-sm-9">' +
+                    dpli += '<div class="col-sm-2">' +
+                            '<label for="decals">Decals</label>'+
                             '<input id="decals" name="decals" class="form-control" value="'+value+'">'+
-                            '</div>'+
                             '</div>';
                   }
                   else{
 
-                    dpli += '<div class="form-group row">' +
-                            '<label for="' + dataPoints.object_type_data_points[i].columnName + '" class="col-sm-3 col-form-label">' + dataPoints.object_type_data_points[i].title + '</label>' +
-                            '<div class="col-sm-9"> <select class="form-control" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '">' +
+                    dpli += '<div class="col-sm-2">' +
+                            '<label for="' + dataPoints.object_type_data_points[i].columnName + '">' + dataPoints.object_type_data_points[i].title + '</label>' +
+                            '<select class="form-control" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '">' +
                             ' <option value="">-Select From List-</option>\n';
 
                     for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
@@ -902,29 +909,28 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     }
 
                     dpli += '</select>' +
-                            '</div></div>';
+                            '</div>';
                   }
+                  
+                  itemIndex += 1;
+                  
+                  if(itemIndex % 6 == 0) dpli += '</div><div class="form-group row">';
             }
 
 
-            dpli += '<div class="form-group row">' +
-                    '   <label for="rate" class="col-sm-3 col-form-label">Rate</label>' +
-                    '   <div class="col-sm-9">' +
+            dpli += '<div class="col-sm-2">' +
+                    '   <label for="rate">Rate</label>' +
                     '       <input id="rate" name="rate" class="form-control" value="' + customer_needs.rate + '">' +
-                    '   </div>' +
                     '</div>';
 
-            dpli += '<div class="form-group row">' +
-                    '   <label for="rateType" class="col-sm-3 col-form-label">Rate Type</label>' +
-                    '   <div class="col-sm-9">' +
+            dpli += '<div class="col-sm-2">' +
+                    '   <label for="rateType">Rate Type</label><br>' +
                     '       <input type="radio" id="rateType" name="rateType" value="Flat Rate" ' + (customer_needs.rateType == "Flat Rate" ? "checked" : "") + '/> Flat Rate ' +
-                    '       <input type="radio" id="rateType" name="rateType" value="Mileage" ' + (customer_needs.rateType == "Mileage" ? "checked" : "") + '/> Mileage</div>' +
-                    '   </div>'+
-                    '</div>';
-
-            dpli += '<div class="form-group row">' +
-                    '   <label for="transportationMode" class="col-sm-3 col-form-label">Transportation Mode</label>' +
-                    '   <div class="col-sm-9">' +
+                    '       <input type="radio" id="rateType" name="rateType" value="Mileage" ' + (customer_needs.rateType == "Mileage" ? "checked" : "") + '/> Mileage' +
+                    '   </div>';
+            
+            dpli += '<div class="col-sm-2">' +
+                    '   <label for="transportationMode">Transportation Mode</label>' +
                     '       <select class="form-control" id="transportationMode" name="transportationMode">' +
                     '           <option value="">*Select Mode...</option>' +
                     '           <option value="Empty" ' + (customer_needs.transportationMode == "Empty" ? "selected" : "") + '>Empty</option>' +
@@ -933,6 +939,15 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     '       </select>' +
                     '   </div>'+
                     '</div>';
+
+//            dpli += '<div class="form-group row">' +
+//                    '   <label for="rateType" class="col-sm-3 col-form-label">Rate Type</label>' +
+//                    '   <div class="col-sm-9">' +
+//                    '       <input type="radio" id="rateType" name="rateType" value="Flat Rate" ' + (customer_needs.rateType == "Flat Rate" ? "checked" : "") + '/> Flat Rate ' +
+//                    '       <input type="radio" id="rateType" name="rateType" value="Mileage" ' + (customer_needs.rateType == "Mileage" ? "checked" : "") + '/> Mileage</div>' +
+//                    '   </div>'+
+//                    '</div>';
+            
 
             $("#dp-check-list-box").append(dpli);
 
@@ -1163,6 +1178,15 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         padding-right: 0.9375rem;
     }
     
+    .w-100{
+        width: 100% !important;
+    }
+    
+    .pickupAddress-border{
+        padding-right:20px; 
+        border-right: 1px solid #ccc;
+    }
+    
  </style>
 
  <ol class="breadcrumb">
@@ -1331,7 +1355,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
      <br />
      
             <div class="row">
-                    <div class="col-md-12">
+                    <div class="col-md-6 pickupAddress-border">
                     <h2>Pickup Address</h2>
                     <form>
                         <input type="hidden" id="customerNeedsID" name="customerNeedsID" value="" />
@@ -1341,25 +1365,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                             <input class="form-control" id="pickupLocation" placeholder="" type="text">
                                     </div>
                             </div>
-                            <div class="form-group row">
-                                    <label for="pickupContactPerson" class="col-sm-3 col-form-label">Contact Person</label>
-                                    <div class="col-sm-9">
-                                            <input class="form-control" id="pickupContactPerson" placeholder="" type="text">
-                                    </div>
-                            </div>
-                            <div class="form-group row">
-                                    <label for="pickupPhoneNumber" class="col-sm-3 col-form-label">Phone Number</label>
-                                    <div class="col-sm-9">
-                                            <input class="form-control" id="pickupPhoneNumber" placeholder="" type="text">
-                                    </div>
-                            </div>
-                            <div class="form-group row">
-                                    <label for="pickupHoursOfOperation" class="col-sm-3 col-form-label">Hours of Operation</label>
-                                    <div class="col-sm-9">
-                                            <input class="form-control" id="pickupHoursOfOperation" placeholder="" type="text">
-                                    </div>
-                            </div>
-
                             <div class="form-group row">
                                     <label for="originationAddress1" class="col-sm-3 col-form-label">Address 1</label>
                                     <div class="col-sm-9">
@@ -1391,6 +1396,25 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     </div>
                             </div>
                             <div class="form-group row">
+                                    <label for="pickupContactPerson" class="col-sm-3 col-form-label">Contact Person</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="pickupContactPerson" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="pickupPhoneNumber" class="col-sm-3 col-form-label">Phone Number</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="pickupPhoneNumber" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="pickupHoursOfOperation" class="col-sm-3 col-form-label">Hours of Operation</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="pickupHoursOfOperation" placeholder="" type="text">
+                                    </div>
+                            </div>
+
+                            <div class="form-group row">
                                     <label for="originationNotes" class="col-sm-3 col-form-label">Notes</label>
                                     <div class="col-sm-9">
                                             <textarea class="form-control" id="originationNotes" rows="3"></textarea>
@@ -1398,36 +1422,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                              </div>
                     </form>
                     </div>
-            </div>
-
-            <hr>
-
-            <div class="row">
-                <div class="col-md-12">
+                
+                <div class="col-md-6">
                     <h2>Delivery Address</h2>
                     <form>
                             <div class="form-group row">
                                     <label for="deliveryLocation" class="col-sm-3 col-form-label">Location</label>
                                     <div class="col-sm-9">
                                             <input class="form-control" id="deliveryLocation" placeholder="" type="text">
-                                    </div>
-                            </div>
-                            <div class="form-group row">
-                                    <label for="deliveryContactPerson" class="col-sm-3 col-form-label">Contact Person</label>
-                                    <div class="col-sm-9">
-                                            <input class="form-control" id="deliveryContactPerson" placeholder="" type="text">
-                                    </div>
-                            </div>
-                            <div class="form-group row">
-                                    <label for="deliveryPhoneNumber" class="col-sm-3 col-form-label">Phone Number</label>
-                                    <div class="col-sm-9">
-                                            <input class="form-control" id="deliveryPhoneNumber" placeholder="" type="text">
-                                    </div>
-                            </div>
-                            <div class="form-group row">
-                                    <label for="deliveryHoursOfOperation" class="col-sm-3 col-form-label">Hours of Operation</label>
-                                    <div class="col-sm-9">
-                                            <input class="form-control" id="deliveryHoursOfOperation" placeholder="" type="text">
                                     </div>
                             </div>
                             <div class="form-group row">
@@ -1461,6 +1463,24 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     </div>
                             </div>
                             <div class="form-group row">
+                                    <label for="deliveryContactPerson" class="col-sm-3 col-form-label">Contact Person</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="deliveryContactPerson" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="deliveryPhoneNumber" class="col-sm-3 col-form-label">Phone Number</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="deliveryPhoneNumber" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="deliveryHoursOfOperation" class="col-sm-3 col-form-label">Hours of Operation</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="deliveryHoursOfOperation" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
                                     <label for="destinationNotes" class="col-sm-3 col-form-label">Notes</label>
                                     <div class="col-sm-9">
                                             <textarea class="form-control" id="destinationNotes" rows="3"></textarea>
@@ -1471,6 +1491,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             </div>
 
             <hr>
+<!--
+            <div class="row">
+            </div>
+
+            <hr>-->
 
             <div class="row">
                     <div class="col-md-12">
@@ -1512,6 +1537,25 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     <input class="form-control" id="deliveryLocation_relay1" placeholder="" type="text">
                             </div>
                             <div class="form-group">
+                                    <label for="address_relay1">Address</label>
+                                    <input class="form-control" id="address_relay1" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="city_relay1">City</label>
+                                    <input class="form-control" id="city_relay1" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="state_relay1">State</label>
+                                    <input class="form-control" id="state_relay1" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="zip_relay1">Zip</label>
+                                    <input class="form-control" id="zip_relay1" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                <button type="button" class="btn btn-secondary w-100" onclick="saveRelayAddressToCarrier(1);">Save Address To Carrier</button>
+                            </div>
+                            <div class="form-group">
                                     <label for="contactPerson_relay1">Contact Person</label>
                                     <input class="form-control" id="contactPerson_relay1" placeholder="" type="text">
                             </div>
@@ -1530,25 +1574,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             <div class="form-group">
                                     <label for="deliveryDate_relay1">Delivery Date</label>
                                     <input class="form-control" id="deliveryDate_relay1" placeholder="" type="date">
-                            </div>
-                            <div class="form-group">
-                                    <label for="address_relay1">Address</label>
-                                    <input class="form-control" id="address_relay1" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="city_relay1">City</label>
-                                    <input class="form-control" id="city_relay1" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="state_relay1">State</label>
-                                    <input class="form-control" id="state_relay1" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="zip_relay1">Zip</label>
-                                    <input class="form-control" id="zip_relay1" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                <button type="button" class="btn btn-secondary" onclick="saveRelayAddressToCarrier(1);">Save Address To Carrier</button>
                             </div>
                             <div class="form-group">
                                     <label for="notes_relay1">Notes</label>
@@ -1582,6 +1607,25 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     <input class="form-control" id="deliveryLocation_relay2" placeholder="" type="text">
                             </div>
                             <div class="form-group">
+                                    <label for="address_relay2">Address</label>
+                                    <input class="form-control" id="address_relay2" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="city_relay2">City</label>
+                                    <input class="form-control" id="city_relay2" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="state_relay2">State</label>
+                                    <input class="form-control" id="state_relay2" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="zip_relay2">Zip</label>
+                                    <input class="form-control" id="zip_relay2" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                <button type="button" class="btn btn-secondary w-100" onclick="saveRelayAddressToCarrier(2);">Save Address To Carrier</button>
+                            </div>
+                            <div class="form-group">
                                     <label for="contactPerson_relay2">Contact Person</label>
                                     <input class="form-control" id="contactPerson_relay2" placeholder="" type="text">
                             </div>
@@ -1600,25 +1644,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             <div class="form-group">
                                     <label for="deliveryDate_relay2">Delivery Date</label>
                                     <input class="form-control" id="deliveryDate_relay2" placeholder="" type="date">
-                            </div>
-                            <div class="form-group">
-                                    <label for="address_relay2">Address</label>
-                                    <input class="form-control" id="address_relay2" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="city_relay2">City</label>
-                                    <input class="form-control" id="city_relay2" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="state_relay2">State</label>
-                                    <input class="form-control" id="state_relay2" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="zip_relay2">Zip</label>
-                                    <input class="form-control" id="zip_relay2" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                <button type="button" class="btn btn-secondary" onclick="saveRelayAddressToCarrier(2);">Save Address To Carrier</button>
                             </div>
                             <div class="form-group">
                                     <label for="notes_relay2">Notes</label>
@@ -1652,6 +1677,25 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     <input class="form-control" id="deliveryLocation_relay3" placeholder="" type="text">
                             </div>
                             <div class="form-group">
+                                    <label for="address_relay3">Address</label>
+                                    <input class="form-control" id="address_relay3" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="city_relay3">City</label>
+                                    <input class="form-control" id="city_relay3" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="state_relay3">State</label>
+                                    <input class="form-control" id="state_relay3" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="zip_relay3">Zip</label>
+                                    <input class="form-control" id="zip_relay3" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                <button type="button" class="btn btn-secondary w-100" onclick="saveRelayAddressToCarrier(3);">Save Address To Carrier</button>
+                            </div>
+                            <div class="form-group">
                                     <label for="contactPerson_relay3">Contact Person</label>
                                     <input class="form-control" id="contactPerson_relay3" placeholder="" type="text">
                             </div>
@@ -1670,25 +1714,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             <div class="form-group">
                                     <label for="deliveryDate_relay3">Delivery Date</label>
                                     <input class="form-control" id="deliveryDate_relay3" placeholder="" type="date">
-                            </div>
-                            <div class="form-group">
-                                    <label for="address_relay3">Address</label>
-                                    <input class="form-control" id="address_relay3" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="city_relay3">City</label>
-                                    <input class="form-control" id="city_relay3" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="state_relay3">State</label>
-                                    <input class="form-control" id="state_relay3" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="zip_relay3">Zip</label>
-                                    <input class="form-control" id="zip_relay3" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                <button type="button" class="btn btn-secondary" onclick="saveRelayAddressToCarrier(3);">Save Address To Carrier</button>
                             </div>
                             <div class="form-group">
                                     <label for="notes_relay3">Notes</label>
@@ -1722,6 +1747,25 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     <input class="form-control" id="deliveryLocation_relay4" placeholder="" type="text">
                             </div>
                             <div class="form-group">
+                                    <label for="address_relay4">Address</label>
+                                    <input class="form-control" id="address_relay4" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="city_relay4">City</label>
+                                    <input class="form-control" id="city_relay4" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="state_relay4">State</label>
+                                    <input class="form-control" id="state_relay4" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="zip_relay4">Zip</label>
+                                    <input class="form-control" id="zip_relay4" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                <button type="button" class="btn btn-secondary w-100" onclick="saveRelayAddressToCarrier(4);">Save Address To Carrier</button>
+                            </div>
+                            <div class="form-group">
                                     <label for="contactPerson_relay4">Contact Person</label>
                                     <input class="form-control" id="contactPerson_relay4" placeholder="" type="text">
                             </div>
@@ -1740,25 +1784,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             <div class="form-group">
                                     <label for="deliveryDate_relay4">Delivery Date</label>
                                     <input class="form-control" id="deliveryDate_relay4" placeholder="" type="date">
-                            </div>
-                            <div class="form-group">
-                                    <label for="address_relay4">Address</label>
-                                    <input class="form-control" id="address_relay4" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="city_relay4">City</label>
-                                    <input class="form-control" id="city_relay4" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="state_relay4">State</label>
-                                    <input class="form-control" id="state_relay4" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="zip_relay4">Zip</label>
-                                    <input class="form-control" id="zip_relay4" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                <button type="button" class="btn btn-secondary" onclick="saveRelayAddressToCarrier(4);">Save Address To Carrier</button>
                             </div>
                             <div class="form-group">
                                     <label for="notes_relay4">Notes</label>
@@ -3414,13 +3439,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         today = mm+'/'+dd+'/'+yyyy;
         today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
 
+        var locationName = $('#deliveryLocation_relay' + relayNumber).val();
         var entityID = $('#entityID_relay' + relayNumber).val();        
         var address = $('#address_relay' + relayNumber).val();
         var city = $('#city_relay' + relayNumber).val();
         var state = $('#state_relay' + relayNumber).val();
         var zip = $('#zip_relay' + relayNumber).val();
         
-        var locationData = {entityID: entityID, locationTypeID: 3, name: "", address1: address, address2: "",
+        var locationData = {entityID: entityID, locationTypeID: 3, name: locationName, address1: address, address2: "",
         city: city, state: state, zip: zip, latitude: 0.00, longitude: 0.00, timeZone: "", status: "Active", 
         createdAt: today, updatedAt: today};
         
