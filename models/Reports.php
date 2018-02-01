@@ -264,7 +264,8 @@ class Reports
 
     public function getardetailcsv(&$db,$startDate,$endDate) {
 
-          $data = "Order ID,Customer Name,Carrier Name,Cost To Customer,Cost To Carrier,QB Invoice #,QB Status\n";
+          $data = "Date Range,".$startDate.",".$endDate."\n";
+          $data .= "Order ID,Customer Name,Carrier Name,Cost To Customer,Cost To Carrier,QB Invoice #,QB Status\n";
 
           $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
 
