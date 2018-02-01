@@ -236,7 +236,7 @@ class Reports
                     $qbInvoiceStatus = $approvedPodData[$c]['qbInvoiceStatus'];
 
                     /* Get carrier name for approved_pod record */
-                    $entitiesResult = $dbhandle->query("SELECT name FROM entities WHERE id = '" . $approvedPodData[$c]['qbInvoiceStatus'] . "'");
+                    $entitiesResult = $dbhandle->query("SELECT name FROM entities WHERE id = '" . $approvedPodData[$c]['carrierID'] . "'");
 
                     $entitiesData = $entitiesResult->fetchAll();
                     for ($e = 0; $e < count($entitiesData); $e++) {
@@ -287,7 +287,7 @@ class Reports
                     $qbInvoiceStatus = $approvedPodData[$c]['qbInvoiceStatus'];
 
                     /* Get carrier name for approved_pod record */
-                    $entitiesResult = $dbhandle->query("SELECT name FROM entities WHERE id = '" . $approvedPodData[$c]['qbInvoiceStatus'] . "'");
+                    $entitiesResult = $dbhandle->query("SELECT name FROM entities WHERE id = '" . $approvedPodData[$c]['carrierID'] . "'");
 
                     $entitiesData = $entitiesResult->fetchAll();
                     for ($e = 0; $e < count($entitiesData); $e++) {
