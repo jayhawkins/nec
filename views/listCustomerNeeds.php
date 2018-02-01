@@ -1454,8 +1454,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
             <?php
                              // Here is check
             ?>
+                                <option value="Load Out" selected>Load Out</option>
                                 <option value="Empty">Empty</option>
-                                <option value="Load Out">Load Out</option>
                                 <option value="Either (Empty or Load Out)">Either (Empty or Load Out)</option>
                            </select>
                          </div>
