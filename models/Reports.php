@@ -236,7 +236,7 @@ class Reports
                     $qbInvoiceStatus = $approvedPodData[$c]['qbInvoiceStatus'];
 
                     /* Get carrier name for approved_pod record */
-                    $entitiesResult = $dbhandle->query("SELECT name FROM entities WHERE id = '" . $approvedPodData[$c]['qbInvoiceStatus'] . "'");
+                    $entitiesResult = $dbhandle->query("SELECT name FROM entities WHERE id = '" . $approvedPodData[$c]['carrierID'] . "'");
 
                     $entitiesData = $entitiesResult->fetchAll();
                     for ($e = 0; $e < count($entitiesData); $e++) {
@@ -264,7 +264,8 @@ class Reports
 
     public function getardetailcsv(&$db,$startDate,$endDate) {
 
-          $data = "Order ID,Customer Name,Carrier Name,Cost To Customer,Cost To Carrier,QB Invoice #,QB Status\n";
+          $data = "Date Range,".$startDate.",".$endDate."\n";
+          $data .= "Order ID,Customer Name,Carrier Name,Cost To Customer,Cost To Carrier,QB Invoice #,QB Status\n";
 
           $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
 
@@ -286,14 +287,14 @@ class Reports
                     $qbInvoiceStatus = $approvedPodData[$c]['qbInvoiceStatus'];
 
                     /* Get carrier name for approved_pod record */
-                    $entitiesResult = $dbhandle->query("SELECT name FROM entities WHERE id = '" . $approvedPodData[$c]['qbInvoiceStatus'] . "'");
+                    $entitiesResult = $dbhandle->query("SELECT name FROM entities WHERE id = '" . $approvedPodData[$c]['carrierID'] . "'");
 
                     $entitiesData = $entitiesResult->fetchAll();
                     for ($e = 0; $e < count($entitiesData); $e++) {
                         $carrierName = $entitiesData[$e]['name'];
                     }
 
-                    $data .= $orderID.",".$customerName.",".$carrerName.",".$costToCustomer.",".$costToCarrier.",".$qbInvoiceNumber.",".$qbInvoiceStatus."\n";
+                    $data .= $orderID.",".$customerName.",".$carrierName.",".$costToCustomer.",".$costToCarrier.",".$qbInvoiceNumber.",".$qbInvoiceStatus."\n";
 
               }
           }
