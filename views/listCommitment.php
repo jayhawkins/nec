@@ -792,34 +792,65 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             var unitEdit = "";
 
             $.each(customer_needs.unitData, function(key, unit){
+                
+                if(unit.year == null) unit.year = "";
+                if(unit.make == null) unit.make = "";
+                if(unit.value == null) unit.value = "";
+                
                 unitData += "<tr>" +
+                        "<td>"+ unit.year +"</td>" +
+                        "<td>"+ unit.make +"</td>" +
                         "<td>"+ unit.unitNumber +"</td>" +
                         "<td>"+ unit.vinNumber +"</td>" +
                         "<td>"+ unit.truckProNumber +"</td>" +
                         "<td>"+ unit.poNumber +"</td>" +
+                        "<td>"+ unit.value +"</td>" +
                         "</tr>";
 
-                unitEdit += ' <div class="row"><div class="col-md-3">\n\
-                            <div class="form-group">\n\
-                                    <label for="unitNumber' + (key + 1) + '">Unit #</label>\n\
-                                    <input class="form-control" id="unitNumber' + (key + 1) + '" placeholder="" type="text" value="'+unit.unitNumber+'">\n\
-                            </div>\n\
-                        </div>\n\
-                <div class="col-md-3">\n\
-                            <div class="form-group">\n\
-                                    <label for="vinNumber' + (key + 1) + '">VIN #</label>\n\
-                                    <input class="form-control" id="vinNumber' + (key + 1) + '" placeholder="" type="text" value="'+unit.vinNumber+'">\n\
-                            </div>\n\</div>\n\
-                <div class="col-md-3">\n\
-                            <div class="form-group">\n\
-                                    <label for="truckProNumber' + (key + 1) + '">Truck/Pro #</label>\n\
-                                    <input class="form-control" id="truckProNumber' + (key + 1) + '" placeholder="" type="text" value="'+unit.truckProNumber+'">\n\
-                            </div>\n\</div>\n\
-                <div class="col-md-3">\n\
-                            <div class="form-group">\n\
-                                    <label for="poNumber' + (key + 1) + '">P.O. #</label>\n\
-                                    <input class="form-control" id="poNumber' + (key + 1) + '" placeholder="" type="text" value="'+unit.poNumber+'">\n\
-                            </div>\n\</div></div>';
+                unitEdit += '<div class="row">\n\
+                                <div class="col-md-1-7">\n\
+                                    <div class="form-group">\n\
+                                            <label for="year' + (key + 1) + '">Year</label>\n\
+                                            <input class="form-control" id="year' + (key + 1) + '" placeholder="" type="text" value="'+unit.year+'">\n\
+                                    </div>\n\
+                                </div>\n\
+                                <div class="col-md-1-7">\n\
+                                    <div class="form-group">\n\
+                                            <label for="make' + (key + 1) + '">Make</label>\n\
+                                            <input class="form-control" id="make' + (key + 1) + '" placeholder="" type="text" value="'+unit.make+'">\n\
+                                    </div>\n\
+                                </div>\n\
+                                <div class="col-md-1-7">\n\
+                                    <div class="form-group">\n\
+                                            <label for="unitNumber' + (key + 1) + '">Unit #</label>\n\
+                                            <input class="form-control" id="unitNumber' + (key + 1) + '" placeholder="" type="text" value="'+unit.unitNumber+'">\n\
+                                    </div>\n\
+                                </div>\n\
+                                <div class="col-md-1-7">\n\
+                                    <div class="form-group">\n\
+                                            <label for="vinNumber' + (key + 1) + '">VIN #</label>\n\
+                                            <input class="form-control" id="vinNumber' + (key + 1) + '" placeholder="" type="text" value="'+unit.vinNumber+'">\n\
+                                    </div>\n\
+                                </div>\n\
+                                <div class="col-md-1-7">\n\
+                                    <div class="form-group">\n\
+                                            <label for="truckProNumber' + (key + 1) + '">Truck/Pro #</label>\n\
+                                            <input class="form-control" id="truckProNumber' + (key + 1) + '" placeholder="" type="text" value="'+unit.truckProNumber+'">\n\
+                                    </div>\n\
+                                </div>\n\
+                                <div class="col-md-1-7">\n\
+                                    <div class="form-group">\n\
+                                            <label for="poNumber' + (key + 1) + '">P.O. #</label>\n\
+                                            <input class="form-control" id="poNumber' + (key + 1) + '" placeholder="" type="text" value="'+unit.poNumber+'">\n\
+                                    </div>\n\
+                                </div>\n\
+                                <div class="col-md-1-7">\n\
+                                    <div class="form-group">\n\
+                                            <label for="value' + (key + 1) + '">Value</label>\n\
+                                            <input class="form-control" id="value' + (key + 1) + '" placeholder="" type="text" value="'+unit.value+'">\n\
+                                    </div>\n\
+                                </div>\n\
+                            </div>';
             });
 
             var dpli = '<div class="form-group row">' +
@@ -1053,6 +1084,16 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
     }
 
 
+    function showEditCommit(){
+        $('#customer-needs-commit').css('display', 'none');
+        $('#editCommitDetails').css('display', 'block');
+    }
+
+    function closeEditCommit(){
+        $('#customer-needs-commit').css('display', 'block');
+        $('#editCommitDetails').css('display', 'none');
+    }
+
 
 //Part I removed
 
@@ -1112,6 +1153,16 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
     ul.ui-autocomplete {
         z-index: 1100;
     }
+    
+    .col-md-1-7{
+        width: 14.285714285%;
+        float: left;    
+        position: relative;
+        min-height: 1px;
+        padding-left: 0.9375rem;
+        padding-right: 0.9375rem;
+    }
+    
  </style>
 
  <ol class="breadcrumb">
@@ -1122,7 +1173,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
      <header>
          <h4><span class="fw-semi-bold">Available Transport</span></h4>
          <div class="widget-controls">
-           <button type="button" class="btn btn-primary btn-md" onclick="addNewCommitment();" id="addNewCommitment">Add New Commitment</button>
+           <!--<button type="button" class="btn btn-primary btn-md" onclick="addNewCommitment();" id="addNewCommitment">Add New Commitment</button>-->
          </div>
      </header>
      <div class="widget-body">
@@ -1182,7 +1233,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
              <a data-widgster="edit" title="Edit" href="#" onclick="editCommitTransport()"><i class="glyphicon glyphicon-pencil" style="font-size: 20px;"></i></a>
              <a data-widgster="close" title="Close" href="#" onclick="closeCommitTransport()"><i class="glyphicon glyphicon-remove" style="font-size: 20px;"></i></a>-->
 
-           <button type="button" class="btn btn-primary btn-md" onclick="editCommitTransport();" id="editCommitment">Edit</button>
+           <button type="button" class="btn btn-primary btn-md" onclick="showEditCommit();" id="editCommitment">Edit</button>
            <button type="button" class="btn btn-primary btn-md" onclick="saveCommitAsOrder();" id="saveCommitAsOrder">Submit to Order</button>
            <button type="button" class="btn btn-primary btn-md" onclick="closeCommitTransport();" id="closeForm">Close</button>
          </div>
@@ -1253,10 +1304,13 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         <table id="new-unit-data-table" class="table table-striped table-hover" width="100%">
                             <thead>
                                 <tr>
+                                    <th>Year</th>
+                                    <th>Make</th>
                                     <th>Unit #</th>
                                     <th>VIN #</th>
                                     <th>Truck/Pro#</th>
                                     <th>P.O. #</th>
+                                    <th>Value</th>
                                 </tr>
                             </thead>
                             <tbody id="unitDataBody">
@@ -1269,17 +1323,13 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
      </div>
  </section>
 
-<!-- Edit Commit Modal -->
-  <div class="modal fade" id="editCommitModal" tabindex="-1" aria-hidden="true" aria-label="exampleModalCommitLabel">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-          <h1 class="modal-title fw-semi-bold" id="commitModalTitle">Edit Commitment</h1>
-        </div>
-        <div class="modal-body">
+<!-- New Edit Commit View -->
+<section class="widget"  id="editCommitDetails" style="display: none;">
+     <header>
+         <h4><span class="fw-semi-bold">Edit Commitment</span></h4>
+     </header>
+     <br />
+     
             <div class="row">
                     <div class="col-md-12">
                     <h2>Pickup Address</h2>
@@ -1736,6 +1786,481 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                 </div>
             </div>
+            
+        <div class="row row-grid">           
+            <div class="col-lg-3 col-md-3 col-sm-12 pull-right">
+                <button type="button" class="btn btn-secondary btn-lg" onclick="closeEditCommit();">Close</button>
+                <button type="button" class="btn btn-primary btn-lg" onclick="addTrailer();" id="addTrailer">AddTrailer</button>
+                <button type="button" class="btn btn-primary btn-lg" onclick="editCommitment();" id="saveCommit">Save</button>
+            </div>
+        </div>
+
+
+ </section>
+
+<!-- Edit Commit Modal
+  <div class="modal fade" id="editCommitModal" tabindex="-1" aria-hidden="true" aria-label="exampleModalCommitLabel">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h1 class="modal-title fw-semi-bold" id="commitModalTitle">Edit Commitment</h1>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                    <div class="col-md-12">
+                    <h2>Pickup Address</h2>
+                    <form>
+                        <input type="hidden" id="customerNeedsID" name="customerNeedsID" value="" />
+                            <div class="form-group row">
+                                    <label for="pickupLocation" class="col-sm-3 col-form-label">Location</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="pickupLocation" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="pickupContactPerson" class="col-sm-3 col-form-label">Contact Person</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="pickupContactPerson" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="pickupPhoneNumber" class="col-sm-3 col-form-label">Phone Number</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="pickupPhoneNumber" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="pickupHoursOfOperation" class="col-sm-3 col-form-label">Hours of Operation</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="pickupHoursOfOperation" placeholder="" type="text">
+                                    </div>
+                            </div>
+
+                            <div class="form-group row">
+                                    <label for="originationAddress1" class="col-sm-3 col-form-label">Address 1</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="originationAddress1" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="originationAddress2" class="col-sm-3 col-form-label">Address 2</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="originationAddress2" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="originationCity" class="col-sm-3 col-form-label">City</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="originationCity" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="originationState" class="col-sm-3 col-form-label">State</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="originationState" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="originationZip" class="col-sm-3 col-form-label">Zip</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="originationZip" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="originationNotes" class="col-sm-3 col-form-label">Notes</label>
+                                    <div class="col-sm-9">
+                                            <textarea class="form-control" id="originationNotes" rows="3"></textarea>
+                                    </div>
+                             </div>
+                    </form>
+                    </div>
+            </div>
+
+            <hr>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <h2>Delivery Address</h2>
+                    <form>
+                            <div class="form-group row">
+                                    <label for="deliveryLocation" class="col-sm-3 col-form-label">Location</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="deliveryLocation" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="deliveryContactPerson" class="col-sm-3 col-form-label">Contact Person</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="deliveryContactPerson" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="deliveryPhoneNumber" class="col-sm-3 col-form-label">Phone Number</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="deliveryPhoneNumber" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="deliveryHoursOfOperation" class="col-sm-3 col-form-label">Hours of Operation</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="deliveryHoursOfOperation" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="destinationAddress1" class="col-sm-3 col-form-label">Address 1</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="destinationAddress1" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="destinationAddress2" class="col-sm-3 col-form-label">Address 2</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="destinationAddress2" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="destinationCity" class="col-sm-3 col-form-label">City</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="destinationCity" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="destinationState" class="col-sm-3 col-form-label">State</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="destinationState" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="destinationZip" class="col-sm-3 col-form-label">Zip</label>
+                                    <div class="col-sm-9">
+                                            <input class="form-control" id="destinationZip" placeholder="" type="text">
+                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                    <label for="destinationNotes" class="col-sm-3 col-form-label">Notes</label>
+                                    <div class="col-sm-9">
+                                            <textarea class="form-control" id="destinationNotes" rows="3"></textarea>
+                                    </div>
+                             </div>
+                    </form>
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="row">
+                    <div class="col-md-12">
+                    <h2>Trailer Data</h2>
+                    <form id="dp-check-list-box">
+
+                    </form>
+                    </div>
+            </div>
+
+            <hr>
+
+            <div class="row">
+                    <div class="col-md-12">
+                            <h2>Relay Addresses</h2>
+                    </div>
+            </div>
+            <br>
+            <div class="row">
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                        <h4>Relay Address 1</h4>
+                            <input class="form-control" id="relay_id1" placeholder="" type="hidden">
+                            <input class="form-control" id="commit_id1" placeholder="" type="hidden">
+                            <div class="form-group">
+                                <label for="entityID_relay1">Carrier</label>
+                                <select id="entityID_relay1" name="entityID_relay1" data-placeholder="Carrier" class="form-control chzn-select" required="required" onchange="populateAutocomplete(this, 1);">
+                                    <option selected=selected value=""> -Select Carrier- </option>
+                    <?php
+                                     foreach($entities->entities->records as $value) {
+                                         $selected = ($value[0] == $entity) ? 'selected=selected':'';
+                                         echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
+                                     }
+                    ?>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                    <label for="deliveryLocation_relay1">Location</label>
+                                    <input class="form-control" id="deliveryLocation_relay1" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="contactPerson_relay1">Contact Person</label>
+                                    <input class="form-control" id="contactPerson_relay1" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="phoneNumber_relay1">Phone Number</label>
+                                    <input class="form-control" id="phoneNumber_relay1" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="hoursOfOperation_relay1">Hours of Operation</label>
+                                    <input class="form-control" id="hoursOfOperation_relay1" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="pickupDate_relay1">Pickup Date</label>
+                                    <input class="form-control" id="pickupDate_relay1" placeholder="" type="date">
+                            </div>
+                            <div class="form-group">
+                                    <label for="deliveryDate_relay1">Delivery Date</label>
+                                    <input class="form-control" id="deliveryDate_relay1" placeholder="" type="date">
+                            </div>
+                            <div class="form-group">
+                                    <label for="address_relay1">Address</label>
+                                    <input class="form-control" id="address_relay1" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="city_relay1">City</label>
+                                    <input class="form-control" id="city_relay1" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="state_relay1">State</label>
+                                    <input class="form-control" id="state_relay1" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="zip_relay1">Zip</label>
+                                    <input class="form-control" id="zip_relay1" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                <button type="button" class="btn btn-secondary" onclick="saveRelayAddressToCarrier(1);">Save Address To Carrier</button>
+                            </div>
+                            <div class="form-group">
+                                    <label for="notes_relay1">Notes</label>
+                                    <textarea class="form-control" id="notes_relay1" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                    <label for="rate_relay1">Negotiated Rate</label>
+                                    <input class="form-control" id="rate_relay1" placeholder="" type="text" disabled>
+                            </div>
+                    </div>
+
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                        <h4>Relay Address 2</h4>
+                            <input class="form-control" id="relay_id2" placeholder="" type="hidden">
+                            <input class="form-control" id="commit_id2" placeholder="" type="hidden">
+                            <div class="form-group">
+                            <label for="entityID_relay2">Carrier</label>
+                                <select id="entityID_relay2" name="entityID_relay2" data-placeholder="Carrier" class="form-control chzn-select" required="required" onchange="populateAutocomplete(this, 2);">
+                                    <option selected=selected value=""> -Select Carrier- </option>
+                    <?php
+                                     foreach($entities->entities->records as $value) {
+                                         $selected = ($value[0] == $entity) ? 'selected=selected':'';
+                                         echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
+                                     }
+                    ?>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                    <label for="deliveryLocation_relay2">Location</label>
+                                    <input class="form-control" id="deliveryLocation_relay2" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="contactPerson_relay2">Contact Person</label>
+                                    <input class="form-control" id="contactPerson_relay2" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="phoneNumber_relay2">Phone Number</label>
+                                    <input class="form-control" id="phoneNumber_relay2" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="hoursOfOperation_relay2">Hours of Operation</label>
+                                    <input class="form-control" id="hoursOfOperation_relay2" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="pickupDate_relay2">Pickup Date</label>
+                                    <input class="form-control" id="pickupDate_relay2" placeholder="" type="date">
+                            </div>
+                            <div class="form-group">
+                                    <label for="deliveryDate_relay2">Delivery Date</label>
+                                    <input class="form-control" id="deliveryDate_relay2" placeholder="" type="date">
+                            </div>
+                            <div class="form-group">
+                                    <label for="address_relay2">Address</label>
+                                    <input class="form-control" id="address_relay2" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="city_relay2">City</label>
+                                    <input class="form-control" id="city_relay2" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="state_relay2">State</label>
+                                    <input class="form-control" id="state_relay2" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="zip_relay2">Zip</label>
+                                    <input class="form-control" id="zip_relay2" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                <button type="button" class="btn btn-secondary" onclick="saveRelayAddressToCarrier(2);">Save Address To Carrier</button>
+                            </div>
+                            <div class="form-group">
+                                    <label for="notes_relay2">Notes</label>
+                                    <textarea class="form-control" id="notes_relay2" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                    <label for="rate_relay2">Negotiated Rate</label>
+                                    <input class="form-control" id="rate_relay2" placeholder="" type="text" disabled>
+                            </div>
+                    </div>
+
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                        <h4>Relay Address 3</h4>
+                            <input class="form-control" id="relay_id3" placeholder="" type="hidden">
+                            <input class="form-control" id="commit_id3" placeholder="" type="hidden">
+                            <div class="form-group">
+                            <label for="entityID_relay3">Carrier</label>
+                                <select id="entityID_relay3" name="entityID_relay3" data-placeholder="Carrier" class="form-control chzn-select" required="required" onchange="populateAutocomplete(this, 3);">
+                                    <option selected=selected value=""> -Select Carrier- </option>
+                    <?php
+                                     foreach($entities->entities->records as $value) {
+                                         $selected = ($value[0] == $entity) ? 'selected=selected':'';
+                                         echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
+                                     }
+                    ?>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                    <label for="deliveryLocation_relay3">Location</label>
+                                    <input class="form-control" id="deliveryLocation_relay3" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="contactPerson_relay3">Contact Person</label>
+                                    <input class="form-control" id="contactPerson_relay3" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="phoneNumber_relay3">Phone Number</label>
+                                    <input class="form-control" id="phoneNumber_relay3" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="hoursOfOperation_relay3">Hours of Operation</label>
+                                    <input class="form-control" id="hoursOfOperation_relay3" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="pickupDate_relay3">Pickup Date</label>
+                                    <input class="form-control" id="pickupDate_relay3" placeholder="" type="date">
+                            </div>
+                            <div class="form-group">
+                                    <label for="deliveryDate_relay3">Delivery Date</label>
+                                    <input class="form-control" id="deliveryDate_relay3" placeholder="" type="date">
+                            </div>
+                            <div class="form-group">
+                                    <label for="address_relay3">Address</label>
+                                    <input class="form-control" id="address_relay3" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="city_relay3">City</label>
+                                    <input class="form-control" id="city_relay3" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="state_relay3">State</label>
+                                    <input class="form-control" id="state_relay3" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="zip_relay3">Zip</label>
+                                    <input class="form-control" id="zip_relay3" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                <button type="button" class="btn btn-secondary" onclick="saveRelayAddressToCarrier(3);">Save Address To Carrier</button>
+                            </div>
+                            <div class="form-group">
+                                    <label for="notes_relay3">Notes</label>
+                                    <textarea class="form-control" id="notes_relay3" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                    <label for="rate_relay3">Negotiated Rate</label>
+                                    <input class="form-control" id="rate_relay3" placeholder="" type="text" disabled>
+                            </div>
+                    </div>
+
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                        <h4>Relay Address 4</h4>
+                            <input class="form-control" id="relay_id4" placeholder="" type="hidden">
+                            <input class="form-control" id="commit_id4" placeholder="" type="hidden">
+                            <div class="form-group">
+                            <label for="entityID_relay4">Carrier</label>
+                                <select id="entityID_relay4" name="entityID_relay4" data-placeholder="Carrier" class="form-control chzn-select" required="required" onchange="populateAutocomplete(this, 4);">
+                                    <option selected=selected value=""> -Select Carrier- </option>
+                    <?php
+                                     foreach($entities->entities->records as $value) {
+                                         $selected = ($value[0] == $entity) ? 'selected=selected':'';
+                                         echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
+                                     }
+                    ?>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                    <label for="deliveryLocation_relay4">Location</label>
+                                    <input class="form-control" id="deliveryLocation_relay4" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="contactPerson_relay4">Contact Person</label>
+                                    <input class="form-control" id="contactPerson_relay4" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="phoneNumber_relay4">Phone Number</label>
+                                    <input class="form-control" id="phoneNumber_relay4" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="hoursOfOperation_relay4">Hours of Operation</label>
+                                    <input class="form-control" id="hoursOfOperation_relay4" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="pickupDate_relay4">Pickup Date</label>
+                                    <input class="form-control" id="pickupDate_relay4" placeholder="" type="date">
+                            </div>
+                            <div class="form-group">
+                                    <label for="deliveryDate_relay4">Delivery Date</label>
+                                    <input class="form-control" id="deliveryDate_relay4" placeholder="" type="date">
+                            </div>
+                            <div class="form-group">
+                                    <label for="address_relay4">Address</label>
+                                    <input class="form-control" id="address_relay4" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="city_relay4">City</label>
+                                    <input class="form-control" id="city_relay4" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="state_relay4">State</label>
+                                    <input class="form-control" id="state_relay4" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                    <label for="zip_relay4">Zip</label>
+                                    <input class="form-control" id="zip_relay4" placeholder="" type="text">
+                            </div>
+                            <div class="form-group">
+                                <button type="button" class="btn btn-secondary" onclick="saveRelayAddressToCarrier(4);">Save Address To Carrier</button>
+                            </div>
+                            <div class="form-group">
+                                    <label for="notes_relay4">Notes</label>
+                                    <textarea class="form-control" id="notes_relay4" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                    <label for="rate_relay4">Negotiated Rate</label>
+                                    <input class="form-control" id="rate_relay4" placeholder="" type="text" disabled>
+                            </div>
+                    </div>
+            </div>
+
+            <hr>
+
+            <div class="row">
+                    <div class="col-md-12">
+                            <h2>Unit Data</h2>
+                    </div>
+            </div>
+
+            <br>
+
+            <div class="row">
+                <div id="addTrailer" class="col-md-12">
+
+                </div>
+            </div>
 
         </div>
         <div class="modal-footer">
@@ -1746,7 +2271,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
       </div>
     </div>
   </div>
-
+-->
  <script>
 
     getCommitted();
@@ -1819,28 +2344,51 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
        var unitID = $('#addTrailer > div').length;
 
-       var unitData = ' <div class="row"><div class="col-md-3">\n\
+        var unitData = '<div class="row">\n\
+                        <div class="col-md-1-7">\n\
+                            <div class="form-group">\n\
+                                    <label for="year' + (unitID + 1) + '">Year</label>\n\
+                                    <input class="form-control" id="year' + (unitID + 1) + '" placeholder="" type="text">\n\
+                            </div>\n\
+                        </div>\n\
+                        <div class="col-md-1-7">\n\
+                            <div class="form-group">\n\
+                                    <label for="make' + (unitID + 1) + '">Make</label>\n\
+                                    <input class="form-control" id="make' + (unitID + 1) + '" placeholder="" type="text">\n\
+                            </div>\n\
+                        </div>\n\
+                        <div class="col-md-1-7">\n\
                             <div class="form-group">\n\
                                     <label for="unitNumber' + (unitID + 1) + '">Unit #</label>\n\
                                     <input class="form-control" id="unitNumber' + (unitID + 1) + '" placeholder="" type="text">\n\
                             </div>\n\
                         </div>\n\
-                <div class="col-md-3">\n\
+                        <div class="col-md-1-7">\n\
                             <div class="form-group">\n\
                                     <label for="vinNumber' + (unitID + 1) + '">VIN #</label>\n\
                                     <input class="form-control" id="vinNumber' + (unitID + 1) + '" placeholder="" type="text">\n\
-                            </div>\n\</div>\n\
-                <div class="col-md-3">\n\
+                            </div>\n\
+                        </div>\n\
+                        <div class="col-md-1-7">\n\
                             <div class="form-group">\n\
                                     <label for="truckProNumber' + (unitID + 1) + '">Truck/Pro #</label>\n\
                                     <input class="form-control" id="truckProNumber' + (unitID + 1) + '" placeholder="" type="text">\n\
-                            </div>\n\</div>\n\
-                <div class="col-md-3">\n\
+                            </div>\n\
+                        </div>\n\
+                        <div class="col-md-1-7">\n\
                             <div class="form-group">\n\
                                     <label for="poNumber' + (unitID + 1) + '">P.O. #</label>\n\
                                     <input class="form-control" id="poNumber' + (unitID + 1) + '" placeholder="" type="text">\n\
-                            </div>\n\</div></div>';
-
+                            </div>\n\
+                        </div>\n\
+                        <div class="col-md-1-7">\n\
+                            <div class="form-group">\n\
+                                    <label for="value' + (unitID + 1) + '">Value</label>\n\
+                                    <input class="form-control" id="value' + (unitID + 1) + '" placeholder="" type="text">\n\
+                            </div>\n\
+                        </div>\n\
+                    </div>';
+                                               
        $('#addTrailer').append(unitData);
    }
 
@@ -2122,13 +2670,16 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
         $('#addTrailer > div').each(function(index, value){
             var unitID = index + 1;
+            var year = $('#year' + unitID).val().trim();
+            var make = $('#make' + unitID).val().trim();
+            var cashValue = $('#value' + unitID).val().trim();
             var unitNumber = $('#unitNumber' + unitID).val().trim();
             var vinNumber = $('#vinNumber' + unitID).val().trim();
             var truckProNumber = $('#truckProNumber' + unitID).val().trim();
             var poNumber = $('#poNumber' + unitID).val().trim();
 
             if(vinNumber != "" || unitNumber != "" || truckProNumber != "" || poNumber != ""){
-                var unitData = {unitNumber: unitNumber, vinNumber: vinNumber, truckProNumber: truckProNumber, poNumber: poNumber};
+                var unitData = {unitNumber: unitNumber, vinNumber: vinNumber, truckProNumber: truckProNumber, poNumber: poNumber, year: year, make: make, value: cashValue};
 
                 unitDataList.push(unitData);
             }
@@ -2343,7 +2894,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                         $("#saveCommit").html("Save");
                         $("#saveCommit").prop("disabled", false);
-                        $("#editCommitModal").modal('hide');
+                        closeEditCommit();
                         loadNewCustomerNeedsCommit(id);
 
                         $("#errorAlertTitle").html("Success");
@@ -2374,13 +2925,17 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
         $('#addTrailer > div').each(function(index, value){
             var unitID = index + 1;
+            var year = $('#year' + unitID).val().trim();
+            var make = $('#make' + unitID).val().trim();
+            var cashValue = $('#value' + unitID).val().trim();
+            
             var unitNumber = $('#unitNumber' + unitID).val().trim();
             var vinNumber = $('#vinNumber' + unitID).val().trim();
             var truckProNumber = $('#truckProNumber' + unitID).val().trim();
             var poNumber = $('#poNumber' + unitID).val().trim();
 
             if(vinNumber != "" || unitNumber != "" || truckProNumber != "" || poNumber != ""){
-                var unitData = {unitNumber: unitNumber, vinNumber: vinNumber, truckProNumber: truckProNumber, poNumber: poNumber};
+                var unitData = {unitNumber: unitNumber, vinNumber: vinNumber, truckProNumber: truckProNumber, poNumber: poNumber, year: year, make: make, value: cashValue};
 
                 unitDataList.push(unitData);
             }
@@ -2553,7 +3108,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     }
                     $("#saveCommit").html("Save");
                     $("#saveCommit").prop("disabled", false);
-                    $("#editCommitModal").modal('hide');
+                    closeEditCommit();
                     loadNewCustomerNeedsCommit(id);
 
                     $("#errorAlertTitle").html("Success");
