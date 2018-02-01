@@ -219,9 +219,9 @@ class Reports
           $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
 
           /* Get approved_pod records */
-          $result = $dbhandle->query("SELECT approved_pod.orderID, approved_pod.carrierID, approved_pod.cost, approved_pod.qbInvoiceNumber, approved_pod.qbInvoiceStatus, entities.name
+          $result = $dbhandle->query("SELECT approved_pod.orderID, approved_pod.orderDetailID, approved_pod.carrierID, approved_pod.cost, approved_pod.qbInvoiceNumber, approved_pod.qbInvoiceStatus, entities.name
                                      FROM approved_pod
-                                     JOIN `orders` on orders.id = approved_pod.orderDetailID
+                                     JOIN `orders` on orders.id = approved_pod.orderID
                                      LEFT JOIN `entities` on entities.id = approved_pod.customerID
                                      WHERE approved_pod.createdAt BETWEEN '" . $startDate . "' AND '" . $endDate . "'");
 
@@ -236,11 +236,20 @@ class Reports
                     $qbInvoiceStatus = $approvedPodData[$c]['qbInvoiceStatus'];
 
                     /* Get carrier name for approved_pod record */
-                    $entitiesResult = $dbhandle->query("SELECT name FROM entities WHERE id = '" . $approvedPodData[$c]['carrierID'] . "'");
+                    $detailsResult = $dbhandle->query("SELECT order_details.carrierRate, entities.name
+                                                        FROM order_details
+                                                        JOIN entities on entities.id = order_details.carrierID
+                                                        WHERE order_details.carrierID = '" . $approvedPodData[$c]['carrierID'] . "'
+                                                        AND order_details.orderID = '" . $approvedPodData[$c]['orderID'] . "'
+                                                        AND order_details.id = '" . $approvedPodData[$c]['orderDetailID'] . "'");
+                    $costToCarrier = 0;
+                    $detailsData = $detailsResult->fetchAll();
+                    for ($d = 0; $d < count($detailsData); $d++) {
+                        $carrierName = $detailsData[$d]['name'];
+                        if ($detailsData[$d]['qty'] > 0) {
+                            $costToCarrier = $detailsData[$d]['carrierRate'] / $detailsData[$d]['qty'];
+                        }
 
-                    $entitiesData = $entitiesResult->fetchAll();
-                    for ($e = 0; $e < count($entitiesData); $e++) {
-                        $carrierName = $entitiesData[$e]['name'];
                     }
 
                     $returnArray .= json_encode(array('orderID' => $orderID, 'customerName' => $customerName, 'carrierName' => $carrierName, 'costToCustomer' => $costToCustomer, 'costToCarrier' => $costToCarrier, 'qbInvoiceNumber' => $qbInvoiceNumber, 'qbStatus' => $qbInvoiceStatus));
@@ -270,9 +279,9 @@ class Reports
           $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
 
           /* Get approved_pod records */
-          $result = $dbhandle->query("SELECT approved_pod.orderID, approved_pod.carrierID, approved_pod.cost, approved_pod.qbInvoiceNumber, approved_pod.qbInvoiceStatus, entities.name
+          $result = $dbhandle->query("SELECT approved_pod.orderID, approved_pod.orderDetailID, approved_pod.carrierID, approved_pod.cost, approved_pod.qbInvoiceNumber, approved_pod.qbInvoiceStatus, entities.name
                                      FROM approved_pod
-                                     JOIN `orders` on orders.id = approved_pod.orderDetailID
+                                     JOIN `orders` on orders.id = approved_pod.orderID
                                      LEFT JOIN `entities` on entities.id = approved_pod.customerID
                                      WHERE approved_pod.createdAt BETWEEN '" . $startDate . "' AND '" . $endDate . "'");
 
@@ -287,11 +296,20 @@ class Reports
                     $qbInvoiceStatus = $approvedPodData[$c]['qbInvoiceStatus'];
 
                     /* Get carrier name for approved_pod record */
-                    $entitiesResult = $dbhandle->query("SELECT name FROM entities WHERE id = '" . $approvedPodData[$c]['carrierID'] . "'");
+                    $detailsResult = $dbhandle->query("SELECT order_details.carrierRate, entities.name
+                                                        FROM order_details
+                                                        JOIN entities on entities.id = order_details.carrierID
+                                                        WHERE order_details.carrierID = '" . $approvedPodData[$c]['carrierID'] . "'
+                                                        AND order_details.orderID = '" . $approvedPodData[$c]['orderID'] . "'
+                                                        AND order_details.id = '" . $approvedPodData[$c]['orderDetailID'] . "'");
+                    $costToCarrier = 0;
+                    $detailsData = $detailsResult->fetchAll();
+                    for ($d = 0; $d < count($detailsData); $d++) {
+                        $carrierName = $detailsData[$d]['name'];
+                        if ($detailsData[$d]['qty'] > 0) {
+                            $costToCarrier = $detailsData[$d]['carrierRate'] / $detailsData[$d]['qty'];
+                        }
 
-                    $entitiesData = $entitiesResult->fetchAll();
-                    for ($e = 0; $e < count($entitiesData); $e++) {
-                        $carrierName = $entitiesData[$e]['name'];
                     }
 
                     $data .= $orderID.",".$customerName.",".$carrierName.",".$costToCustomer.",".$costToCarrier.",".$qbInvoiceNumber.",".$qbInvoiceStatus."\n";
