@@ -222,11 +222,7 @@ require '../lib/common.php';
                 type: "POST",
                 contentType: "application/json",
                 responseType: "arraybuffer",
-                data: function(d) {
-                    d.startDate = $("#startDate").val();
-                    d.endDate = $("#endDate").val();
-                    return;
-                },
+                data: JSON.stringify(params),
                 success: function(data){
                     var element = document.createElement('a');
                     element.setAttribute('href', "data:application/octet-stream;charset=utf-8;base64,"+btoa(data.replace(/\n/g, '\r\n')));
