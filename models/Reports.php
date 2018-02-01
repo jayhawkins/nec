@@ -236,7 +236,7 @@ class Reports
                     $qbInvoiceStatus = $approvedPodData[$c]['qbInvoiceStatus'];
 
                     /* Get carrier name for approved_pod record */
-                    $detailsResult = $dbhandle->query("SELECT order_details.carrierRate, entities.name
+                    $detailsResult = $dbhandle->query("SELECT order_details.carrierRate, order_details.qty, entities.name
                                                         FROM order_details
                                                         JOIN entities on entities.id = order_details.carrierID
                                                         WHERE order_details.carrierID = '" . $approvedPodData[$c]['carrierID'] . "'
@@ -296,7 +296,7 @@ class Reports
                     $qbInvoiceStatus = $approvedPodData[$c]['qbInvoiceStatus'];
 
                     /* Get carrier name for approved_pod record */
-                    $detailsResult = $dbhandle->query("SELECT order_details.carrierRate, entities.name
+                    $detailsResult = $dbhandle->query("SELECT order_details.carrierRate, order_details.qty, entities.name
                                                         FROM order_details
                                                         JOIN entities on entities.id = order_details.carrierID
                                                         WHERE order_details.carrierID = '" . $approvedPodData[$c]['carrierID'] . "'
