@@ -335,6 +335,7 @@ class Reports
                                                         AND order_details.orderID = '" . $approvedPodData[$c]['orderID'] . "'
                                                         AND order_details.id = '" . $approvedPodData[$c]['orderDetailID'] . "'");
                     $costToCarrier = 0;
+                    $carrierName = "";
                     $detailsData = $detailsResult->fetchAll();
                     for ($d = 0; $d < count($detailsData); $d++) {
                         $carrierName = $detailsData[$d]['name'];
@@ -405,6 +406,7 @@ class Reports
                                                         AND order_details.orderID = '" . $approvedPodData[$c]['orderID'] . "'
                                                         AND order_details.id = '" . $approvedPodData[$c]['orderDetailID'] . "'");
                     $costToCarrier = 0;
+                    $carrierName = "";
                     $detailsData = $detailsResult->fetchAll();
                     for ($d = 0; $d < count($detailsData); $d++) {
                         $carrierName = $detailsData[$d]['name'];
