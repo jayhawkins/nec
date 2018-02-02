@@ -806,7 +806,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         "<td>"+ unit.vinNumber +"</td>" +
                         "<td>"+ unit.truckProNumber +"</td>" +
                         "<td>"+ unit.poNumber +"</td>" +
-                        "<td>"+ unit.value +"</td>" +
+                        "<td>$"+ parseFloat(unit.value).toFixed(2) +"</td>" +
                         "</tr>";
 
                 unitEdit += '<div class="row">\n\
@@ -855,7 +855,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 <div class="col-md-1">\n\
                                     <div class="form-group">\n\
                                             <label for="value' + (key + 1) + '">Value</label>\n\
-                                            <input class="form-control" id="value' + (key + 1) + '" placeholder="" type="text" value="'+unit.value+'">\n\
+                                            <input class="form-control" id="value' + (key + 1) + '" placeholder="" type="text" value="'+parseFloat(unit.value).toFixed(2)+'">\n\
                                     </div>\n\
                                 </div>\n\
                             </div>';
