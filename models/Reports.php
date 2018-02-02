@@ -24,7 +24,7 @@ class Reports
               }
           }
 
-          $querystring . = " order by order_details.createdAt desc";
+          $querystring .= " order by order_details.createdAt desc";
 
           $result = $dbhandle->query($querystring);
 
@@ -70,7 +70,7 @@ class Reports
               }
           }
 
-          $querystring . = " order by order_details.createdAt desc";
+          $querystring .= " order by order_details.createdAt desc";
 
           $result = $dbhandle->query($querystring);
 
@@ -115,7 +115,7 @@ class Reports
               }
           }
 
-          $querystring . = " order by order_details.createdAt desc";
+          $querystring .= " order by order_details.createdAt desc";
 
           $result = $dbhandle->query($querystring);
 
@@ -161,7 +161,7 @@ class Reports
               }
           }
 
-          $querystring . = " order by order_details.createdAt desc";
+          $querystring .= " order by order_details.createdAt desc";
 
           $result = $dbhandle->query($querystring);
 
@@ -213,7 +213,7 @@ class Reports
               }
           }
 
-          $querystring . = " order by approved_pod.createdAt desc";
+          $querystring .= " order by approved_pod.createdAt desc";
 
           $result = $dbhandle->query($querystring);
           if (count($result) > 0) {
@@ -241,7 +241,7 @@ class Reports
               }
           }
 
-          $querystring . = " order by approved_pod.createdAt desc";
+          $querystring .= " order by approved_pod.createdAt desc";
 
           $result = $dbhandle->query($querystring);
 
@@ -269,7 +269,7 @@ class Reports
               }
           }
 
-          $querystring . = " order by approved_pod.createdAt desc";
+          $querystring .= " order by approved_pod.createdAt desc";
 
           $result = $dbhandle->query($querystring);
 
@@ -322,7 +322,7 @@ class Reports
               }
           }
 
-          $querystring . = " order by approved_pod.createdAt desc";
+          $querystring .= " order by approved_pod.createdAt desc";
 
           $result = $dbhandle->query($querystring);
 
@@ -351,7 +351,7 @@ class Reports
               }
           }
 
-          $querystring . = " order by approved_pod.createdAt desc";
+          $querystring .= " order by approved_pod.createdAt desc";
 
           $result = $dbhandle->query($querystring);
 
@@ -379,7 +379,7 @@ class Reports
               }
           }
 
-          $querystring . = " order by approved_pod.createdAt desc";
+          $querystring .= " order by approved_pod.createdAt desc";
 
           $result = $dbhandle->query($querystring);
 
@@ -422,7 +422,7 @@ class Reports
               }
           }
 
-          $querystring . = " order by approved_pod.createdAt desc";
+          $querystring .= " order by approved_pod.createdAt desc";
 
           $result = $dbhandle->query($querystring);
 
@@ -495,7 +495,7 @@ class Reports
               }
           }
 
-          $querystring . = " order by approved_pod.createdAt desc";
+          $querystring .= " order by approved_pod.createdAt desc";
 
           $result = $dbhandle->query($querystring);
 

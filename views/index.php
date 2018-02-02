@@ -1,6 +1,5 @@
 <?php
 
-
 if ($_SESSION['userid'] <= 0 || $_SESSION['userid'] == "") {
     header("Location: " . HTTP_HOST . "/login");
 }
