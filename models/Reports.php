@@ -13,7 +13,8 @@ class Reports
                                      join order_statuses on order_statuses.orderDetailID = order_details.id
                                      left join orders on orders.id = order_details.orderID
                                      left join entities on entities.id = order_details.carrierID
-                                     where order_details.status = 'Open'";
+                                     where order_details.status = 'Open'
+                                     and order_statuses.status != 'Trailer Delivered'";
 
           if ($entityid > 0) {
               if ($entitytype == 1) {
@@ -56,7 +57,8 @@ class Reports
                                      join order_statuses on order_statuses.orderDetailID = order_details.id
                                      left join orders on orders.id = order_details.orderID
                                      left join entities on entities.id = order_details.carrierID
-                                     where order_details.status = 'Open'";
+                                     where order_details.status = 'Open'
+                                     and order_statuses.status != 'Trailer Delivered'";
 
           if ($entityid > 0) {
               if ($entitytype == 1) {
