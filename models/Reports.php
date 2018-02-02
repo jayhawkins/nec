@@ -3,6 +3,97 @@
 class Reports
 {
 
+    public function getdeliveredtrailers(&$db, $entitytype, $entityid) {
+
+          $returnArray = "";
+
+          $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
+          $querystring = "select *, order_statuses.status as statusesstatus, orders.customerID as custID
+                                     from order_details
+                                     join order_statuses on order_statuses.orderDetailID = order_details.id
+                                     left join orders on orders.id = order_details.orderID
+                                     left join entities on entities.id = order_details.carrierID
+                                     where order_details.status = 'Open'
+                                     and order_statuses.status = 'Trailer Delivered'";
+
+          if ($entityid > 0) {
+              if ($entitytype == 1) {
+                  $querystring .= " and orders.customerID = '" . $entityid . "'";
+              } else {
+                  $querystring .= " and order_details.carrierID = '" . $entityid . "'";
+              }
+          }
+
+          $querystring . = " order by order_details.createdAt desc";
+
+          $result = $dbhandle->query($querystring);
+
+          if (count($result) > 0) {
+              $data = $result->fetchAll();
+              for ($c = 0; $c < count($data); $c++) {
+                    /* Get carrier name for approved_pod record */
+                    $entitiesResult = $dbhandle->query("SELECT name FROM entities WHERE id = '" . $data[$c]['custID'] . "'");
+
+                    $entitiesData = $entitiesResult->fetchAll();
+                    for ($e = 0; $e < count($entitiesData); $e++) {
+                        $customerName = $entitiesData[$e]['name'];
+                    }
+
+                    $returnArray .= json_encode(array('customerName' => $customerName, 'carrierName' => $data[$c]['name'], 'orderID' => $data[$c]['orderID'], 'unitNumber' => $data[$c]['unitNumber'], 'vinNumber' => $data[$c]['vinNumber'], 'city' => $data[$c]['city'], 'state' => $data[$c]['state'], 'statusesstatus' => $data[$c]['statusesstatus']));
+
+                    if ($c < count($data) - 1) {
+                        $returnArray .= ",";
+                    }
+
+              }
+              echo "{ \"order_details\": [".$returnArray."]}";
+          } else {
+              echo '{}';
+          }
+    }
+
+    public function getdeliveredtrailerscsv(&$db, $entitytype, $entityid) {
+          $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
+          $querystring = "select *, order_statuses.status as statusesstatus, orders.customerID as custID
+                                     from order_details
+                                     join order_statuses on order_statuses.orderDetailID = order_details.id
+                                     left join orders on orders.id = order_details.orderID
+                                     left join entities on entities.id = order_details.carrierID
+                                     where order_details.status = 'Open'
+                                     and order_statuses.status = 'Trailer Delivered'";
+
+          if ($entityid > 0) {
+              if ($entitytype == 1) {
+                  $querystring .= " and orders.customerID = '" . $entityid . "'";
+              } else {
+                  $querystring .= " and order_details.carrierID = '" . $entityid . "'";
+              }
+          }
+
+          $querystring . = " order by order_details.createdAt desc";
+
+          $result = $dbhandle->query($querystring);
+
+          if (count($result) > 0) {
+              $records = $result->fetchAll();
+              $data = "Order ID,Customer Name,Carrier Name,Unit Number,VIN,Location, Status\n";
+              foreach($records as $record) {
+                  /* Get carrier name for approved_pod record */
+                  $entitiesResult = $dbhandle->query("SELECT name FROM entities WHERE id = '" . $record['custID'] . "'");
+
+                  $entitiesData = $entitiesResult->fetchAll();
+                  for ($e = 0; $e < count($entitiesData); $e++) {
+                       $customerName = $entitiesData[$e]['name'];
+                  }
+                  $location = $record['city'] . " " . $record['state'];
+                  $data .= $record['orderID'].",".$customerName.",".$record['name'].",".$record['unitNumber'].",".$record['vinNumber'].",".$location.",".$record['statusesstatus']."\n";
+              }
+              echo $data;
+          } else {
+              echo 'No records found that match criteria';
+          }
+    }
+
     public function getundeliveredtrailers(&$db, $entitytype, $entityid) {
 
           $returnArray = "";
@@ -23,6 +114,8 @@ class Reports
                   $querystring .= " and order_details.carrierID = '" . $entityid . "'";
               }
           }
+
+          $querystring . = " order by order_details.createdAt desc";
 
           $result = $dbhandle->query($querystring);
 
@@ -67,6 +160,8 @@ class Reports
                   $querystring .= " and order_details.carrierID = '" . $entityid . "'";
               }
           }
+
+          $querystring . = " order by order_details.createdAt desc";
 
           $result = $dbhandle->query($querystring);
 
@@ -118,6 +213,8 @@ class Reports
               }
           }
 
+          $querystring . = " order by approved_pod.createdAt desc";
+
           $result = $dbhandle->query($querystring);
           if (count($result) > 0) {
               $currentData = $result->fetchAll();
@@ -144,6 +241,8 @@ class Reports
               }
           }
 
+          $querystring . = " order by approved_pod.createdAt desc";
+
           $result = $dbhandle->query($querystring);
 
           if (count($result) > 0) {
@@ -169,6 +268,8 @@ class Reports
                   $querystring .= " and approved_pod.carrierID = '" . $entityid . "'";
               }
           }
+
+          $querystring . = " order by approved_pod.createdAt desc";
 
           $result = $dbhandle->query($querystring);
 
@@ -221,6 +322,8 @@ class Reports
               }
           }
 
+          $querystring . = " order by approved_pod.createdAt desc";
+
           $result = $dbhandle->query($querystring);
 
           if (count($result) > 0) {
@@ -248,6 +351,8 @@ class Reports
               }
           }
 
+          $querystring . = " order by approved_pod.createdAt desc";
+
           $result = $dbhandle->query($querystring);
 
           if (count($result) > 0) {
@@ -273,6 +378,8 @@ class Reports
                   $querystring .= " and approved_pod.carrierID = '" . $entityid . "'";
               }
           }
+
+          $querystring . = " order by approved_pod.createdAt desc";
 
           $result = $dbhandle->query($querystring);
 
@@ -314,6 +421,8 @@ class Reports
                   $querystring .= " and approved_pod.carrierID = '" . $entityid . "'";
               }
           }
+
+          $querystring . = " order by approved_pod.createdAt desc";
 
           $result = $dbhandle->query($querystring);
 
@@ -385,6 +494,8 @@ class Reports
                   $querystring .= " and approved_pod.carrierID = '" . $entityid . "'";
               }
           }
+
+          $querystring . = " order by approved_pod.createdAt desc";
 
           $result = $dbhandle->query($querystring);
 

@@ -744,6 +744,34 @@ $app->route('POST /indexgetavailability', function() {
 /*****************************************************************************/
 // Reporting Processes
 /*****************************************************************************/
+$app->route('POST /getdeliveredtrailers', function() {
+    $entityType = Flight::request()->data->entitytype;
+    $entityID = Flight::request()->data->entityid;
+    $reports = Flight::reports();
+    $db = Flight::db();
+    $result = $reports->getdeliveredtrailers($db,$entityType,$entityID);
+    if ($result) {
+        print_r($result);
+        //echo "success";
+    } else {
+        print_r($result);
+    }
+});
+
+$app->route('POST /getdeliveredtrailerscsv', function() {
+    $entityType = Flight::request()->data->entitytype;
+    $entityID = Flight::request()->data->entityid;
+    $reports = Flight::reports();
+    $db = Flight::db();
+    $result = $reports->getdeliveredtrailerscsv($db,$entityType,$entityID);
+    if ($result) {
+        print_r($result);
+        //echo "success";
+    } else {
+        print_r($result);
+    }
+});
+
 $app->route('POST /getundeliveredtrailers', function() {
     $entityType = Flight::request()->data->entitytype;
     $entityID = Flight::request()->data->entityid;
