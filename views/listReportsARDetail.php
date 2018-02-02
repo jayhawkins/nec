@@ -67,8 +67,8 @@ require '../lib/common.php';
                 { data: "orderID" },
                 { data: "customerName" },
                 { data: "carrierName" },
-                { data: "costToCustomer" },
-                { data: "costToCarrier" },
+                { data: "costToCustomer", render: $.fn.dataTable.render.number(',', '.', 2, '$') },
+                { data: "costToCarrier", render: $.fn.dataTable.render.number(',', '.', 2, '$') },
                 { data: "qbInvoiceNumber" },
                 { data: "qbStatus" }
             ]
