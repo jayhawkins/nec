@@ -541,7 +541,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
 			var dpli = '';
 			var dpchecked = '';
 			var emptyMode = '';
-			var loadMode = '';
+			var loadMode = 'selected';
 			var eitherMode = '';
 			$("#id").val('');
 			$("#qty").val('');
