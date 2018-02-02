@@ -11,7 +11,9 @@ require '../lib/common.php';
 
       function loadTableAJAX() {
 
-        url = '<?php echo HTTP_HOST."/getundeliveredtrailers" ?>';
+        var url = '<?php echo HTTP_HOST."/getundeliveredtrailers" ?>';
+        var params = {entitytype: <?php echo $_SESSION['entitytype'] ?>,
+                      entityid: <?php echo $_SESSION['entityid'] ?>};
 
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
@@ -19,6 +21,11 @@ require '../lib/common.php';
             ajax: {
                 url: url,
                 type: 'POST',
+                data: function(d) {
+                    d.entitytype = <?php echo $_SESSION['entitytype'] ?>;
+                    d.entityid = <?php echo $_SESSION['entityid'] ?>;
+                    return;
+                },
                 dataSrc: 'order_details'
             },
             columns: [
@@ -56,11 +63,11 @@ require '../lib/common.php';
  <ol class="breadcrumb">
    <li>ADMIN</li>
    <li>Reporting</li>
-   <li class="active">Undelivered Relays</li>
+   <li class="active">Undelivered Reports</li>
  </ol>
  <section class="widget">
      <header>
-         <h4><span class="fw-semi-bold">Undelivered Trailer Relays</span></h4>
+         <h4><span class="fw-semi-bold">Undelivered Reports</span></h4>
          <div class="widget-controls">
              <a data-widgster="expand" title="Expand" href="#"><i class="glyphicon glyphicon-chevron-up"></i></a>
              <a data-widgster="collapse" title="Collapse" href="#"><i class="glyphicon glyphicon-chevron-down"></i></a>
@@ -142,9 +149,13 @@ require '../lib/common.php';
 
             url = '<?php echo HTTP_HOST."/getundeliveredtrailerscsv" ?>';
 
+            var params = {entitytype: <?php echo $_SESSION['entitytype'] ?>,
+                          entityid: <?php echo $_SESSION['entityid'] ?>};
+
             $.ajax({
                 url: url,
                 type: "POST",
+                data: JSON.stringify(params),
                 contentType: "application/json",
                 responseType: "arraybuffer",
                 success: function(data){
