@@ -591,11 +591,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
     }
 
     function loadOrderNotes(orderID){
-    
+
         var url = '<?php echo API_HOST_URL; ?>';
-        
+
         url += '/order_notes?include=members&columns=id,userID,note,createdAt,updatedAt,members.firstName,members.lastName&filter=orderID,eq,' + orderID + '&order=id,desc&transform=1';
-    
+
         if ( ! $.fn.DataTable.isDataTable( '#admin-note-table' ) ) {
 
             var orders_table = $('#admin-note-table').DataTable({
@@ -825,7 +825,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
             var carriers = [];
             var trailers = order_details[0].orders[0].podList;
-            
+
             // Get the Carrier Rate
             var displayCustomerRate = order_details[0].orders[0].customerRate;
             var displayCarrierTotal = 0;
@@ -1046,9 +1046,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 if(key == 0){
                     trailerList += "<div class=\"row trailer-row trailer-row__border-top trailer-row__selected\" onclick=\"displayTrailer(this, '" + trailer.vinNumber + "', '" + currentCarrier + "', '" + trailer.unitNumber + "')\">" +
                                 "       <div class=\"col-md-12\">" +
-                                "           <h4>Vin#: " + trailer.vinNumber + "</h4>" +
-                                "           <div class=\"text-blue\">Unit #:" +
-                                "               <span class=\"pad-left-25\">" + trailer.unitNumber + "</span>" +
+                                "           <h4>Unit #: " + trailer.unitNumber + "</h4>" +
+                                "           <div class=\"text-blue\">VIN #:" +
+                                "               <span class=\"pad-left-25\">" + trailer.vinNumber + "</span>" +
                                 "           </div>" +
                                 "       </div>" +
                                 " </div>";
@@ -1061,9 +1061,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 else{
                     trailerList += "<div class=\"row trailer-row trailer-row__border-bot trailer-row__notselected\" onclick=\"displayTrailer(this, '" + trailer.vinNumber + "', '" + currentCarrier + "', '" + trailer.unitNumber + "')\">" +
                                 "       <div class=\"col-md-12\">" +
-                                "           <h4>Vin#: " + trailer.vinNumber + "</h4>" +
-                                "           <div class=\"text-blue\">Unit #:" +
-                                "               <span class=\"pad-left-25\">" + trailer.unitNumber + "</span>" +
+                                "           <h4>Unit #: " + trailer.unitNumber + "</h4>" +
+                                "           <div class=\"text-blue\">VIN #:" +
+                                "               <span class=\"pad-left-25\">" + trailer.vinNumber + "</span>" +
                                 "           </div>" +
                                 "       </div>" +
                                 " </div>";
@@ -3341,9 +3341,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         </div>
                     </div>
                 </div>
-                
+
                 <div id="addStatus" class="carrier-summary__bottom-container" style="display: none;">
-                        
+
                     <input type="hidden" id="statusID" value="" />
                     <input type="hidden" id="statusOrderID" value="" />
                     <input type="hidden" id="statusOrderDetailID" value="" />
@@ -3586,7 +3586,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         </div>
 
         <div id="adminNotes" class="row" style="display: none;">
-            
+
             <div id="dataTable-9000" class="col-md-12">
                 <h5><span class="fw-semi-bold">Admin Notes</span></h5>
                 <div class="widget-controls">
@@ -5055,7 +5055,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         });
 
         $('#btnSaveAdminNote').off('click').on('click', function(){
-            
+
             var today = new Date();
             var dd = today.getDate();
             var mm = today.getMonth()+1; //January is 0!
@@ -5086,11 +5086,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
             today = mm+'/'+dd+'/'+yyyy;
             today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
-            
+
             var orderID = $('#orderID').val();
 
-            var note = {orderID: orderID, userID: userid, note: $("#txtAdminNote").val(), createdAt: today, updatedAt: today};            
-            
+            var note = {orderID: orderID, userID: userid, note: $("#txtAdminNote").val(), createdAt: today, updatedAt: today};
+
             $.ajax({
                 url: '<?php echo API_HOST_URL . "/order_notes/"; ?>',
                 type: "POST",
