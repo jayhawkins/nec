@@ -3,17 +3,27 @@
 class Reports
 {
 
-    public function getundeliveredtrailers(&$db) {
+    public function getundeliveredtrailers(&$db, $entitytype, $entityid) {
 
           $returnArray = "";
 
           $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
-          $result = $dbhandle->query("select *, order_statuses.status as statusesstatus, orders.customerID as custID
+          $querystring = "select *, order_statuses.status as statusesstatus, orders.customerID as custID
                                      from order_details
                                      join order_statuses on order_statuses.orderDetailID = order_details.id
                                      left join orders on orders.id = order_details.orderID
                                      left join entities on entities.id = order_details.carrierID
-                                     where order_details.status = 'Open'");
+                                     where order_details.status = 'Open'";
+
+          if ($entityid > 0) {
+              if ($entitytype == 1) {
+                  $querystring .= " and orders.customerID = '" . $entityid . "'";
+              } else {
+                  $querystring .= " and order_details.carrierID = '" . $entityid . "'";
+              }
+          }
+
+          $result = $dbhandle->query($querystring);
 
           if (count($result) > 0) {
               $data = $result->fetchAll();
@@ -39,14 +49,24 @@ class Reports
           }
     }
 
-    public function getundeliveredtrailerscsv(&$db) {
+    public function getundeliveredtrailerscsv(&$db, $entitytype, $entityid) {
           $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
-          $result = $dbhandle->query("select *, order_statuses.status as statusesstatus, orders.customerID as custID
+          $querystring = "select *, order_statuses.status as statusesstatus, orders.customerID as custID
                                      from order_details
                                      join order_statuses on order_statuses.orderDetailID = order_details.id
                                      left join orders on orders.id = order_details.orderID
                                      left join entities on entities.id = order_details.carrierID
-                                     where order_details.status = 'Open'");
+                                     where order_details.status = 'Open'";
+
+          if ($entityid > 0) {
+              if ($entitytype == 1) {
+                  $querystring .= " and orders.customerID = '" . $entityid . "'";
+              } else {
+                  $querystring .= " and order_details.carrierID = '" . $entityid . "'";
+              }
+          }
+
+          $result = $dbhandle->query($querystring);
 
           if (count($result) > 0) {
               $records = $result->fetchAll();
@@ -68,7 +88,7 @@ class Reports
           }
     }
 
-    public function getarsummary(&$db) {
+    public function getarsummary(&$db, $entitytype, $entityid) {
 
           $currentRevenue = 0;
           $currentPayout = 0;
@@ -83,10 +103,20 @@ class Reports
           $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
 
           /* Current Week */
-          $result = $dbhandle->query("SELECT *
+          $querystring = "SELECT *
                                      FROM approved_pod
                                      JOIN `orders` on orders.id = approved_pod.orderDetailID
-                                     WHERE approved_pod.createdAt BETWEEN CURDATE()-INTERVAL 1 WEEK AND CURDATE()");
+                                     WHERE approved_pod.createdAt BETWEEN CURDATE()-INTERVAL 1 WEEK AND CURDATE()";
+
+          if ($entityid > 0) {
+              if ($entitytype == 1) {
+                  $querystring .= " and orders.customerID = '" . $entityid . "'";
+              } else {
+                  $querystring .= " and approved_pod.carrierID = '" . $entityid . "'";
+              }
+          }
+
+          $result = $dbhandle->query($querystring);
           if (count($result) > 0) {
               $currentData = $result->fetchAll();
               for ($c = 0; $c < count($currentData); $c++) {
@@ -99,10 +129,20 @@ class Reports
           $returnArray = json_encode(array('weekTitle' => 'Current Week', 'revenue' => $currentRevenue, 'payout' => $currentPayout, 'difference' => $currentDifference));
 
           /* Previous Week */
-          $result = $dbhandle->query("SELECT * FROM approved_pod
+          $querystring = "SELECT * FROM approved_pod
                                         JOIN `orders` on orders.id = approved_pod.orderDetailID
                                         WHERE approved_pod.createdAt >= CURDATE() - INTERVAL DAYOFWEEK(CURDATE())+6 DAY
-                                        AND approved_pod.createdAt < CURDATE() - INTERVAL DAYOFWEEK(CURDATE())-1 DAY");
+                                        AND approved_pod.createdAt < CURDATE() - INTERVAL DAYOFWEEK(CURDATE())-1 DAY";
+
+          if ($entityid > 0) {
+              if ($entitytype == 1) {
+                  $querystring .= " and orders.customerID = '" . $entityid . "'";
+              } else {
+                  $querystring .= " and approved_pod.carrierID = '" . $entityid . "'";
+              }
+          }
+
+          $result = $dbhandle->query($querystring);
 
           if (count($result) > 0) {
               $previousData = $result->fetchAll();
@@ -116,9 +156,19 @@ class Reports
           $returnArray .= "," . json_encode(array('weekTitle' => 'Previous Week', 'revenue' => $previousRevenue, 'payout' => $previousPayout, 'difference' => $previousDifference));
 
           /* This Month */
-          $result = $dbhandle->query("SELECT * FROM approved_pod
+          $querystring = "SELECT * FROM approved_pod
                                       JOIN `orders` on orders.id = approved_pod.orderDetailID
-                                      WHERE MONTH(approved_pod.createdAt)=MONTH(NOW()) AND YEAR(approved_pod.createdAt)=YEAR(NOW())");
+                                      WHERE MONTH(approved_pod.createdAt)=MONTH(NOW()) AND YEAR(approved_pod.createdAt)=YEAR(NOW())";
+
+          if ($entityid > 0) {
+              if ($entitytype == 1) {
+                  $querystring .= " and orders.customerID = '" . $entityid . "'";
+              } else {
+                  $querystring .= " and approved_pod.carrierID = '" . $entityid . "'";
+              }
+          }
+
+          $result = $dbhandle->query($querystring);
 
           if (count($result) > 0) {
               $monthData = $result->fetchAll();
@@ -140,7 +190,7 @@ class Reports
           }
     }
 
-    public function getarsummarycsv(&$db) {
+    public function getarsummarycsv(&$db, $entitytype, $entityid) {
           $currentRevenue = 0;
           $currentPayout = 0;
           $currentDifference = 0;
@@ -156,10 +206,20 @@ class Reports
           $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
 
           /* Current Week */
-          $result = $dbhandle->query("SELECT *
+          $querystring = "SELECT *
                                      FROM approved_pod
                                      JOIN `orders` on orders.id = approved_pod.orderDetailID
-                                     WHERE approved_pod.createdAt BETWEEN CURDATE()-INTERVAL 1 WEEK AND CURDATE()");
+                                     WHERE approved_pod.createdAt BETWEEN CURDATE()-INTERVAL 1 WEEK AND CURDATE()";
+
+          if ($entityid > 0) {
+              if ($entitytype == 1) {
+                  $querystring .= " and orders.customerID = '" . $entityid . "'";
+              } else {
+                  $querystring .= " and approved_pod.carrierID = '" . $entityid . "'";
+              }
+          }
+
+          $result = $dbhandle->query($querystring);
 
           if (count($result) > 0) {
               $currentData = $result->fetchAll();
@@ -173,10 +233,20 @@ class Reports
           $data .= "Current Week,".$currentRevenue.",".$currentPayout.",".$currentDifference."\n";
 
           /* Previous Week */
-          $result = $dbhandle->query("SELECT * FROM approved_pod
+          $querystring = "SELECT * FROM approved_pod
                                         JOIN `orders` on orders.id = approved_pod.orderDetailID
                                         WHERE approved_pod.createdAt >= CURDATE() - INTERVAL DAYOFWEEK(CURDATE())+6 DAY
-                                        AND approved_pod.createdAt < CURDATE() - INTERVAL DAYOFWEEK(CURDATE())-1 DAY");
+                                        AND approved_pod.createdAt < CURDATE() - INTERVAL DAYOFWEEK(CURDATE())-1 DAY";
+
+          if ($entityid > 0) {
+              if ($entitytype == 1) {
+                  $querystring .= " and orders.customerID = '" . $entityid . "'";
+              } else {
+                  $querystring .= " and approved_pod.carrierID = '" . $entityid . "'";
+              }
+          }
+
+          $result = $dbhandle->query($querystring);
 
           if (count($result) > 0) {
               $previousData = $result->fetchAll();
@@ -190,9 +260,19 @@ class Reports
           $data .= "Previous Week,".$previousRevenue.",".$previousPayout.",".$previousDifference."\n";
 
           /* This Month */
-          $result = $dbhandle->query("SELECT * FROM approved_pod
+          $querystring = "SELECT * FROM approved_pod
                                       JOIN `orders` on orders.id = approved_pod.orderDetailID
-                                      WHERE MONTH(approved_pod.createdAt)=MONTH(NOW()) AND YEAR(approved_pod.createdAt)=YEAR(NOW())");
+                                      WHERE MONTH(approved_pod.createdAt)=MONTH(NOW()) AND YEAR(approved_pod.createdAt)=YEAR(NOW())";
+
+          if ($entityid > 0) {
+              if ($entitytype == 1) {
+                  $querystring .= " and orders.customerID = '" . $entityid . "'";
+              } else {
+                  $querystring .= " and approved_pod.carrierID = '" . $entityid . "'";
+              }
+          }
+
+          $result = $dbhandle->query($querystring);
 
           if (count($result) > 0) {
               $monthData = $result->fetchAll();
@@ -212,18 +292,28 @@ class Reports
           }
     }
 
-    public function getardetail(&$db,$startDate,$endDate) {
+    public function getardetail(&$db,$startDate,$endDate,$entitytype,$entityid) {
 
           $returnArray = "";
 
           $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
 
           /* Get approved_pod records */
-          $result = $dbhandle->query("SELECT approved_pod.orderID, approved_pod.orderDetailID, approved_pod.carrierID, approved_pod.cost, approved_pod.qbInvoiceNumber, approved_pod.qbInvoiceStatus, entities.name
+          $querystring = "SELECT approved_pod.orderID, approved_pod.orderDetailID, approved_pod.carrierID, approved_pod.cost, approved_pod.qbInvoiceNumber, approved_pod.qbInvoiceStatus, entities.name
                                      FROM approved_pod
                                      JOIN `orders` on orders.id = approved_pod.orderID
                                      LEFT JOIN `entities` on entities.id = approved_pod.customerID
-                                     WHERE approved_pod.createdAt BETWEEN '" . $startDate . "' AND '" . $endDate . "'");
+                                     WHERE approved_pod.createdAt BETWEEN '" . $startDate . "' AND '" . $endDate . "'";
+
+          if ($entityid > 0) {
+              if ($entitytype == 1) {
+                  $querystring .= " and orders.customerID = '" . $entityid . "'";
+              } else {
+                  $querystring .= " and approved_pod.carrierID = '" . $entityid . "'";
+              }
+          }
+
+          $result = $dbhandle->query($querystring);
 
           if (count($result) > 0) {
               $approvedPodData = $result->fetchAll();
@@ -271,7 +361,7 @@ class Reports
           }
     }
 
-    public function getardetailcsv(&$db,$startDate,$endDate) {
+    public function getardetailcsv(&$db,$startDate,$endDate,$entitytype,$entityid) {
 
           $data = "Date Range,".$startDate.",".$endDate."\n";
           $data .= "Order ID,Customer Name,Carrier Name,Cost To Customer,Cost To Carrier,QB Invoice #,QB Status\n";
@@ -279,11 +369,21 @@ class Reports
           $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
 
           /* Get approved_pod records */
-          $result = $dbhandle->query("SELECT approved_pod.orderID, approved_pod.orderDetailID, approved_pod.carrierID, approved_pod.cost, approved_pod.qbInvoiceNumber, approved_pod.qbInvoiceStatus, entities.name
+          $querystring = "SELECT approved_pod.orderID, approved_pod.orderDetailID, approved_pod.carrierID, approved_pod.cost, approved_pod.qbInvoiceNumber, approved_pod.qbInvoiceStatus, entities.name
                                      FROM approved_pod
                                      JOIN `orders` on orders.id = approved_pod.orderID
                                      LEFT JOIN `entities` on entities.id = approved_pod.customerID
-                                     WHERE approved_pod.createdAt BETWEEN '" . $startDate . "' AND '" . $endDate . "'");
+                                     WHERE approved_pod.createdAt BETWEEN '" . $startDate . "' AND '" . $endDate . "'";
+
+          if ($entityid > 0) {
+              if ($entitytype == 1) {
+                  $querystring .= " and orders.customerID = '" . $entityid . "'";
+              } else {
+                  $querystring .= " and approved_pod.carrierID = '" . $entityid . "'";
+              }
+          }
+
+          $result = $dbhandle->query($querystring);
 
           if (count($result) > 0) {
               $approvedPodData = $result->fetchAll();
