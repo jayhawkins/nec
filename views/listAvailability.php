@@ -449,8 +449,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                 {
                     data: function (o) {
 
+                        var buttons = '<div class="pull-right text-nowrap">';
+                        buttons += '</div>';
+                        /* This causes way too much latency with larger datasets. Figure out a new way to handle this.
                         var checkurl = '<?php echo API_HOST_URL; ?>' + '/customer_needs_commit?include=customer_needs&filter[]=customer_needs.rootCustomerNeedsID,eq,' + o.id + '&filter[]=entityID,eq,'+ <?php echo $_SESSION['entityid']; ?> + '&transform=1';
                         var buttons = '';
+
                         $.ajax({
                              url: checkurl,
                              type: 'GET',
@@ -478,6 +482,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                 buttons += '</div>';
                              }
                         });
+                        */
                         return buttons;
 
                     }
@@ -1144,7 +1149,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
             <button type="button" id="allRelays" class="btn btn-primary">View All Relays</button>
          </div>
          <br /><br />
-         <div><strong><i class="glyphicon glyphicon-star text"></i> <span class="text">indicates you have committed to relays on this availability</span></strong></div>
+
+         <!-- Remove this for now until we can determine a better way to handle displaying committed to relays -->
+         <!--div><strong><i class="glyphicon glyphicon-star text"></i> <span class="text">indicates you have committed to relays on this availability</span></strong></div-->
+
          <div id="dataTable" class="mt">
              <table id="datatable-table" class="table table-striped table-hover">
                  <thead>
