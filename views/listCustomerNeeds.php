@@ -11,6 +11,9 @@ $states = json_decode(file_get_contents(API_HOST_URL . '/states?columns=abbrevia
 $entities = '';
 $entities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=id,name&order=name&filter[]=id,gt,0&filter[]=entityTypeID,eq,1'));
 
+$allEntities = '';
+$allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=id,name&order=name&filter[]=id,gt,0&transform=1'));
+
 $entity = '';
 $entity = json_decode(file_get_contents(API_HOST_URL . '/entities?filter[]=id,eq,' . $_SESSION['entityid'] . '&transform=1'));
 
@@ -66,6 +69,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
      var contacts = <?php echo json_encode($contacts); ?>;
      var entities = <?php echo json_encode($entities); ?>;
      var entity = <?php echo json_encode($entity); ?>;
+     var allEntities = <?php echo json_encode($allEntities); ?>;
      var entityID = <?php echo $_SESSION['entityid']; ?>;
      //console.log(entity);
 
@@ -469,7 +473,26 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                 dataSrc: 'customer_needs'
             },
             columns: [
-                { data: "entities[0].name", visible: show },
+                {
+                    data: null,
+                    "bSortable": true,
+                    "mRender": function (o) {
+
+                        var entityName = '';
+                        var entityID = o.entityID;
+
+                        allEntities.entities.forEach(function(entity){
+
+                            if(entityID == entity.id){
+
+                                entityName = entity.name;
+                            }
+                        });
+
+                        return entityName;
+                    }, visible: show
+                },
+                //{ data: "entities[0].name", visible: show },
                 { data: "id", visible: false },
                 { data: "entityID", visible: false },
                 { data: "qty" },
