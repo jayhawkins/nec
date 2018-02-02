@@ -1054,6 +1054,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 " </div>";
 
                         $("#displayVinNumber").html(trailer.vinNumber);
+                        $("#displayUnitNumber").html(trailer.unitNumber);
                         $("#activeCarrier").val('');
 
                         displayOrderStatuses(orderID, '', trailer.vinNumber);
@@ -3228,7 +3229,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 <div class="carrier-summary__top-container">
                     <div class="row">
                         <div class="col-md-12">
-                            <h4 id="displayVinNumber"></h4>
+                            <h4 id="displayVinNumber" style="display: none"></h4>
+                            <h4 id="displayUnitNumber"></h4>
                             <ul class="list-inline">
                                 <li class="list-inline-item">Active Carrier:</li>
                                 <li class="list-inline-item">
@@ -3462,7 +3464,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         <div class="carrier-summary__top-container">
                             <div class="row">
                                 <div class="col-md-12">
-                                    <h4 id="displayVinNumber">1JJV532D0JL041440</h4>
+                                    <h4 id="displayVinNumber" style="display: none">1JJV532D0JL041440</h4>
+                                    <h4 id="displayUnitNumber">1234567890</h4>
                                     <ul class="list-inline">
                                         <li class="list-inline-item">Notes from prior Carrier:</li>
                                         <li class="list-inline-item" id="statusNotes">N/A</li>
@@ -6168,6 +6171,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         $("#activeCarrier").unbind('change').bind('change',function(){ // Doing it like this because it was double posting document giving me duplicates
 
             var vinNumber = $("#displayVinNumber").html();
+            var unitNumber = $("#displayUnitNumber").html();
 
             var activeCarrier = $("#activeCarrier").val();
             var orderID = $("#orderID").val();
@@ -6842,6 +6846,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         switchTrailerSelect(element);
 
         $("#displayVinNumber").html(vinNumber);
+        $("#displayUnitNumber").html(unitNumber);
         $("#statusVinNumber").val(vinNumber);
         $("#statusUnitNumber").val(unitNumber);
         $("#statusID").val('');
