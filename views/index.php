@@ -1533,7 +1533,7 @@ if ($_SESSION['entityid'] > 0) {
 <?php
     }
 
-    if ( ($_SESSION['entityid'] == 0 ) && in_array($_SESSION['usertypeid'], $reportsMenuAccessList) ) {
+    if ( ($_SESSION['entitytype'] > 0 || $_SESSION['entityid'] == 0 ) && in_array($_SESSION['usertypeid'], $reportsMenuAccessList) ) {
  ?>
 
             <li><a class="collapsed" href="#sidebar-sub-levels" data-toggle="collapse" data-parent="#sidebar-levels">

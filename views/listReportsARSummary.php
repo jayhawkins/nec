@@ -19,6 +19,11 @@ require '../lib/common.php';
             ajax: {
                 url: url,
                 type: 'POST',
+                data: function(d) {
+                    d.entitytype = <?php echo $_SESSION['entitytype'] ?>;
+                    d.entityid = <?php echo $_SESSION['entityid'] ?>;
+                    return;
+                },
                 dataSrc: 'approved_pod'
             },
             columns: [
@@ -125,9 +130,13 @@ require '../lib/common.php';
 
             url = '<?php echo HTTP_HOST."/getarsummarycsv" ?>';
 
+            var params = {entitytype: <?php echo $_SESSION['entitytype'] ?>,
+                          entityid: <?php echo $_SESSION['entityid'] ?>};
+
             $.ajax({
                 url: url,
                 type: "POST",
+                data: JSON.stringify(params),
                 contentType: "application/json",
                 responseType: "arraybuffer",
                 success: function(data){
