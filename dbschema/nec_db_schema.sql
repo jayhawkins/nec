@@ -36,6 +36,9 @@ COLLATE = utf8_general_ci
 ENGINE = InnoDB
 AUTO_INCREMENT = 3;
 
+ALTER TABLE approved_pod ADD COLUMN qbInvoiceNumber VarChar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' AFTER hasBeenInvoiced;
+ALTER TABLE approved_pod ADD COLUMN qbInvoiceStatus VarChar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' AFTER qbInvoiceNumber;
+
 -- CREATE TABLE "carrier_needs" --------------------------------
 CREATE TABLE IF NOT EXISTS `carrier_needs` (
 	`id` Int( 11 ) UNSIGNED AUTO_INCREMENT NOT NULL,
@@ -920,6 +923,23 @@ AUTO_INCREMENT = 1;
 -- -------------------------------------------------------------
 -- ---------------------------------------------------------
 
+-- CREATE TABLE "order_notes" ------------------------------------
+-- CREATE TABLE "order_notes" ----------------------------------------
+CREATE TABLE IF NOT EXISTS `order_notes` (
+	`id` Int( 11 ) UNSIGNED AUTO_INCREMENT NOT NULL,
+	`orderID` Int( 11 ) UNSIGNED NOT NULL,
+	`userID` Int( 11 ) UNSIGNED NOT NULL,
+	`note` VarChar( 600 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
+	`createdAt` DateTime NOT NULL,
+	`updatedAt` DateTime NOT NULL,
+	CONSTRAINT `unique_id` UNIQUE( `id` ) )
+CHARACTER SET = utf8
+COLLATE = utf8_general_ci
+ENGINE = InnoDB
+AUTO_INCREMENT = 1;
+-- -------------------------------------------------------------
+-- ---------------------------------------------------------
+
 
 -- CREATE TABLE "routes" ------------------------------------
 -- CREATE TABLE "routes" ----------------------------------------
@@ -1208,6 +1228,18 @@ ALTER TABLE `users`
 ALTER TABLE `configuration_data_point_values`
 	ADD CONSTRAINT `lnk_configuration_data_points_configuration_data_point_values` FOREIGN KEY ( `configuration_data_point_id` )
 	REFERENCES `configuration_data_points`( `id` )
+	ON DELETE No Action
+	ON UPDATE No Action;
+
+ALTER TABLE `order_notes`
+	ADD CONSTRAINT `lnk_orders_order_notes` FOREIGN KEY ( `orderID` )
+	REFERENCES `orders`( `id` )
+	ON DELETE No Action
+	ON UPDATE No Action;
+
+ALTER TABLE `order_notes`
+	ADD CONSTRAINT `lnk_members_order_notes` FOREIGN KEY ( `userID` )
+	REFERENCES `members`( `userID` )
 	ON DELETE No Action
 	ON UPDATE No Action;
 
