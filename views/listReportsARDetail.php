@@ -57,6 +57,8 @@ require '../lib/common.php';
                 data: function(d) {
                     d.startDate = $("#startDate").val();
                     d.endDate = $("#endDate").val();
+                    d.entitytype = <?php echo $_SESSION['entitytype'] ?>;
+                    d.entityid = <?php echo $_SESSION['entityid'] ?>;
                     return;
                 },
                 dataSrc: 'approved_pod'
@@ -65,8 +67,8 @@ require '../lib/common.php';
                 { data: "orderID" },
                 { data: "customerName" },
                 { data: "carrierName" },
-                { data: "costToCustomer" },
-                { data: "costToCarrier" },
+                { data: "costToCustomer", render: $.fn.dataTable.render.number(',', '.', 2, '$') },
+                { data: "costToCarrier", render: $.fn.dataTable.render.number(',', '.', 2, '$') },
                 { data: "qbInvoiceNumber" },
                 { data: "qbStatus" }
             ]
@@ -214,7 +216,9 @@ require '../lib/common.php';
             url = '<?php echo HTTP_HOST."/getardetailcsv" ?>';
             var params = {
                       startDate: $("#startDate").val(),
-                      endDate: $("#endDate").val()
+                      endDate: $("#endDate").val(),
+                      entitytype: <?php echo $_SESSION['entitytype'] ?>,
+                      entityid: <?php echo $_SESSION['entityid'] ?>
             };
 
             $.ajax({

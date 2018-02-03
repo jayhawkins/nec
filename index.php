@@ -744,10 +744,40 @@ $app->route('POST /indexgetavailability', function() {
 /*****************************************************************************/
 // Reporting Processes
 /*****************************************************************************/
-$app->route('POST /getundeliveredtrailers', function() {
+$app->route('POST /getdeliveredtrailers', function() {
+    $entityType = Flight::request()->data->entitytype;
+    $entityID = Flight::request()->data->entityid;
     $reports = Flight::reports();
     $db = Flight::db();
-    $result = $reports->getundeliveredtrailers($db);
+    $result = $reports->getdeliveredtrailers($db,$entityType,$entityID);
+    if ($result) {
+        print_r($result);
+        //echo "success";
+    } else {
+        print_r($result);
+    }
+});
+
+$app->route('POST /getdeliveredtrailerscsv', function() {
+    $entityType = Flight::request()->data->entitytype;
+    $entityID = Flight::request()->data->entityid;
+    $reports = Flight::reports();
+    $db = Flight::db();
+    $result = $reports->getdeliveredtrailerscsv($db,$entityType,$entityID);
+    if ($result) {
+        print_r($result);
+        //echo "success";
+    } else {
+        print_r($result);
+    }
+});
+
+$app->route('POST /getundeliveredtrailers', function() {
+    $entityType = Flight::request()->data->entitytype;
+    $entityID = Flight::request()->data->entityid;
+    $reports = Flight::reports();
+    $db = Flight::db();
+    $result = $reports->getundeliveredtrailers($db,$entityType,$entityID);
     if ($result) {
         print_r($result);
         //echo "success";
@@ -757,9 +787,11 @@ $app->route('POST /getundeliveredtrailers', function() {
 });
 
 $app->route('POST /getundeliveredtrailerscsv', function() {
+    $entityType = Flight::request()->data->entitytype;
+    $entityID = Flight::request()->data->entityid;
     $reports = Flight::reports();
     $db = Flight::db();
-    $result = $reports->getundeliveredtrailerscsv($db);
+    $result = $reports->getundeliveredtrailerscsv($db,$entityType,$entityID);
     if ($result) {
         print_r($result);
         //echo "success";
@@ -769,9 +801,11 @@ $app->route('POST /getundeliveredtrailerscsv', function() {
 });
 
 $app->route('POST /getarsummary', function() {
+    $entityType = Flight::request()->data->entitytype;
+    $entityID = Flight::request()->data->entityid;
     $reports = Flight::reports();
     $db = Flight::db();
-    $result = $reports->getarsummary($db);
+    $result = $reports->getarsummary($db,$entityType,$entityID);
         echo $result;
         die();
     if ($result) {
@@ -783,9 +817,11 @@ $app->route('POST /getarsummary', function() {
 });
 
 $app->route('POST /getarsummarycsv', function() {
+    $entityType = Flight::request()->data->entitytype;
+    $entityID = Flight::request()->data->entityid;
     $reports = Flight::reports();
     $db = Flight::db();
-    $result = $reports->getarsummarycsv($db);
+    $result = $reports->getarsummarycsv($db,$entityType,$entityID);
     if ($result) {
         print_r($result);
         //echo "success";
@@ -795,11 +831,13 @@ $app->route('POST /getarsummarycsv', function() {
 });
 
 $app->route('POST /getardetail', function() {
+    $entityType = Flight::request()->data->entitytype;
+    $entityID = Flight::request()->data->entityid;
     $startDate = Flight::request()->data->startDate;
     $endDate = Flight::request()->data->endDate;
     $reports = Flight::reports();
     $db = Flight::db();
-    $result = $reports->getardetail($db,$startDate,$endDate);
+    $result = $reports->getardetail($db,$startDate,$endDate,$entityType,$entityID);
     if ($result) {
         print_r($result);
         //echo "success";
@@ -809,11 +847,13 @@ $app->route('POST /getardetail', function() {
 });
 
 $app->route('POST /getardetailcsv', function() {
+    $entityType = Flight::request()->data->entitytype;
+    $entityID = Flight::request()->data->entityid;
     $startDate = Flight::request()->data->startDate;
     $endDate = Flight::request()->data->endDate;
     $reports = Flight::reports();
     $db = Flight::db();
-    $result = $reports->getardetailcsv($db,$startDate,$endDate);
+    $result = $reports->getardetailcsv($db,$startDate,$endDate,$entityType,$entityID);
     if ($result) {
         print_r($result);
         //echo "success";

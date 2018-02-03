@@ -792,62 +792,70 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             var unitEdit = "";
 
             $.each(customer_needs.unitData, function(key, unit){
-                
+
                 if(unit.year == null) unit.year = "";
                 if(unit.make == null) unit.make = "";
+                if(unit.licenseNumber == null) unit.licenseNumber = "";
                 if(unit.value == null) unit.value = "";
-                
+
                 unitData += "<tr>" +
                         "<td>"+ unit.year +"</td>" +
                         "<td>"+ unit.make +"</td>" +
+                        "<td>"+ unit.licenseNumber +"</td>" +
                         "<td>"+ unit.unitNumber +"</td>" +
                         "<td>"+ unit.vinNumber +"</td>" +
                         "<td>"+ unit.truckProNumber +"</td>" +
                         "<td>"+ unit.poNumber +"</td>" +
-                        "<td>"+ unit.value +"</td>" +
+                        "<td>$"+ parseFloat(unit.value).toFixed(2) +"</td>" +
                         "</tr>";
 
                 unitEdit += '<div class="row">\n\
-                                <div class="col-md-1-7">\n\
+                                <div class="col-md-1">\n\
                                     <div class="form-group">\n\
                                             <label for="year' + (key + 1) + '">Year</label>\n\
                                             <input class="form-control" id="year' + (key + 1) + '" placeholder="" type="text" value="'+unit.year+'">\n\
                                     </div>\n\
                                 </div>\n\
-                                <div class="col-md-1-7">\n\
+                                <div class="col-md-2">\n\
                                     <div class="form-group">\n\
                                             <label for="make' + (key + 1) + '">Make</label>\n\
                                             <input class="form-control" id="make' + (key + 1) + '" placeholder="" type="text" value="'+unit.make+'">\n\
                                     </div>\n\
                                 </div>\n\
-                                <div class="col-md-1-7">\n\
+                                <div class="col-md-1">\n\
+                                    <div class="form-group">\n\
+                                            <label for="make' + (key + 1) + '">License #</label>\n\
+                                            <input class="form-control" id="licenseNumber' + (key + 1) + '" placeholder="" type="text" value="'+unit.licenseNumber+'">\n\
+                                    </div>\n\
+                                </div>\n\
+                                <div class="col-md-1">\n\
                                     <div class="form-group">\n\
                                             <label for="unitNumber' + (key + 1) + '">Unit #</label>\n\
                                             <input class="form-control" id="unitNumber' + (key + 1) + '" placeholder="" type="text" value="'+unit.unitNumber+'">\n\
                                     </div>\n\
                                 </div>\n\
-                                <div class="col-md-1-7">\n\
+                                <div class="col-md-2">\n\
                                     <div class="form-group">\n\
                                             <label for="vinNumber' + (key + 1) + '">VIN #</label>\n\
                                             <input class="form-control" id="vinNumber' + (key + 1) + '" placeholder="" type="text" value="'+unit.vinNumber+'">\n\
                                     </div>\n\
                                 </div>\n\
-                                <div class="col-md-1-7">\n\
+                                <div class="col-md-2">\n\
                                     <div class="form-group">\n\
                                             <label for="truckProNumber' + (key + 1) + '">Truck/Pro #</label>\n\
                                             <input class="form-control" id="truckProNumber' + (key + 1) + '" placeholder="" type="text" value="'+unit.truckProNumber+'">\n\
                                     </div>\n\
                                 </div>\n\
-                                <div class="col-md-1-7">\n\
+                                <div class="col-md-2">\n\
                                     <div class="form-group">\n\
                                             <label for="poNumber' + (key + 1) + '">P.O. #</label>\n\
                                             <input class="form-control" id="poNumber' + (key + 1) + '" placeholder="" type="text" value="'+unit.poNumber+'">\n\
                                     </div>\n\
                                 </div>\n\
-                                <div class="col-md-1-7">\n\
+                                <div class="col-md-1">\n\
                                     <div class="form-group">\n\
                                             <label for="value' + (key + 1) + '">Value</label>\n\
-                                            <input class="form-control" id="value' + (key + 1) + '" placeholder="" type="text" value="'+unit.value+'">\n\
+                                            <input class="form-control" id="value' + (key + 1) + '" placeholder="" type="text" value="'+parseFloat(unit.value).toFixed(2)+'">\n\
                                     </div>\n\
                                 </div>\n\
                             </div>';
@@ -859,8 +867,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             '<input id="qty" name="qty" class="form-control" value="'+customer_needs.qty+'">'+
                             '</div>'+
                             '</div>';
-                    
-                    
+
+
             var dpli = '<div class="form-group row">' +
                         '   <div class="col-sm-2">' +
                             '<label for="qty">Quantity</label>'+
@@ -868,7 +876,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         '   </div>';
 
             var itemIndex = 1;
-            
+
             for (var i = 0; i < dataPoints.object_type_data_points.length; i++) {
                 var selected = '';
                 var value = '';
@@ -911,9 +919,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     dpli += '</select>' +
                             '</div>';
                   }
-                  
+
                   itemIndex += 1;
-                  
+
                   if(itemIndex % 6 == 0) dpli += '</div><div class="form-group row">';
             }
 
@@ -928,7 +936,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     '       <input type="radio" id="rateType" name="rateType" value="Flat Rate" ' + (customer_needs.rateType == "Flat Rate" ? "checked" : "") + '/> Flat Rate ' +
                     '       <input type="radio" id="rateType" name="rateType" value="Mileage" ' + (customer_needs.rateType == "Mileage" ? "checked" : "") + '/> Mileage' +
                     '   </div>';
-            
+
             dpli += '<div class="col-sm-2">' +
                     '   <label for="transportationMode">Transportation Mode</label>' +
                     '       <select class="form-control" id="transportationMode" name="transportationMode">' +
@@ -947,7 +955,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 //                    '       <input type="radio" id="rateType" name="rateType" value="Mileage" ' + (customer_needs.rateType == "Mileage" ? "checked" : "") + '/> Mileage</div>' +
 //                    '   </div>'+
 //                    '</div>';
-            
+
 
             $("#dp-check-list-box").append(dpli);
 
@@ -1024,7 +1032,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     url: '<?php echo API_HOST_URL . "/locations"; ?>' + '?filter=entityID,eq,' + currentCarrier + '&transform=1',
                     contentType: "application/json",
                     success: function (json) {
-                        
+
                         console.log(json);
                         var locations = json.locations;
                         var locationdata = [];
@@ -1038,7 +1046,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             var entry = {id: id, value: value, label: label, city: city, state: state, zip: zip};
                             locationdata.push(entry);
                         });
-                        
+
                         $('#address_relay' + relayNumber).autocomplete({
                             source: locationdata,
                             minLength: 0,
@@ -1072,7 +1080,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 carrier[entid] = entname;
 
                 if (carrierIDs.indexOf(carrier) === -1) carrierIDs.push(carrier);
-                
+
                 if(relayNumber == 4) return false;
 
             });
@@ -1164,29 +1172,29 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         background: url('../img/details_close.png') no-repeat center center;
         cursor: pointer;
     }
-    
+
     ul.ui-autocomplete {
         z-index: 1100;
     }
-    
+
     .col-md-1-7{
         width: 14.285714285%;
-        float: left;    
+        float: left;
         position: relative;
         min-height: 1px;
         padding-left: 0.9375rem;
         padding-right: 0.9375rem;
     }
-    
+
     .w-100{
         width: 100% !important;
     }
-    
+
     .pickupAddress-border{
-        padding-right:20px; 
+        padding-right:20px;
         border-right: 1px solid #ccc;
     }
-    
+
  </style>
 
  <ol class="breadcrumb">
@@ -1330,6 +1338,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 <tr>
                                     <th>Year</th>
                                     <th>Make</th>
+                                    <th>License #</th>
                                     <th>Unit #</th>
                                     <th>VIN #</th>
                                     <th>Truck/Pro#</th>
@@ -1353,7 +1362,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
          <h4><span class="fw-semi-bold">Edit Commitment</span></h4>
      </header>
      <br />
-     
+
             <div class="row">
                     <div class="col-md-6 pickupAddress-border">
                     <h2>Pickup Address</h2>
@@ -1422,7 +1431,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                              </div>
                     </form>
                     </div>
-                
+
                 <div class="col-md-6">
                     <h2>Delivery Address</h2>
                     <form>
@@ -1811,9 +1820,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                 </div>
             </div>
-            
-        <div class="row row-grid">           
-            <div class="col-lg-3 col-md-3 col-sm-12 pull-right">
+
+        <div class="row row-grid">
+            <div class="col-lg-4 col-md-4 col-sm-12 pull-right">
                 <button type="button" class="btn btn-secondary btn-lg" onclick="closeEditCommit();">Close</button>
                 <button type="button" class="btn btn-primary btn-lg" onclick="addTrailer();" id="addTrailer">AddTrailer</button>
                 <button type="button" class="btn btn-primary btn-lg" onclick="editCommitment();" id="saveCommit">Save</button>
@@ -2370,50 +2379,56 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
        var unitID = $('#addTrailer > div').length;
 
         var unitData = '<div class="row">\n\
-                        <div class="col-md-1-7">\n\
+                        <div class="col-md-1">\n\
                             <div class="form-group">\n\
                                     <label for="year' + (unitID + 1) + '">Year</label>\n\
                                     <input class="form-control" id="year' + (unitID + 1) + '" placeholder="" type="text">\n\
                             </div>\n\
                         </div>\n\
-                        <div class="col-md-1-7">\n\
+                        <div class="col-md-2">\n\
                             <div class="form-group">\n\
                                     <label for="make' + (unitID + 1) + '">Make</label>\n\
                                     <input class="form-control" id="make' + (unitID + 1) + '" placeholder="" type="text">\n\
                             </div>\n\
                         </div>\n\
-                        <div class="col-md-1-7">\n\
+                        <div class="col-md-1">\n\
+                            <div class="form-group">\n\
+                                    <label for="licenseNumber' + (unitID + 1) + '">License #</label>\n\
+                                    <input class="form-control" id="licenseNumber' + (unitID + 1) + '" placeholder="" type="text">\n\
+                            </div>\n\
+                        </div>\n\
+                        <div class="col-md-1">\n\
                             <div class="form-group">\n\
                                     <label for="unitNumber' + (unitID + 1) + '">Unit #</label>\n\
                                     <input class="form-control" id="unitNumber' + (unitID + 1) + '" placeholder="" type="text">\n\
                             </div>\n\
                         </div>\n\
-                        <div class="col-md-1-7">\n\
+                        <div class="col-md-2">\n\
                             <div class="form-group">\n\
                                     <label for="vinNumber' + (unitID + 1) + '">VIN #</label>\n\
                                     <input class="form-control" id="vinNumber' + (unitID + 1) + '" placeholder="" type="text">\n\
                             </div>\n\
                         </div>\n\
-                        <div class="col-md-1-7">\n\
+                        <div class="col-md-2">\n\
                             <div class="form-group">\n\
                                     <label for="truckProNumber' + (unitID + 1) + '">Truck/Pro #</label>\n\
                                     <input class="form-control" id="truckProNumber' + (unitID + 1) + '" placeholder="" type="text">\n\
                             </div>\n\
                         </div>\n\
-                        <div class="col-md-1-7">\n\
+                        <div class="col-md-2">\n\
                             <div class="form-group">\n\
                                     <label for="poNumber' + (unitID + 1) + '">P.O. #</label>\n\
                                     <input class="form-control" id="poNumber' + (unitID + 1) + '" placeholder="" type="text">\n\
                             </div>\n\
                         </div>\n\
-                        <div class="col-md-1-7">\n\
+                        <div class="col-md-1">\n\
                             <div class="form-group">\n\
                                     <label for="value' + (unitID + 1) + '">Value</label>\n\
                                     <input class="form-control" id="value' + (unitID + 1) + '" placeholder="" type="text">\n\
                             </div>\n\
                         </div>\n\
                     </div>';
-                                               
+
        $('#addTrailer').append(unitData);
    }
 
@@ -2697,6 +2712,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             var unitID = index + 1;
             var year = $('#year' + unitID).val().trim();
             var make = $('#make' + unitID).val().trim();
+            var licenseNumber = $('#licenseNumber' + unitID).val().trim();
             var cashValue = $('#value' + unitID).val().trim();
             var unitNumber = $('#unitNumber' + unitID).val().trim();
             var vinNumber = $('#vinNumber' + unitID).val().trim();
@@ -2704,7 +2720,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             var poNumber = $('#poNumber' + unitID).val().trim();
 
             if(vinNumber != "" || unitNumber != "" || truckProNumber != "" || poNumber != ""){
-                var unitData = {unitNumber: unitNumber, vinNumber: vinNumber, truckProNumber: truckProNumber, poNumber: poNumber, year: year, make: make, value: cashValue};
+                var unitData = {unitNumber: unitNumber, vinNumber: vinNumber, truckProNumber: truckProNumber, poNumber: poNumber, year: year, make: make, licenseNumber: licenseNumber, value: cashValue};
 
                 unitDataList.push(unitData);
             }
@@ -2809,7 +2825,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                             var relayID = $('#relay_id' + relayNumber).val().trim();
                             var commitID = $('#commit_id' + relayNumber).val().trim();
-                            
+
                             var destinationAddress1 = $('#address_relay' + relayNumber).val().trim();
                             var destinationCity = $('#city_relay' + relayNumber).val().trim();
                             var destinationState = $('#state_relay' + relayNumber).val().trim();
@@ -2952,8 +2968,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             var unitID = index + 1;
             var year = $('#year' + unitID).val().trim();
             var make = $('#make' + unitID).val().trim();
+            var licenseNumber = $('#licenseNumber' + unitID).val().trim();
             var cashValue = $('#value' + unitID).val().trim();
-            
+
             var unitNumber = $('#unitNumber' + unitID).val().trim();
             var vinNumber = $('#vinNumber' + unitID).val().trim();
             var truckProNumber = $('#truckProNumber' + unitID).val().trim();
@@ -3086,7 +3103,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                         if(data > 0){
 
                                             var relayID = data;
-                                            
+
                                             var entityID = $('#entityID_relay' + relayNumber).val();
                                             var pickupDate = $('#pickupDate_relay' + relayNumber).val();
                                             var deliveryDate = $('#deliveryDate_relay' + relayNumber).val();
@@ -3378,7 +3395,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
     function populateAutocomplete(select, relayNumber){
         var currentCarrier = $(select).val();
-        
+
         $.ajax({
             url: '<?php echo API_HOST_URL . "/locations"; ?>' + '?filter=entityID,eq,' + currentCarrier + '&transform=1',
             contentType: "application/json",
@@ -3411,7 +3428,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
     }
 
     function saveRelayAddressToCarrier(relayNumber){
-    
+
         var today = new Date();
         var dd = today.getDate();
         var mm = today.getMonth()+1; //January is 0!
@@ -3440,16 +3457,16 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
 
         var locationName = $('#deliveryLocation_relay' + relayNumber).val();
-        var entityID = $('#entityID_relay' + relayNumber).val();        
+        var entityID = $('#entityID_relay' + relayNumber).val();
         var address = $('#address_relay' + relayNumber).val();
         var city = $('#city_relay' + relayNumber).val();
         var state = $('#state_relay' + relayNumber).val();
         var zip = $('#zip_relay' + relayNumber).val();
-        
+
         var locationData = {entityID: entityID, locationTypeID: 3, name: locationName, address1: address, address2: "",
-        city: city, state: state, zip: zip, latitude: 0.00, longitude: 0.00, timeZone: "", status: "Active", 
+        city: city, state: state, zip: zip, latitude: 0.00, longitude: 0.00, timeZone: "", status: "Active",
         createdAt: today, updatedAt: today};
-        
+
         $.ajax({
             url: '<?php echo API_HOST_URL . "/locations"; ?>',
             type: 'POST',
@@ -3460,26 +3477,26 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 if(data > 0){
                     var entitySelect = $('#entityID_relay' + relayNumber);
                     populateAutocomplete(entitySelect, relayNumber);
-                    
+
                     $("#errorAlertTitle").html("Success");
                     $("#errorAlertBody").html("Address Saved");
                     $("#errorAlert").modal('show');
 
                 }
-                else{                    
+                else{
                     $("#errorAlertTitle").html("Error");
                     $("#errorAlertBody").html("Unable to Save Address");
                     $("#errorAlert").modal('show');
                 }
             },
-            error: function(){                
+            error: function(){
                 $("#errorAlertTitle").html("Error");
                 $("#errorAlertBody").html("Unable to Save Address");
                 $("#errorAlert").modal('show');
             }
         });
-        
-        
+
+
     }
 
  </script>

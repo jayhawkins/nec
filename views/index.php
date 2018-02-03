@@ -1533,7 +1533,7 @@ if ($_SESSION['entityid'] > 0) {
 <?php
     }
 
-    if ( ($_SESSION['entityid'] == 0 ) && in_array($_SESSION['usertypeid'], $reportsMenuAccessList) ) {
+    if ( ($_SESSION['entitytype'] > 0 || $_SESSION['entityid'] == 0 ) && in_array($_SESSION['usertypeid'], $reportsMenuAccessList) ) {
  ?>
 
             <li><a class="collapsed" href="#sidebar-sub-levels" data-toggle="collapse" data-parent="#sidebar-levels">
@@ -1544,6 +1544,7 @@ if ($_SESSION['entityid'] > 0) {
                       <i class="toggle fa fa-angle-down"></i>
                 </a>
               <ul id="sidebar-sub-levels" class="collapse">
+                  <li><a href="#" onclick="ajaxFormCall('listReportsDelivered');">Delivered Reports</a></li>
                   <li><a href="#" onclick="ajaxFormCall('listReportsUndelivered');">Undelivered Reports</a></li>
                   <li><a href="#" onclick="ajaxFormCall('listReportsARSummary');">A/R Summary</a></li>
                   <li><a href="#" onclick="ajaxFormCall('listReportsARDetail');">A/R Detail</a></li>

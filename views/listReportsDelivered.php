@@ -11,7 +11,9 @@ require '../lib/common.php';
 
       function loadTableAJAX() {
 
-        url = '<?php echo HTTP_HOST."/getarsummary" ?>';
+        var url = '<?php echo HTTP_HOST."/getdeliveredtrailers" ?>';
+        var params = {entitytype: <?php echo $_SESSION['entitytype'] ?>,
+                      entityid: <?php echo $_SESSION['entityid'] ?>};
 
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
@@ -24,13 +26,27 @@ require '../lib/common.php';
                     d.entityid = <?php echo $_SESSION['entityid'] ?>;
                     return;
                 },
-                dataSrc: 'approved_pod'
+                dataSrc: 'order_details'
             },
             columns: [
-                { data: "weekTitle" },
-                { data: "revenue", render: $.fn.dataTable.render.number(',', '.', 2, '$')},
-                { data: "payout", render: $.fn.dataTable.render.number(',', '.', 2, '$') },
-                { data: "difference", render: $.fn.dataTable.render.number(',', '.', 2, '$') }
+                { data: "orderID" },
+                { data: "customerName"},
+                { data: "carrierName"},
+                { data: "unitNumber" },
+                { data: "vinNumber" },
+                { data: null,
+                        "bSortable": true,
+                        "mRender" : function(o) {
+                            if (o.city) {
+                                var location = o.city + ', ' + o.state;
+                            } else {
+                                var location = '';
+                            }
+
+                            return location;
+                        }
+                },
+                { data: "statusesstatus"}
             ]
           });
 
@@ -47,11 +63,11 @@ require '../lib/common.php';
  <ol class="breadcrumb">
    <li>ADMIN</li>
    <li>Reporting</li>
-   <li class="active">A/R Summary</li>
+   <li class="active">Delivered Reports</li>
  </ol>
  <section class="widget">
      <header>
-         <h4><span class="fw-semi-bold">A/R Summary</span></h4>
+         <h4><span class="fw-semi-bold">Delivered Reports</span></h4>
          <div class="widget-controls">
              <a data-widgster="expand" title="Expand" href="#"><i class="glyphicon glyphicon-chevron-up"></i></a>
              <a data-widgster="collapse" title="Collapse" href="#"><i class="glyphicon glyphicon-chevron-down"></i></a>
@@ -70,10 +86,13 @@ require '../lib/common.php';
              <table id="datatable-table" class="table table-striped table-hover" width="100%">
                  <thead>
                  <tr>
-                     <th class="hidden-sm-down">&nbsp;</th>
-                     <th class="hidden-sm-down text-nowrap">Revenue</th>
-                     <th class="hidden-sm-down text-nowrap">Payout</th>
-                     <th class="hidden-sm-down text-nowrap">Difference</th>
+                     <th class="hidden-sm-down">Order ID</th>
+                     <th class="hidden-sm-down text-nowrap" width="20%">Customer</th>
+                     <th class="hidden-sm-down text-nowrap" width="20%">Carrier</th>
+                     <th class="hidden-sm-down text-nowrap">Unit Number</th>
+                     <th class="hidden-sm-down text-nowrap">VIN</th>
+                     <th class="hidden-sm-down text-nowrap">Last Location</th>
+                     <th class="hidden-sm-down">Trailer Status</th>
                  </tr>
                  </thead>
                  <tbody>
@@ -128,7 +147,7 @@ require '../lib/common.php';
 
     function downloadTemplateClick() {
 
-            url = '<?php echo HTTP_HOST."/getarsummarycsv" ?>';
+            url = '<?php echo HTTP_HOST."/getdeliveredtrailerscsv" ?>';
 
             var params = {entitytype: <?php echo $_SESSION['entitytype'] ?>,
                           entityid: <?php echo $_SESSION['entityid'] ?>};
@@ -142,15 +161,15 @@ require '../lib/common.php';
                 success: function(data){
                     var element = document.createElement('a');
                     element.setAttribute('href', "data:application/octet-stream;charset=utf-8;base64,"+btoa(data.replace(/\n/g, '\r\n')));
-                    element.setAttribute('download', "ar_summary_report.csv");
+                    element.setAttribute('download', "carrier_needs_bulk_import_template.csv");
                     //$("#downloadTemplate").attr("href","data:application/octet-stream;charset=utf-8;base64,"+btoa(data.replace(/\n/g, '\r\n')));
-                    //$("#downloadTemplate").attr("download","ar_summary_report.csv");
+                    //$("#downloadTemplate").attr("download","carrier_needs_bulk_import_template.csv");
                     document.body.appendChild(element);
                     element.click();
                     document.body.removeChild(element);
                 },
                 error: function() {
-                    alert('Failed to Download A/R Summary Report');
+                    alert('Failed to Download Undelivered Trailers Report');
                 }
             });
 

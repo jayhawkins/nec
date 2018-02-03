@@ -307,288 +307,335 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
     }
 
-      function post() {
+    function post() {
 
-          var result = true;
+        var result = true;
 
-          var params = {
-                address1: $("#originationAddress").val(),
-                city: $("#originationCity").val(),
-                state: $("#originationState").val(),
-                zip: $("#originationZip").val(),
-                entityID: $("#entityID").val(),
-                locationType: "Origination"
-          };
-          $.ajax({
-             url: '<?php echo HTTP_HOST."/getlocationbycitystatezip" ?>',
-             type: 'POST',
-             data: JSON.stringify(params),
-             contentType: "application/json",
-             async: false,
-             success: function(response){
-                if (response == "success") {
-                    var params = {
-                          address1: $("#destinationAddress").val(),
-                          city: $("#destinationCity").val(),
-                          state: $("#destinationState").val(),
-                          zip: $("#destinationZip").val(),
-                          entityID: $("#entityID").val(),
-                          locationType: "Destination"
-                    };
-                    $.ajax({
-                       url: '<?php echo HTTP_HOST."/getlocationbycitystatezip" ?>',
-                       type: 'POST',
-                       data: JSON.stringify(params),
-                       contentType: "application/json",
-                       async: false,
-                       success: function(response){
-                          if (response == "success") {
-                          } else {
-                              result = false;
-                                $("#errorAlertTitle").html("Error");
-                                $("#errorAlertBody").html("Preparation Failed!");
-                                $("#errorAlert").modal('show');
-                          }
-                       },
-                       error: function(response) {
-                          result = false;
-                            $("#errorAlertTitle").html("Failed Searching for Destination Location!");
-                            $("#errorAlertBody").html("Notify NEC of this failure.");
-                            $("#errorAlert").modal('show');
-                       }
-                    });
-                } else {
-                    result = false;
-                    $("#errorAlertTitle").html("Error");
-                    $("#errorAlertBody").html("Preparation Failed!");
-                    $("#errorAlert").modal('show');
-                }
-             },
-             error: function(response) {
-                result = false;
-                $("#errorAlertTitle").html("Failed Searching for Origination Location!");
-                $("#errorAlertBody").html("Notify NEC of this failure.");
-                $("#errorAlert").modal('show');
-             }
+        var params = {
+              address1: $("#originationAddress").val(),
+              city: $("#originationCity").val(),
+              state: $("#originationState").val(),
+              zip: $("#originationZip").val(),
+              entityID: $("#entityID").val(),
+              locationType: "Origination"
+        };
+        $.ajax({
+           url: '<?php echo HTTP_HOST."/getlocationbycitystatezip" ?>',
+           type: 'POST',
+           data: JSON.stringify(params),
+           contentType: "application/json",
+           async: false,
+           success: function(response){
+              if (response == "success") {
+                  var params = {
+                        address1: $("#destinationAddress").val(),
+                        city: $("#destinationCity").val(),
+                        state: $("#destinationState").val(),
+                        zip: $("#destinationZip").val(),
+                        entityID: $("#entityID").val(),
+                        locationType: "Destination"
+                  };
+                  $.ajax({
+                     url: '<?php echo HTTP_HOST."/getlocationbycitystatezip" ?>',
+                     type: 'POST',
+                     data: JSON.stringify(params),
+                     contentType: "application/json",
+                     async: false,
+                     success: function(response){
+                        if (response == "success") {
+                        } else {
+                            result = false;
+                              $("#errorAlertTitle").html("Error");
+                              $("#errorAlertBody").html("Preparation Failed!");
+                              $("#errorAlert").modal('show');
+                        }
+                     },
+                     error: function(response) {
+                        result = false;
+                          $("#errorAlertTitle").html("Failed Searching for Destination Location!");
+                          $("#errorAlertBody").html("Notify NEC of this failure.");
+                          $("#errorAlert").modal('show');
+                     }
+                  });
+              } else {
+                  result = false;
+                  $("#errorAlertTitle").html("Error");
+                  $("#errorAlertBody").html("Preparation Failed!");
+                  $("#errorAlert").modal('show');
+              }
+           },
+           error: function(response) {
+              result = false;
+              $("#errorAlertTitle").html("Failed Searching for Origination Location!");
+              $("#errorAlertBody").html("Notify NEC of this failure.");
+              $("#errorAlert").modal('show');
+           }
+        });
+
+        if (result) {
+          verifyAndPost(function(data) {
+              $("#load").html("Save Changes");
+              $("#load").prop("disabled", false);
           });
 
-          if (result) {
-            verifyAndPost(function(data) {
-                $("#load").html("Save Changes");
-                $("#load").prop("disabled", false);
-            });
-
-              return true;
-        }
-        else { return false; }
+            return true;
       }
+      else { return false; }
+    }
 
-      function verifyAndPost() {
+    function verifyAndPost() {
 
-                $("#load").html("<i class='fa fa-spinner fa-spin'></i> Editing Order");
-                $("#load").prop("disabled", true);
-
-
-                var passValidation = false;
-                var type = "";
-                var today = new Date();
-                var dd = today.getDate();
-                var mm = today.getMonth()+1; //January is 0!
-                var yyyy = today.getFullYear();
-                var hours = today.getHours();
-                var min = today.getMinutes();
-                var sec = today.getSeconds();
-
-                if(dd<10) {
-                    dd='0'+dd;
-                }
-
-                if(mm<10) {
-                    mm='0'+mm;
-                }
-
-                if(hours<10) {
-                    hours='0'+hours;
-                }
-
-                if(min<10) {
-                    min='0'+min;
-                }
-
-                today = mm+'/'+dd+'/'+yyyy;
-                today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
-
-                var originationaddress = $("#originationAddress").val() + ', ' + $("#originationCity").val() + ', ' + $("#originationState").val() + ', ' + $("#originationZip").val();
-                var destinationaddress = $("#destinationAddress").val() + ', ' + $("#destinationCity").val() + ', ' + $("#destinationState").val() + ', ' + $("#destinationZip").val();
-
-                // getMapDirectionFromGoogle is defined in common.js
-                newGetMapDirectionFromGoogle( originationaddress, destinationaddress, function(response) {
-
-                              var originationlat = response.originationlat;
-                              var originationlng = response.originationlng;
-                              var destinationlat = response.destinationlat;
-                              var destinationlng = response.destinationlng;
-                              var distance = response.distance;
-
-                                var url = '<?php echo API_HOST_URL . "/orders/"; ?>' + $("#id").val();
-                                type = "PUT";
+              $("#load").html("<i class='fa fa-spinner fa-spin'></i> Editing Order");
+              $("#load").prop("disabled", true);
 
 
-                              // Build the podList
-                              var podArray = [];
-                              var obj = $("#input-list-box li");
-                              var item = {};
-                              for (var i = 0; i < obj.length; i++) {
-                                  var blnMatch = false;
-                                  var newVinNumber = obj[i].firstChild.value.trim();
+              var passValidation = false;
+              var type = "";
+              var today = new Date();
+              var dd = today.getDate();
+              var mm = today.getMonth()+1; //January is 0!
+              var yyyy = today.getFullYear();
+              var hours = today.getHours();
+              var min = today.getMinutes();
+              var sec = today.getSeconds();
 
-                                  if (newVinNumber != ""){
+              if(dd<10) {
+                  dd='0'+dd;
+              }
 
-                                      for(var j=0; j < existingPODList.length; j++){
-                                          if(existingPODList[j].vinNumber == newVinNumber){
-                                              blnMatch = true;
-                                              podArray.push(existingPODList[j]);
-                                              break;
-                                          }
-                                      }
+              if(mm<10) {
+                  mm='0'+mm;
+              }
 
-                                      if(!blnMatch){
-                                        item = {vinNumber: newVinNumber, deliveryDate: "", notes: "", fileName: "", carrier: ""};
-                                        podArray.push(item);
-                                      }
+              if(hours<10) {
+                  hours='0'+hours;
+              }
 
-                                  }
-                              }
+              if(min<10) {
+                  min='0'+min;
+              }
+
+              today = mm+'/'+dd+'/'+yyyy;
+              today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+
+              var originationaddress = $("#originationAddress").val() + ', ' + $("#originationCity").val() + ', ' + $("#originationState").val() + ', ' + $("#originationZip").val();
+              var destinationaddress = $("#destinationAddress").val() + ', ' + $("#destinationCity").val() + ', ' + $("#destinationState").val() + ', ' + $("#destinationZip").val();
+
+              // getMapDirectionFromGoogle is defined in common.js
+              newGetMapDirectionFromGoogle( originationaddress, destinationaddress, function(response) {
+
+                            var originationlat = response.originationlat;
+                            var originationlng = response.originationlng;
+                            var destinationlat = response.destinationlat;
+                            var destinationlng = response.destinationlng;
+                            var distance = response.distance;
+
+                              var url = '<?php echo API_HOST_URL . "/orders/"; ?>' + $("#id").val();
+                              type = "PUT";
 
 
-                              // Build the needsDataPoints
-                              var needsarray = [];
-                              var obj = $("#dp-check-list-box li select");
-                              for (var i = 0; i < obj.length; i++) {
-                                  item = {};
-                                  item[obj[i].id] = obj[i].value;
-                                  needsarray.push(item);
-                              }
+                            // Build the podList
+                            var podArray = [];
+                            var obj = $("#input-list-box li");
+                            var item = {};
+                            for (var i = 0; i < obj.length; i++) {
+                                var blnMatch = false;
+                                var newVinNumber = obj[i].firstChild.value.trim();
 
-                                var decal = {};
-                                decal['decals'] = $("#decals").val();
-                                needsarray.push(decal);
+                                if (newVinNumber != ""){
 
-                              var needsdatapoints = needsarray;
-
-                              var pickupInformation = {
-                                  pickupLocation: $("#pickupLocation").val(),
-                                  contactPerson: $("#pickupContactPerson").val(),
-                                  phoneNumber: $("#pickupPhoneNumber").val(),
-                                  hoursOfOperation: $("#pickupHoursOfOperation").val()
-                              };
-
-                              var deliveryInformation  = {
-                                  deliveryLocation: $("#deliveryLocation").val(),
-                                  contactPerson: $("#deliveryContactPerson").val(),
-                                  phoneNumber: $("#deliveryPhoneNumber").val(),
-                                  hoursOfOperation: $("#deliveryHoursOfOperation").val()
-                              };
-
-                            var date = today;
-                            var data = {customerRate: $("#rate").val(), rateType: $('input[name="rateType"]:checked').val(), transportationMode: $("#transportationMode").val(), pickupInformation: pickupInformation, originationAddress: $("#originationAddress").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), deliveryInformation: deliveryInformation, destinationAddress: $("#destinationAddress").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, distance: distance, needsDataPoints: needsdatapoints, updatedAt: date};
-
-                              if (podArray.length > 0){
-                                  data.podList = podArray;
-                              }
-
-                              var emailData = data;
-                              var orderDetailTable = $('#order-details-table').DataTable();
-                              var orderDetailJSON = orderDetailTable.ajax.json();
-
-                              var orderNumber = orderDetailJSON.order_details[0].orders[0].orderID;
-                              var customerID = orderDetailJSON.order_details[0].orders[0].customerID;
-
-                              emailData.orderNumber = orderNumber;
-                              emailData.customerID = customerID;
-
-                              //console.log(JSON.stringify(emailData));
-
-                              $.ajax({
-                                 url: url,
-                                 type: type,
-                                 data: JSON.stringify(data),
-                                 contentType: "application/json",
-                                 async: false,
-                                 success: function(data){
-                                    if (data > 0) {
-
-                                      $.ajax({
-                                          url: '<?php echo HTTP_HOST; ?>' + '/sendorderupdatenotification',
-                                          type: "POST",
-                                          data: JSON.stringify(emailData),
-                                          contentType: "application/json",
-                                          async:false,
-                                          success: function(data){
-
-                                                $("#load").html("Save Changes");
-                                                $("#load").prop("disabled", false);
-
-                                                if(entityid > 0){
-                                                    $("#errorAlertTitle").html("Error");
-                                                    $("#errorAlertBody").html(data);
-                                                    $("#errorAlert").modal('show');
-                                                }
-
-                                                $("#editOrder").modal('hide');
-
-                                                var orderDetailTable = $('#order-details-table').DataTable();
-                                                var podListTable = $('#pod-list-table').DataTable();
-
-                                                orderDetailTable.ajax.reload();
-                                                podListTable.ajax.reload();
-
-                                                $("#id").val('');
-                                                $("#qty").val('');
-                                                $("#rate").val('');
-                                                $("#originationAddress").val('');
-                                                $("#originationCity").val('');
-                                                $("#originationState").val('');
-                                                $("#originationZip").val('');
-                                                $("#destinationAddress").val('');
-                                                $("#destinationCity").val('');
-                                                $("#destinationState").val('');
-                                                $("#destinationZip").val('');
-                                                passValidation = true;
-
-                                          },
-                                          error: function(data){
-                                                $("#load").html("Save Changes");
-                                                $("#load").prop("disabled", false);
-
-                                                $("#errorAlertTitle").html("Notification Error");
-                                                $("#errorAlertBody").html(JSON.stringify(data));
-                                                $("#errorAlert").modal('show');
-                                          }
-                                      });
-
-                                    } else {
-                                        $("#load").html("Save Changes");
-                                        $("#load").prop("disabled", false);
-
-                                        $("#errorAlertTitle").html("Error");
-                                        $("#errorAlertBody").html("Editing Order Failed! Please Verify Your Data.");
-                                        $("#errorAlert").modal('show');
+                                    for(var j=0; j < existingPODList.length; j++){
+                                        if(existingPODList[j].vinNumber == newVinNumber){
+                                            blnMatch = true;
+                                            podArray.push(existingPODList[j]);
+                                            break;
+                                        }
                                     }
-                                 },
-                                 error: function() {
-                                    $("#load").html("Save Changes");
-                                    $("#load").prop("disabled", false);
 
-                                    $("#errorAlertTitle").html("Error");
-                                    $("#errorAlertBody").html("There Was An Error Editing The Order!");
-                                    $("#errorAlert").modal('show');
-                                 }
-                              });
+                                    if(!blnMatch){
+                                      item = {vinNumber: newVinNumber, deliveryDate: "", notes: "", fileName: "", carrier: ""};
+                                      podArray.push(item);
+                                    }
 
-                              return passValidation;
-              });
-      }
+                                }
+                            }
+
+
+                            // Build the needsDataPoints
+                            var needsarray = [];
+                            var obj = $("#dp-check-list-box li select");
+                            for (var i = 0; i < obj.length; i++) {
+                                item = {};
+                                item[obj[i].id] = obj[i].value;
+                                needsarray.push(item);
+                            }
+
+                              var decal = {};
+                              decal['decals'] = $("#decals").val();
+                              needsarray.push(decal);
+
+                            var needsdatapoints = needsarray;
+
+                            var pickupInformation = {
+                                pickupLocation: $("#pickupLocation").val(),
+                                contactPerson: $("#pickupContactPerson").val(),
+                                phoneNumber: $("#pickupPhoneNumber").val(),
+                                hoursOfOperation: $("#pickupHoursOfOperation").val()
+                            };
+
+                            var deliveryInformation  = {
+                                deliveryLocation: $("#deliveryLocation").val(),
+                                contactPerson: $("#deliveryContactPerson").val(),
+                                phoneNumber: $("#deliveryPhoneNumber").val(),
+                                hoursOfOperation: $("#deliveryHoursOfOperation").val()
+                            };
+
+                          var date = today;
+                          var data = {customerRate: $("#rate").val(), rateType: $('input[name="rateType"]:checked').val(), transportationMode: $("#transportationMode").val(), pickupInformation: pickupInformation, originationAddress: $("#originationAddress").val(), originationCity: $("#originationCity").val(), originationState: $("#originationState").val(), originationZip: $("#originationZip").val(), deliveryInformation: deliveryInformation, destinationAddress: $("#destinationAddress").val(), destinationCity: $("#destinationCity").val(), destinationState: $("#destinationState").val(), destinationZip: $("#destinationZip").val(), originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, distance: distance, needsDataPoints: needsdatapoints, updatedAt: date};
+
+                            if (podArray.length > 0){
+                                data.podList = podArray;
+                            }
+
+                            var emailData = data;
+                            var orderDetailTable = $('#order-details-table').DataTable();
+                            var orderDetailJSON = orderDetailTable.ajax.json();
+
+                            var orderNumber = orderDetailJSON.order_details[0].orders[0].orderID;
+                            var customerID = orderDetailJSON.order_details[0].orders[0].customerID;
+
+                            emailData.orderNumber = orderNumber;
+                            emailData.customerID = customerID;
+
+                            //console.log(JSON.stringify(emailData));
+
+                            $.ajax({
+                               url: url,
+                               type: type,
+                               data: JSON.stringify(data),
+                               contentType: "application/json",
+                               async: false,
+                               success: function(data){
+                                  if (data > 0) {
+
+                                    $.ajax({
+                                        url: '<?php echo HTTP_HOST; ?>' + '/sendorderupdatenotification',
+                                        type: "POST",
+                                        data: JSON.stringify(emailData),
+                                        contentType: "application/json",
+                                        async:false,
+                                        success: function(data){
+
+                                              $("#load").html("Save Changes");
+                                              $("#load").prop("disabled", false);
+
+                                              if(entityid > 0){
+                                                  $("#errorAlertTitle").html("Error");
+                                                  $("#errorAlertBody").html(data);
+                                                  $("#errorAlert").modal('show');
+                                              }
+
+                                              $("#editOrder").modal('hide');
+
+                                              var orderDetailTable = $('#order-details-table').DataTable();
+                                              var podListTable = $('#pod-list-table').DataTable();
+
+                                              orderDetailTable.ajax.reload();
+                                              podListTable.ajax.reload();
+
+                                              $("#id").val('');
+                                              $("#qty").val('');
+                                              $("#rate").val('');
+                                              $("#originationAddress").val('');
+                                              $("#originationCity").val('');
+                                              $("#originationState").val('');
+                                              $("#originationZip").val('');
+                                              $("#destinationAddress").val('');
+                                              $("#destinationCity").val('');
+                                              $("#destinationState").val('');
+                                              $("#destinationZip").val('');
+                                              passValidation = true;
+
+                                        },
+                                        error: function(data){
+                                              $("#load").html("Save Changes");
+                                              $("#load").prop("disabled", false);
+
+                                              $("#errorAlertTitle").html("Notification Error");
+                                              $("#errorAlertBody").html(JSON.stringify(data));
+                                              $("#errorAlert").modal('show');
+                                        }
+                                    });
+
+                                  } else {
+                                      $("#load").html("Save Changes");
+                                      $("#load").prop("disabled", false);
+
+                                      $("#errorAlertTitle").html("Error");
+                                      $("#errorAlertBody").html("Editing Order Failed! Please Verify Your Data.");
+                                      $("#errorAlert").modal('show');
+                                  }
+                               },
+                               error: function() {
+                                  $("#load").html("Save Changes");
+                                  $("#load").prop("disabled", false);
+
+                                  $("#errorAlertTitle").html("Error");
+                                  $("#errorAlertBody").html("There Was An Error Editing The Order!");
+                                  $("#errorAlert").modal('show');
+                               }
+                            });
+
+                            return passValidation;
+            });
+    }
+
+    function loadOrderNotes(orderID){
+
+        var url = '<?php echo API_HOST_URL; ?>';
+
+        url += '/order_notes?include=members&columns=id,userID,note,createdAt,updatedAt,members.firstName,members.lastName&filter=orderID,eq,' + orderID + '&order=id,desc&transform=1';
+
+        if ( ! $.fn.DataTable.isDataTable( '#admin-note-table' ) ) {
+
+            var orders_table = $('#admin-note-table').DataTable({
+            retrieve: true,
+            processing: true,
+            ajax: {
+                url: url,
+                dataSrc: 'order_notes'
+            },
+            columns:  [
+                    { data: "id", visible: false },
+                    { data: "userID", visible: false },
+                    { data: null,
+                        "bSortable": true,
+                        "mRender": function (o) {
+                            var userFullName = o.members[0].firstName + ' ' + o.members[0].lastName;
+
+                            return userFullName;
+                        }
+                    },
+                    { data: "note" },
+                    { data: "createdAt" }
+                ]
+          });
+
+            orders_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', orders_table.table().container() ) );
+            //To Reload The Ajax
+            //See DataTables.net for more information about the reload method
+            orders_table.ajax.reload();
+        }
+        else{
+
+            //The URL will change with each "View Commit" button click
+          // Must load new Url each time.
+            var reload_table = $('#admin-note-table').DataTable();
+            reload_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', reload_table.table().container() ) );
+            reload_table.ajax.url(url).load();
+        }
+
+    }
 
     function loadTableAJAX(status) {
 
@@ -738,7 +785,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
       }
 
-      function loadNewOrderDetailsAJAX(orderID){
+    function loadNewOrderDetailsAJAX(orderID){
 
         var url = '<?php echo API_HOST_URL; ?>';
         var blnShow = false;
@@ -778,7 +825,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
             var carriers = [];
             var trailers = order_details[0].orders[0].podList;
-console.log(trailers);
+
             // Get the Carrier Rate
             var displayCustomerRate = order_details[0].orders[0].customerRate;
             var displayCarrierTotal = 0;
@@ -997,26 +1044,27 @@ console.log(trailers);
                 if(trailer.unitNumber == null || trailer.unitNumber == "") trailer.unitNumber = "N/A";
 
                 if(key == 0){
-                    trailerList += "<div class=\"row trailer-row trailer-row__border-top trailer-row__selected\" onclick=\"displayTrailer(this, '" + trailer.vinNumber + "', '" + currentCarrier + "')\">" +
+                    trailerList += "<div class=\"row trailer-row trailer-row__border-top trailer-row__selected\" onclick=\"displayTrailer(this, '" + trailer.vinNumber + "', '" + currentCarrier + "', '" + trailer.unitNumber + "')\">" +
                                 "       <div class=\"col-md-12\">" +
-                                "           <h4>Vin#: " + trailer.vinNumber + "</h4>" +
-                                "           <div class=\"text-blue\">Unit #:" +
-                                "               <span class=\"pad-left-25\">" + trailer.unitNumber + "</span>" +
+                                "           <h4>Unit #: " + trailer.unitNumber + "</h4>" +
+                                "           <div class=\"text-blue\">VIN #:" +
+                                "               <span class=\"pad-left-25\">" + trailer.vinNumber + "</span>" +
                                 "           </div>" +
                                 "       </div>" +
                                 " </div>";
 
                         $("#displayVinNumber").html(trailer.vinNumber);
+                        $("#displayUnitNumber").html(trailer.unitNumber);
                         $("#activeCarrier").val('');
 
                         displayOrderStatuses(orderID, '', trailer.vinNumber);
                 }
                 else{
-                    trailerList += "<div class=\"row trailer-row trailer-row__border-bot trailer-row__notselected\" onclick=\"displayTrailer(this, '" + trailer.vinNumber + "', '" + currentCarrier + "')\">" +
+                    trailerList += "<div class=\"row trailer-row trailer-row__border-bot trailer-row__notselected\" onclick=\"displayTrailer(this, '" + trailer.vinNumber + "', '" + currentCarrier + "', '" + trailer.unitNumber + "')\">" +
                                 "       <div class=\"col-md-12\">" +
-                                "           <h4>Vin#: " + trailer.vinNumber + "</h4>" +
-                                "           <div class=\"text-blue\">Unit #:" +
-                                "               <span class=\"pad-left-25\">" + trailer.unitNumber + "</span>" +
+                                "           <h4>Unit #: " + trailer.unitNumber + "</h4>" +
+                                "           <div class=\"text-blue\">VIN #:" +
+                                "               <span class=\"pad-left-25\">" + trailer.vinNumber + "</span>" +
                                 "           </div>" +
                                 "       </div>" +
                                 " </div>";
@@ -1105,6 +1153,7 @@ console.log(trailers);
         $("#order-details").css("display", "block");
         $("#orders").css("display", "none");
 
+        loadOrderNotes(orderID);
     }
 
     function loadOrderDetailsAJAX(orderID){
@@ -1867,7 +1916,7 @@ console.log(trailers);
 
     }
 
-      function formatListBox() {
+    function formatListBox() {
           // Bootstrap Listbox
           $('.list-group.checked-list-box .list-group-item').each(function () {
 
@@ -1956,188 +2005,188 @@ console.log(trailers);
 
       }
 
-      function formatListBoxDP() {
-          // Bootstrap Listbox
-          $('.list-group.dp-checked-list-box .list-group-item').each(function () {
+    function formatListBoxDP() {
+        // Bootstrap Listbox
+        $('.list-group.dp-checked-list-box .list-group-item').each(function () {
 
-              // Settings
-              var $widget = $(this),
-                  $checkbox = $('<input type="checkbox" class="hidden" style="display: none" />'),
-                  color = ($widget.data('color') ? $widget.data('color') : "primary"),
-                  style = ($widget.data('style') == "button" ? "btn-" : "list-group-item-"),
-                  settings = {
-                      on: {
-                          icon: 'glyphicon glyphicon-check'
-                      },
-                      off: {
-                          icon: 'glyphicon glyphicon-unchecked'
-                      }
-                  };
+            // Settings
+            var $widget = $(this),
+                $checkbox = $('<input type="checkbox" class="hidden" style="display: none" />'),
+                color = ($widget.data('color') ? $widget.data('color') : "primary"),
+                style = ($widget.data('style') == "button" ? "btn-" : "list-group-item-"),
+                settings = {
+                    on: {
+                        icon: 'glyphicon glyphicon-check'
+                    },
+                    off: {
+                        icon: 'glyphicon glyphicon-unchecked'
+                    }
+                };
 
-              $widget.css('cursor', 'pointer');
-              $widget.append($checkbox);
+            $widget.css('cursor', 'pointer');
+            $widget.append($checkbox);
 
-              // Event Handlers
-              $widget.on('click', function () {
-                  //$checkbox.prop('checked', !$checkbox.is(':checked'));
-                  //$checkbox.triggerHandler('change');
-                  //recordDataPoints();
-                  //updateDisplay();
-              });
-              $checkbox.on('change', function () {
-                  //updateDisplay();
-              });
+            // Event Handlers
+            $widget.on('click', function () {
+                //$checkbox.prop('checked', !$checkbox.is(':checked'));
+                //$checkbox.triggerHandler('change');
+                //recordDataPoints();
+                //updateDisplay();
+            });
+            $checkbox.on('change', function () {
+                //updateDisplay();
+            });
 
-              function recordDataPoints() {
-                  var passValidation = false;
-                  var entityID = <?php echo $_SESSION['entityid']; ?>;
-                  var contactdata = [];
+            function recordDataPoints() {
+                var passValidation = false;
+                var entityID = <?php echo $_SESSION['entityid']; ?>;
+                var contactdata = [];
 
-                  $("#dp-check-list-box li.active").each(function(idx, li) {
-                      contactdata.push({"entityID": entityID, "location_id": $("#id").val(), "contact_id": $(li).context.id});
-                  });
+                $("#dp-check-list-box li.active").each(function(idx, li) {
+                    contactdata.push({"entityID": entityID, "location_id": $("#id").val(), "contact_id": $(li).context.id});
+                });
 
-                  if (contactdata.length > 0) {
-                      var url = '<?php echo HTTP_HOST."/deletelocationcontacts"; ?>';
-                      var data = {location_id: $("#id").val()};
-                      var type = "POST";
+                if (contactdata.length > 0) {
+                    var url = '<?php echo HTTP_HOST."/deletelocationcontacts"; ?>';
+                    var data = {location_id: $("#id").val()};
+                    var type = "POST";
 
-                      $.ajax({
-                         url: url,
-                         type: type,
-                         data: JSON.stringify(data),
-                         contentType: "application/json",
-                         async: false,
-                         success: function(data){
-                            if (data == "success") {
+                    $.ajax({
+                       url: url,
+                       type: type,
+                       data: JSON.stringify(data),
+                       contentType: "application/json",
+                       async: false,
+                       success: function(data){
+                          if (data == "success") {
 
-                                 $.ajax({
-                                    url: url,
-                                    type: type,
-                                    data: JSON.stringify(data),
-                                    contentType: "application/json",
-                                    async: false,
-                                    success: function(data){
-                                         getLocationContacts();
-                                    },
-                                    error: function() {
-                                        $("#errorAlertTitle").html("Error");
-                                        $("#errorAlertBody").html("There Was An Error Adding Need Contacts!");
-                                        $("#errorAlert").modal('show');
-                                    }
-                                 });
-                            } else {
-                                $("#errorAlertTitle").html("Error");
-                                $("#errorAlertBody").html("There Was An Issue Clearing Need Contacts!");
-                                $("#errorAlert").modal('show');
-                            }
-                         },
-                         error: function() {
-                            $("#errorAlertTitle").html("Error");
-                            $("#errorAlertBody").html("There Was An Error Deleting Need Records!");
-                            $("#errorAlert").modal('show');
-                         }
-                      });
-                  }
-              }
+                               $.ajax({
+                                  url: url,
+                                  type: type,
+                                  data: JSON.stringify(data),
+                                  contentType: "application/json",
+                                  async: false,
+                                  success: function(data){
+                                       getLocationContacts();
+                                  },
+                                  error: function() {
+                                      $("#errorAlertTitle").html("Error");
+                                      $("#errorAlertBody").html("There Was An Error Adding Need Contacts!");
+                                      $("#errorAlert").modal('show');
+                                  }
+                               });
+                          } else {
+                              $("#errorAlertTitle").html("Error");
+                              $("#errorAlertBody").html("There Was An Issue Clearing Need Contacts!");
+                              $("#errorAlert").modal('show');
+                          }
+                       },
+                       error: function() {
+                          $("#errorAlertTitle").html("Error");
+                          $("#errorAlertBody").html("There Was An Error Deleting Need Records!");
+                          $("#errorAlert").modal('show');
+                       }
+                    });
+                }
+            }
 
 
-              // Actions
-              function updateDisplay() {
-                  var isChecked = $checkbox.is(':checked');
+            // Actions
+            function updateDisplay() {
+                var isChecked = $checkbox.is(':checked');
 
-                  // Set the button's state
-                  $widget.data('state', (isChecked) ? "on" : "off");
+                // Set the button's state
+                $widget.data('state', (isChecked) ? "on" : "off");
 
-                  // Set the button's icon
-                  $widget.find('.state-icon')
-                      .removeClass()
-                      .addClass('state-icon ' + settings[$widget.data('state')].icon);
+                // Set the button's icon
+                $widget.find('.state-icon')
+                    .removeClass()
+                    .addClass('state-icon ' + settings[$widget.data('state')].icon);
 
-                  // Update the button's color
-                  if (isChecked) {
-                      $widget.addClass(style + color + ' active');
-                  } else {
-                      $widget.removeClass(style + color + ' active');
-                  }
-              }
+                // Update the button's color
+                if (isChecked) {
+                    $widget.addClass(style + color + ' active');
+                } else {
+                    $widget.removeClass(style + color + ' active');
+                }
+            }
 
-              // Initialization
-              function init() {
+            // Initialization
+            function init() {
 
-                  if ($widget.data('checked') == true) {
-                      $checkbox.prop('checked', !$checkbox.is(':checked'));
-                  }
+                if ($widget.data('checked') == true) {
+                    $checkbox.prop('checked', !$checkbox.is(':checked'));
+                }
 
-                  updateDisplay();var checkedItems = {}, counter = 0;
-                  $("#dp-check-list-box li.active").each(function(idx, li) {
-                    //console.log($(li));
-                      checkedItems[counter] = $(li).context.id;
-                      counter++;
-                  });
-                  //$('#display-json').html(JSON.stringify(checkedItems, null, '\t'));
-                  if ($widget.find('.state-icon').length == 0) {
-                      $widget.prepend('<span class="state-icon ' + settings[$widget.data('state')].icon + '"></span>');
-                  }
-              }
+                updateDisplay();var checkedItems = {}, counter = 0;
+                $("#dp-check-list-box li.active").each(function(idx, li) {
+                  //console.log($(li));
+                    checkedItems[counter] = $(li).context.id;
+                    counter++;
+                });
+                //$('#display-json').html(JSON.stringify(checkedItems, null, '\t'));
+                if ($widget.find('.state-icon').length == 0) {
+                    $widget.prepend('<span class="state-icon ' + settings[$widget.data('state')].icon + '"></span>');
+                }
+            }
 
-              init();
-          });
+            init();
+        });
 
-          // Doesn't get called - this is from the example but copied to the Save Changes button click
-          $('#get-checked-data').on('click', function(event) {
-              event.preventDefault();
-              var checkedItems = {}, counter = 0;
-              $("#check-list-box li.active").each(function(idx, li) {
-                  checkedItems[counter] = $(li).context.id;
-                  counter++;
-              });
-          });
+        // Doesn't get called - this is from the example but copied to the Save Changes button click
+        $('#get-checked-data').on('click', function(event) {
+            event.preventDefault();
+            var checkedItems = {}, counter = 0;
+            $("#check-list-box li.active").each(function(idx, li) {
+                checkedItems[counter] = $(li).context.id;
+                counter++;
+            });
+        });
 
-      }
+  }
 
-      function getLocationContacts() {
+    function getLocationContacts() {
 
-          var url = '<?php echo API_HOST_URL . "/locations_contacts?columns=location_id,contact_id&filter=entityID,eq," . $_SESSION['entityid']; ?>';
-          var type = "GET";
+        var url = '<?php echo API_HOST_URL . "/locations_contacts?columns=location_id,contact_id&filter=entityID,eq," . $_SESSION['entityid']; ?>';
+        var type = "GET";
 
-          $.ajax({
-             url: url,
-             type: type,
-             async: false,
-             success: function(data){
-                  locations_contacts = data;
-             },
-             error: function() {
-                $("#errorAlertTitle").html("Error");
-                $("#errorAlertBody").html("There Was An Error Retrieving Location Contacts!");
-                $("#errorAlert").modal('show');
-             }
-          });
-      }
+        $.ajax({
+           url: url,
+           type: type,
+           async: false,
+           success: function(data){
+                locations_contacts = data;
+           },
+           error: function() {
+              $("#errorAlertTitle").html("Error");
+              $("#errorAlertBody").html("There Was An Error Retrieving Location Contacts!");
+              $("#errorAlert").modal('show');
+           }
+        });
+    }
 
-      function getLocations(city) {
+    function getLocations(city) {
 
-          var url = '<?php echo API_HOST_URL . "/locations?columns=id,city,state,zip&filter[]=entityID,eq," . $_SESSION['entityid']; ?>';
-          url += "&filter[]=city,sw," + city;
-          var type = "GET";
+        var url = '<?php echo API_HOST_URL . "/locations?columns=id,city,state,zip&filter[]=entityID,eq," . $_SESSION['entityid']; ?>';
+        url += "&filter[]=city,sw," + city;
+        var type = "GET";
 
-          $.ajax({
-             url: url,
-             type: type,
-             async: false,
-             success: function(data){
-                $("#errorAlertTitle").html("Success");
-                $("#errorAlertBody").html(JSON.stringify(data));
-                $("#errorAlert").modal('show');
-             },
-             error: function() {
-                $("#errorAlertTitle").html("Error");
-                $("#errorAlertBody").html("There Was An Error Retrieving Location Contacts!");
-                $("#errorAlert").modal('show');
-             }
-          });
-      }
+        $.ajax({
+           url: url,
+           type: type,
+           async: false,
+           success: function(data){
+              $("#errorAlertTitle").html("Success");
+              $("#errorAlertBody").html(JSON.stringify(data));
+              $("#errorAlert").modal('show');
+           },
+           error: function() {
+              $("#errorAlertTitle").html("Error");
+              $("#errorAlertBody").html("There Was An Error Retrieving Location Contacts!");
+              $("#errorAlert").modal('show');
+           }
+        });
+    }
 
     function editOrderComment(){
         var orderDetailsTable = $("#order-details-table").DataTable();
@@ -2470,12 +2519,24 @@ console.log(trailers);
         $('#orderSummary').css('display', 'block');
         $('#trackingHistory').css('display', 'none');
         $('#editOrderDetails').css('display', 'none');
+        $('#adminNotes').css('display', 'none');
+        closeAddStatus();
     }
 
     function showTrackingHistory(){
         $('#orderSummary').css('display', 'none');
         $('#trackingHistory').css('display', 'block');
         $('#editOrderDetails').css('display', 'none');
+        $('#adminNotes').css('display', 'none');
+        closeAddStatus();
+    }
+
+    function showAdminNotes(){
+        $('#orderSummary').css('display', 'none');
+        $('#trackingHistory').css('display', 'none');
+        $('#editOrderDetails').css('display', 'none');
+        $('#adminNotes').css('display', 'block');
+        closeAddStatus();
     }
 
     function populateEditForm(orderID){
@@ -2638,6 +2699,20 @@ console.log(trailers);
     function closeEditOrder(){
         $('#order-details').css('display', 'block');
         $('#editOrderDetails').css('display', 'none');
+    }
+
+    function openAddStatus(){
+        $('#addStatus').css('display', 'block');
+        $('#statusesList').css('display', 'none');
+        $('#btnAddStatus').css('display', 'none');
+        $('#btnCloseAddStatus').css('display', 'block');
+    }
+
+    function closeAddStatus(){
+        $('#addStatus').css('display', 'none');
+        $('#statusesList').css('display', 'block');
+        $('#btnAddStatus').css('display', 'block');
+        $('#btnCloseAddStatus').css('display', 'none');
     }
 
  </script>
@@ -2843,6 +2918,9 @@ console.log(trailers);
             </li>
             <li>
                 <a href="#" onclick="showTrackingHistory();">Tracking History</a>
+            </li>
+            <li>
+                <a href="#" onclick="showAdminNotes();">Admin Notes</a>
             </li>
         </ul>
 
@@ -3151,7 +3229,8 @@ console.log(trailers);
                 <div class="carrier-summary__top-container">
                     <div class="row">
                         <div class="col-md-12">
-                            <h4 id="displayVinNumber">1JJV532D0JL041440</h4>
+                            <h4 id="displayVinNumber" style="display: none"></h4>
+                            <h4 id="displayUnitNumber"></h4>
                             <ul class="list-inline">
                                 <li class="list-inline-item">Active Carrier:</li>
                                 <li class="list-inline-item">
@@ -3159,6 +3238,8 @@ console.log(trailers);
 
                                     </select>
                                 </li>
+                                <li class="list-inline-item pull-right"><button id="btnAddStatus" class="btn btn-primary" onclick="openAddStatus()">Add Status</button></li>
+                                <li class="list-inline-item pull-right"><button id="btnCloseAddStatus" class="btn btn-primary" onclick="closeAddStatus()">Close Add Status</button></li>
                             </ul>
                         </div>
 
@@ -3262,6 +3343,116 @@ console.log(trailers);
                         </div>
                     </div>
                 </div>
+
+                <div id="addStatus" class="carrier-summary__bottom-container" style="display: none;">
+
+                    <input type="hidden" id="statusID" value="" />
+                    <input type="hidden" id="statusOrderID" value="" />
+                    <input type="hidden" id="statusOrderDetailID" value="" />
+                    <input type="hidden" id="statusCarrierID" value="" />
+                    <input type="hidden" id="statusDocumentID" value="" />
+                    <input type="hidden" id="statusFileName" value="" />
+                    <input type="hidden" id="statusVinNumber" value="" />
+                    <input type="hidden" id="statusUnitNumber" value="" />
+                    <div class="row">
+                        <div class="col-md-1">
+                            <div class="carrier-logo carrier-logo__buds"></div>
+                        </div>
+                        <div class="col-md-3">&nbsp;</div>
+                        <div class="col-md-3">
+                            <div class="text-blue">Update Trailer Status:</div>
+                        </div>
+                        <div class="col-md-4">
+                            <select class="custom-select bkg-qty-yellow" id="statusTrailerStatus">
+                                <option selected>In Transit</option>
+                                <option>In Carrier Yard</option>
+                                <option>At Shipper To Be Loaded</option>
+                                <option>Trailer Loaded In Route</option>
+                                <option>At Consignee To Be Unloaded</option>
+                                <option>Trailer Delivered</option>
+                            </select>
+                        </div>
+                        <div class="col-md-1">&nbsp;</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-1">&nbsp;</div>
+                        <div class="col-md-3">&nbsp;</div>
+                        <div class="col-md-3">
+                            <div class="text-blue">Update Current Location:</div>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="current-location" class="form-control" id="statusCurrentLocation" placeholder="City, State" value="Augusta GA"><br>
+                        </div>
+                        <div class="col-md-1">&nbsp;</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-1">&nbsp;</div>
+                        <div class="col-md-3">&nbsp;</div>
+                        <div class="col-md-3">
+                            <div class="text-blue">Loading Status:</div>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="loading-status" class="form-control" id="statusLoadingStatus" placeholder="Loaded or Unloaded?" value="Loaded"><br>
+                        </div>
+                        <div class="col-md-1">&nbsp;</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-1">&nbsp;</div>
+                        <div class="col-md-3">&nbsp;</div>
+                        <div class="col-md-3">
+                            <div class="text-blue">Arrival ETA</div>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="arrival-eta" class="form-control" id="statusArrivalEta" placeholder="ETA in hours" value="72"><br>
+                        </div>
+                        <div class="col-md-1">&nbsp;</div>
+                    </div>
+
+                    <!-- Show this if status record exist -->
+                    <div id="statusRecordButtons" style="display: none">
+                        <div class="row">
+                            <div class="col-md-1">&nbsp;</div>
+                            <div class="col-md-3">&nbsp;</div>
+                            <div class="col-md-3">
+                                <button type="button" id="btnDownloadPOD" class="btn btn-primary">Download POD &nbsp; <span class="fa fa-download"></span></button>
+                            </div>
+                            <div class="col-md-3">
+                                <button type="button" class="btn btn-outline-light" id="btnPaperClip"><span class="fa fa-lg fa-paperclip"></span></button>
+                                &nbsp;
+                                <button type="button" class="btn btn-primary" id="btnUploadPOD">Upload POD &nbsp; <span class="fa fa-upload"></span></button>
+                            </div>
+                            <div class="col-md-1">
+                                <button type="button" class="list-inline-item btn btn-primary pull-right" id="saveTrailerStatusExisting">Update</li>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Show this if NO status record exist -->
+                    <div id="noStatusRecordsExist" style="display: none">
+                        <div class="row">
+                            <div class="col-md-1">&nbsp;</div>
+                            <div class="col-md-3">&nbsp;</div>
+                            <div class="col-md-3">
+                                <button type="button" id="btnDownloadPODNotExisting" class="btn btn-primary">Download POD &nbsp; <span class="fa fa-download"></span></button>
+                            </div>
+                            <div class="col-md-3">
+
+                            </div>
+                            <div class="col-md-1">
+                                <button type="button" class="list-inline-item btn btn-primary pull-right" id="saveTrailerStatusNotExisting">Save Changes</li>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <hr>
+                    <div class="widget border-radius-5 border-light-blue">
+                        <label for="statusAddANote" class="text-blue">Add a Note</label>
+                        <textarea class="form-control" id="statusAddANote" rows="3"></textarea><br>
+                        <label for="blnShowCustomer" class="text-blue"><input type="checkbox" id="blnShowCustomer" value="true">Share with Customer</label><br>
+                        <button type="button" id="addNote" class="btn btn-primary">Add Note</button>
+                    </div>
+                </div>
             </div>
 
             <?php
@@ -3273,7 +3464,8 @@ console.log(trailers);
                         <div class="carrier-summary__top-container">
                             <div class="row">
                                 <div class="col-md-12">
-                                    <h4>1JJV532D0JL041440</h4>
+                                    <h4 id="displayVinNumber" style="display: none">1JJV532D0JL041440</h4>
+                                    <h4 id="displayUnitNumber">1234567890</h4>
                                     <ul class="list-inline">
                                         <li class="list-inline-item">Notes from prior Carrier:</li>
                                         <li class="list-inline-item" id="statusNotes">N/A</li>
@@ -3396,7 +3588,30 @@ console.log(trailers);
 
         </div>
 
+        <div id="adminNotes" class="row" style="display: none;">
 
+            <div id="dataTable-9000" class="col-md-12">
+                <h5><span class="fw-semi-bold">Admin Notes</span></h5>
+                <div class="widget-controls">
+                    <button type="button" class="btn btn-primary btn-md" onclick="" id="addAdminNote">Add Note</button>
+                </div>
+                <br>
+                <br>
+                <table id="admin-note-table" class="table table-striped table-hover" width="100%">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>UserID</th>
+                        <th>User</th>
+                        <th>Note</th>
+                        <th>Date</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                 </table>
+            </div>
+        </div>
 
     </section>
 </div>
@@ -4534,6 +4749,7 @@ console.log(trailers);
     </div>
   </div>
 -->
+
 <!-- Edit Trailer Data Modal -->
   <div class="modal fade" id="editTrailerData" tabindex="-1" aria-hidden="true" aria-label="exampleModalCommitLabel">
     <div class="modal-dialog modal-lg" role="document">
@@ -4643,6 +4859,27 @@ console.log(trailers);
         <div class="modal-footer">
            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
            <button type="button" class="btn btn-primary"  id="btnApprovePOD">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Add Admin Note -->
+<div class="modal fade" id="adminNoteModal" tabindex="-1" aria-hidden="true" aria-label="exampleModalCommitLabel">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalCommitLabel"><strong>Add Note</strong></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <textarea class="form-control" id="txtAdminNote" rows="3"></textarea>
+        </div>
+        <div class="modal-footer">
+           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+           <button type="button" class="btn btn-primary"  id="btnSaveAdminNote">Save</button>
         </div>
       </div>
     </div>
@@ -4809,6 +5046,67 @@ console.log(trailers);
 
                     $("#errorAlertTitle").html("Error");
                     $("#errorAlertBody").html("Unable to Approve POD");
+                    $("#errorAlert").modal('show');
+                }
+            });
+
+        });
+
+        $('#addAdminNote').off('click').on('click', function(){
+            $("#txtAdminNote").val("");
+            $("#adminNoteModal").modal('show');
+        });
+
+        $('#btnSaveAdminNote').off('click').on('click', function(){
+
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth()+1; //January is 0!
+            var yyyy = today.getFullYear();
+            var hours = today.getHours();
+            var min = today.getMinutes();
+            var sec = today.getSeconds();
+
+            if(dd<10) {
+                dd='0'+dd;
+            }
+
+            if(mm<10) {
+                mm='0'+mm;
+            }
+
+            if(hours<10) {
+                hours='0'+hours;
+            }
+
+            if(min<10) {
+                min='0'+min;
+            }
+
+            if(sec<10) {
+                sec='0'+sec;
+            }
+
+            today = mm+'/'+dd+'/'+yyyy;
+            today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+
+            var orderID = $('#orderID').val();
+
+            var note = {orderID: orderID, userID: userid, note: $("#txtAdminNote").val(), createdAt: today, updatedAt: today};
+
+            $.ajax({
+                url: '<?php echo API_HOST_URL . "/order_notes/"; ?>',
+                type: "POST",
+                data: JSON.stringify(note),
+                contentType: "application/json",
+                async: false,
+                success: function(){
+                    loadOrderNotes(orderID);
+                    $("#adminNoteModal").modal('hide');
+                },
+                error: function(error){
+                    $("#errorAlertTitle").html("Error");
+                    $("#errorAlertBody").html("Unable to Save Note.");
                     $("#errorAlert").modal('show');
                 }
             });
@@ -5728,6 +6026,9 @@ console.log(trailers);
                         },
                         error: function(data){
                             console.log(JSON.stringify(data));
+                            $("#errorAlertTitle").html("Error");
+                            $("#errorAlertBody").html(JSON.stringify(data));
+                            $("#errorAlert").modal('show');
                         }
                     });
                 },
@@ -5870,9 +6171,12 @@ console.log(trailers);
         $("#activeCarrier").unbind('change').bind('change',function(){ // Doing it like this because it was double posting document giving me duplicates
 
             var vinNumber = $("#displayVinNumber").html();
+            var unitNumber = $("#displayUnitNumber").html();
 
             var activeCarrier = $("#activeCarrier").val();
             var orderID = $("#orderID").val();
+
+            $('#statusCarrierID').val(activeCarrier);
 
             displayOrderStatuses(orderID, activeCarrier, vinNumber);
         });
@@ -5963,7 +6267,10 @@ console.log(trailers);
                             $("#statusAddANote").val('');
                             $("#noStatusRecordsExist").css("display", "none");
                             $("#statusRecordButtons").css("display", "block");
-                            alert('Order Trailer Status Saved!');
+                            $("#errorAlertTitle").html("Success");
+                            $("#errorAlertBody").html("Order Trailer Status Saved!");
+                            $("#errorAlert").modal('show');
+                            displayOrderStatuses(statusOrderID, statusCarrierID, statusVinNumber);
                         },
                         error: function(error){
                             $("#errorAlertTitle").html("Error");
@@ -6069,7 +6376,10 @@ console.log(trailers);
                             $("#statusAddANote").val('');
                             $("#noStatusRecordsExist").css("display", "none");
                             $("#statusRecordButtons").css("display", "block");
-                            alert('Order Trailer Status Saved!');
+                            $("#errorAlertTitle").html("Success");
+                            $("#errorAlertBody").html("Order Trailer Status Saved!");
+                            $("#errorAlert").modal('show');
+                            displayOrderStatuses(statusOrderID, statusCarrierID, statusVinNumber);
                         },
                         error: function(error){
                             $("#errorAlertTitle").html("Error");
@@ -6153,6 +6463,7 @@ console.log(trailers);
                         contentType: "application/json",
                         async: false,
                         success: function(){
+                            displayOrderStatuses(statusOrderID, statusCarrierID, statusVinNumber);
                             $("#errorAlertTitle").html("Success");
                             $("#errorAlertBody").html("Trailer Note Saved!");
                             $("#errorAlert").modal('show');
@@ -6400,243 +6711,248 @@ console.log(trailers);
 
     });
 
-        function switchRelaySelect(element){
+    function switchRelaySelect(element){
 
-            $(".carrier-row").removeClass('carrier-row__border-top');
-            $(".carrier-row").removeClass('carrier-row__selected');
-            $(".carrier-row").removeClass('carrier-row__border-bot');
-            $(".carrier-row").removeClass('carrier-row__notselected');
-            $(".carrier-row").addClass('carrier-row__border-bot');
-            $(".carrier-row").addClass('carrier-row__notselected');
+        $(".carrier-row").removeClass('carrier-row__border-top');
+        $(".carrier-row").removeClass('carrier-row__selected');
+        $(".carrier-row").removeClass('carrier-row__border-bot');
+        $(".carrier-row").removeClass('carrier-row__notselected');
+        $(".carrier-row").addClass('carrier-row__border-bot');
+        $(".carrier-row").addClass('carrier-row__notselected');
 
-            $(element).removeClass('carrier-row__border-bot');
-            $(element).removeClass('carrier-row__notselected');
-            $(element).addClass('carrier-row__border-top');
-            $(element).addClass('carrier-row__selected');
-        }
+        $(element).removeClass('carrier-row__border-bot');
+        $(element).removeClass('carrier-row__notselected');
+        $(element).addClass('carrier-row__border-top');
+        $(element).addClass('carrier-row__selected');
+    }
 
-        function displayRelay(element, orderDetailID){
-            switchRelaySelect(element);
-            var url = '<?php echo API_HOST_URL; ?>/order_details/' + orderDetailID;
+    function displayRelay(element, orderDetailID){
+        switchRelaySelect(element);
+        var url = '<?php echo API_HOST_URL; ?>/order_details/' + orderDetailID;
 
-            $.get(url, function(data){
+        $.get(url, function(data){
 
-                var currentCarrier = data.carrierID;
-                var entityName = "";
+            var currentCarrier = data.carrierID;
+            var entityName = "";
 
-                allEntities.entities.forEach(function(entity){
+            allEntities.entities.forEach(function(entity){
 
-                    if(currentCarrier == entity.id){
+                if(currentCarrier == entity.id){
 
-                        entityName += entity.name;
-                    }
-                });
-
-
-                if(data.pickupInformation == null){
-                    data.pickupInformation = {pickupLocation: "", contactPerson: "", phoneNumber: "", hoursOfOperation: ""};
+                    entityName += entity.name;
                 }
-
-                if(data.deliveryInformation == null){
-                    data.deliveryInformation = {deliveryLocation: "", contactPerson: "", phoneNumber: "", hoursOfOperation: ""};
-                }
-
-                if(data.pickupInformation.hoursOfOperation == "") data.pickupInformation.hoursOfOperation = "N/A";
-                if(data.deliveryInformation.hoursOfOperation == "") data.deliveryInformation.hoursOfOperation = "N/A";
-
-                $("#pickupName").val(data.pickupInformation.pickupLocation);
-                $("#pickupAddress").val(data.originationAddress);
-                $("#pickupCity").val(data.originationCity);
-                $("#pickupState").val(data.originationState);
-                $("#pickupZip").val(data.originationZip);
-                $("#pickupPhone").val(data.pickupInformation.phoneNumber);
-                $("#pickupContact").val(data.pickupInformation.contactPerson);
-                $("#pickupHours").val(data.pickupInformation.hoursOfOperation);
-                $("#pickupDate").val(data.pickupDate);
-
-                $("#deliveryName").val(data.deliveryInformation.deliveryLocation);
-                $("#deliveryAddress").val(data.destinationAddress);
-                $("#deliveryCity").val(data.destinationCity);
-                $("#deliveryState").val(data.destinationState);
-                $("#deliveryZip").val(data.destinationZip);
-                $("#deliveryPhone").val(data.deliveryInformation.phoneNumber);
-                $("#deliveryContact").val(data.deliveryInformation.contactPerson);
-                $("#deliveryHours").val(data.deliveryInformation.hoursOfOperation);
-                $("#deliveryDate").val(data.deliveryDate);
-
-                $("#transportMode").val(data.transportationMode);
-                $("#carrierRate").val(data.carrierRate);
-                $("#carrierQty").val(data.qty);
-
-                var carrierDistance = " <h5>" + entityName + "</h5> <small class=\"text-blue\">Distance: " + data.distance + " miles</small>";
-
-                $("#carrierDistance").empty().html(carrierDistance);
-                $("#orderDetailID").val(data.id);
-
-                $.ajax({
-                    url: '<?php echo API_HOST_URL . "/locations"; ?>' + '?filter=entityID,eq,' + currentCarrier + '&transform=1',
-                    contentType: "application/json",
-                    success: function (json) {
-                        var locations = json.locations;
-                        var data = [];
-                        $.each(locations, function(key, location){
-                            var value = location.address1;
-                            var label = location.address1 + ', ' + location.city + ', ' + location.state + ' ' + location.zip;
-                            var id = location.id
-                            var city = location.city;
-                            var state = location.state;
-                            var zip = location.zip;
-                            var entry = {id: id, value: value, label: label, city: city, state: state, zip: zip};
-                            data.push(entry);
-                        });
-
-                        $("#pickupAddress").autocomplete({
-                            source: data,
-                            minLength: 0,
-                            select: function (event, ui) {
-                                $("#pickupCity").val(ui.item.city);
-                                $("#pickupState").val(ui.item.state);
-                                $("#pickupZip").val(ui.item.zip);
-                            }
-                        });
-
-
-                        $("#deliveryAddress").autocomplete({
-                            source: data,
-                            minLength: 0,
-                            select: function (event, ui) {
-                                $("#deliveryCity").val(ui.item.city);
-                                $("#deliveryState").val(ui.item.state);
-                                $("#deliveryZip").val(ui.item.zip);
-                            }
-                        });
-                    }
-                });
             });
 
-        }
 
-        function switchTrailerSelect(element){
-
-            $(".trailer-row").removeClass('trailer-row__border-top');
-            $(".trailer-row").removeClass('trailer-row__selected');
-            $(".trailer-row").removeClass('trailer-row__border-bot');
-            $(".trailer-row").removeClass('trailer-row__notselected');
-            $(".trailer-row").addClass('trailer-row__border-bot');
-            $(".trailer-row").addClass('trailer-row__notselected');
-
-            $(element).removeClass('trailer-row__border-bot');
-            $(element).removeClass('trailer-row__notselected');
-            $(element).addClass('trailer-row__border-top');
-            $(element).addClass('trailer-row__selected');
-        }
-
-        function displayTrailer(element, vinNumber, carrierID){
-            switchTrailerSelect(element);
-
-            $("#displayVinNumber").html(vinNumber);
-            var activeCarrier = carrierID;
-            var orderID = $("#orderID").val();
-
-            displayOrderStatuses(orderID, activeCarrier, vinNumber);
-        }
-
-        function saveCurrentOrderDetail(){
-
-            var today = new Date();
-            var dd = today.getDate();
-            var mm = today.getMonth()+1; //January is 0!
-            var yyyy = today.getFullYear();
-            var hours = today.getHours();
-            var min = today.getMinutes();
-            var sec = today.getSeconds();
-
-            if(dd<10) {
-                dd='0'+dd;
+            if(data.pickupInformation == null){
+                data.pickupInformation = {pickupLocation: "", contactPerson: "", phoneNumber: "", hoursOfOperation: ""};
             }
 
-            if(mm<10) {
-                mm='0'+mm;
+            if(data.deliveryInformation == null){
+                data.deliveryInformation = {deliveryLocation: "", contactPerson: "", phoneNumber: "", hoursOfOperation: ""};
             }
 
-            if(hours<10) {
-                hours='0'+hours;
-            }
+            if(data.pickupInformation.hoursOfOperation == "") data.pickupInformation.hoursOfOperation = "N/A";
+            if(data.deliveryInformation.hoursOfOperation == "") data.deliveryInformation.hoursOfOperation = "N/A";
 
-            if(min<10) {
-                min='0'+min;
-            }
+            $("#pickupName").val(data.pickupInformation.pickupLocation);
+            $("#pickupAddress").val(data.originationAddress);
+            $("#pickupCity").val(data.originationCity);
+            $("#pickupState").val(data.originationState);
+            $("#pickupZip").val(data.originationZip);
+            $("#pickupPhone").val(data.pickupInformation.phoneNumber);
+            $("#pickupContact").val(data.pickupInformation.contactPerson);
+            $("#pickupHours").val(data.pickupInformation.hoursOfOperation);
+            $("#pickupDate").val(data.pickupDate);
 
-            today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+            $("#deliveryName").val(data.deliveryInformation.deliveryLocation);
+            $("#deliveryAddress").val(data.destinationAddress);
+            $("#deliveryCity").val(data.destinationCity);
+            $("#deliveryState").val(data.destinationState);
+            $("#deliveryZip").val(data.destinationZip);
+            $("#deliveryPhone").val(data.deliveryInformation.phoneNumber);
+            $("#deliveryContact").val(data.deliveryInformation.contactPerson);
+            $("#deliveryHours").val(data.deliveryInformation.hoursOfOperation);
+            $("#deliveryDate").val(data.deliveryDate);
 
-            var orderDetailID = $("#orderDetailID").val();
+            $("#transportMode").val(data.transportationMode);
+            $("#carrierRate").val(data.carrierRate);
+            $("#carrierQty").val(data.qty);
 
-            var pickupName = $("#pickupName").val();
-            var pickupAddress = $("#pickupAddress").val();
-            var pickupCity = $("#pickupCity").val();
-            var pickupState = $("#pickupState").val();
-            var pickupZip = $("#pickupZip").val();
-            var pickupPhone = $("#pickupPhone").val();
-            var pickupContact = $("#pickupContact").val();
-            var pickupHours = $("#pickupHours").val();
-            var pickupDate = $("#pickupDate").val();
+            var carrierDistance = " <h5>" + entityName + "</h5> <small class=\"text-blue\">Distance: " + data.distance + " miles</small>";
 
-            var deliveryName = $("#deliveryName").val();
-            var deliveryAddress = $("#deliveryAddress").val();
-            var deliveryCity = $("#deliveryCity").val();
-            var deliveryState = $("#deliveryState").val();
-            var deliveryZip = $("#deliveryZip").val();
-            var deliveryPhone = $("#deliveryPhone").val();
-            var deliveryContact = $("#deliveryContact").val();
-            var deliveryHours = $("#deliveryHours").val();
-            var deliveryDate = $("#deliveryDate").val();
+            $("#carrierDistance").empty().html(carrierDistance);
+            $("#orderDetailID").val(data.id);
 
-            var transportationMode = $("#transportMode").val();
-            var carrierRate = $("#carrierRate").val();
-            var carrierQty = $("#carrierQty").val();
+            $.ajax({
+                url: '<?php echo API_HOST_URL . "/locations"; ?>' + '?filter=entityID,eq,' + currentCarrier + '&transform=1',
+                contentType: "application/json",
+                success: function (json) {
+                    var locations = json.locations;
+                    var data = [];
+                    $.each(locations, function(key, location){
+                        var value = location.address1;
+                        var label = location.address1 + ', ' + location.city + ', ' + location.state + ' ' + location.zip;
+                        var id = location.id
+                        var city = location.city;
+                        var state = location.state;
+                        var zip = location.zip;
+                        var entry = {id: id, value: value, label: label, city: city, state: state, zip: zip};
+                        data.push(entry);
+                    });
 
-            var pickupInformation = {pickupLocation: pickupName, phoneNumber: pickupPhone, contactPerson: pickupContact, hoursOfOperation: pickupHours};
-            var deliveryInformation = {deliveryLocation: deliveryName, phoneNumber: deliveryPhone, contactPerson: deliveryContact, hoursOfOperation: deliveryHours};
+                    $("#pickupAddress").autocomplete({
+                        source: data,
+                        minLength: 0,
+                        select: function (event, ui) {
+                            $("#pickupCity").val(ui.item.city);
+                            $("#pickupState").val(ui.item.state);
+                            $("#pickupZip").val(ui.item.zip);
+                        }
+                    });
 
-            var originationaddress = pickupAddress + ', ' + pickupCity + ', ' + pickupState + ', ' + pickupZip;
-            var destinationaddress = deliveryAddress + ', ' + deliveryCity + ', ' + deliveryState + ', ' + deliveryZip;
 
-            // getMapDirectionFromGoogle is defined in common.js
-            newGetMapDirectionFromGoogle( originationaddress, destinationaddress, function(response) {
-
-                var originationlat = response.originationlat;
-                var originationlng = response.originationlng;
-                var destinationlat = response.destinationlat;
-                var destinationlng = response.destinationlng;
-                var distance = response.distance;
-
-                var order_detail = {pickupInformation: pickupInformation, originationAddress: pickupAddress, originationCity: pickupCity, originationState: pickupState, originationZip: pickupZip,
-                    deliveryInformation: deliveryInformation, destinationAddress: deliveryAddress, destinationCity: deliveryCity, destinationState: deliveryState, destinationZip: deliveryZip,
-                    orginationLng: originationlng, originationLat: originationlat, destinationLng: destinationlng, destinationLat: destinationlat, distance: distance, transportationMode: transportationMode,
-                    qty: carrierQty, carrierRate: carrierRate, pickupDate: pickupDate, deliveryDate: deliveryDate, updatedAt: today};
-
-                $.ajax({
-                    url: '<?php echo API_HOST_URL . "/order_details/"; ?>' + orderDetailID,
-                    type: 'PUT',
-                    data: JSON.stringify(order_detail),
-                    contentType: "application/json",
-                    async: false,
-                    success: function(){
-                        $("#errorAlertTitle").html("Success");
-                        $("#errorAlertBody").html("Order Detail Saved");
-                        $("#errorAlert").modal('show');
-
-                        var orderID = $("#orderID").val();
-                        loadNewOrderDetailsAJAX(orderID);
-                    },
-                    error: function(error){
-                        $("#errorAlertTitle").html("Error");
-                        $("#errorAlertBody").html("Unable to save Order Detail");
-                        $("#errorAlert").modal('show');
-                    }
-                });
-
+                    $("#deliveryAddress").autocomplete({
+                        source: data,
+                        minLength: 0,
+                        select: function (event, ui) {
+                            $("#deliveryCity").val(ui.item.city);
+                            $("#deliveryState").val(ui.item.state);
+                            $("#deliveryZip").val(ui.item.zip);
+                        }
+                    });
+                }
             });
+        });
+
+    }
+
+    function switchTrailerSelect(element){
+
+        $(".trailer-row").removeClass('trailer-row__border-top');
+        $(".trailer-row").removeClass('trailer-row__selected');
+        $(".trailer-row").removeClass('trailer-row__border-bot');
+        $(".trailer-row").removeClass('trailer-row__notselected');
+        $(".trailer-row").addClass('trailer-row__border-bot');
+        $(".trailer-row").addClass('trailer-row__notselected');
+
+        $(element).removeClass('trailer-row__border-bot');
+        $(element).removeClass('trailer-row__notselected');
+        $(element).addClass('trailer-row__border-top');
+        $(element).addClass('trailer-row__selected');
+    }
+
+    function displayTrailer(element, vinNumber, carrierID, unitNumber){
+        switchTrailerSelect(element);
+
+        $("#displayVinNumber").html(vinNumber);
+        $("#displayUnitNumber").html(unitNumber);
+        $("#statusVinNumber").val(vinNumber);
+        $("#statusUnitNumber").val(unitNumber);
+        $("#statusID").val('');
+
+        var activeCarrier = carrierID;
+        var orderID = $("#orderID").val();
+
+        displayOrderStatuses(orderID, activeCarrier, vinNumber);
+    }
+
+    function saveCurrentOrderDetail(){
+
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth()+1; //January is 0!
+        var yyyy = today.getFullYear();
+        var hours = today.getHours();
+        var min = today.getMinutes();
+        var sec = today.getSeconds();
+
+        if(dd<10) {
+            dd='0'+dd;
         }
+
+        if(mm<10) {
+            mm='0'+mm;
+        }
+
+        if(hours<10) {
+            hours='0'+hours;
+        }
+
+        if(min<10) {
+            min='0'+min;
+        }
+
+        today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+
+        var orderDetailID = $("#orderDetailID").val();
+
+        var pickupName = $("#pickupName").val();
+        var pickupAddress = $("#pickupAddress").val();
+        var pickupCity = $("#pickupCity").val();
+        var pickupState = $("#pickupState").val();
+        var pickupZip = $("#pickupZip").val();
+        var pickupPhone = $("#pickupPhone").val();
+        var pickupContact = $("#pickupContact").val();
+        var pickupHours = $("#pickupHours").val();
+        var pickupDate = $("#pickupDate").val();
+
+        var deliveryName = $("#deliveryName").val();
+        var deliveryAddress = $("#deliveryAddress").val();
+        var deliveryCity = $("#deliveryCity").val();
+        var deliveryState = $("#deliveryState").val();
+        var deliveryZip = $("#deliveryZip").val();
+        var deliveryPhone = $("#deliveryPhone").val();
+        var deliveryContact = $("#deliveryContact").val();
+        var deliveryHours = $("#deliveryHours").val();
+        var deliveryDate = $("#deliveryDate").val();
+
+        var transportationMode = $("#transportMode").val();
+        var carrierRate = $("#carrierRate").val();
+        var carrierQty = $("#carrierQty").val();
+
+        var pickupInformation = {pickupLocation: pickupName, phoneNumber: pickupPhone, contactPerson: pickupContact, hoursOfOperation: pickupHours};
+        var deliveryInformation = {deliveryLocation: deliveryName, phoneNumber: deliveryPhone, contactPerson: deliveryContact, hoursOfOperation: deliveryHours};
+
+        var originationaddress = pickupAddress + ', ' + pickupCity + ', ' + pickupState + ', ' + pickupZip;
+        var destinationaddress = deliveryAddress + ', ' + deliveryCity + ', ' + deliveryState + ', ' + deliveryZip;
+
+        // getMapDirectionFromGoogle is defined in common.js
+        newGetMapDirectionFromGoogle( originationaddress, destinationaddress, function(response) {
+
+            var originationlat = response.originationlat;
+            var originationlng = response.originationlng;
+            var destinationlat = response.destinationlat;
+            var destinationlng = response.destinationlng;
+            var distance = response.distance;
+
+            var order_detail = {pickupInformation: pickupInformation, originationAddress: pickupAddress, originationCity: pickupCity, originationState: pickupState, originationZip: pickupZip,
+                deliveryInformation: deliveryInformation, destinationAddress: deliveryAddress, destinationCity: deliveryCity, destinationState: deliveryState, destinationZip: deliveryZip,
+                orginationLng: originationlng, originationLat: originationlat, destinationLng: destinationlng, destinationLat: destinationlat, distance: distance, transportationMode: transportationMode,
+                qty: carrierQty, carrierRate: carrierRate, pickupDate: pickupDate, deliveryDate: deliveryDate, updatedAt: today};
+
+            $.ajax({
+                url: '<?php echo API_HOST_URL . "/order_details/"; ?>' + orderDetailID,
+                type: 'PUT',
+                data: JSON.stringify(order_detail),
+                contentType: "application/json",
+                async: false,
+                success: function(){
+                    $("#errorAlertTitle").html("Success");
+                    $("#errorAlertBody").html("Order Detail Saved");
+                    $("#errorAlert").modal('show');
+
+                    var orderID = $("#orderID").val();
+                    loadNewOrderDetailsAJAX(orderID);
+                },
+                error: function(error){
+                    $("#errorAlertTitle").html("Error");
+                    $("#errorAlertBody").html("Unable to save Order Detail");
+                    $("#errorAlert").modal('show');
+                }
+            });
+
+        });
+    }
 
  </script>
