@@ -618,7 +618,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     },
                     { data: "note" },
                     { data: "createdAt" }
-                ]
+                ],
+                order: [[4, "desc"]]
           });
 
             orders_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', orders_table.table().container() ) );
@@ -757,7 +758,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     }, visible: false
                 }
             ],
-            scrollX: true
+            scrollX: true,
+            order: [[1, "desc"]]
           });
 
             orders_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', orders_table.table().container() ) );

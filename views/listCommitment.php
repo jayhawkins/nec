@@ -674,6 +674,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 }
 
             ],
+            order: [[2, "desc"]]
             //scrollX: true
           });
 

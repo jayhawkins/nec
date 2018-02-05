@@ -14,6 +14,8 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
 
     var entityid = <?php echo $_SESSION['entityid']; ?>;
 
+    var userid = <?php echo $_SESSION['userid']; ?>;
+    
 	var myApp;
 	myApp = myApp || (function () {
 		var pleaseWaitDiv = $('<div class="modal hide" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false"><div class="modal-header"><h1>Processing...</h1></div><div class="modal-body"><div class="progress progress-striped active"><div class="bar" style="width: 100%;"></div></div></div></div>');
@@ -26,7 +28,57 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
 			},
 		};
 	})();
-        
+
+        function loadDamageClaimNotes(damageClaimID){
+
+            var url = '<?php echo API_HOST_URL; ?>';
+
+            url += '/damage_claim_notes?include=members&columns=id,userID,note,createdAt,updatedAt,members.firstName,members.lastName&filter=damageClaimID,eq,' + damageClaimID + '&order=createdAt,desc&transform=1';
+
+            var blnShow = false;
+            
+            if(entityid == 0) blnShow = true;
+
+            if ( ! $.fn.DataTable.isDataTable( '#damage-note-table' ) ) {
+
+                var orders_table = $('#damage-note-table').DataTable({
+                retrieve: true,
+                processing: true,
+                ajax: {
+                    url: url,
+                    dataSrc: 'damage_claim_notes'
+                },
+                columns:  [
+                        { data: "id", visible: false },
+                        { data: "userID", visible: false },
+                        { data: null,
+                            "bSortable": true,
+                            "mRender": function (o) {
+                                var userFullName = o.members[0].firstName + ' ' + o.members[0].lastName;
+
+                                return userFullName;
+                            }, visible: blnShow
+                        },
+                        { data: "note" },
+                        { data: "createdAt" }
+                    ],
+                order: [[4, "desc"]]
+              });
+
+                //To Reload The Ajax
+                //See DataTables.net for more information about the reload method
+                orders_table.ajax.reload();
+            }
+            else{
+
+                //The URL will change with each "View Commit" button click
+              // Must load new Url each time.
+                var reload_table = $('#damage-note-table').DataTable();
+                reload_table.ajax.url(url).load();
+            }
+
+        }
+
 	function validateFile(file) {
 	    if (file) {
             var ext = $(file).val().split(".");
@@ -193,82 +245,6 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
 		}
 	}
 
-	function replaceDocument() {
-
-        var data,date;
-        var passValidation = false;
-        var type = "";
-        var today = new Date();
-        var dd = today.getDate();
-        var mm = today.getMonth()+1; //January is 0!
-        var yyyy = today.getFullYear();
-        var hours = today.getHours();
-        var min = today.getMinutes();
-        var sec = today.getSeconds();
-        var url = "";
-        if(dd<10) {
-            dd='0'+dd;
-        }
-        if(mm<10) {
-            mm='0'+mm;
-        }
-        if(hours<10) {
-            hours='0'+hours;
-        }
-        if(min<10) {
-            min='0'+min;
-        }
-        today = mm+'/'+dd+'/'+yyyy;
-        today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
-        var date = today;
-
-	    url = '<?php echo HTTP_HOST."/uploaddocument" ?>';
-        type = "POST";
-        var formData = new FormData();
-        formData.append('fileupload', $('#updatePolicyFile')[0].files[0]);
-        formData.append('entityID', $("#entityID").val());
-        formData.append('name', $("#vinNumber").val());
-        $.ajax({
-            url : url,
-            type : 'POST',
-            data : formData,
-            processData: false,  // tell jQuery not to process the data
-            contentType: false,  // tell jQuery not to set contentType
-            success : function(data) {
-                // update listInsurance
-                url = '<?php echo API_HOST_URL . "/damage_claims/" ?>' + $("#replaceID").val();
-                type = "PUT";
-                var files = $('#updatePolicyFile').prop("files");
-                var fileNames = $.map(files, function(val) { return val.name; }).join(',');
-                data = {id: $("#replaceID").val(), fileupload: fileNames, entityID: $("#entityID").val(), updatedAt: date};
-                console.log(data);
-                $.ajax({
-                    url: url,
-                    type: type,
-                    data: JSON.stringify(data),
-                    contentType: "application/json",
-                    async: false,
-                    success: function(data){
-                        if (data > 0) {
-                            $("#viewPolicy").modal('hide');
-                            loadTableAJAX();
-                            passValidation = true;
-                        } else {
-                            alert("Updating Damage Claim Document Failed!");
-                        }
-                    },
-                    error: function() {
-                        alert("There Was An Error Updating Damage Claim Document!");
-                    }
-                });
-                //console.log('listDamageClaim updated');
-            },
-            error: function() {
-                alert("Failed");
-            }
-        });
-	}
-
 	function loadTableAJAX() {
             var url = '<?php echo API_HOST_URL; ?>' + '/damage_claims?filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&transform=1';
             var example_table = $('#datatable-table').DataTable({
@@ -294,6 +270,7 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
                             var buttons = '<div class="pull-right text-nowrap">';
 
                             buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-eye-open text\"></i> <span class=\"text\">Upload/View Claim Files</span></button> &nbsp;';
+                            buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-eye-open text\"></i> <span class=\"text\">View Notes</span></button> &nbsp;';
 
                             buttons += '</div>';
                             return buttons;
@@ -459,12 +436,13 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
                                 var buttons = '<div class="pull-right text-nowrap">';
                                 
                                 buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-eye-open text\"></i> <span class=\"text\">Upload/View Claim</span></button> &nbsp;';
-                                buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text\"></i> <span class=\"text\">Edit</span></button>';
+                                buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-eye-open text\"></i> <span class=\"text\">View Notes</span></button> &nbsp;';
+                                buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text\"></i> <span class=\"text\">Edit</span></button> &nbsp;';
                                 
                                 if (o.status == "Active") {
-                                        buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text\"></i> <span class=\"text\">Disable</span></button>";
+                                        buttons += "<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text\"></i> <span class=\"text\">Disable</span></button>";
                                 } else {
-                                        buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text\"></i> <span class=\"text\">Enable</span></button>";
+                                        buttons += "<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text\"></i> <span class=\"text\">Enable</span></button>";
                                 }
                                 buttons += '</div>';
                                 return buttons;
@@ -839,6 +817,63 @@ else {
     </div>
 </div>
 
+<div class="modal fade" id="viewNotesModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                </button>
+                <br>
+                <br>
+                <h5 class="modal-title" id="viewNotesLabel" style="display: inline-block;"><strong>Damage Claim Notes</strong></h5>
+                    <button type="button" class="btn btn-primary btn-md pull-right" onclick="" id="addDamageNote">Add Note</button>
+            </div>
+            <div class="modal-body">
+                <form id="formRegister" class="register-form mt-lg">
+                    <input type="hidden" id="damageClaimID" name="damageClaimID" />
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <table id="damage-note-table" class="table table-striped table-hover" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>UserID</th>
+                                        <th>User</th>
+                                        <th>Note</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                             </table>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="addNoteModal" tabindex="-1" aria-hidden="true" aria-label="exampleModalCommitLabel">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalCommitLabel"><strong>Add Note</strong></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <textarea class="form-control" id="txtAdminNote" rows="3"></textarea>
+        </div>
+        <div class="modal-footer">
+           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+           <button type="button" class="btn btn-primary"  id="btnSaveNote">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 <?php
 if($_SESSION['entitytype'] != 0){
 ?>
@@ -855,6 +890,67 @@ if($_SESSION['entitytype'] != 0){
 		todayHighlight: true,
 		format: "yyyy-mm-dd"
 	});
+
+        $('#addDamageNote').off('click').on('click', function(){
+            $("#txtAdminNote").val("");
+            $("#addNoteModal").modal('show');
+        });
+
+        $('#btnSaveNote').off('click').on('click', function(){
+
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth()+1; //January is 0!
+            var yyyy = today.getFullYear();
+            var hours = today.getHours();
+            var min = today.getMinutes();
+            var sec = today.getSeconds();
+
+            if(dd<10) {
+                dd='0'+dd;
+            }
+
+            if(mm<10) {
+                mm='0'+mm;
+            }
+
+            if(hours<10) {
+                hours='0'+hours;
+            }
+
+            if(min<10) {
+                min='0'+min;
+            }
+
+            if(sec<10) {
+                sec='0'+sec;
+            }
+
+            today = mm+'/'+dd+'/'+yyyy;
+            today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+
+            var damageClaimID = $('#damageClaimID').val();
+
+            var note = {damageClaimID: damageClaimID, userID: userid, note: $("#txtAdminNote").val(), createdAt: today, updatedAt: today};
+
+            $.ajax({
+                url: '<?php echo API_HOST_URL . "/damage_claim_notes/"; ?>',
+                type: "POST",
+                data: JSON.stringify(note),
+                contentType: "application/json",
+                async: false,
+                success: function(){
+                    loadDamageClaimNotes(damageClaimID);
+                    $("#addNoteModal").modal('hide');
+                },
+                error: function(error){
+                    $("#errorAlertTitle").html("Error");
+                    $("#errorAlertBody").html("Unable to Save Note.");
+                    $("#errorAlert").modal('show');
+                }
+            });
+
+        });
 
         $("#addClaim").click(function(){
               $("#id").val('');
@@ -880,6 +976,11 @@ if($_SESSION['entitytype'] != 0){
                 loadFileUploadDiv();
                 
                 $("#viewPolicy").modal('show');
+            }  else if (this.textContent.indexOf("View Notes") > -1) {
+                $("#damageClaimID").val(data['id']);
+                loadDamageClaimNotes(data['id']);
+                
+                $("#viewNotesModal").modal('show');
             } else {
                 $("#id").val(data["id"]);
                 if (this.textContent.indexOf("Disable") > -1) {
@@ -1021,6 +1122,67 @@ else {
             format: "yyyy-mm-dd"
         });
 
+        $('#addDamageNote').off('click').on('click', function(){
+            $("#txtAdminNote").val("");
+            $("#addNoteModal").modal('show');
+        });
+
+        $('#btnSaveNote').off('click').on('click', function(){
+
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth()+1; //January is 0!
+            var yyyy = today.getFullYear();
+            var hours = today.getHours();
+            var min = today.getMinutes();
+            var sec = today.getSeconds();
+
+            if(dd<10) {
+                dd='0'+dd;
+            }
+
+            if(mm<10) {
+                mm='0'+mm;
+            }
+
+            if(hours<10) {
+                hours='0'+hours;
+            }
+
+            if(min<10) {
+                min='0'+min;
+            }
+
+            if(sec<10) {
+                sec='0'+sec;
+            }
+
+            today = mm+'/'+dd+'/'+yyyy;
+            today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+
+            var damageClaimID = $('#damageClaimID').val();
+
+            var note = {damageClaimID: damageClaimID, userID: userid, note: $("#txtAdminNote").val(), createdAt: today, updatedAt: today};
+
+            $.ajax({
+                url: '<?php echo API_HOST_URL . "/damage_claim_notes/"; ?>',
+                type: "POST",
+                data: JSON.stringify(note),
+                contentType: "application/json",
+                async: false,
+                success: function(){
+                    loadDamageClaimNotes(damageClaimID);
+                    $("#addNoteModal").modal('hide');
+                },
+                error: function(error){
+                    $("#errorAlertTitle").html("Error");
+                    $("#errorAlertBody").html("Unable to Save Note.");
+                    $("#errorAlert").modal('show');
+                }
+            });
+
+        });
+
 
         $('#business-datatable-table tbody').off('click').on( 'click', 'button', function () {
             var businesstable = $("#business-datatable-table").DataTable();
@@ -1058,6 +1220,11 @@ else {
                 loadFileUploadDiv();
                 
                 $("#viewPolicy").modal('show');
+            } else if (this.textContent.indexOf("View Notes") > -1) {
+                $("#damageClaimID").val(data['id']);
+                loadDamageClaimNotes(data['id']);
+                
+                $("#viewNotesModal").modal('show');
             } else {
                 $("#id").val(data["id"]);
                 if (this.textContent.indexOf("Disable") > -1) {
