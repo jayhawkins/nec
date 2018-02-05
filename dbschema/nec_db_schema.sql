@@ -1024,16 +1024,30 @@ FOREIGN KEY (`routeID`) REFERENCES `routes`(`id`);
 
 
 
+CREATE TABLE IF NOT EXISTS `damage_claim_notes` (
+	`id` Int( 11 ) UNSIGNED AUTO_INCREMENT NOT NULL,
+	`damageClaimID` Int( 11 ) UNSIGNED NOT NULL,
+	`userID` Int( 11 ) UNSIGNED NOT NULL,
+	`note` VarChar( 600 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
+	`createdAt` DateTime NOT NULL,
+	`updatedAt` DateTime NOT NULL,
+	CONSTRAINT `unique_id` UNIQUE( `id` ) )
+CHARACTER SET = utf8
+COLLATE = utf8_general_ci
+ENGINE = InnoDB
+AUTO_INCREMENT = 1;
 
+ALTER TABLE `damage_claim_notes`
+	ADD CONSTRAINT `lnk_damage_claims_damage_claim_notes` FOREIGN KEY ( `damageClaimID` )
+	REFERENCES `damage_claims`( `id` )
+	ON DELETE No Action
+	ON UPDATE No Action;
 
-
-
-
-
-
-
-
-
+ALTER TABLE `damage_claim_notes`
+	ADD CONSTRAINT `lnk_members_damage_claim_notes` FOREIGN KEY ( `userID` )
+	REFERENCES `members`( `userID` )
+	ON DELETE No Action
+	ON UPDATE No Action;
 
 
 
