@@ -86,7 +86,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
       })();
 
         function reloadContacts(){
-            
+
             var url = '<?php echo API_HOST_URL . "/contacts?columns=id,firstName,lastName&order=lastName&filter=entityID,eq," . $_SESSION['entityid'] ?>';
             var type = "GET";
 
@@ -459,7 +459,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
             var example_table = $('#datatable-table').DataTable({
                 retrieve: true,
                 processing: true,
-                bSort: false,
+                bSort: true,
                 ajax: {
                     url: url,
                     dataSrc: 'carrier_needs'
@@ -2160,8 +2160,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
     }
 
     $("#addCarrierContact").on("hidden.bs.modal", function () {
-        
-        $("#addNeed").trigger("click");       
+
+        $("#addNeed").trigger("click");
     });
 
     $("#myModal").on("hidden.bs.modal", function () {
