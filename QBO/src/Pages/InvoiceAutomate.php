@@ -50,6 +50,97 @@ if (!$serviceContext)
 
 
 
+$customerName = 'Yaw Tandoh';
+$customerAddress = '3305 Foxhound Dr';
+$customerCity = 'Hamilton';
+$customerState = 'OH';
+$customerZip = '45011';
+$customerPrice = '500';
+$customerNotes = "Nationwide Equipment Control Test: ";
+$customer_found = FALSE;
+// Run a query to see if customer exists
+$entities = $dataService->Query("SELECT * FROM Customer");
+
+// Echo some formatted output
+$i = 0;
+foreach($entities as $oneCustomer)
+{
+	
+    
+    if ($customerName==$oneCustomer->DisplayName){
+        $customer_found = TRUE;
+        $customerid = $oneCustomer->Id;
+    }
+    
+   
+	$i++;
+}
+
+
+//echo 'Customer Found: '.$customer_found;
+
+////customerName,customerAddress,customerCity,customerState,customerZip,customerPrice,customerNotes
+// Add a customer
+if ($customer_found == FALSE){
+$customerObj = new IPPCustomer();
+$customerObj->Name = $customerName;
+$customerObj->CompanyName = $customerName;
+$customerObj->GivenName = $customerName;
+$customerObj->DisplayName = $customerName;
+
+$BillAddr = new IPPPhysicalAddress();
+$BillAddr->Line1 = $customerAddress;        
+$BillAddr->City = $customerCity;
+$BillAddr->CountrySubDivisionCode = $customerState;
+$BillAddr->PostalCode = $customerZip;
+$customerObj->BillAddr = $BillAddr;
+
+
+
+try{
+ $resultingCustomerObj = $dataService->Add($customerObj);
+ //print_r($resultingInvoiceObj); 
+ $customerid = $resultingCustomerObj->Id;
+} catch (Exception $e){
+    print_r($customerObj);
+ echo $e->getMessage();
+}
+
+//echo $customerid;
+
+}
+else{
+    $customerObj = new IPPCustomer();
+    $customerObj = $dataService->FindById(
+  new IPPCustomer( array('Id' => $customerid), true));
+
+$customerObj->Name = $customerName;
+$customerObj->CompanyName = $customerName;
+$customerObj->GivenName = $customerName;
+$customerObj->DisplayName = $customerName;
+
+$BillAddr = new IPPPhysicalAddress();
+$BillAddr->Line1 = $customerAddress;        
+$BillAddr->City = $customerCity;
+$BillAddr->CountrySubDivisionCode = $customerState;
+$BillAddr->PostalCode = $customerZip;
+$customerObj->BillAddr = $BillAddr;
+
+
+try{
+ $resultingCustomerObj = $dataService->Add($customerObj);
+ //print_r($resultingInvoiceObj); 
+} catch (Exception $e){
+ echo $e->getMessage();
+}
+
+    
+  //echo $customerid;
+    
+}
+
+
+
 //connect to the server
 
 
