@@ -23,7 +23,9 @@ $loop = mysqli_query($dbh, "SELECT p.id,p.customerID,p.cost, p.orderID, p.orderD
 
 while ($row = mysqli_fetch_array($loop))
 {
-     echo $row['id'] . " " .echo $row['orderID'] . " " . $row['originationCity'] . " " . $row['originationState'] . " " . $row['destinationCity'] . " " . $row['destinationState'] . " " . $row['name'] . " " . $row['address1']." " . $row['city']." " . $row['state'] ." " . $row['zip'].   "<br/>";
+     //echo $row['id'] . " " .echo $row['orderID'] . " " . $row['originationCity'] . " " . $row['originationState'] . " " . $row['destinationCity'] . " " . $row['destinationState'] . " " . $row['name'] . " " . $row['address1']." " . $row['city']." " . $row['state'] ." " . $row['zip'].   "<br/>";
+
+    echo $row['originationCity'] . " " . $row['originationState']; 
 }
 	 
 ?>
