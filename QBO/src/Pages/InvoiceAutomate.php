@@ -88,12 +88,12 @@ $customerObj->CompanyName = $customerName;
 $customerObj->GivenName = $customerName;
 $customerObj->DisplayName = $customerName;
 
-$BillAddr = new IPPPhysicalAddress();
-$BillAddr->Line1 = $customerAddress;        
-$BillAddr->City = $customerCity;
-$BillAddr->CountrySubDivisionCode = $customerState;
-$BillAddr->PostalCode = $customerZip;
-$customerObj->BillAddr = $BillAddr;
+//$BillAddr = new IPPPhysicalAddress();
+//$BillAddr->Line1 = $customerAddress;        
+//$BillAddr->City = $customerCity;
+//$BillAddr->CountrySubDivisionCode = $customerState;
+//$BillAddr->PostalCode = $customerZip;
+//$customerObj->BillAddr = $BillAddr;
 
 
 
