@@ -1,9 +1,54 @@
 <?php
 /**
-* replace things with { } curly brackets with the appropriate information
-* including the curly brackets! don't leave those in there...
-* You'll use your database handler ($dbh) when you run your queries
+* Invoice Automation
+* nec.dubtel.com
+* Yaw G. Tandoh 2/6/2018
 **/
+
+//Initiate Quickbooks Settings
+//error_reporting(E_ALL);
+error_reporting(E_ALL ^ E_WARNING); 
+ini_set('display_errors', 1);
+
+require_once('../config.php');
+
+require_once(PATH_SDK_ROOT . 'Core/ServiceContext.php');
+require_once(PATH_SDK_ROOT . 'DataService/DataService.php');
+require_once(PATH_SDK_ROOT . 'PlatformService/PlatformService.php');
+require_once(PATH_SDK_ROOT . 'Utility/Configuration/ConfigurationManager.php');
+require_once('../../CRUD/helper/PurchaseHelper.php'); 
+
+
+
+//Specify QBO or QBD
+$serviceType = IntuitServicesType::QBO;
+
+// Get App Config
+$realmId = ConfigurationManager::AppSettings('RealmID');
+if (!$realmId)
+	exit("Please add realm to App.Config before running this sample.\n");
+
+// Prep Service Context
+$requestValidator = new OAuthRequestValidator(ConfigurationManager::AppSettings('AccessToken'),
+                                              ConfigurationManager::AppSettings('AccessTokenSecret'),
+                                              ConfigurationManager::AppSettings('ConsumerKey'),
+                                              ConfigurationManager::AppSettings('ConsumerSecret'));
+$serviceContext = new ServiceContext($realmId, $serviceType, $requestValidator);
+if (!$serviceContext)
+	exit("Problem while initializing ServiceContext.\n");
+
+// Prep Data Services
+$dataService = new DataService($serviceContext);
+if (!$dataService)
+	exit("Problem while initializing DataService.\n");
+
+
+
+$serviceContext = new ServiceContext($realmId, $serviceType, $requestValidator);
+if (!$serviceContext)
+	exit("Problem while initializing ServiceContext.\n");
+
+
 
 //connect to the server
 
