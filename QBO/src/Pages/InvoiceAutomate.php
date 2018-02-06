@@ -25,7 +25,7 @@ while ($row = mysqli_fetch_array($loop))
 {
      //echo $row['id'] . " " .echo $row['orderID'] . " " . $row['originationCity'] . " " . $row['originationState'] . " " . $row['destinationCity'] . " " . $row['destinationState'] . " " . $row['name'] . " " . $row['address1']." " . $row['city']." " . $row['state'] ." " . $row['zip'].   "<br/>";
 
-    echo 'from '.$row['originationCity'] . " to " . $row['originationState'] . " for ". $row['name'] . " <br>" ; 
+    echo 'from '.$row['originationCity'] . " to " . $row['originationState'] . " for ". $row['name'] ." Cost:". $row['cost']. " <br>" ; 
 }
 	 
 ?>
