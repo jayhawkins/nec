@@ -469,7 +469,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             $('#deliveryLocation_relay' + relayNumber).val("");
             $('#contactPerson_relay' + relayNumber).val("");
             $('#phoneNumber_relay' + relayNumber).val("");
-            $('#hoursOfOperation_relay' + relayNumber).val("");
+            //$('#hoursOfOperation_relay' + relayNumber).val("");
+            $('#hoursOfOperationOpen_relay' + relayNumber).val("");
+            $('#hoursOfOperationClose_relay' + relayNumber).val("");
+            $('#timeZone_relay' + relayNumber).val("");
         }
 
 
@@ -988,125 +991,126 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             var selectedRelayTabs = "";
 
             $.each(relays, function(key, customer_needs){
-                //if(customer_needs.deliveryInformation == null) customer_needs.deliveryInformation = {deliveryLocation: "", contactPerson: "", phoneNumber: "", hoursOfOperation: ""};
-                if(customer_needs.deliveryInformation == null) customer_needs.deliveryInformation = {deliveryLocation: "", contactPerson: "", phoneNumber: "", hoursOfOperationOpen: "", hoursOfOperationClose: "", timeZone: ""};
-                if(customer_needs.destinationAddress1 == null) customer_needs.destinationAddress1 = "";
-                if(customer_needs.destinationZip == null) customer_needs.destinationZip = "";
+                if (customer_needs.status == 'Available') {
+                    //if(customer_needs.deliveryInformation == null) customer_needs.deliveryInformation = {deliveryLocation: "", contactPerson: "", phoneNumber: "", hoursOfOperation: ""};
+                    if(customer_needs.deliveryInformation == null) customer_needs.deliveryInformation = {deliveryLocation: "", contactPerson: "", phoneNumber: "", deliveryHoursOfOperationOpen: "", deliveryHoursOfOperationClose: "", deliveryTimeZone: ""};
+                    if(customer_needs.destinationAddress1 == null) customer_needs.destinationAddress1 = "";
+                    if(customer_needs.destinationZip == null) customer_needs.destinationZip = "";
 
-                var deliveryInformation = "";
+                    var deliveryInformation = "";
 
-                //if(customer_needs.deliveryInformation.deliveryLocation != "" && customer_needs.deliveryInformation.contactPerson != "" && customer_needs.deliveryInformation.phoneNumber != "" && customer_needs.deliveryInformation.hoursOfOperation != "" ){
-                if(customer_needs.deliveryInformation.deliveryLocation != "" && customer_needs.deliveryInformation.contactPerson != "" && customer_needs.deliveryInformation.phoneNumber != "" && customer_needs.deliveryInformation.hoursOfOperationOpen != "" && customer_needs.deliveryInformation.hoursOfOperationClose != ""){
+                    //if(customer_needs.deliveryInformation.deliveryLocation != "" && customer_needs.deliveryInformation.contactPerson != "" && customer_needs.deliveryInformation.phoneNumber != "" && customer_needs.deliveryInformation.hoursOfOperation != "" ){
+                    if(customer_needs.deliveryInformation.deliveryLocation != "" && customer_needs.deliveryInformation.contactPerson != "" && customer_needs.deliveryInformation.phoneNumber != "" && customer_needs.deliveryInformation.deliveryHoursOfOperationOpen != "" && customer_needs.deliveryInformation.deliveryHoursOfOperationClose != ""){
 
-                    //deliveryInformation = customer_needs.deliveryInformation.deliveryLocation + "<br>"
-                    //        + customer_needs.deliveryInformation.contactPerson + "<br>"
-                    //        + customer_needs.deliveryInformation.phoneNumber + "<br>"
-                    //        + customer_needs.deliveryInformation.hoursOfOperation + "<br><br>";
+                        //deliveryInformation = customer_needs.deliveryInformation.deliveryLocation + "<br>"
+                        //        + customer_needs.deliveryInformation.contactPerson + "<br>"
+                        //        + customer_needs.deliveryInformation.phoneNumber + "<br>"
+                        //        + customer_needs.deliveryInformation.hoursOfOperation + "<br><br>";
 
-                    deliveryInformation = customer_needs.deliveryInformation.deliveryLocation + "<br>"
-                            + customer_needs.deliveryInformation.contactPerson + "<br>"
-                            + customer_needs.deliveryInformation.phoneNumber + "<br>"
-                            + customer_needs.deliveryInformation.hoursOfOperationOpen + " to " + customer_needs.deliveryInformation.hoursOfOperationClose + " " + customer_needs.deliveryInformation.timeZone + "<br><br>";
-                }
-
-                var deliveryAddress = deliveryInformation + customer_needs.destinationAddress1 + "<br>" +
-                        customer_needs.destinationCity + ", " + customer_needs.destinationState + " " + customer_needs.destinationZip + "<br><br>";
-
-                if(customer_needs.destinationNotes != ""){
-                        deliveryAddress  += "Notes:<br>" +
-                        customer_needs.destinationNotes + "<br>";
-                }
-
-                var relayNumber = key + 1;
-                if(key == 0){
-                    relayTabs += "<li class=\"nav-link active\" aria-expanded=\"false\"><a href=\"#" + key + "\" data-toggle=\"tab\" class=\"active\" aria-expanded=\"true\">Relay Address " + relayNumber + "</a></li>";
-
-                    selectedRelayTabs += "<div class=\"tab-pane active\" id=\"" + key + "\" aria-expanded=\"false\">" + deliveryAddress + "</div>";
-                }
-                else{
-                    relayTabs += "<li class=\"nav-link\" aria-expanded=\"false\"><a href=\"#" + key + "\" data-toggle=\"tab\" class=\"active\" aria-expanded=\"true\">Relay Address " + relayNumber + "</a></li>";
-
-                    selectedRelayTabs += "<div class=\"tab-pane\" id=\"" + key + "\" aria-expanded=\"false\">" + deliveryAddress + "</div>";
-                }
-
-                $('#relay_id' + relayNumber).val(customer_needs.id);
-                $('#commit_id' + relayNumber).val(customer_needs.customer_needs_commit[0].id);
-                $('#entityID_relay' + relayNumber).val(parseInt(customer_needs.customer_needs_commit[0].entities[0].id));
-                $('#address_relay' + relayNumber).val(customer_needs.destinationAddress1);
-                $('#city_relay' + relayNumber).val(customer_needs.destinationCity);
-                $('#state_relay' + relayNumber).val(customer_needs.destinationState);
-                $('#zip_relay' + relayNumber).val(customer_needs.destinationZip);
-                $('#notes_relay' + relayNumber).val(customer_needs.destinationNotes);
-                $('#pickupDate_relay' + relayNumber).val(customer_needs.customer_needs_commit[0].pickupDate);
-                $('#deliveryDate_relay' + relayNumber).val(customer_needs.customer_needs_commit[0].deliveryDate);
-                $('#rate_relay' + relayNumber).val();
-
-                $('#deliveryLocation_relay' + relayNumber).val(customer_needs.deliveryInformation.deliveryLocation);
-                $('#contactPerson_relay' + relayNumber).val(customer_needs.deliveryInformation.contactPerson);
-                $('#phoneNumber_relay' + relayNumber).val(customer_needs.deliveryInformation.phoneNumber);
-
-                //$('#hoursOfOperation_relay' + relayNumber).val(customer_needs.deliveryInformation.hoursOfOperation);
-                $('#hoursOfOperationOpen_relay' + relayNumber).val(customer_needs.deliveryInformation.hoursOfOperationOpen);
-                $('#hoursOfOperationClose_relay' + relayNumber).val(customer_needs.deliveryInformation.hoursOfOperationClose);
-                $('#timeZone_relay' + relayNumber).val(customer_needs.deliveryInformation.timeZone);
-
-                var currentCarrier = parseInt(customer_needs.customer_needs_commit[0].entities[0].id);
-
-                $.ajax({
-                    url: '<?php echo API_HOST_URL . "/locations"; ?>' + '?filter=entityID,eq,' + currentCarrier + '&transform=1',
-                    contentType: "application/json",
-                    success: function (json) {
-
-                        //console.log(json);
-                        var locations = json.locations;
-                        var locationdata = [];
-                        $.each(locations, function(key, location){
-                            var value = location.address1;
-                            var label = location.address1 + ', ' + location.city + ', ' + location.state + ' ' + location.zip;
-                            var id = location.id
-                            var city = location.city;
-                            var state = location.state;
-                            var zip = location.zip;
-                            var entry = {id: id, value: value, label: label, city: city, state: state, zip: zip};
-                            locationdata.push(entry);
-                        });
-
-                        $('#address_relay' + relayNumber).autocomplete({
-                            source: locationdata,
-                            minLength: 0,
-                            select: function (event, ui) {
-                                $('#city_relay' + relayNumber).val(ui.item.city);
-                                $('#state_relay' + relayNumber).val(ui.item.state);
-                                $('#zip_relay' + relayNumber).val(ui.item.zip);
-                            }
-                        });
+                        deliveryInformation = customer_needs.deliveryInformation.deliveryLocation + "<br>"
+                                + customer_needs.deliveryInformation.contactPerson + "<br>"
+                                + customer_needs.deliveryInformation.phoneNumber + "<br>"
+                                + customer_needs.deliveryInformation.deliveryHoursOfOperationOpen + " to " + customer_needs.deliveryInformation.deliveryHoursOfOperationClose + " " + customer_needs.deliveryInformation.deliveryTimeZone + "<br><br>";
                     }
-                });
 
+                    var deliveryAddress = deliveryInformation + customer_needs.destinationAddress1 + "<br>" +
+                            customer_needs.destinationCity + ", " + customer_needs.destinationState + " " + customer_needs.destinationZip + "<br><br>";
 
-                if(customer_needs.customer_needs_commit[0].rate == 0){
-                    var calcRate = 0.00;
-                    if (customer_needs.customer_needs_commit[0].entities[0].rateType == "Mileage") {
-                        calcRate = ( customer_needs.customer_needs_commit[0].distance * parseFloat(customer_needs.customer_needs_commit[0].entities[0].negotiatedRate).toFixed(2) ) * customer_needs.customer_needs_commit[0].qty;
-                    } else {
-                        calcRate = customer_needs.customer_needs_commit[0].entities[0].negotiatedRate;
+                    if(customer_needs.destinationNotes != ""){
+                            deliveryAddress  += "Notes:<br>" +
+                            customer_needs.destinationNotes + "<br>";
                     }
-                    //$('#rate_relay' + relayNumber).val('$' + parseFloat(calcRate).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,").toString());
-                    $('#rate_relay' + relayNumber).val(parseFloat(calcRate).toFixed(2));
+
+                    var relayNumber = key + 1;
+                    if(key == 0){
+                        relayTabs += "<li class=\"nav-link active\" aria-expanded=\"false\"><a href=\"#" + key + "\" data-toggle=\"tab\" class=\"active\" aria-expanded=\"true\">Relay Address " + relayNumber + "</a></li>";
+
+                        selectedRelayTabs += "<div class=\"tab-pane active\" id=\"" + key + "\" aria-expanded=\"false\">" + deliveryAddress + "</div>";
+                    }
+                    else{
+                        relayTabs += "<li class=\"nav-link\" aria-expanded=\"false\"><a href=\"#" + key + "\" data-toggle=\"tab\" class=\"active\" aria-expanded=\"true\">Relay Address " + relayNumber + "</a></li>";
+
+                        selectedRelayTabs += "<div class=\"tab-pane\" id=\"" + key + "\" aria-expanded=\"false\">" + deliveryAddress + "</div>";
+                    }
+
+                    $('#relay_id' + relayNumber).val(customer_needs.id);
+                    $('#commit_id' + relayNumber).val(customer_needs.customer_needs_commit[0].id);
+                    $('#entityID_relay' + relayNumber).val(parseInt(customer_needs.customer_needs_commit[0].entities[0].id));
+                    $('#address_relay' + relayNumber).val(customer_needs.destinationAddress1);
+                    $('#city_relay' + relayNumber).val(customer_needs.destinationCity);
+                    $('#state_relay' + relayNumber).val(customer_needs.destinationState);
+                    $('#zip_relay' + relayNumber).val(customer_needs.destinationZip);
+                    $('#notes_relay' + relayNumber).val(customer_needs.destinationNotes);
+                    $('#pickupDate_relay' + relayNumber).val(customer_needs.customer_needs_commit[0].pickupDate);
+                    $('#deliveryDate_relay' + relayNumber).val(customer_needs.customer_needs_commit[0].deliveryDate);
+                    $('#rate_relay' + relayNumber).val();
+
+                    $('#deliveryLocation_relay' + relayNumber).val(customer_needs.deliveryInformation.deliveryLocation);
+                    $('#contactPerson_relay' + relayNumber).val(customer_needs.deliveryInformation.contactPerson);
+                    $('#phoneNumber_relay' + relayNumber).val(customer_needs.deliveryInformation.phoneNumber);
+
+                    //$('#hoursOfOperation_relay' + relayNumber).val(customer_needs.deliveryInformation.hoursOfOperation);
+                    $('#hoursOfOperationOpen_relay' + relayNumber).val(customer_needs.deliveryInformation.deliveryHoursOfOperationOpen);
+                    $('#hoursOfOperationClose_relay' + relayNumber).val(customer_needs.deliveryInformation.deliveryHoursOfOperationClose);
+                    $('#timeZone_relay' + relayNumber).val(customer_needs.deliveryInformation.deliveryTimeZone);
+
+                    var currentCarrier = parseInt(customer_needs.customer_needs_commit[0].entities[0].id);
+
+                    $.ajax({
+                        url: '<?php echo API_HOST_URL . "/locations"; ?>' + '?filter=entityID,eq,' + currentCarrier + '&transform=1',
+                        contentType: "application/json",
+                        success: function (json) {
+
+                            //console.log(json);
+                            var locations = json.locations;
+                            var locationdata = [];
+                            $.each(locations, function(key, location){
+                                var value = location.address1;
+                                var label = location.address1 + ', ' + location.city + ', ' + location.state + ' ' + location.zip;
+                                var id = location.id
+                                var city = location.city;
+                                var state = location.state;
+                                var zip = location.zip;
+                                var entry = {id: id, value: value, label: label, city: city, state: state, zip: zip};
+                                locationdata.push(entry);
+                            });
+
+                            $('#address_relay' + relayNumber).autocomplete({
+                                source: locationdata,
+                                minLength: 0,
+                                select: function (event, ui) {
+                                    $('#city_relay' + relayNumber).val(ui.item.city);
+                                    $('#state_relay' + relayNumber).val(ui.item.state);
+                                    $('#zip_relay' + relayNumber).val(ui.item.zip);
+                                }
+                            });
+                        }
+                    });
+
+
+                    if(customer_needs.customer_needs_commit[0].rate == 0){
+                        var calcRate = 0.00;
+                        if (customer_needs.customer_needs_commit[0].entities[0].rateType == "Mileage") {
+                            calcRate = ( customer_needs.customer_needs_commit[0].distance * parseFloat(customer_needs.customer_needs_commit[0].entities[0].negotiatedRate).toFixed(2) ) * customer_needs.customer_needs_commit[0].qty;
+                        } else {
+                            calcRate = customer_needs.customer_needs_commit[0].entities[0].negotiatedRate;
+                        }
+                        //$('#rate_relay' + relayNumber).val('$' + parseFloat(calcRate).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,").toString());
+                        $('#rate_relay' + relayNumber).val(parseFloat(calcRate).toFixed(2));
+                    }
+                    else{
+                        $('#rate_relay' + relayNumber).val(parseFloat(customer_needs.customer_needs_commit[0].rate).toFixed(2));
+                    }
+
+                    var entid = parseInt(customer_needs.customer_needs_commit[0].entities[0].id);
+                    var entname = customer_needs.customer_needs_commit[0].entities[0].name;
+                    var carrier = {};
+                    carrier[entid] = entname;
+
+                    if (carrierIDs.indexOf(carrier) === -1) carrierIDs.push(carrier);
+
+                    if(relayNumber == 4) return false;
                 }
-                else{
-                    $('#rate_relay' + relayNumber).val(parseFloat(customer_needs.customer_needs_commit[0].rate).toFixed(2));
-                }
-
-                var entid = parseInt(customer_needs.customer_needs_commit[0].entities[0].id);
-                var entname = customer_needs.customer_needs_commit[0].entities[0].name;
-                var carrier = {};
-                carrier[entid] = entname;
-
-                if (carrierIDs.indexOf(carrier) === -1) carrierIDs.push(carrier);
-
-                if(relayNumber == 4) return false;
-
             });
 
             $('#relayTabs').append(relayTabs);
@@ -1223,6 +1227,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
  <ol class="breadcrumb">
    <li>ADMIN</li>
+   <li onclick="ajaxFormCall('listCommitment');" onmouseover="" style="cursor: pointer;">View Commitments</li>
    <li class="active">View Carrier Committed Transport</li>
  </ol>
  <section id="customer-needs" class="widget">
@@ -1452,7 +1457,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                                 <option>05:00</option>
                                                 <option>06:00</option>
                                                 <option>07:00</option>
-                                                <option selected>08:00</option>
+                                                <option>08:00</option>
                                                 <option>09:00</option>
                                                 <option>10:00</option>
                                                 <option>11:00</option>
@@ -1490,7 +1495,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                                 <option>14:00</option>
                                                 <option>15:00</option>
                                                 <option>16:00</option>
-                                                <option selected>17:00</option>
+                                                <option>17:00</option>
                                                 <option>18:00</option>
                                                 <option>19:00</option>
                                                 <option>20:00</option>
@@ -1504,7 +1509,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                             <select class="form-control" id="pickupTimeZone">
                                                 <option>EST (Eastern)</option>
                                                 <option>CST (Central)</option>
-                                                <option selected>MPT (Mountain)</option>
+                                                <option>MPT (Mountain)</option>
                                                 <option>PST (Pacific)</option>
                                             </select>
                                     </div>
@@ -1582,7 +1587,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                                 <option>05:00</option>
                                                 <option>06:00</option>
                                                 <option>07:00</option>
-                                                <option selected>08:00</option>
+                                                <option>08:00</option>
                                                 <option>09:00</option>
                                                 <option>10:00</option>
                                                 <option>11:00</option>
@@ -1611,7 +1616,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                                 <option>05:00</option>
                                                 <option>06:00</option>
                                                 <option>07:00</option>
-                                                <option selected>08:00</option>
+                                                <option>08:00</option>
                                                 <option>09:00</option>
                                                 <option>10:00</option>
                                                 <option>11:00</option>
@@ -1634,11 +1639,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                             <select class="form-control" id="deliveryTimeZone">
                                                 <option>EST (Eastern)</option>
                                                 <option>CST (Central)</option>
-                                                <option selected>MPT (Mountain)</option>
+                                                <option>MPT (Mountain)</option>
                                                 <option>PST (Pacific)</option>
                                             </select>
                                     </div>
-                                    <div class="col-sm-2">&nbsp;</div>
                             </div>
                             <div class="form-group row">
                                     <label for="destinationNotes" class="col-sm-3 col-form-label">Notes</label>
@@ -1727,6 +1731,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     <label for="hoursOfOperationOpen_relay1">Opening Hour</label>
                                     <!--input class="form-control" id="hoursOfOperation_relay1" placeholder="" type="text"-->
                                     <select class="form-control" id="hoursOfOperationOpen_relay1">
+                                        <option></option>
                                         <option>01:00</option>
                                         <option>02:00</option>
                                         <option>03:00</option>
@@ -1734,7 +1739,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                         <option>05:00</option>
                                         <option>06:00</option>
                                         <option>07:00</option>
-                                        <option selected>08:00</option>
+                                        <option>08:00</option>
                                         <option>09:00</option>
                                         <option>10:00</option>
                                         <option>11:00</option>
@@ -1756,6 +1761,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             <div class="form-group">
                                     <label for="hoursOfOperationClose_relay1">Closing Hour</label>
                                     <select class="form-control" id="hoursOfOperationClose_relay1">
+                                        <option></option>
                                         <option>01:00</option>
                                         <option>02:00</option>
                                         <option>03:00</option>
@@ -1772,7 +1778,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                         <option>14:00</option>
                                         <option>15:00</option>
                                         <option>16:00</option>
-                                        <option selected>17:00</option>
+                                        <option>17:00</option>
                                         <option>18:00</option>
                                         <option>19:00</option>
                                         <option>20:00</option>
@@ -1787,7 +1793,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     <select class="form-control" id="timeZone_relay1">
                                         <option>EST (Eastern)</option>
                                         <option>CST (Central)</option>
-                                        <option selected>MPT (Mountain)</option>
+                                        <option>MPT (Mountain)</option>
                                         <option>PST (Pacific)</option>
                                     </select>
                             </div>
@@ -1861,6 +1867,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     <label for="hoursOfOperationOpen_relay2">Opening Hour</label>
                                     <!--input class="form-control" id="hoursOfOperation_relay2" placeholder="" type="text"-->
                                     <select class="form-control" id="hoursOfOperationOpen_relay2">
+                                        <option></option>
                                         <option>01:00</option>
                                         <option>02:00</option>
                                         <option>03:00</option>
@@ -1868,7 +1875,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                         <option>05:00</option>
                                         <option>06:00</option>
                                         <option>07:00</option>
-                                        <option selected>08:00</option>
+                                        <option>08:00</option>
                                         <option>09:00</option>
                                         <option>10:00</option>
                                         <option>11:00</option>
@@ -1890,6 +1897,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             <div class="form-group">
                                     <label for="hoursOfOperationClose_relay2">Closing Hour</label>
                                     <select class="form-control" id="hoursOfOperationClose_relay2">
+                                        <option></option>
                                         <option>01:00</option>
                                         <option>02:00</option>
                                         <option>03:00</option>
@@ -1906,7 +1914,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                         <option>14:00</option>
                                         <option>15:00</option>
                                         <option>16:00</option>
-                                        <option selected>17:00</option>
+                                        <option>17:00</option>
                                         <option>18:00</option>
                                         <option>19:00</option>
                                         <option>20:00</option>
@@ -1921,7 +1929,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     <select class="form-control" id="timeZone_relay2">
                                         <option>EST (Eastern)</option>
                                         <option>CST (Central)</option>
-                                        <option selected>MPT (Mountain)</option>
+                                        <option>MPT (Mountain)</option>
                                         <option>PST (Pacific)</option>
                                     </select>
                             </div>
@@ -1995,6 +2003,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     <label for="hoursOfOperationOpen_relay3">Opening Hour</label>
                                     <!--input class="form-control" id="hoursOfOperation_relay3" placeholder="" type="text"-->
                                     <select class="form-control" id="hoursOfOperationOpen_relay3">
+                                        <option></option>
                                         <option>01:00</option>
                                         <option>02:00</option>
                                         <option>03:00</option>
@@ -2002,7 +2011,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                         <option>05:00</option>
                                         <option>06:00</option>
                                         <option>07:00</option>
-                                        <option selected>08:00</option>
+                                        <option>08:00</option>
                                         <option>09:00</option>
                                         <option>10:00</option>
                                         <option>11:00</option>
@@ -2024,6 +2033,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             <div class="form-group">
                                     <label for="hoursOfOperationClose_relay3">Closing Hour</label>
                                     <select class="form-control" id="hoursOfOperationClose_relay3">
+                                        <option></option>
                                         <option>01:00</option>
                                         <option>02:00</option>
                                         <option>03:00</option>
@@ -2040,7 +2050,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                         <option>14:00</option>
                                         <option>15:00</option>
                                         <option>16:00</option>
-                                        <option selected>17:00</option>
+                                        <option>17:00</option>
                                         <option>18:00</option>
                                         <option>19:00</option>
                                         <option>20:00</option>
@@ -2055,7 +2065,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     <select class="form-control" id="timeZone_relay3">
                                         <option>EST (Eastern)</option>
                                         <option>CST (Central)</option>
-                                        <option selected>MPT (Mountain)</option>
+                                        <option>MPT (Mountain)</option>
                                         <option>PST (Pacific)</option>
                                     </select>
                             </div>
@@ -2129,6 +2139,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     <label for="hoursOfOperationOpen_relay4">Opening Hour</label>
                                     <!--input class="form-control" id="hoursOfOperation_relay4" placeholder="" type="text"-->
                                     <select class="form-control" id="hoursOfOperationOpen_relay4">
+                                        <option></option>
                                         <option>01:00</option>
                                         <option>02:00</option>
                                         <option>03:00</option>
@@ -2136,7 +2147,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                         <option>05:00</option>
                                         <option>06:00</option>
                                         <option>07:00</option>
-                                        <option selected>08:00</option>
+                                        <option>08:00</option>
                                         <option>09:00</option>
                                         <option>10:00</option>
                                         <option>11:00</option>
@@ -2158,6 +2169,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             <div class="form-group">
                                     <label for="hoursOfOperationClose_relay4">Closing Hour</label>
                                     <select class="form-control" id="hoursOfOperationClose_relay4">
+                                        <option></option>
                                         <option>01:00</option>
                                         <option>02:00</option>
                                         <option>03:00</option>
@@ -2174,7 +2186,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                         <option>14:00</option>
                                         <option>15:00</option>
                                         <option>16:00</option>
-                                        <option selected>17:00</option>
+                                        <option>17:00</option>
                                         <option>18:00</option>
                                         <option>19:00</option>
                                         <option>20:00</option>
@@ -2189,7 +2201,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     <select class="form-control" id="timeZone_relay4">
                                         <option>EST (Eastern)</option>
                                         <option>CST (Central)</option>
-                                        <option selected>MPT (Mountain)</option>
+                                        <option>MPT (Mountain)</option>
                                         <option>PST (Pacific)</option>
                                     </select>
                             </div>
@@ -3175,12 +3187,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 */
 
             var pickupInformation = {pickupLocation: $('#pickupLocation').val().trim(), contactPerson: $('#pickupContactPerson').val().trim(),
-                                    phoneNumber: $('#pickupPhoneNumber').val().trim(), pickupHoursOfOperationOpen: $('#pickupHoursOfOperationOpen').val().trim(),
-                                    pickupHoursOfOperationClose: $('#pickupHoursOfOperationClose').val().trim(), pickupTimeZone: $('#pickupTimeZone').val().trim()};
+                                    phoneNumber: $('#pickupPhoneNumber').val().trim(), pickupHoursOfOperationOpen: $('#pickupHoursOfOperationOpen').val(),
+                                    pickupHoursOfOperationClose: $('#pickupHoursOfOperationClose').val(), pickupTimeZone: $('#pickupTimeZone').val()};
 
             var deliveryInformation = {deliveryLocation: $('#deliveryLocation').val().trim(), contactPerson: $('#deliveryContactPerson').val().trim(),
-                                    phoneNumber: $('#deliveryPhoneNumber').val().trim(), deliveryHoursOfOperationOpen: $('#deliveryHoursOfOperationOpen').val().trim(),
-                                    deliveryHoursOfOperationClose: $('#deliveryHoursOfOperationClose').val().trim(), deliveryTimeZone: $('#deliveryTimeZone').val().trim()};
+                                    phoneNumber: $('#deliveryPhoneNumber').val().trim(), deliveryHoursOfOperationOpen: $('#deliveryHoursOfOperationOpen').val(),
+                                    deliveryHoursOfOperationClose: $('#deliveryHoursOfOperationClose').val(), deliveryTimeZone: $('#deliveryTimeZone').val()};
 
 
             var originationAddress1 = $('#originationAddress1').val().trim();
@@ -3216,7 +3228,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
             var qty = $("#qty").val().trim();
             var rate = $("#rate").val().trim();
-            var rateType = $("#rateType").val().trim();
+            var rateType = $('input[name=rateType]:checked').val().trim();
             var transportationMode = $("#transportationMode").val().trim();
 
             var data = {pickupInformation: pickupInformation, originationAddress1: originationAddress1, originationAddress2: originationAddress2, originationCity: originationCity, originationState: originationState, originationZip: originationZip, originationNotes: originationNotes,
@@ -3255,8 +3267,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 */
 
                             var deliveryInformation = {deliveryLocation: $('#deliveryLocation_relay' + relayNumber).val().trim(), contactPerson: $('#contactPerson_relay' + relayNumber).val().trim(),
-                                                    phoneNumber: $('#phoneNumber_relay' + relayNumber).val().trim(), hoursOfOperationOpen: $('#hoursOfOperationOpen_relay' + relayNumber).val().trim(),
-                                                    hoursOfOperationClose: $('#hoursOfOperationClose_relay' + relayNumber).val().trim(),timeZone: $('#timeZone_relay' + relayNumber).val().trim()};
+                                                    phoneNumber: $('#phoneNumber_relay' + relayNumber).val().trim(), deliveryHoursOfOperationOpen: $('#hoursOfOperationOpen_relay' + relayNumber).val().trim(),
+                                                    deliveryHoursOfOperationClose: $('#hoursOfOperationClose_relay' + relayNumber).val().trim(),deliveryTimeZone: $('#timeZone_relay' + relayNumber).val()};
 
                             if(destinationCity != "" && destinationState != ""){
 
@@ -3270,9 +3282,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 else{
                                     url = '<?php echo API_HOST_URL . "/customer_needs" ?>/' + relayID;
                                     type = "PUT";
+                                    /*
                                     relayData = {rootCustomerNeedsID: id, pickupInformation: pickupInformation,  originationAddress1: originationAddress1, originationCity: originationCity, originationState: originationState, originationZip: originationZip, originationNotes: originationNotes,
                                         deliveryInformation: deliveryInformation, destinationAddress1: destinationAddress1, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, destinationNotes: destinationNotes,
                                         qty: qty, updatedAt: today, needsDataPoints: needsdatapoints,  unitData: unitDataList, rate: rate, rateType: rateType, transportationMode: transportationMode};
+                                    */
+                                    relayData = {rootCustomerNeedsID: id, pickupInformation: pickupInformation,  originationAddress1: originationAddress1, originationCity: originationCity, originationState: originationState, originationZip: originationZip, originationNotes: originationNotes,
+                                        deliveryInformation: deliveryInformation, destinationAddress1: destinationAddress1, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, destinationNotes: destinationNotes,
+                                        qty: qty, updatedAt: today, needsDataPoints: needsdatapoints,  unitData: unitDataList};
                                 }
 
                                 $.ajax({
@@ -3300,7 +3317,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                                             pickupDate: pickupDate, deliveryDate: deliveryDate };
 */
                                             var commitData = {customerNeedsID: relayID, entityID: entityID, originationAddress1: originationAddress1, originationCity: originationCity, originationState: originationState, originationZip: originationZip,
-                                                            destinationAddress1: destinationAddress1, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, rate: rate, updatedAt: today,
+                                                            destinationAddress1: destinationAddress1, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, updatedAt: today,
                                                             pickupDate: pickupDate, deliveryDate: deliveryDate };
 
                                             $.ajax({
@@ -3445,12 +3462,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 */
 
             var pickupInformation = {pickupLocation: $('#pickupLocation').val().trim(), contactPerson: $('#pickupContactPerson').val().trim(),
-                                    phoneNumber: $('#pickupPhoneNumber').val().trim(), pickupHoursOfOperationOpen: $('#pickupHoursOfOperationOpen').val().trim(),
-                                    pickupHoursOfOperationClose: $('#pickupHoursOfOperationClose').val().trim(), pickupTimeZone: $('#pickupTimeZone').val().trim()};
+                                    phoneNumber: $('#pickupPhoneNumber').val().trim(), pickupHoursOfOperationOpen: $('#pickupHoursOfOperationOpen').val(),
+                                    pickupHoursOfOperationClose: $('#pickupHoursOfOperationClose').val(), pickupTimeZone: $('#pickupTimeZone').val()};
 
             var deliveryInformation = {deliveryLocation: $('#deliveryLocation').val().trim(), contactPerson: $('#deliveryContactPerson').val().trim(),
-                                    phoneNumber: $('#deliveryPhoneNumber').val().trim(), deliveryHoursOfOperationOpen: $('#deliveryHoursOfOperationOpen').val().trim(),
-                                    deliveryHoursOfOperationClose: $('#deliveryHoursOfOperationClose').val().trim(), deliveryTimeZone: $('#deliveryTimeZone').val().trim()};
+                                    phoneNumber: $('#deliveryPhoneNumber').val().trim(), deliveryHoursOfOperationOpen: $('#deliveryHoursOfOperationOpen').val(),
+                                    deliveryHoursOfOperationClose: $('#deliveryHoursOfOperationClose').val(), deliveryTimeZone: $('#deliveryTimeZone').val()};
 
             var originationAddress1 = $('#originationAddress1').val().trim();
             var originationAddress2 = $('#originationAddress2').val().trim();
@@ -3521,8 +3538,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 */
 
                             var deliveryInformation = {deliveryLocation: $('#deliveryLocation_relay' + relayNumber).val().trim(), contactPerson: $('#contactPerson_relay' + relayNumber).val().trim(),
-                                                    phoneNumber: $('#phoneNumber_relay' + relayNumber).val().trim(), hoursOfOperationOpen: $('#hoursOfOperationOpen_relay' + relayNumber).val().trim(),
-                                                    hoursOfOperationClose: $('#hoursOfOperationClose_relay' + relayNumber).val().trim(),timeZone: $('#timeZone_relay' + relayNumber).val().trim()};
+                                                    phoneNumber: $('#phoneNumber_relay' + relayNumber).val().trim(), deliveryHoursOfOperationOpen: $('#hoursOfOperationOpen_relay' + relayNumber).val().trim(),
+                                                    deliveryHoursOfOperationClose: $('#hoursOfOperationClose_relay' + relayNumber).val().trim(),deliveryTimeZone: $('#timeZone_relay' + relayNumber).val().trim()};
 
                             if(destinationCity != "" && destinationState != ""){
 
@@ -3679,12 +3696,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 */
 
             var pickupInformation = {pickupLocation: $('#pickupLocation').val().trim(), contactPerson: $('#pickupContactPerson').val().trim(),
-                                    phoneNumber: $('#pickupPhoneNumber').val().trim(), pickupHoursOfOperationOpen: $('#pickupHoursOfOperationOpen').val().trim(),
-                                    pickupHoursOfOperationClose: $('#pickupHoursOfOperationClose').val().trim(), pickupTimeZone: $('#pickupTimeZone').val().trim()};
+                                    phoneNumber: $('#pickupPhoneNumber').val().trim(), pickupHoursOfOperationOpen: $('#pickupHoursOfOperationOpen').val(),
+                                    pickupHoursOfOperationClose: $('#pickupHoursOfOperationClose').val(), pickupTimeZone: $('#pickupTimeZone').val()};
 
             var deliveryInformation = {deliveryLocation: $('#deliveryLocation').val().trim(), contactPerson: $('#deliveryContactPerson').val().trim(),
-                                    phoneNumber: $('#deliveryPhoneNumber').val().trim(), deliveryHoursOfOperationOpen: $('#deliveryHoursOfOperationOpen').val().trim(),
-                                    deliveryHoursOfOperationClose: $('#deliveryHoursOfOperationClose').val().trim(), deliveryTimeZone: $('#deliveryTimeZone').val().trim()};
+                                    phoneNumber: $('#deliveryPhoneNumber').val().trim(), deliveryHoursOfOperationOpen: $('#deliveryHoursOfOperationOpen').val(),
+                                    deliveryHoursOfOperationClose: $('#deliveryHoursOfOperationClose').val(), deliveryTimeZone: $('#deliveryTimeZone').val()};
 
             var originationAddress1 = $('#originationAddress1').val().trim();
             var originationAddress2 = $('#originationAddress2').val().trim();
@@ -3699,6 +3716,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             var destinationState = $('#destinationState').val().trim();
             var destinationZip = $('#destinationZip').val().trim();
             var destinationNotes = $('#destinationNotes').val().trim();
+
+            var transportationMode = $('#transportationMode').val().trim();
 
 
             // Build the needsDataPoints
@@ -3727,7 +3746,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 */
             var orderData = {customerID: customerID, carrierIDs: carrierIDs, orderID: orderID, deliveryInformation: deliveryInformation, pickupInformation: pickupInformation, originationAddress: originationAddress1, originationCity: originationCity, originationState: originationState, originationZip: originationZip,
                         destinationAddress: destinationAddress1,  destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, originationLng: "", originationLat: "", destinationLng: "", destinationLat: "", distance: 0, needsDataPoints: needsdatapoints, podList: unitDataList,
-                        comments: "", createdAt: today, updatedAt: today, qty: qty, customerRate: rate};
+                        comments: "", createdAt: today, updatedAt: today, qty: qty, customerRate: rate, transportationMode: transportationMode};
 
             var url = '<?php echo API_HOST_URL . "/orders" ?>';
 
@@ -3761,8 +3780,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 */
 
                             var deliveryInformation = {deliveryLocation: $('#deliveryLocation_relay' + relayNumber).val().trim(), contactPerson: $('#contactPerson_relay' + relayNumber).val().trim(),
-                                                    phoneNumber: $('#phoneNumber_relay' + relayNumber).val().trim(), hoursOfOperationOpen: $('#hoursOfOperationOpen_relay' + relayNumber).val().trim(),
-                                                    hoursOfOperationClose: $('#hoursOfOperationClose_relay' + relayNumber).val().trim(),timeZone: $('#timeZone_relay' + relayNumber).val().trim()};
+                                                    phoneNumber: $('#phoneNumber_relay' + relayNumber).val().trim(), deliveryHoursOfOperationOpen: $('#hoursOfOperationOpen_relay' + relayNumber).val(),
+                                                    deliveryHoursOfOperationClose: $('#hoursOfOperationClose_relay' + relayNumber).val(),timeZone: $('#timeZone_relay' + relayNumber).val()};
 
                             if(destinationCity != "" && destinationState != ""){
 
@@ -3779,7 +3798,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                         qty: qty, createdAt: today, updatedAt: today, needsDataPoints: needsdatapoints, status: "Open", pickupDate: pickupDate, deliveryDate: deliveryDate};
 */
                                     relayData = {carrierID: entityID, orderID: data, pickupInformation: pickupInformation, originationAddress: originationAddress1, originationCity: originationCity, originationState: originationState, originationZip: originationZip,
-                                        deliveryInformation: deliveryInformation, destinationAddress: destinationAddress1, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, carrierRate: carrierRate, transportationMode: "",
+                                        deliveryInformation: deliveryInformation, destinationAddress: destinationAddress1, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, carrierRate: carrierRate, transportationMode: transportationMode,
                                         qty: qty, createdAt: today, updatedAt: today, needsDataPoints: needsdatapoints, status: "Open", pickupDate: pickupDate, deliveryDate: deliveryDate};
 
                                 $.ajax({
