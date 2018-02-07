@@ -61,7 +61,7 @@ class Logs
             $logContext  = stream_context_create($logOptions);
             $logResult = file_get_contents($logURL, false, $logContext); 
             
-            return true;
+            return $logResult;
 
         } catch (Exception $e) { // The authorization query failed verification
               header('HTTP/1.1 404 Not Found');
