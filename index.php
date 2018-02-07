@@ -1521,6 +1521,40 @@ $app->route('GET|POST /oauth', function() {
  */
 
 
+/*****************************************************************************/
+// Logs API Calls
+/*****************************************************************************/
+
+$app->route('POST /save_to_log', function() {
+    
+    $log_type_name = Flight::request()->data->logTypeName;
+    $log_msg = Flight::request()->data->logMessage;
+    $ref_id = Flight::request()->data->referenceID;
+    
+    $logsAPI = Flight::logs();
+
+    $apiResponse = $logsAPI->enter_log($log_type_name, $log_msg, $ref_id);
+
+    print_r($apiResponse);
+});
+
+$app->route('GET /customer_needs_log', function() {
+    $customerNeedsID = Flight::request()->data->customerNeedsID;
+    $logsAPI = Flight::logs();
+
+    $apiResponse = $logsAPI->get_log_for_customer_needs($customerNeedsID);
+
+    print_r($apiResponse);
+});
+
+$app->route('GET /orders_log', function() {
+    $ordersID = Flight::request()->data->orderID;
+    $logsAPI = Flight::logs();
+
+    $apiResponse = $logsAPI->get_log_for_orders($ordersID);
+
+    print_r($apiResponse);
+});
 
 // Start the framework
 $app->start();
