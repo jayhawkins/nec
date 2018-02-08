@@ -480,14 +480,20 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 pickupLocation: $("#pickupLocation").val(),
                                 contactPerson: $("#pickupContactPerson").val(),
                                 phoneNumber: $("#pickupPhoneNumber").val(),
-                                hoursOfOperation: $("#pickupHoursOfOperation").val()
+                                //hoursOfOperation: $("#pickupHoursOfOperation").val()
+                                pickupHoursOfOperationOpen: $("#pickupHoursOfOperationOpen").val(),
+                                pickupHoursOfOperationClose: $("#pickupHoursOfOperationClose").val(),
+                                pickupTimeZone: $("#pickupTimeZone").val()
                             };
 
                             var deliveryInformation  = {
                                 deliveryLocation: $("#deliveryLocation").val(),
                                 contactPerson: $("#deliveryContactPerson").val(),
                                 phoneNumber: $("#deliveryPhoneNumber").val(),
-                                hoursOfOperation: $("#deliveryHoursOfOperation").val()
+                                //hoursOfOperation: $("#deliveryHoursOfOperation").val()
+                                deliveryHoursOfOperationOpen: $("#deliveryHoursOfOperationOpen").val(),
+                                deliveryHoursOfOperationClose: $("#deliveryHoursOfOperationClose").val(),
+                                deliveryTimeZone: $("#deliveryTimeZone").val()
                             };
 
                           var date = today;
@@ -914,19 +920,26 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
 
                     if(order_details[i].pickupInformation == null){
-                        order_details[i].pickupInformation = {pickupLocation: "", contactPerson: "", phoneNumber: "", hoursOfOperation: ""};
+                        //order_details[i].pickupInformation = {pickupLocation: "", contactPerson: "", phoneNumber: "", hoursOfOperation: ""};
+                        order_details[i].pickupInformation = {pickupLocation: "", contactPerson: "", phoneNumber: "", pickupHoursOfOperationOpen: "", pickupHoursOfOperationClose: "", pickupTimeZone: ""};
                     }
 
                     if(order_details[i].deliveryInformation == null){
-                        order_details[i].deliveryInformation = {deliveryLocation: "", contactPerson: "", phoneNumber: "", hoursOfOperation: ""};
+                        //order_details[i].deliveryInformation = {deliveryLocation: "", contactPerson: "", phoneNumber: "", hoursOfOperation: ""};
+                        order_details[i].deliveryInformation = {pickupLocation: "", contactPerson: "", phoneNumber: "", deliveryHoursOfOperationOpen: "", deliveryHoursOfOperationClose: "", deliveryTimeZone: ""};
                     }
 
                     var carrierDistance = " <h5>" + entityName + "</h5> <small class=\"text-blue\">Distance: " + order_details[i].distance + " miles</small>";
 
                     $("#carrierDistance").empty().html(carrierDistance);
 
-                    if(order_details[i].pickupInformation.hoursOfOperation == "") order_details[i].pickupInformation.hoursOfOperation = "N/A";
-                    if(order_details[i].deliveryInformation.hoursOfOperation == "") order_details[i].deliveryInformation.hoursOfOperation = "N/A";
+                    //if(order_details[i].pickupInformation.hoursOfOperation == "") order_details[i].pickupInformation.hoursOfOperation = "N/A";
+                    if(order_details[i].pickupInformation.pickupHoursOfOperationOpen == "") order_details[i].pickupInformation.pickupHoursOfOperationOpen = "01:00";
+                    if(order_details[i].pickupInformation.pickupHoursOfOperationClose == "") order_details[i].pickupInformation.pickupHoursOfOperationClose = "01:00";
+
+                    //if(order_details[i].deliveryInformation.hoursOfOperation == "") order_details[i].deliveryInformation.hoursOfOperation = "N/A";
+                    if(order_details[i].deliveryInformation.deliveryHoursOfOperationOpen == "") order_details[i].deliveryInformation.deliveryHoursOfOperationOpen = "01:00";
+                    if(order_details[i].deliveryInformation.deliveryHoursOfOperationClose == "") order_details[i].deliveryInformation.deliveryHoursOfOperationClose = "01:00";
 
                     if(entityType == 0){
                         $("#pickupName").val(order_details[i].pickupInformation.pickupLocation);
@@ -936,7 +949,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         $("#pickupZip").val(order_details[i].originationZip);
                         $("#pickupPhone").val(order_details[i].pickupInformation.phoneNumber);
                         $("#pickupContact").val(order_details[i].pickupInformation.contactPerson);
-                        $("#pickupHours").val(order_details[i].pickupInformation.hoursOfOperation);
+                        //$("#pickupHours").val(order_details[i].pickupInformation.hoursOfOperation);
+                        $("#pickupHoursOfOperationOpen").val(order_details[i].pickupInformation.pickupHoursOfOperationOpen);
+                        $("#pickupHoursOfOperationClose").val(order_details[i].pickupInformation.pickupHoursOfOperationClose);
+                        $("#pickupTimeZone").val(order_details[i].pickupInformation.pickupTimeZone);
                         $("#pickupDate").val(order_details[i].pickupDate);
 
                         $("#deliveryName").val(order_details[i].deliveryInformation.deliveryLocation);
@@ -946,7 +962,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         $("#deliveryZip").val(order_details[i].destinationZip);
                         $("#deliveryPhone").val(order_details[i].deliveryInformation.phoneNumber);
                         $("#deliveryContact").val(order_details[i].deliveryInformation.contactPerson);
-                        $("#deliveryHours").val(order_details[i].deliveryInformation.hoursOfOperation);
+                        //$("#deliveryHours").val(order_details[i].deliveryInformation.hoursOfOperation);
+                        $("#deliveryHoursOfOperationOpen").val(order_details[i].pickupInformation.deliveryHoursOfOperationOpen);
+                        $("#deliveryHoursOfOperationClose").val(order_details[i].pickupInformation.deliveryHoursOfOperationClose);
+                        $("#deliveryTimeZone").val(order_details[i].pickupInformation.deliveryTimeZone);
                         $("#deliveryDate").val(order_details[i].deliveryDate);
 
                         $("#transportMode").val(order_details[i].transportationMode);
@@ -1006,7 +1025,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 "<br>" +
                                 order_details[i].pickupInformation.contactPerson + "<br>" +
                                 "<br>" +
-                                order_details[i].pickupInformation.hoursOfOperation + "<br>" +
+                                //order_details[i].pickupInformation.hoursOfOperation + "<br>" +
+                                order_details[i].pickupInformation.pickupHoursOfOperationOpen + " to " + order_details[i].pickupInformation.pickupHoursOfOperationClose + " " + order_details[i].pickupInformation.pickupTimeZone +
                                 "<br>" +
                                 "<strong>Pick Up Date</strong><br>" +
                                 "<div style=\"margin-left: 30px;\">" + order_details[i].pickupDate + "</div>" +
@@ -1021,7 +1041,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 "<br>" +
                                 order_details[i].deliveryInformation.contactPerson + "<br>" +
                                 "<br>" +
-                                order_details[i].deliveryInformation.hoursOfOperation + "<br>" +
+                                //order_details[i].deliveryInformation.hoursOfOperation + "<br>" +
+                                order_details[i].deliveryInformation.deliveryHoursOfOperationOpen + " to " + order_details[i].deliveryInformation.deliveryHoursOfOperationClose + " " + order_details[i].deliveryInformation.deliveryTimeZone +
                                 "<br>" +
                                 "<strong>Pick Up Date</strong><br>" +
                                 "<div style=\"margin-left: 30px;\">" + order_details[i].deliveryDate + "</div>" +
@@ -1085,7 +1106,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
             $.each(trailers, function(key, trailer){
 
-                if(trailer.vinNumber == null || trailer.vinNumber == "") trailer.unitNumber = "N/A";
+                if(trailer.vinNumber == null || trailer.vinNumber == "") trailer.vinNumber = "N/A";
                 if(trailer.unitNumber == null || trailer.unitNumber == "") trailer.unitNumber = "N/A";
 
                 if(key == 0){
@@ -1539,7 +1560,13 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 if(podDataJSON.deliveryInformation.deliveryLocation == ""){
                                     errorCount++;
                                 }
-                                if(podDataJSON.deliveryInformation.hoursOfOperation == ""){
+                                //if(podDataJSON.deliveryInformation.hoursOfOperation == ""){
+                                //    errorCount++;
+                                //}
+                                if(podDataJSON.deliveryInformation.deliveryHoursOfOperationOpen == ""){
+                                    errorCount++;
+                                }
+                                if(podDataJSON.deliveryInformation.deliveryHoursOfOperationClose == ""){
                                     errorCount++;
                                 }
                             }
@@ -1556,7 +1583,13 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 if(podDataJSON.pickupInformation.pickupLocation == ""){
                                     errorCount++;
                                 }
-                                if(podDataJSON.pickupInformation.hoursOfOperation == ""){
+                                //if(podDataJSON.pickupInformation.hoursOfOperation == ""){
+                                //    errorCount++;
+                                //}
+                                if(podDataJSON.pickupInformation.pickupHoursOfOperationOpen == ""){
+                                    errorCount++;
+                                }
+                                if(podDataJSON.pickupInformation.pickupHoursOfOperationClose == ""){
                                     errorCount++;
                                 }
                             }
@@ -1715,23 +1748,35 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 	             		$('#customer_pickupContactPerson').text(data.orders[0].pickupInformation.contactPerson);
 	             		$('#customer_pickupLocation').text(data.orders[0].pickupInformation.pickupLocation);
 	             		$('#customer_pickupPhoneNumber').text(data.orders[0].pickupInformation.phoneNumber);
-	             		$('#customer_pickupHoursOfOperation').text(data.orders[0].pickupInformation.hoursOfOperation);
+	             		//$('#customer_pickupHoursOfOperation').text(data.orders[0].pickupInformation.hoursOfOperation);
+	             		$('#customer_pickupHoursOfOperationOpen').text(data.orders[0].pickupInformation.pickupHoursOfOperationOpen);
+	             		$('#customer_pickupHoursOfOperationClose').text(data.orders[0].pickupInformation.pickupHoursOfOperationClose);
+	             		$('#customer_pickupTimeZone').text(data.orders[0].pickupInformation.pickupTimeZone);
 
 	             		$('#pickupContactPerson').val(data.orders[0].pickupInformation.contactPerson);
 	             		$('#pickupLocation').val(data.orders[0].pickupInformation.pickupLocation);
 	             		$('#pickupPhoneNumber').val(data.orders[0].pickupInformation.phoneNumber);
-	             		$('#pickupHoursOfOperation').val(data.orders[0].pickupInformation.hoursOfOperation);
+	             		//$('#pickupHoursOfOperation').val(data.orders[0].pickupInformation.hoursOfOperation);
+	             		$('#pickupHoursOfOperationOpen').val(data.orders[0].pickupInformation.pickupHoursOfOperationOpen);
+	             		$('#pickupHoursOfOperationClose').val(data.orders[0].pickupInformation.pickupHoursOfOperationClose);
+	             		$('#pickupTimeZone').val(data.orders[0].pickupInformation.pickupTimeZone);
 
 					} else {
 	             		$('#customer_pickupContactPerson').text('');
 	             		$('#customer_pickupLocation').text('');
 	             		$('#customer_pickupPhoneNumber').text('');
-	             		$('#customer_pickupHoursOfOperation').text('');
+	             		//$('#customer_pickupHoursOfOperation').text('');
+	             		$('#customer_pickupHoursOfOperationOpen').text('');
+	             		$('#customer_pickupHoursOfOperationClose').text('');
+	             		$('#customer_pickupTimeZone').text('');
 
 	             		$('#pickupContactPerson').val('');
 	             		$('#pickupLocation').val('');
 	             		$('#pickupPhoneNumber').val('');
-	             		$('#pickupHoursOfOperation').val('');
+	             		//$('#pickupHoursOfOperation').val('');
+	             		$('#pickupHoursOfOperationOpen').val('0.00');
+	             		$('#pickupHoursOfOperationClose').val('0.00');
+	             		$('#pickupTimeZone').val('');
 					}
 
 					if (data.orders[0].deliveryInformation !== null) {
@@ -1740,13 +1785,19 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 	             		$('#customer_deliveryLocation').text(data.orders[0].deliveryInformation.deliveryLocation);
 	             		$('#customer_deliveryLocation').text(data.orders[0].deliveryInformation.deliveryLocation);
 	             		$('#customer_deliveryPhoneNumber').text(data.orders[0].deliveryInformation.phoneNumber);
-	             		$('#customer_deliveryHoursOfOperation').text(data.orders[0].deliveryInformation.hoursOfOperation);
+	             		//$('#customer_deliveryHoursOfOperation').text(data.orders[0].deliveryInformation.hoursOfOperation);
+	             		$('#customer_deliveryHoursOfOperationOpen').text(data.orders[0].deliveryInformation.deliveryHoursOfOperationOpen);
+	             		$('#customer_deliveryHoursOfOperationClose').text(data.orders[0].deliveryInformation.deliveryHoursOfOperationClose);
+	             		$('#customer_deliveryTimeZone').text(data.orders[0].deliveryInformation.deliveryTimeZone);
 
 	             		$('#deliveryContactPerson').val(data.orders[0].deliveryInformation.contactPerson);
 	             		$('#deliveryLocation').val(data.orders[0].deliveryInformation.deliveryLocation);
 	             		$('#deliveryLocation').val(data.orders[0].deliveryInformation.deliveryLocation);
 	             		$('#deliveryPhoneNumber').val(data.orders[0].deliveryInformation.phoneNumber);
-	             		$('#deliveryHoursOfOperation').val(data.orders[0].deliveryInformation.hoursOfOperation);
+	             		//$('#deliveryHoursOfOperation').val(data.orders[0].deliveryInformation.hoursOfOperation);
+	             		$('#deliveryHoursOfOperationOpen').val(data.orders[0].deliveryInformation.deliveryHoursOfOperationOpen);
+	             		$('#deliveryHoursOfOperationClose').val(data.orders[0].deliveryInformation.deliveryHoursOfOperationClose);
+	             		$('#deliveryTimeZone').val(data.orders[0].deliveryInformation.deliveryTimeZone);
 
 					} else {
 
@@ -1754,13 +1805,19 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 	             		$('#customer_deliveryLocation').text('');
 	             		$('#customer_deliveryLocation').text('');
 	             		$('#customer_deliveryPhoneNumber').text('');
-	             		$('#customer_deliveryHoursOfOperation').text('');
+	             		//$('#customer_deliveryHoursOfOperation').text('');
+	             		$('#customer_deliveryHoursOfOperationOpen').text('0.00');
+	             		$('#customer_deliveryHoursOfOperationClose').text('0.00');
+	             		$('#customer_deliveryTimeZone').text('');
 
 	             		$('#deliveryContactPerson').val('');
 	             		$('#deliveryLocation').val('');
 	             		$('#deliveryLocation').val('');
 	             		$('#deliveryPhoneNumber').val('');
-	             		$('#deliveryHoursOfOperation').val('');
+	             		//$('#deliveryHoursOfOperation').val('');
+	             		$('#deliveryHoursOfOperationOpen').val('0.00');
+	             		$('#deliveryHoursOfOperationClose').val('0.00');
+	             		$('#deliveryTimeZone').val('');
 
 					}
 
@@ -2605,8 +2662,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             var order = data.orders[0];
             var needsDataPoints = order.needsDataPoints;
 
-            if(order.deliveryInformation == null) order.deliveryInformation = {deliveryLocation: "", contactPerson: "", phoneNumber: "", hoursOfOperation: ""};
-            if(order.pickupInformation == null) order.pickupInformation = {pickupLocation: "", contactPerson: "", phoneNumber: "", hoursOfOperation: ""};
+            //if(order.deliveryInformation == null) order.deliveryInformation = {deliveryLocation: "", contactPerson: "", phoneNumber: "", hoursOfOperation: ""};
+            if(order.deliveryInformation == null) order.deliveryInformation = {deliveryLocation: "", contactPerson: "", phoneNumber: "", deliveryHoursOfOperationOpen: "", deliveryHoursOfOperationClose: "", deliveryTimeZone: ""};
+
+            //if(order.pickupInformation == null) order.pickupInformation = {pickupLocation: "", contactPerson: "", phoneNumber: "", hoursOfOperation: ""};
+            if(order.pickupInformation == null) order.pickupInformation = {pickupLocation: "", contactPerson: "", phoneNumber: "", pickupHoursOfOperationOpen: "", pickupHoursOfOperationClose: "", pickupTimeZone: ""};
+
             if(order.originationAddress1 == null) order.originationAddress1 = "";
             if(order.destinationAddress1 == null) order.destinationAddress1 = "";
             if(order.originationAddress2 == null) order.originationAddress2 = "";
@@ -2614,12 +2675,15 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             if(order.originationZip == null) order.originationZip = "";
             if(order.destinationZip == null) order.destinationZip = "";
             if(order.podList == null) order.podList = [];
-
+console.log(order);
             // Populate Edit form
             $('#pickupLocation').val(order.pickupInformation.pickupLocation);
             $('#pickupContactPerson').val(order.pickupInformation.contactPerson);
             $('#pickupPhoneNumber').val(order.pickupInformation.phoneNumber);
-            $('#pickupHoursOfOperation').val(order.pickupInformation.hoursOfOperation);
+            //$('#pickupHoursOfOperation').val(order.pickupInformation.hoursOfOperation);
+            $('#pickupHoursOfOperationOpen').val(order.pickupInformation.pickupHoursOfOperationOpen);
+            $('#pickupHoursOfOperationClose').val(order.pickupInformation.pickupHoursOfOperationClose);
+            $('#pickupTimeZone').val(order.pickupInformation.pickupTimeZone);
             $('#originationAddress1').val(order.originationAddress);
             $('#originationCity').val(order.originationCity);
             $('#originationState').val(order.originationState);
@@ -2629,7 +2693,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             $('#deliveryLocation').val(order.deliveryInformation.deliveryLocation);
             $('#deliveryContactPerson').val(order.deliveryInformation.contactPerson);
             $('#deliveryPhoneNumber').val(order.deliveryInformation.phoneNumber);
-            $('#deliveryHoursOfOperation').val(order.deliveryInformation.hoursOfOperation);
+            //$('#deliveryHoursOfOperation').val(order.deliveryInformation.hoursOfOperation);
+            $('#deliveryHoursOfOperationOpen').val(order.deliveryInformation.deliveryHoursOfOperationOpen);
+            $('#deliveryHoursOfOperationClose').val(order.deliveryInformation.deliveryHoursOfOperationClose);
+            $('#deliveryTimeZone').val(order.deliveryInformation.deliveryTimeZone);
             $('#destinationAddress1').val(order.destinationAddress);
             $('#destinationCity').val(order.destinationCity);
             $('#destinationState').val(order.destinationState);
@@ -2720,7 +2787,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             var order_details = order.order_details;
 
             $.each(order_details, function(key, detail){
-                if(detail.deliveryInformation == null) detail.deliveryInformation = {deliveryLocation: "", contactPerson: "", phoneNumber: "", hoursOfOperation: ""};
+                //if(detail.deliveryInformation == null) detail.deliveryInformation = {deliveryLocation: "", contactPerson: "", phoneNumber: "", hoursOfOperation: ""};
+                if(detail.deliveryInformation == null) detail.deliveryInformation = {deliveryLocation: "", contactPerson: "", phoneNumber: "", deliveryHoursOfOperationOpen: "", deliveryHoursOfOperationClose: "", deliveryTimeZone: ""};
                 if(detail.destinationAddress == null) detail.destinationAddress = "";
                 if(detail.destinationZip == null) detail.destinationZip = "";
 
@@ -2737,7 +2805,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 $('#deliveryLocation_relay' + relayNumber).val(detail.deliveryInformation.deliveryLocation);
                 $('#contactPerson_relay' + relayNumber).val(detail.deliveryInformation.contactPerson);
                 $('#phoneNumber_relay' + relayNumber).val(detail.deliveryInformation.phoneNumber);
-                $('#hoursOfOperation_relay' + relayNumber).val(detail.deliveryInformation.hoursOfOperation);
+                //$('#hoursOfOperation_relay' + relayNumber).val(detail.deliveryInformation.hoursOfOperation);
+                $('#deliveryHoursOfOperationOpen_relay' + relayNumber).val(detail.deliveryInformation.deliveryHoursOfOperationOpen);
+                $('#deliveryHoursOfOperationClose_relay' + relayNumber).val(detail.deliveryInformation.deliveryHoursOfOperationClose);
+                $('#deliveryTimeZone_relay' + relayNumber).val(detail.deliveryInformation.deliveryTimeZone);
 
                 if(relayNumber == 4) return false;
 
@@ -2915,7 +2986,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
     <ol class="breadcrumb">
         <li>ADMIN</li>
-        <li>View Orders</li>
+        <li onclick="ajaxFormCall('listOrders');" onmouseover="" style="cursor: pointer;">View Orders</li>
         <li class="active">View Order Details</li>
     </ol>
 
@@ -3102,10 +3173,78 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                                 <input type="text" class="form-control" id="pickupPhone" placeholder="Contact Phone Number"><br>
                                 <input type="text" class="form-control" id="pickupContact" placeholder="Contact - First and Last Name"><br>
-                                    <input type="text" class="form-control" id="pickupHours" placeholder="Hours Of Operations"><br>
-                                    <label for="pick-up-date" class="text-blue">Pick Up Date</label>
-                            <input type="date" class="form-control" style="padding-left: 40px;" id="pickupDate" placeholder="MM/DD/YYYY">
-                                    <div class="fa fa-lg fa-calendar text-blue" style="position: relative; left: 10px; top: -28px;"></div>
+                                    <!--input type="text" class="form-control" id="pickupHours" placeholder="Hours Of Operations"><br-->
+
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                            <select class="form-control" id="pickupHoursOfOperationOpen">
+                                                <option>01:00</option>
+                                                <option>02:00</option>
+                                                <option>03:00</option>
+                                                <option>04:00</option>
+                                                <option>05:00</option>
+                                                <option>06:00</option>
+                                                <option>07:00</option>
+                                                <option selected>08:00</option>
+                                                <option>09:00</option>
+                                                <option>10:00</option>
+                                                <option>11:00</option>
+                                                <option>12:00</option>
+                                                <option>13:00</option>
+                                                <option>14:00</option>
+                                                <option>15:00</option>
+                                                <option>16:00</option>
+                                                <option>17:00</option>
+                                                <option>18:00</option>
+                                                <option>19:00</option>
+                                                <option>20:00</option>
+                                                <option>21:00</option>
+                                                <option>22:00</option>
+                                                <option>23:00</option>
+                                                <option>24:00</option>
+                                            </select>
+                                    </div>
+                                    <div class="col-sm-3">
+                                            <select class="form-control" id="pickupHoursOfOperationClose">
+                                                <option>01:00</option>
+                                                <option>02:00</option>
+                                                <option>03:00</option>
+                                                <option>04:00</option>
+                                                <option>05:00</option>
+                                                <option>06:00</option>
+                                                <option>07:00</option>
+                                                <option>08:00</option>
+                                                <option>09:00</option>
+                                                <option>10:00</option>
+                                                <option>11:00</option>
+                                                <option>12:00</option>
+                                                <option>13:00</option>
+                                                <option>14:00</option>
+                                                <option>15:00</option>
+                                                <option>16:00</option>
+                                                <option selected>17:00</option>
+                                                <option>18:00</option>
+                                                <option>19:00</option>
+                                                <option>20:00</option>
+                                                <option>21:00</option>
+                                                <option>22:00</option>
+                                                <option>23:00</option>
+                                                <option>24:00</option>
+                                            </select>
+                                    </div>
+                                    <div class="col-sm-3">
+                                            <select class="form-control" id="pickupTimeZone">
+                                                <option>EST (Eastern)</option>
+                                                <option>CST (Central)</option>
+                                                <option selected>MPT (Mountain)</option>
+                                                <option>PST (Pacific)</option>
+                                            </select>
+                                    </div>
+                                </div>
+
+                                <label for="pick-up-date" class="text-blue">Pick Up Date</label>
+                                <input type="date" class="form-control" style="padding-left: 40px;" id="pickupDate" placeholder="MM/DD/YYYY">
+                                <div class="fa fa-lg fa-calendar text-blue" style="position: relative; left: 10px; top: -28px;"></div>
                         </div>
                             <div class="col-md-4">
                                 <h5 class="text-blue">Delivery Information</h5>
@@ -3133,7 +3272,75 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                                 <input type="text" class="form-control" id="deliveryPhone" placeholder="Contact Phone Number"><br>
                                 <input type="text" class="form-control" id="deliveryContact" placeholder="Contact - First and Last Name"><br>
-                                <input type="text" class="form-control" id="deliveryHours" placeholder="Hours Of Operations"><br>
+                                <!--input type="text" class="form-control" id="deliveryHours" placeholder="Hours Of Operations"><br-->
+
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                            <select class="form-control" id="deliveryHoursOfOperationOpen">
+                                                <option>01:00</option>
+                                                <option>02:00</option>
+                                                <option>03:00</option>
+                                                <option>04:00</option>
+                                                <option>05:00</option>
+                                                <option>06:00</option>
+                                                <option>07:00</option>
+                                                <option selected>08:00</option>
+                                                <option>09:00</option>
+                                                <option>10:00</option>
+                                                <option>11:00</option>
+                                                <option>12:00</option>
+                                                <option>13:00</option>
+                                                <option>14:00</option>
+                                                <option>15:00</option>
+                                                <option>16:00</option>
+                                                <option>17:00</option>
+                                                <option>18:00</option>
+                                                <option>19:00</option>
+                                                <option>20:00</option>
+                                                <option>21:00</option>
+                                                <option>22:00</option>
+                                                <option>23:00</option>
+                                                <option>24:00</option>
+                                            </select>
+                                    </div>
+                                    <div class="col-sm-3">
+                                            <select class="form-control" id="deliveryHoursOfOperationClose">
+                                                <option>01:00</option>
+                                                <option>02:00</option>
+                                                <option>03:00</option>
+                                                <option>04:00</option>
+                                                <option>05:00</option>
+                                                <option>06:00</option>
+                                                <option>07:00</option>
+                                                <option>08:00</option>
+                                                <option>09:00</option>
+                                                <option>10:00</option>
+                                                <option>11:00</option>
+                                                <option>12:00</option>
+                                                <option>13:00</option>
+                                                <option>14:00</option>
+                                                <option>15:00</option>
+                                                <option>16:00</option>
+                                                <option selected>17:00</option>
+                                                <option>18:00</option>
+                                                <option>19:00</option>
+                                                <option>20:00</option>
+                                                <option>21:00</option>
+                                                <option>22:00</option>
+                                                <option>23:00</option>
+                                                <option>24:00</option>
+                                            </select>
+                                    </div>
+                                    <div class="col-sm-3">
+                                            <select class="form-control" id="deliveryTimeZone">
+                                                <option>EST (Eastern)</option>
+                                                <option>CST (Central)</option>
+                                                <option selected>MPT (Mountain)</option>
+                                                <option>PST (Pacific)</option>
+                                            </select>
+                                    </div>
+                                </div>
+
                                 <label for="pick-up-date" class="text-blue">Drop Off Date</label>
                             <input type="date" class="form-control" style="padding-left: 40px;" id="deliveryDate" placeholder="MM/DD/YYYY">
                             <div class="fa fa-lg fa-calendar text-blue" style="position: relative; left: 10px; top: -28px;"></div>
@@ -3747,7 +3954,73 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             <div class="form-group row">
                                     <label for="pickupHoursOfOperation" class="col-sm-3 col-form-label">Hours of Operation</label>
                                     <div class="col-sm-9">
-                                            <input class="form-control" id="pickupHoursOfOperation" placeholder="" type="text">
+                                            <!--input class="form-control" id="pickupHoursOfOperation" placeholder="" type="text"-->
+
+                                            <div class="col-sm-3">
+                                                    <select class="form-control" id="pickupHoursOfOperationOpen">
+                                                        <option>01:00</option>
+                                                        <option>02:00</option>
+                                                        <option>03:00</option>
+                                                        <option>04:00</option>
+                                                        <option>05:00</option>
+                                                        <option>06:00</option>
+                                                        <option>07:00</option>
+                                                        <option selected>08:00</option>
+                                                        <option>09:00</option>
+                                                        <option>10:00</option>
+                                                        <option>11:00</option>
+                                                        <option>12:00</option>
+                                                        <option>13:00</option>
+                                                        <option>14:00</option>
+                                                        <option>15:00</option>
+                                                        <option>16:00</option>
+                                                        <option>17:00</option>
+                                                        <option>18:00</option>
+                                                        <option>19:00</option>
+                                                        <option>20:00</option>
+                                                        <option>21:00</option>
+                                                        <option>22:00</option>
+                                                        <option>23:00</option>
+                                                        <option>24:00</option>
+                                                    </select>
+                                            </div>
+                                            <div class="col-sm-3">
+                                                    <select class="form-control" id="pickupHoursOfOperationClose">
+                                                        <option>01:00</option>
+                                                        <option>02:00</option>
+                                                        <option>03:00</option>
+                                                        <option>04:00</option>
+                                                        <option>05:00</option>
+                                                        <option>06:00</option>
+                                                        <option>07:00</option>
+                                                        <option>08:00</option>
+                                                        <option>09:00</option>
+                                                        <option>10:00</option>
+                                                        <option>11:00</option>
+                                                        <option>12:00</option>
+                                                        <option>13:00</option>
+                                                        <option>14:00</option>
+                                                        <option>15:00</option>
+                                                        <option>16:00</option>
+                                                        <option selected>17:00</option>
+                                                        <option>18:00</option>
+                                                        <option>19:00</option>
+                                                        <option>20:00</option>
+                                                        <option>21:00</option>
+                                                        <option>22:00</option>
+                                                        <option>23:00</option>
+                                                        <option>24:00</option>
+                                                    </select>
+                                            </div>
+                                            <div class="col-sm-3">
+                                                    <select class="form-control" id="pickupTimeZone">
+                                                        <option>EST (Eastern)</option>
+                                                        <option>CST (Central)</option>
+                                                        <option selected>MPT (Mountain)</option>
+                                                        <option>PST (Pacific)</option>
+                                                    </select>
+                                            </div>
+
                                     </div>
                             </div>
 
@@ -3812,7 +4085,73 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             <div class="form-group row">
                                     <label for="deliveryHoursOfOperation" class="col-sm-3 col-form-label">Hours of Operation</label>
                                     <div class="col-sm-9">
-                                            <input class="form-control" id="deliveryHoursOfOperation" placeholder="" type="text">
+                                            <!--input class="form-control" id="deliveryHoursOfOperation" placeholder="" type="text"-->
+
+                                            <div class="col-sm-3">
+                                                    <select class="form-control" id="deliveryHoursOfOperationOpen">
+                                                        <option>01:00</option>
+                                                        <option>02:00</option>
+                                                        <option>03:00</option>
+                                                        <option>04:00</option>
+                                                        <option>05:00</option>
+                                                        <option>06:00</option>
+                                                        <option>07:00</option>
+                                                        <option selected>08:00</option>
+                                                        <option>09:00</option>
+                                                        <option>10:00</option>
+                                                        <option>11:00</option>
+                                                        <option>12:00</option>
+                                                        <option>13:00</option>
+                                                        <option>14:00</option>
+                                                        <option>15:00</option>
+                                                        <option>16:00</option>
+                                                        <option>17:00</option>
+                                                        <option>18:00</option>
+                                                        <option>19:00</option>
+                                                        <option>20:00</option>
+                                                        <option>21:00</option>
+                                                        <option>22:00</option>
+                                                        <option>23:00</option>
+                                                        <option>24:00</option>
+                                                    </select>
+                                            </div>
+                                            <div class="col-sm-3">
+                                                    <select class="form-control" id="deliveryHoursOfOperationClose">
+                                                        <option>01:00</option>
+                                                        <option>02:00</option>
+                                                        <option>03:00</option>
+                                                        <option>04:00</option>
+                                                        <option>05:00</option>
+                                                        <option>06:00</option>
+                                                        <option>07:00</option>
+                                                        <option>08:00</option>
+                                                        <option>09:00</option>
+                                                        <option>10:00</option>
+                                                        <option>11:00</option>
+                                                        <option>12:00</option>
+                                                        <option>13:00</option>
+                                                        <option>14:00</option>
+                                                        <option>15:00</option>
+                                                        <option>16:00</option>
+                                                        <option selected>17:00</option>
+                                                        <option>18:00</option>
+                                                        <option>19:00</option>
+                                                        <option>20:00</option>
+                                                        <option>21:00</option>
+                                                        <option>22:00</option>
+                                                        <option>23:00</option>
+                                                        <option>24:00</option>
+                                                    </select>
+                                            </div>
+                                            <div class="col-sm-3">
+                                                    <select class="form-control" id="deliveryTimeZone">
+                                                        <option>EST (Eastern)</option>
+                                                        <option>CST (Central)</option>
+                                                        <option selected>MPT (Mountain)</option>
+                                                        <option>PST (Pacific)</option>
+                                                    </select>
+                                            </div>
+
                                     </div>
                             </div>
                             <div class="form-group row">
@@ -3886,8 +4225,74 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     <input class="form-control" id="phoneNumber_relay1" placeholder="" type="text">
                             </div>
                             <div class="form-group">
-                                    <label for="hoursOfOperation_relay1">Hours of Operation</label>
-                                    <input class="form-control" id="hoursOfOperation_relay1" placeholder="" type="text">
+                                    <label for="hoursOfOperationOpen_relay1">Hours of Operation</label>
+                                    <!--input class="form-control" id="hoursOfOperation_relay1" placeholder="" type="text"-->
+                                    <br />
+                                    <div class="col-md-4">
+                                                    <select class="form-control" id="hoursOfOperationOpen_relay1">
+                                                        <option>01:00</option>
+                                                        <option>02:00</option>
+                                                        <option>03:00</option>
+                                                        <option>04:00</option>
+                                                        <option>05:00</option>
+                                                        <option>06:00</option>
+                                                        <option>07:00</option>
+                                                        <option>08:00</option>
+                                                        <option>09:00</option>
+                                                        <option>10:00</option>
+                                                        <option>11:00</option>
+                                                        <option>12:00</option>
+                                                        <option>13:00</option>
+                                                        <option>14:00</option>
+                                                        <option>15:00</option>
+                                                        <option>16:00</option>
+                                                        <option>17:00</option>
+                                                        <option>18:00</option>
+                                                        <option>19:00</option>
+                                                        <option>20:00</option>
+                                                        <option>21:00</option>
+                                                        <option>22:00</option>
+                                                        <option>23:00</option>
+                                                        <option>24:00</option>
+                                                    </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                    <select class="form-control" id="hoursOfOperationClose_relay1">
+                                                        <option>01:00</option>
+                                                        <option>02:00</option>
+                                                        <option>03:00</option>
+                                                        <option>04:00</option>
+                                                        <option>05:00</option>
+                                                        <option>06:00</option>
+                                                        <option>07:00</option>
+                                                        <option>08:00</option>
+                                                        <option>09:00</option>
+                                                        <option>10:00</option>
+                                                        <option>11:00</option>
+                                                        <option>12:00</option>
+                                                        <option>13:00</option>
+                                                        <option>14:00</option>
+                                                        <option>15:00</option>
+                                                        <option>16:00</option>
+                                                        <option>17:00</option>
+                                                        <option>18:00</option>
+                                                        <option>19:00</option>
+                                                        <option>20:00</option>
+                                                        <option>21:00</option>
+                                                        <option>22:00</option>
+                                                        <option>23:00</option>
+                                                        <option>24:00</option>
+                                                    </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                    <select class="form-control" id="timeZone_relay1">
+                                                        <option>EST (Eastern)</option>
+                                                        <option>CST (Central)</option>
+                                                        <option>MPT (Mountain)</option>
+                                                        <option>PST (Pacific)</option>
+                                                    </select>
+                                            </div>
+
                             </div>
                             <div class="form-group">
                                     <label for="pickupDate_relay1">Pickup Date</label>
@@ -3933,7 +4338,73 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             </div>
                             <div class="form-group">
                                     <label for="hoursOfOperation_relay2">Hours of Operation</label>
-                                    <input class="form-control" id="hoursOfOperation_relay2" placeholder="" type="text">
+                                    <!--input class="form-control" id="hoursOfOperation_relay2" placeholder="" type="text"-->
+                                    <br />
+                                    <div class="col-sm-4">
+                                                    <select class="form-control" id="hoursOfOperationOpen_relay2">
+                                                        <option>01:00</option>
+                                                        <option>02:00</option>
+                                                        <option>03:00</option>
+                                                        <option>04:00</option>
+                                                        <option>05:00</option>
+                                                        <option>06:00</option>
+                                                        <option>07:00</option>
+                                                        <option>08:00</option>
+                                                        <option>09:00</option>
+                                                        <option>10:00</option>
+                                                        <option>11:00</option>
+                                                        <option>12:00</option>
+                                                        <option>13:00</option>
+                                                        <option>14:00</option>
+                                                        <option>15:00</option>
+                                                        <option>16:00</option>
+                                                        <option>17:00</option>
+                                                        <option>18:00</option>
+                                                        <option>19:00</option>
+                                                        <option>20:00</option>
+                                                        <option>21:00</option>
+                                                        <option>22:00</option>
+                                                        <option>23:00</option>
+                                                        <option>24:00</option>
+                                                    </select>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                    <select class="form-control" id="hoursOfOperationClose_relay2">
+                                                        <option>01:00</option>
+                                                        <option>02:00</option>
+                                                        <option>03:00</option>
+                                                        <option>04:00</option>
+                                                        <option>05:00</option>
+                                                        <option>06:00</option>
+                                                        <option>07:00</option>
+                                                        <option>08:00</option>
+                                                        <option>09:00</option>
+                                                        <option>10:00</option>
+                                                        <option>11:00</option>
+                                                        <option>12:00</option>
+                                                        <option>13:00</option>
+                                                        <option>14:00</option>
+                                                        <option>15:00</option>
+                                                        <option>16:00</option>
+                                                        <option>17:00</option>
+                                                        <option>18:00</option>
+                                                        <option>19:00</option>
+                                                        <option>20:00</option>
+                                                        <option>21:00</option>
+                                                        <option>22:00</option>
+                                                        <option>23:00</option>
+                                                        <option>24:00</option>
+                                                    </select>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                    <select class="form-control" id="timeZone_relay2">
+                                                        <option>EST (Eastern)</option>
+                                                        <option>CST (Central)</option>
+                                                        <option>MPT (Mountain)</option>
+                                                        <option>PST (Pacific)</option>
+                                                    </select>
+                                            </div>
+
                             </div>
                             <div class="form-group">
                                     <label for="pickupDate_relay2">Pickup Date</label>
@@ -3979,7 +4450,73 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             </div>
                             <div class="form-group">
                                     <label for="hoursOfOperation_relay3">Hours of Operation</label>
-                                    <input class="form-control" id="hoursOfOperation_relay3" placeholder="" type="text">
+                                    <!--input class="form-control" id="hoursOfOperation_relay3" placeholder="" type="text"-->
+                                    <br />
+                                    <div class="col-sm-4">
+                                                    <select class="form-control" id="hoursOfOperationOpen_relay3">
+                                                        <option>01:00</option>
+                                                        <option>02:00</option>
+                                                        <option>03:00</option>
+                                                        <option>04:00</option>
+                                                        <option>05:00</option>
+                                                        <option>06:00</option>
+                                                        <option>07:00</option>
+                                                        <option>08:00</option>
+                                                        <option>09:00</option>
+                                                        <option>10:00</option>
+                                                        <option>11:00</option>
+                                                        <option>12:00</option>
+                                                        <option>13:00</option>
+                                                        <option>14:00</option>
+                                                        <option>15:00</option>
+                                                        <option>16:00</option>
+                                                        <option>17:00</option>
+                                                        <option>18:00</option>
+                                                        <option>19:00</option>
+                                                        <option>20:00</option>
+                                                        <option>21:00</option>
+                                                        <option>22:00</option>
+                                                        <option>23:00</option>
+                                                        <option>24:00</option>
+                                                    </select>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                    <select class="form-control" id="hoursOfOperationClose_relay3">
+                                                        <option>01:00</option>
+                                                        <option>02:00</option>
+                                                        <option>03:00</option>
+                                                        <option>04:00</option>
+                                                        <option>05:00</option>
+                                                        <option>06:00</option>
+                                                        <option>07:00</option>
+                                                        <option>08:00</option>
+                                                        <option>09:00</option>
+                                                        <option>10:00</option>
+                                                        <option>11:00</option>
+                                                        <option>12:00</option>
+                                                        <option>13:00</option>
+                                                        <option>14:00</option>
+                                                        <option>15:00</option>
+                                                        <option>16:00</option>
+                                                        <option>17:00</option>
+                                                        <option>18:00</option>
+                                                        <option>19:00</option>
+                                                        <option>20:00</option>
+                                                        <option>21:00</option>
+                                                        <option>22:00</option>
+                                                        <option>23:00</option>
+                                                        <option>24:00</option>
+                                                    </select>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                    <select class="form-control" id="timeZone_relay3">
+                                                        <option>EST (Eastern)</option>
+                                                        <option>CST (Central)</option>
+                                                        <option>MPT (Mountain)</option>
+                                                        <option>PST (Pacific)</option>
+                                                    </select>
+                                            </div>
+
                             </div>
                             <div class="form-group">
                                     <label for="pickupDate_relay3">Pickup Date</label>
@@ -4025,7 +4562,73 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             </div>
                             <div class="form-group">
                                     <label for="hoursOfOperation_relay4">Hours of Operation</label>
-                                    <input class="form-control" id="hoursOfOperation_relay4" placeholder="" type="text">
+                                    <!--input class="form-control" id="hoursOfOperation_relay4" placeholder="" type="text"-->
+                                    <br />
+                                    <div class="col-sm-4">
+                                                    <select class="form-control" id="hoursOfOperationOpen_relay4">
+                                                        <option>01:00</option>
+                                                        <option>02:00</option>
+                                                        <option>03:00</option>
+                                                        <option>04:00</option>
+                                                        <option>05:00</option>
+                                                        <option>06:00</option>
+                                                        <option>07:00</option>
+                                                        <option>08:00</option>
+                                                        <option>09:00</option>
+                                                        <option>10:00</option>
+                                                        <option>11:00</option>
+                                                        <option>12:00</option>
+                                                        <option>13:00</option>
+                                                        <option>14:00</option>
+                                                        <option>15:00</option>
+                                                        <option>16:00</option>
+                                                        <option>17:00</option>
+                                                        <option>18:00</option>
+                                                        <option>19:00</option>
+                                                        <option>20:00</option>
+                                                        <option>21:00</option>
+                                                        <option>22:00</option>
+                                                        <option>23:00</option>
+                                                        <option>24:00</option>
+                                                    </select>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                    <select class="form-control" id="hoursOfOperationClose_relay4">
+                                                        <option>01:00</option>
+                                                        <option>02:00</option>
+                                                        <option>03:00</option>
+                                                        <option>04:00</option>
+                                                        <option>05:00</option>
+                                                        <option>06:00</option>
+                                                        <option>07:00</option>
+                                                        <option>08:00</option>
+                                                        <option>09:00</option>
+                                                        <option>10:00</option>
+                                                        <option>11:00</option>
+                                                        <option>12:00</option>
+                                                        <option>13:00</option>
+                                                        <option>14:00</option>
+                                                        <option>15:00</option>
+                                                        <option>16:00</option>
+                                                        <option>17:00</option>
+                                                        <option>18:00</option>
+                                                        <option>19:00</option>
+                                                        <option>20:00</option>
+                                                        <option>21:00</option>
+                                                        <option>22:00</option>
+                                                        <option>23:00</option>
+                                                        <option>24:00</option>
+                                                    </select>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                    <select class="form-control" id="timeZone_relay4">
+                                                        <option>EST (Eastern)</option>
+                                                        <option>CST (Central)</option>
+                                                        <option>MPT (Mountain)</option>
+                                                        <option>PST (Pacific)</option>
+                                                    </select>
+                                            </div>
+
                             </div>
                             <div class="form-group">
                                     <label for="pickupDate_relay4">Pickup Date</label>
@@ -5258,26 +5861,38 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         $("#pickupLocation").val('');
                         $("#pickupContactPerson").val('');
                         $("#pickupPhoneNumber").val('');
-                        $("#pickupHoursOfOperation").val('');
+                        //$("#pickupHoursOfOperation").val('');
+                        $("#pickupHoursOfOperationOpen").val('');
+                        $("#pickupHoursOfOperationClose").val('');
+                        $("#pickupTimeZone").val('');
                     }
                     else{
                         $("#pickupLocation").val(data["pickupInformation"].pickupLocation);
                         $("#pickupContactPerson").val(data["pickupInformation"].contactPerson);
                         $("#pickupPhoneNumber").val(data["pickupInformation"].phoneNumber);
-                        $("#pickupHoursOfOperation").val(data["pickupInformation"].hoursOfOperation);
+                        //$("#pickupHoursOfOperation").val(data["pickupInformation"].hoursOfOperation);
+                        $("#pickupHoursOfOperationOpen").val(data["pickupInformation"].pickupHoursOfOperationOpen);
+                        $("#pickupHoursOfOperationClose").val(data["pickupInformation"].pickupHoursOfOperationClose);
+                        $("#pickupTimeZone").val(data["pickupInformation"].pickupTimeZone);
                     }
 
                     if(data["deliveryInformation"] == null){
                         $("#deliveryLocation").val('');
                         $("#deliveryContactPerson").val('');
                         $("#deliveryPhoneNumber").val('');
-                        $("#deliveryHoursOfOperation").val('');
+                        //$("#deliveryHoursOfOperation").val('');
+                        $("#deliveryHoursOfOperationOpen").val('');
+                        $("#deliveryHoursOfOperationClose").val('');
+                        $("#deliveryTimeZone").val('');
                     }
                     else{
                         $("#deliveryLocation").val(data["deliveryInformation"].deliveryLocation);
                         $("#deliveryContactPerson").val(data["deliveryInformation"].contactPerson);
                         $("#deliveryPhoneNumber").val(data["deliveryInformation"].phoneNumber);
-                        $("#deliveryHoursOfOperation").val(data["deliveryInformation"].hoursOfOperation);
+                        //$("#deliveryHoursOfOperation").val(data["deliveryInformation"].hoursOfOperation);
+                        $("#deliveryHoursOfOperationOpen").val(data["deliveryInformation"].deliveryHoursOfOperationOpen);
+                        $("#deliveryHoursOfOperationClose").val(data["deliveryInformation"].deliveryHoursOfOperationClose);
+                        $("#deliveryTimeZone").val(data["deliveryInformation"].deliveryTimeZone);
                     }
 
                     $("#transportationMode").val(data["transportationMode"]);
@@ -5467,7 +6082,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     });
 
                     var size = data.needsDataPoints[3].length + ' x ' + data.needsDataPoints[4].width + ' x ' + data.needsDataPoints[0].height;
-
+/*
                     var podDataJSON = {
                         podFormType: customerName,
                         unitNumber: pod.unitNumber, vinNumber: pod.vinNumber, trailerProNumber: pod.truckProNumber, year: pod.trailerYear,
@@ -5478,6 +6093,19 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         pickupPhoneNumber: data.pickupInformation.phoneNumber, pickupHours: data.pickupInformation.hoursOfOperation,
                         deliveryLocation: data.deliveryInformation.deliveryLocation, deliveryContact: data.deliveryInformation.contactPerson,
                         deliveryPhoneNumber: data.deliveryInformation.phoneNumber, deliveryHours: data.deliveryInformation.hoursOfOperation
+                    };
+*/
+
+                    var podDataJSON = {
+                        podFormType: customerName,
+                        unitNumber: pod.unitNumber, vinNumber: pod.vinNumber, trailerProNumber: pod.truckProNumber, year: pod.trailerYear,
+                        size: size, type: data.needsDataPoints[5].type, door: data.needsDataPoints[1].door, decals: data.needsDataPoints[13].decals,
+                        originationAddress: data.originationAddress, originationCity: data.originationCity, originationState: data.originationState, originationZipcode: data.originationZip,
+                        destinationAddress: data.destinationAddress, destinationCity: data.destinationCity, destinationState: data.destinationState, destinationZipcode: data.destinationZip,
+                        pickupLocation: data.pickupInformation.pickupLocation, pickupContact: data.pickupInformation.contactPerson,
+                        pickupPhoneNumber: data.pickupInformation.phoneNumber, pickupHours: data.pickupInformation.pickupHoursOfOperationOpen + " to " + data.pickupInformation.pickupHoursOfOperationClose + " " + data.pickupInformation.pickupTimeZone,
+                        deliveryLocation: data.deliveryInformation.deliveryLocation, deliveryContact: data.deliveryInformation.contactPerson,
+                        deliveryPhoneNumber: data.deliveryInformation.phoneNumber, deliveryHours: data.deliveryInformation.deliveryHoursOfOperationOpen + " to " + data.deliveryInformation.deliveryHoursOfOperationClose + " " + data.deliveryInformation.deliveryTimeZone
                     };
 
                     var podURL = '<?php echo HTTP_HOST . '/pod_form_api'; ?>';
@@ -6058,7 +6686,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     var size = data.needsDataPoints[3].length + ' x ' + data.needsDataPoints[4].width + ' x ' + data.needsDataPoints[0].height;
 
                     var pod = data.podList[0];
-
+/*
                     var podDataJSON = {
                         podFormType: customerName,
                         unitNumber: pod.unitNumber, vinNumber: pod.vinNumber, trailerProNumber: pod.truckProNumber, year: pod.trailerYear,
@@ -6069,6 +6697,19 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         pickupPhoneNumber: data.pickupInformation.phoneNumber, pickupHours: data.pickupInformation.hoursOfOperation,
                         deliveryLocation: data.deliveryInformation.deliveryLocation, deliveryContact: data.deliveryInformation.contactPerson,
                         deliveryPhoneNumber: data.deliveryInformation.phoneNumber, deliveryHours: data.deliveryInformation.hoursOfOperation
+                    };
+*/
+
+                    var podDataJSON = {
+                        podFormType: customerName,
+                        unitNumber: pod.unitNumber, vinNumber: pod.vinNumber, trailerProNumber: pod.truckProNumber, year: pod.trailerYear,
+                        size: size, type: data.needsDataPoints[5].type, door: data.needsDataPoints[1].door, decals: data.needsDataPoints[14].decals,
+                        originationAddress: data.originationAddress, originationCity: data.originationCity, originationState: data.originationState, originationZipcode: data.originationZip,
+                        destinationAddress: data.destinationAddress, destinationCity: data.destinationCity, destinationState: data.destinationState, destinationZipcode: data.destinationZip,
+                        pickupLocation: data.pickupInformation.pickupLocation, pickupContact: data.pickupInformation.contactPerson,
+                        pickupPhoneNumber: data.pickupInformation.phoneNumber, pickupHours: data.pickupInformation.pickupHoursOfOperationOpen + " to " + data.pickupInformation.pickupHoursOfOperationClose + " " + data.pickupInformation.pickupTimeZone,
+                        deliveryLocation: data.deliveryInformation.deliveryLocation, deliveryContact: data.deliveryInformation.contactPerson,
+                        deliveryPhoneNumber: data.deliveryInformation.phoneNumber, deliveryHours: data.deliveryInformation.deliveryHoursOfOperationOpen + " to " + data.deliveryInformation.deliveryHoursOfOperationClose + " " + data.deliveryInformation.deliveryTimeZone
                     };
 
                     var podURL = '<?php echo HTTP_HOST . '/pod_form_api'; ?>';
@@ -6127,7 +6768,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     var size = data.needsDataPoints[3].length + ' x ' + data.needsDataPoints[4].width + ' x ' + data.needsDataPoints[0].height;
 
                     var pod = data.podList[0];
-
+/*
                     var podDataJSON = {
                         podFormType: customerName,
                         unitNumber: pod.unitNumber, vinNumber: pod.vinNumber, trailerProNumber: pod.truckProNumber, year: pod.trailerYear,
@@ -6138,6 +6779,19 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         pickupPhoneNumber: data.pickupInformation.phoneNumber, pickupHours: data.pickupInformation.hoursOfOperation,
                         deliveryLocation: data.deliveryInformation.deliveryLocation, deliveryContact: data.deliveryInformation.contactPerson,
                         deliveryPhoneNumber: data.deliveryInformation.phoneNumber, deliveryHours: data.deliveryInformation.hoursOfOperation
+                    };
+*/
+
+                    var podDataJSON = {
+                        podFormType: customerName,
+                        unitNumber: pod.unitNumber, vinNumber: pod.vinNumber, trailerProNumber: pod.truckProNumber, year: pod.trailerYear,
+                        size: size, type: data.needsDataPoints[5].type, door: data.needsDataPoints[1].door, decals: data.needsDataPoints[14].decals,
+                        originationAddress: data.originationAddress, originationCity: data.originationCity, originationState: data.originationState, originationZipcode: data.originationZip,
+                        destinationAddress: data.destinationAddress, destinationCity: data.destinationCity, destinationState: data.destinationState, destinationZipcode: data.destinationZip,
+                        pickupLocation: data.pickupInformation.pickupLocation, pickupContact: data.pickupInformation.contactPerson,
+                        pickupPhoneNumber: data.pickupInformation.phoneNumber, pickupHours: data.pickupInformation.pickupHoursOfOperationOpen + " to " + data.pickupInformation.pickupHoursOfOperationClose + " " + data.pickupInformation.pickupTimeZone,
+                        deliveryLocation: data.deliveryInformation.deliveryLocation, deliveryContact: data.deliveryInformation.contactPerson,
+                        deliveryPhoneNumber: data.deliveryInformation.phoneNumber, deliveryHours: data.deliveryInformation.deliveryHoursOfOperationOpen + " to " + data.deliveryInformation.deliveryHoursOfOperationClose + " " + data.deliveryInformation.deliveryTimeZone
                     };
 
                     var podURL = '<?php echo HTTP_HOST . '/pod_form_api'; ?>';
@@ -6756,12 +7410,21 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
 
                 var id = $('#orderID').val();
-
+/*
                 var pickupInformation = {pickupLocation: $('#pickupLocation').val().trim(), contactPerson: $('#pickupContactPerson').val().trim(),
                                         phoneNumber: $('#pickupPhoneNumber').val().trim(), hoursOfOperation: $('#pickupHoursOfOperation').val().trim()};
 
                 var deliveryInformation = {deliveryLocation: $('#deliveryLocation').val().trim(), contactPerson: $('#deliveryContactPerson').val().trim(),
                                         phoneNumber: $('#deliveryPhoneNumber').val().trim(), hoursOfOperation: $('#deliveryHoursOfOperation').val().trim()};
+*/
+
+                var pickupInformation = {pickupLocation: $('#pickupLocation').val().trim(), contactPerson: $('#pickupContactPerson').val().trim(),
+                                        phoneNumber: $('#pickupPhoneNumber').val().trim(), pickupHoursOfOperationOpen: $('#pickupHoursOfOperationOpen').val().trim(),
+                                        pickupHoursOfOperationClose: $('#pickupHoursOfOperationClose').val().trim(),pickupTimeZone: $('#pickupTimeZone').val().trim()};
+
+                var deliveryInformation = {deliveryLocation: $('#deliveryLocation').val().trim(), contactPerson: $('#deliveryContactPerson').val().trim(),
+                                        phoneNumber: $('#deliveryPhoneNumber').val().trim(), deliveryHoursOfOperationOpen: $('#deliveryHoursOfOperationOpen').val().trim(),
+                                        deliveryHoursOfOperationClose: $('#deliveryHoursOfOperationClose').val().trim(),deliveryTimeZone: $('#deliveryTimeZone').val().trim()};
 
                 var originationAddress1 = $('#originationAddress1').val().trim();
                 var originationAddress2 = $('#originationAddress2').val().trim();
@@ -6836,9 +7499,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     var destinationCity = $('#city_relay' + relayNumber).val().trim();
                                     var destinationState = $('#state_relay' + relayNumber).val().trim();
                                     var destinationZip = $('#zip_relay' + relayNumber).val().trim();
-
+/*
                                     var deliveryInformation = {deliveryLocation: $('#deliveryLocation_relay' + relayNumber).val().trim(), contactPerson: $('#contactPerson_relay' + relayNumber).val().trim(),
                                                             phoneNumber: $('#phoneNumber_relay' + relayNumber).val().trim(), hoursOfOperation: $('#hoursOfOperation_relay' + relayNumber).val().trim()};
+*/
+
+                                    var deliveryInformation = {deliveryLocation: $('#deliveryLocation_relay' + relayNumber).val().trim(), contactPerson: $('#contactPerson_relay' + relayNumber).val().trim(),
+                                                            phoneNumber: $('#phoneNumber_relay' + relayNumber).val().trim(), deliveryHoursOfOperationOpen: $('#hoursOfOperationOpen_relay' + relayNumber).val().trim(),
+                                                            deliveryHoursOfOperationClose: $('#hoursOfOperationClose_relay' + relayNumber).val().trim(),deliveryTimeZone: $('#timeZone_relay' + relayNumber).val().trim()};
 
                                     if(destinationCity != "" && destinationState != ""){
 
@@ -6985,15 +7653,24 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
 
             if(data.pickupInformation == null){
-                data.pickupInformation = {pickupLocation: "", contactPerson: "", phoneNumber: "", hoursOfOperation: ""};
+                //data.pickupInformation = {pickupLocation: "", contactPerson: "", phoneNumber: "", hoursOfOperation: ""};
+                data.pickupInformation = {pickupLocation: "", contactPerson: "", phoneNumber: "", pickupHoursOfOperationOpen: "", pickupHoursOfOperationClose: "", pickupTimeZone: ""};
             }
 
             if(data.deliveryInformation == null){
-                data.deliveryInformation = {deliveryLocation: "", contactPerson: "", phoneNumber: "", hoursOfOperation: ""};
+                //data.deliveryInformation = {deliveryLocation: "", contactPerson: "", phoneNumber: "", hoursOfOperation: ""};
+                data.deliveryInformation = {deliveryLocation: "", contactPerson: "", phoneNumber: "", deliveryHoursOfOperationOpen: "", deliveryHoursOfOperationClose: "", deliveryTimeZone: ""};
             }
 
-            if(data.pickupInformation.hoursOfOperation == "") data.pickupInformation.hoursOfOperation = "N/A";
-            if(data.deliveryInformation.hoursOfOperation == "") data.deliveryInformation.hoursOfOperation = "N/A";
+            //if(data.pickupInformation.hoursOfOperation == "") data.pickupInformation.hoursOfOperation = "N/A";
+            if(data.pickupInformation.pickupHoursOfOperationOpen == "") data.pickupInformation.pickupHoursOfOperationOpen = "01:00";
+            if(data.pickupInformation.pickupHoursOfOperationClose == "") data.pickupInformation.pickupHoursOfOperationClose = "01:00";
+            if(data.pickupInformation.pickupTimeZone == "") data.pickupInformation.pickupTimeZone = "EST (Eastern)";
+
+            //if(data.deliveryInformation.hoursOfOperation == "") data.deliveryInformation.hoursOfOperation = "N/A";
+            if(data.deliveryInformation.deliveryHoursOfOperationOpen == "") data.deliveryInformation.deliveryHoursOfOperationOpen = "01:00";
+            if(data.deliveryInformation.deliveryHoursOfOperationClose == "") data.deliveryInformation.deliveryHoursOfOperationClose = "01:00";
+            if(data.deliveryInformation.deliveryTimeZone == "") data.deliveryInformation.deliveryTimeZone = "EST (Eastern)";
 
             $("#pickupName").val(data.pickupInformation.pickupLocation);
             $("#pickupAddress").val(data.originationAddress);
@@ -7002,7 +7679,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             $("#pickupZip").val(data.originationZip);
             $("#pickupPhone").val(data.pickupInformation.phoneNumber);
             $("#pickupContact").val(data.pickupInformation.contactPerson);
-            $("#pickupHours").val(data.pickupInformation.hoursOfOperation);
+            //$("#pickupHours").val(data.pickupInformation.hoursOfOperation);
+            $("#pickupHoursOfOperationOpen").val(data.pickupInformation.pickupHoursOfOperationOpen);
+            $("#pickupHoursOfOperationClose").val(data.pickupInformation.pickupHoursOfOperationClose);
+            $("#pickupTimeZone").val(data.pickupInformation.pickupTimeZone);
             $("#pickupDate").val(data.pickupDate);
 
             $("#deliveryName").val(data.deliveryInformation.deliveryLocation);
@@ -7012,7 +7692,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             $("#deliveryZip").val(data.destinationZip);
             $("#deliveryPhone").val(data.deliveryInformation.phoneNumber);
             $("#deliveryContact").val(data.deliveryInformation.contactPerson);
-            $("#deliveryHours").val(data.deliveryInformation.hoursOfOperation);
+            //$("#deliveryHours").val(data.deliveryInformation.hoursOfOperation);
+            $("#deliveryHoursOfOperationOpen").val(data.deliveryInformation.deliveryHoursOfOperationOpen);
+            $("#deliveryHoursOfOperationClose").val(data.deliveryInformation.deliveryHoursOfOperationClose);
+            $("#deliveryTimeZone").val(data.deliveryInformation.deliveryTimeZone);
             $("#deliveryDate").val(data.deliveryDate);
 
             $("#transportMode").val(data.transportationMode);
@@ -7134,7 +7817,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         var pickupZip = $("#pickupZip").val();
         var pickupPhone = $("#pickupPhone").val();
         var pickupContact = $("#pickupContact").val();
-        var pickupHours = $("#pickupHours").val();
+        //var pickupHours = $("#pickupHours").val();
+        var pickupHoursOfOperationOpen = $("#pickupHoursOfOperationOpen").val();
+        var pickupHoursOfOperationClose = $("#pickupHoursOfOperationClose").val();
+        var pickupTimeZone = $("#pickupTimeZone").val();
         var pickupDate = $("#pickupDate").val();
 
         var deliveryName = $("#deliveryName").val();
@@ -7144,15 +7830,23 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         var deliveryZip = $("#deliveryZip").val();
         var deliveryPhone = $("#deliveryPhone").val();
         var deliveryContact = $("#deliveryContact").val();
-        var deliveryHours = $("#deliveryHours").val();
+        //var deliveryHours = $("#deliveryHours").val();
+        var deliveryHoursOfOperationOpen = $("#deliveryHoursOfOperationOpen").val();
+        var deliveryHoursOfOperationClose = $("#deliveryHoursOfOperationClose").val();
+        var deliveryTimeZone = $("#deliveryTimeZone").val();
         var deliveryDate = $("#deliveryDate").val();
 
         var transportationMode = $("#transportMode").val();
         var carrierRate = $("#carrierRate").val();
         var carrierQty = $("#carrierQty").val();
 
-        var pickupInformation = {pickupLocation: pickupName, phoneNumber: pickupPhone, contactPerson: pickupContact, hoursOfOperation: pickupHours};
-        var deliveryInformation = {deliveryLocation: deliveryName, phoneNumber: deliveryPhone, contactPerson: deliveryContact, hoursOfOperation: deliveryHours};
+        //var pickupInformation = {pickupLocation: pickupName, phoneNumber: pickupPhone, contactPerson: pickupContact, hoursOfOperation: pickupHours};
+        var pickupInformation = {pickupLocation: pickupName, phoneNumber: pickupPhone, contactPerson: pickupContact, pickupHoursOfOperationOpen: pickupHoursOfOperationOpen,
+                                pickupHoursOfOperationClose: pickupHoursOfOperationClose, pickupTimeZone: pickupTimeZone};
+
+        //var deliveryInformation = {deliveryLocation: deliveryName, phoneNumber: deliveryPhone, contactPerson: deliveryContact, hoursOfOperation: deliveryHours};
+        var deliveryInformation = {deliveryLocation: deliveryName, phoneNumber: deliveryPhone, contactPerson: deliveryContact, deliveryHoursOfOperationOpen: deliveryHoursOfOperationOpen,
+                                  deliveryHoursOfOperationClose: deliveryHoursOfOperationClose, deliveryTimeZone: deliveryTimeZone};
 
         var originationaddress = pickupAddress + ', ' + pickupCity + ', ' + pickupState + ', ' + pickupZip;
         var destinationaddress = deliveryAddress + ', ' + deliveryCity + ', ' + deliveryState + ', ' + deliveryZip;

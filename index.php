@@ -546,8 +546,10 @@ $app->route('POST /createcustomerneedsfromexisting', function() {
     $transportation_type = Flight::request()->data->transportation_type;
     $pickupDate = Flight::request()->data->pickupDate;
     $deliveryDate = Flight::request()->data->deliveryDate;
+    $rate = Flight::request()->data->rate;
+    $rateType = Flight::request()->data->rateType;
     $customerneed = Flight::customerNeeds();
-    $result = $customerneed->createFromExisting(API_HOST,$id,$rootCustomerNeedsID,$carrierID,$qty,$originationAddress1,$originationCity,$originationState,$originationZip,$destinationAddress1,$destinationCity,$destinationState,$destinationZip,$originationLat,$originationLng,$destinationLat,$destinationLng,$distance,$transportationMode,$transportation_mode,$transportation_type,$pickupDate,$deliveryDate,GOOGLE_MAPS_API);
+    $result = $customerneed->createFromExisting(API_HOST,$id,$rootCustomerNeedsID,$carrierID,$qty,$originationAddress1,$originationCity,$originationState,$originationZip,$destinationAddress1,$destinationCity,$destinationState,$destinationZip,$originationLat,$originationLng,$destinationLat,$destinationLng,$distance,$transportationMode,$transportation_mode,$transportation_type,$pickupDate,$deliveryDate,$rate,$rateType,GOOGLE_MAPS_API);
     if ($result == "success") {
         print_r($result);
         //echo "success";
