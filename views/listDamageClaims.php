@@ -185,7 +185,8 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
 					}
 				});
 
-			} else {
+			} 
+                        else {
 
                                 // update listDamageClaims
                                 url = '<?php echo API_HOST_URL . "/damage_claims" ?>';
@@ -222,22 +223,7 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
                                                 alert("There Was An Error Adding Damage Claim!");
                                         }
                                 });
-                                
-//				url = '<?php echo HTTP_HOST."/uploaddocument" ?>';
-//				type = "POST";
-//				var formData = new FormData();
-//				formData.append('fileupload', $('#fileupload')[0].files[0]);
-//				formData.append('entityID', $("#entityID").val());
-//				formData.append('name', 'Damage Claim for: ' + $("#vinNumber").val() + ' - ' + $('#fileupload')[0].files[0].name);
-//				$.ajax({
-//					url : url,
-//					type : 'POST',
-//					data : formData,
-//					processData: false,  // tell jQuery not to process the data
-//					contentType: false,  // tell jQuery not to set contentType
-//					success : function(data) {
-//					}
-//				});
+                              
 			}
 			return passValidation;
 		} else {
@@ -276,7 +262,8 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
                             return buttons;
                         }
                     }
-                ]
+                ],
+                order: [[1, "desc"]]
             });
             example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
             //To Reload The Ajax
@@ -398,7 +385,8 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
                         return buttons;
                     }
                 }
-            ]
+            ],
+            order: [[2]]
           });
 
           example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
@@ -448,7 +436,8 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
                                 return buttons;
                             }
                         }
-                    ]
+                    ],
+                    order: [[1, "desc"]]
                 });
                 example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
                 //To Reload The Ajax
@@ -494,7 +483,8 @@ if($_SESSION['entitytype'] != 0){
 		Column sorting, live search, pagination. Built with
 		<a href="http://www.datatables.net/" target="_blank">jQuery DataTables</a>
 		</p -->
-		<!--button type="button" id="addClaim" class="btn btn-primary pull-xs-right" data-target="#myModal">Add Claim</button-->
+		
+                <button type="button" id="addClaim" class="btn btn-primary pull-xs-right" data-target="#myModal">Add Claim</button>
 		<br /><br />
 		<div id="dataTable" class="mt">
 			<table id="datatable-table" class="table table-striped table-hover">
@@ -953,8 +943,9 @@ if($_SESSION['entitytype'] != 0){
         });
 
         $("#addClaim").click(function(){
-              $("#id").val('');
-              $("#claimsModal").modal('show');
+            $("#id").val('');
+            $("#entityID").val(entityid);
+            $("#claimsModal").modal('show');
         });
 
         $('#datatable-table tbody').off('click', 'button').on( 'click', 'button', function () {
@@ -962,6 +953,7 @@ if($_SESSION['entitytype'] != 0){
             var data = table.row( $(this).parents('tr') ).data();
             if (this.textContent.indexOf("Edit") > -1) {
                 $("#id").val(data["id"]);
+                $("#entityID").val(entityid);
                 $("#entityAtFaultID").val(data["entityAtFaultID"]);
                 $("#vinNumber").val(data["vinNumber"]);
                 $("#damage").val(data["damage"]);

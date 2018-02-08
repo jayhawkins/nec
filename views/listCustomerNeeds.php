@@ -348,6 +348,33 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                         async: false,
                                         success: function(notification){
                                 */
+                                   
+                                   
+                                   
+                                if ($("#id").val() > '') {
+                                    var logParams = {logTypeName: "Customer Needs", logMessage: "Availability has been Updated.", referenceID: $("#id").val()};
+                                } else {
+                                    var logParams = {logTypeName: "Customer Needs", logMessage: "Availability has been Created.", referenceID: data};
+                                }
+                                   
+                                   // This is will enter into the log
+                                   $.ajax({
+                                       url: '<?php echo HTTP_HOST."/save_to_log" ?>',
+                                        type: 'POST',
+                                        data: JSON.stringify(logParams),
+                                        contentType: "application/json",
+                                        async: false,
+                                        success: function(logResult){
+                                            
+                                            console.log(logResult);
+                                        },
+                                        error: function(error){
+                                            
+                                            $("#errorAlertTitle").html("Error");
+                                            $("#errorAlertBody").html(error);
+                                            $("#errorAlert").modal('show');
+                                        }
+                                   });
                                             //var updatedata = {rootCustomerNeedsID: data};
                                             var updatedata = {rootCustomerNeedsID: 0};
                                             $.ajax({
@@ -398,7 +425,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                     $("#load").html("Save Changes");
                                     $("#load").prop("disabled", false);
                                   passValidation = true;
-                                } else {
+                                } 
+                                else {
                                     $("#load").html("Save Changes");
                                     $("#load").prop("disabled", false);
 	                                  alert("Adding Need Failed! Please Verify Your Data.");
@@ -738,6 +766,28 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
           var url = '<?php echo API_HOST_URL . "/customer_needs" ?>/' + $("#id").val();
           var type = "PUT";
 
+        var logParams = {logTypeName: "Customer Needs", logMessage: "Availability has been made " + newStatus + ".", referenceID: $("#id").val()};
+        
+
+           // This is will enter into the log
+           $.ajax({
+               url: '<?php echo HTTP_HOST."/save_to_log" ?>',
+                type: 'POST',
+                data: JSON.stringify(logParams),
+                contentType: "application/json",
+                async: false,
+                success: function(logResult){
+
+                    console.log(logResult);
+                },
+                error: function(error){
+
+                    $("#errorAlertTitle").html("Error");
+                    $("#errorAlertBody").html(error);
+                    $("#errorAlert").modal('show');
+                }
+           });
+           
           $.ajax({
              url: url,
              type: type,

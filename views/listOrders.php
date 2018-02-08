@@ -638,6 +638,49 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
     }
 
+    function loadOrderLedger(orderID){
+
+        var url = '<?php echo HTTP_HOST; ?>/orders_log/' + orderID;
+
+        if ( ! $.fn.DataTable.isDataTable( '#order-ledger-table' ) ) {
+
+            var orders_table = $('#order-ledger-table').DataTable({
+                retrieve: true,
+                processing: true,
+                ajax: {
+                    url: url,
+                    //dataSrc: 'logs',
+                    dataSrc: function ( json ) {
+
+                        var logs = json.logs;
+
+                        return logs;
+                    }
+                },
+                columns:  [
+                        { data: "id", visible: false },
+                        { data: "log_type_id", visible: false },
+                        { data: "log_descr" },
+                        { data: "ref_id", visible: false },
+                        { data: "user_id", visible: false },
+                        { data: "createdAt" }
+                    ],
+                    order: [[5, "desc"]]
+              });
+
+            //To Reload The Ajax
+            //See DataTables.net for more information about the reload method
+            orders_table.ajax.reload();
+        }
+        else{
+
+            //The URL will change with each "View Commit" button click
+            // Must load new Url each time.
+            var reload_table = $('#order-ledger-table').DataTable();
+            reload_table.ajax.url(url).load();
+        }
+    }
+
     function loadTableAJAX(status) {
 
         var url = '<?php echo API_HOST_URL; ?>';
@@ -1156,6 +1199,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         $("#orders").css("display", "none");
 
         loadOrderNotes(orderID);
+        loadOrderLedger(orderID);
     }
 
     function loadOrderDetailsAJAX(orderID){
@@ -2522,6 +2566,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         $('#trackingHistory').css('display', 'none');
         $('#editOrderDetails').css('display', 'none');
         $('#adminNotes').css('display', 'none');
+        $('#orderLedger').css('display', 'none');
         closeAddStatus();
     }
 
@@ -2530,6 +2575,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         $('#trackingHistory').css('display', 'block');
         $('#editOrderDetails').css('display', 'none');
         $('#adminNotes').css('display', 'none');
+        $('#orderLedger').css('display', 'none');
         closeAddStatus();
     }
 
@@ -2538,6 +2584,16 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         $('#trackingHistory').css('display', 'none');
         $('#editOrderDetails').css('display', 'none');
         $('#adminNotes').css('display', 'block');
+        $('#orderLedger').css('display', 'none');
+        closeAddStatus();
+    }
+    
+    function showOrderLedger(){
+        $('#orderSummary').css('display', 'none');
+        $('#trackingHistory').css('display', 'none');
+        $('#editOrderDetails').css('display', 'none');
+        $('#adminNotes').css('display', 'none');
+        $('#orderLedger').css('display', 'block');
         closeAddStatus();
     }
 
@@ -2922,8 +2978,18 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 <a href="#" onclick="showTrackingHistory();">Tracking History</a>
             </li>
             <li>
+                <a href="#" onclick="showOrderLedger();">Order Ledger</a>
+            </li>
+            
+            <?php
+                if($_SESSION['entitytype'] == 0){
+            ?>
+            <li>
                 <a href="#" onclick="showAdminNotes();">Admin Notes</a>
             </li>
+        <?php
+            }
+        ?>
         </ul>
 
         <div id="orderSummary" class="row">
@@ -3590,6 +3656,29 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
         </div>
 
+        <div id="orderLedger" class="row" style="display: none;">
+
+            <div id="dataTable-9000" class="col-md-12">
+                <h5><span class="fw-semi-bold">Order Ledger</span></h5>
+                
+                <br>
+                <br>
+                <table id="order-ledger-table" class="table table-striped table-hover" width="100%">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Log Type ID</th>
+                        <th>Ledger Description</th>
+                        <th>Reference ID</th>
+                        <th>User ID</th>
+                        <th>Date</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                 </table>
+            </div>
+        </div>
         <div id="adminNotes" class="row" style="display: none;">
 
             <div id="dataTable-9000" class="col-md-12">
@@ -5004,6 +5093,27 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     var activeCarrier = $("#activeCarrier").val();
                                     displayOrderStatuses(orderID, activeCarrier, vinNumber);
 
+                                    var logParams = {logTypeName: "Orders", logMessage: "POD has been approved for VIN#: " + vinNumber, referenceID: orderID};        
+
+                                    // This is will enter into the log
+                                    $.ajax({
+                                        url: '<?php echo HTTP_HOST."/save_to_log" ?>',
+                                         type: 'POST',
+                                         data: JSON.stringify(logParams),
+                                         contentType: "application/json",
+                                         async: false,
+                                         success: function(logResult){
+
+                                             console.log(logResult);
+                                         },
+                                         error: function(error){
+
+                                             $("#errorAlertTitle").html("Error");
+                                             $("#errorAlertBody").html(error);
+                                             $("#errorAlert").modal('show');
+                                         }
+                                    });
+
                                     $('#approveCustomerID').val("");
                                     $('#approveCost').val("");
                                     $('#approveOrderID').val("");
@@ -5103,7 +5213,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 contentType: "application/json",
                 async: false,
                 success: function(){
-                    loadOrderNotes(orderID);
+                    loadOrderNotes(orderID);                  
                     $("#adminNoteModal").modal('hide');
                 },
                 error: function(error){
@@ -5769,6 +5879,27 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 $("#errorAlertBody").html("POD Successfully Uploaded.");
                                 $("#errorAlert").modal('show');
 
+                                var logParams = {logTypeName: "Orders", logMessage: "POD has been uploaded.", referenceID: $('#orderID').val()};        
+
+                                // This is will enter into the log
+                                $.ajax({
+                                    url: '<?php echo HTTP_HOST."/save_to_log" ?>',
+                                     type: 'POST',
+                                     data: JSON.stringify(logParams),
+                                     contentType: "application/json",
+                                     async: false,
+                                     success: function(logResult){
+
+                                         console.log(logResult);
+                                     },
+                                     error: function(error){
+
+                                         $("#errorAlertTitle").html("Error");
+                                         $("#errorAlertBody").html(error);
+                                         $("#errorAlert").modal('show');
+                                     }
+                                });
+                                    
                                 // Clear Form
                                 $('#statusID').val('');
                                 //$("#uploadPOD").modal('hide');
@@ -6120,6 +6251,26 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 $("#errorAlertBody").html("Purchase Order Successfully Uploaded");
                                 $("#errorAlert").modal('show');
 
+                                var logParams = {logTypeName: "Orders", logMessage: "Purchase Order has been uploaded.", referenceID: $('#orderID').val()};        
+
+                                // This is will enter into the log
+                                $.ajax({
+                                    url: '<?php echo HTTP_HOST."/save_to_log" ?>',
+                                     type: 'POST',
+                                     data: JSON.stringify(logParams),
+                                     contentType: "application/json",
+                                     async: false,
+                                     success: function(logResult){
+
+                                         console.log(logResult);
+                                     },
+                                     error: function(error){
+
+                                         $("#errorAlertTitle").html("Error");
+                                         $("#errorAlertBody").html(error);
+                                         $("#errorAlert").modal('show');
+                                     }
+                                });
                                 // Clear Form
                                 $('#orderID').val('');
                                 $("#newUploadPO").modal('hide');
@@ -6265,6 +6416,28 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         contentType: "application/json",
                         async: false,
                         success: function(data){
+                            
+                            var logParams = {logTypeName: "Orders", logMessage: "Trailer status has been updated.", referenceID: $('#orderID').val()};        
+
+                            // This is will enter into the log
+                            $.ajax({
+                                url: '<?php echo HTTP_HOST."/save_to_log" ?>',
+                                 type: 'POST',
+                                 data: JSON.stringify(logParams),
+                                 contentType: "application/json",
+                                 async: false,
+                                 success: function(logResult){
+
+                                     console.log(logResult);
+                                 },
+                                 error: function(error){
+
+                                     $("#errorAlertTitle").html("Error");
+                                     $("#errorAlertBody").html(error);
+                                     $("#errorAlert").modal('show');
+                                 }
+                            });
+                            
                             $("#statusID").val(data);
                             $("#statusAddANote").val('');
                             $("#noStatusRecordsExist").css("display", "none");
@@ -6374,6 +6547,28 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         contentType: "application/json",
                         async: false,
                         success: function(data){
+                            
+                            var logParams = {logTypeName: "Orders", logMessage: "Trailer status has been added.", referenceID: $('#orderID').val()};        
+
+                            // This is will enter into the log
+                            $.ajax({
+                                url: '<?php echo HTTP_HOST."/save_to_log" ?>',
+                                 type: 'POST',
+                                 data: JSON.stringify(logParams),
+                                 contentType: "application/json",
+                                 async: false,
+                                 success: function(logResult){
+
+                                     console.log(logResult);
+                                 },
+                                 error: function(error){
+
+                                     $("#errorAlertTitle").html("Error");
+                                     $("#errorAlertBody").html(error);
+                                     $("#errorAlert").modal('show');
+                                 }
+                            });
+                            
                             $("#statusID").val(data);
                             $("#statusAddANote").val('');
                             $("#noStatusRecordsExist").css("display", "none");
@@ -6465,6 +6660,28 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         contentType: "application/json",
                         async: false,
                         success: function(){
+                            
+                            var logParams = {logTypeName: "Orders", logMessage: "Note has been added to the Trailer Status.", referenceID: statusOrderID};        
+
+                            // This is will enter into the log
+                            $.ajax({
+                                url: '<?php echo HTTP_HOST."/save_to_log" ?>',
+                                 type: 'POST',
+                                 data: JSON.stringify(logParams),
+                                 contentType: "application/json",
+                                 async: false,
+                                 success: function(logResult){
+
+                                     console.log(logResult);
+                                 },
+                                 error: function(error){
+
+                                     $("#errorAlertTitle").html("Error");
+                                     $("#errorAlertBody").html(error);
+                                     $("#errorAlert").modal('show');
+                                 }
+                            });
+                            
                             displayOrderStatuses(statusOrderID, statusCarrierID, statusVinNumber);
                             $("#errorAlertTitle").html("Success");
                             $("#errorAlertBody").html("Trailer Note Saved!");
@@ -6686,7 +6903,28 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     }
 
                                 }
+ 
+                                var logParams = {logTypeName: "Orders", logMessage: "Order has been updated.", referenceID: id};        
 
+                                // This is will enter into the log
+                                $.ajax({
+                                    url: '<?php echo HTTP_HOST."/save_to_log" ?>',
+                                     type: 'POST',
+                                     data: JSON.stringify(logParams),
+                                     contentType: "application/json",
+                                     async: false,
+                                     success: function(logResult){
+
+                                         console.log(logResult);
+                                     },
+                                     error: function(error){
+
+                                         $("#errorAlertTitle").html("Error");
+                                         $("#errorAlertBody").html(error);
+                                         $("#errorAlert").modal('show');
+                                     }
+                                });
+                            
                                 $("#saveCommit").html("Save");
                                 $("#saveCommit").prop("disabled", false);
                                 loadNewOrderDetailsAJAX(id);
@@ -6945,7 +7183,29 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     $("#errorAlert").modal('show');
 
                     var orderID = $("#orderID").val();
-                    loadNewOrderDetailsAJAX(orderID);
+                    loadNewOrderDetailsAJAX(orderID);                    
+                    
+                    var logParams = {logTypeName: "Orders", logMessage: "Order relay has been updated.", referenceID: orderID};        
+
+                    // This is will enter into the log
+                    $.ajax({
+                        url: '<?php echo HTTP_HOST."/save_to_log" ?>',
+                         type: 'POST',
+                         data: JSON.stringify(logParams),
+                         contentType: "application/json",
+                         async: false,
+                         success: function(logResult){
+
+                             console.log(logResult);
+                         },
+                         error: function(error){
+
+                             $("#errorAlertTitle").html("Error");
+                             $("#errorAlertBody").html(error);
+                             $("#errorAlert").modal('show');
+                         }
+                    });
+                            
                 },
                 error: function(error){
                     $("#errorAlertTitle").html("Error");
