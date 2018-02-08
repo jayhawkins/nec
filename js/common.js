@@ -190,3 +190,25 @@ function newGetMapDirectionFromGoogle(p1,p2,callback) {
     });
 
 }
+
+function proxylogout(identifier) {
+
+    var params = {
+          identifier: identifier
+    };
+
+    $.ajax({
+       url: '/proxylogout',
+       type: "POST",
+       data: JSON.stringify(params),
+       contentType: "application/json",
+       async: false,
+       success: function(data){
+           location.reload();
+       },
+       error: function() {
+          alert("There was an Error Proxying Out of User Account!");
+       }
+    });
+
+}
