@@ -3372,7 +3372,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                             }
                         }
-
+        
                         $("#saveCommit").html("Save");
                         $("#saveCommit").prop("disabled", false);
                         closeEditCommit();
@@ -3381,6 +3381,29 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         $("#errorAlertTitle").html("Success");
                         $("#errorAlertBody").html("Commit Updated");
                         $("#errorAlert").modal('show');
+                        
+                        
+                        var logParams = {logTypeName: "Customer Needs", logMessage: "Commitment has been edited edited by Admin.", referenceID: id};        
+
+                        // This is will enter into the log
+                        $.ajax({
+                            url: '<?php echo HTTP_HOST."/save_to_log" ?>',
+                             type: 'POST',
+                             data: JSON.stringify(logParams),
+                             contentType: "application/json",
+                             async: false,
+                             success: function(logResult){
+
+                                 console.log(logResult);
+                             },
+                             error: function(error){
+
+                                 $("#errorAlertTitle").html("Error");
+                                 $("#errorAlertBody").html(error);
+                                 $("#errorAlert").modal('show');
+                             }
+                        });
+                                 
                     }
                     else{
                         console.log(data);
@@ -3824,6 +3847,48 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 });
                             }
                         }
+
+                        var customer_needs_to_orders = {customerNeedsID: id, orderID: data};
+                        var orderID = data;
+                        
+                        $.ajax({
+                            url: '<?php echo API_HOST_URL ?>' + "/customer_needs_to_orders",
+                            type: "POST",
+                            data: JSON.stringify(customer_needs_to_orders),
+                            contentType: "application/json",
+                            async: false,
+                            success: function(data){
+                                
+                                var logParams = {logTypeName: "Orders", logMessage: "Commitments has been converted to order", referenceID: orderID};        
+
+                                // This is will enter into the log
+                                $.ajax({
+                                    url: '<?php echo HTTP_HOST."/save_to_log" ?>',
+                                     type: 'POST',
+                                     data: JSON.stringify(logParams),
+                                     contentType: "application/json",
+                                     async: false,
+                                     success: function(logResult){
+
+                                         console.log(logResult);
+                                     },
+                                     error: function(error){
+
+                                         $("#errorAlertTitle").html("Error");
+                                         $("#errorAlertBody").html(error);
+                                         $("#errorAlert").modal('show');
+                                     }
+                                });
+                            },
+                            error: function(data){
+
+                                $("#errorAlertTitle").html("Error");
+                                $("#errorAlertBody").html("There Was An Error Connecting Commitments With Orders");
+                                $("#errorAlert").modal('show');
+                            }
+                        });
+
+
 
                         closeCustomerCommitLegs(id);
                         $(document.body).css("cursor", "default");

@@ -1538,8 +1538,7 @@ $app->route('POST /save_to_log', function() {
     print_r($apiResponse);
 });
 
-$app->route('GET /customer_needs_log', function() {
-    $customerNeedsID = Flight::request()->data->customerNeedsID;
+$app->route('GET /customer_needs_log/@customerNeedsID', function($customerNeedsID) {
     $logsAPI = Flight::logs();
 
     $apiResponse = $logsAPI->get_log_for_customer_needs($customerNeedsID);
@@ -1547,8 +1546,7 @@ $app->route('GET /customer_needs_log', function() {
     print_r($apiResponse);
 });
 
-$app->route('GET /orders_log', function() {
-    $ordersID = Flight::request()->data->orderID;
+$app->route('GET /orders_log/@orderID', function($ordersID) {
     $logsAPI = Flight::logs();
 
     $apiResponse = $logsAPI->get_log_for_orders($ordersID);

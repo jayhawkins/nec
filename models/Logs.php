@@ -32,9 +32,8 @@ class Logs
                 $log_type_id = $this->add_log_type($log_type_name);
             }
             else{
-                $log_type_id = $result->log_types->records[0][1];
+                $log_type_id = $result->log_types->records[0][0];
             }
-
 
             //SEE IF WE HAVE AN ACTIVE SESSION TO WORK WITH
             if (isset($_SESSION['userid'])) {
@@ -113,7 +112,7 @@ class Logs
             $logTypeContext  = stream_context_create($logTypeOptions);
             $logTypeResult = json_decode(file_get_contents($logTypeURL,false,$logTypeContext));
             
-            $log_type_id = $logTypeResult->log_types->records[0][1];
+            $log_type_id = $logTypeResult->log_types->records[0][0];
 
             $logArgs = array(
                 "filter[0]"=>"ref_id,eq,".$customerNeedsID,
@@ -155,7 +154,7 @@ class Logs
             $logTypeContext  = stream_context_create($logTypeOptions);
             $logTypeResult = json_decode(file_get_contents($logTypeURL,false,$logTypeContext));            
             
-            $order_log_type_id = $logTypeResult->log_types->records[0][1];
+            $order_log_type_id = $logTypeResult->log_types->records[0][0];
             
             $logTypeArgs = array("filter[0]"=>"type_name,eq,Customer Needs");
 
@@ -169,9 +168,12 @@ class Logs
             $logTypeContext  = stream_context_create($logTypeOptions);
             $logTypeResult = json_decode(file_get_contents($logTypeURL,false,$logTypeContext));            
             
-            $customer_needs_log_type_id = $logTypeResult->log_types->records[0][1];
+            $customer_needs_log_type_id = $logTypeResult->log_types->records[0][0];
             
-            $customerNeedToOrderArgs = array("filter[0]"=>"orderID,eq,{$orderID}");
+            
+            
+            
+            $customerNeedToOrderArgs = array("filter[0]"=>"orderID,eq," . $orderID);
             $customerNeedToOrderURL = API_HOST_URL . "/customer_needs_to_orders?".http_build_query($customerNeedToOrderArgs);
             $customerNeedToOrderOptions = array(
                 'http' => array(
@@ -183,8 +185,8 @@ class Logs
             $customerNeedToOrderResult = json_decode(file_get_contents($customerNeedToOrderURL,false,$customerNeedToOrderContext));   
             
             $customerNeedsID = $customerNeedToOrderResult->customer_needs_to_orders->records[0][1];
-
-            $result = array();
+            
+            $result = (object) array("logs" => array());
 
             $customerNeedsLogArgs = array(
                 "filter[0]"=>"ref_id,eq,".$customerNeedsID,
@@ -222,14 +224,13 @@ class Logs
 
             $ordersLog = $ordersLogResult->logs;
 
-            $result = array_merge($customerNeedsLog, $ordersLog);
+            $result->logs = array_merge($customerNeedsLog, $ordersLog);
 
-            return $result;
+            return json_encode($result);
         } catch (Exception $e) { // The authorization query failed verification
-              header('HTTP/1.1 404 Not Found');
-              header('Content-Type: text/plain; charset=utf8');
-              echo $e->getMessage();
-              exit();
+              
+            $result = (object) array("logs" => array());            
+            return json_encode($result);
         }
     }
 

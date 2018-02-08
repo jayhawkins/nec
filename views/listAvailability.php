@@ -359,6 +359,28 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                      async: false,
                                      success: function(notification){
                                          //alert("Create from existing: " + notification);
+                                         var logParams = {logTypeName: "Customer Needs", logMessage: "A commitment has been made.", referenceID: $("#id").val()};
+        
+
+                                        // This is will enter into the log
+                                        $.ajax({
+                                            url: '<?php echo HTTP_HOST."/save_to_log" ?>',
+                                             type: 'POST',
+                                             data: JSON.stringify(logParams),
+                                             contentType: "application/json",
+                                             async: false,
+                                             success: function(logResult){
+
+                                                 console.log(logResult);
+                                             },
+                                             error: function(error){
+
+                                                 $("#errorAlertTitle").html("Error");
+                                                 $("#errorAlertBody").html(error);
+                                                 $("#errorAlert").modal('show');
+                                             }
+                                        });
+                                         
                                          $("#myModalCommit").modal('hide');
                                      },
                                      error: function() {
