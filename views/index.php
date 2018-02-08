@@ -1798,6 +1798,15 @@ if ($_SESSION['entityid'] > 0) {
             -->
 
             <ul class="nav navbar-nav pull-xs-right">
+<?php
+        if ( isset($_SESSION['existinguserid'])) {
+?>
+                <li class="nav navbar-form pull-xs-left">
+                    <button type="button" class="btn btn-danger" onclick="proxylogout('<?php echo $_SESSION['existinguserid']; ?>');">Proxy Logout</button>&nbsp;&nbsp;
+                </li>
+<?php
+        }
+?>
                 <li class="nav navbar-form pull-xs-left">
                     <span class="form-control"><strong><?php echo $entityname; ?></strong></span>&nbsp;&nbsp;
                 </li>

@@ -83,6 +83,7 @@ $app->route('GET /forgot', function() {
 
 $app->route('GET /logout', function() {
   unset($_SESSION['userid']);
+  unset($_SESSION['existinguserid']);
   Flight::redirect('/login');
 });
 
@@ -167,6 +168,32 @@ $app->route('POST /setpasswordvalidate', function() {
     } else {
       $invalidPassword = (isset($_SESSION['invalidPassword'])) ? $_SESSION['invalidPassword']:''; // Just use the invalidPassword session var since it's just an error
       Flight::render('setpassword', array('invalidPassword'=> $invalidPassword));
+    }
+});
+
+$app->route('POST /proxylogin', function() {
+    $username = Flight::request()->data['proxyid'];
+    $user = Flight::users();
+    $db = Flight::db();
+    $return = $user->proxylogin($db,$username);
+    if ($return) {
+      Flight::redirect('dashboard');
+    } else {
+      echo $return;
+      //$invalidPassword = (isset($_SESSION['invalidPassword'])) ? $_SESSION['invalidPassword']:'';
+      //Flight::render('login', array('invalidPassword'=> $invalidPassword));
+    }
+});
+
+$app->route('POST /proxylogout', function() {
+    $existinguserid = Flight::request()->data['identifier'];
+    $user = Flight::users();
+    $db = Flight::db();
+    $return = $user->proxylogout($db,$existinguserid);
+    if ($return) {
+        Flight::redirect('dashboard');
+    } else {
+        echo $return;
     }
 });
 
@@ -1526,11 +1553,11 @@ $app->route('GET|POST /oauth', function() {
 /*****************************************************************************/
 
 $app->route('POST /save_to_log', function() {
-    
+
     $log_type_name = Flight::request()->data->logTypeName;
     $log_msg = Flight::request()->data->logMessage;
     $ref_id = Flight::request()->data->referenceID;
-    
+
     $logsAPI = Flight::logs();
 
     $apiResponse = $logsAPI->enter_log($log_type_name, $log_msg, $ref_id);
