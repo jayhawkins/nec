@@ -13,8 +13,8 @@ use QuickBooksOnline\API\PlatformService\PlatformService;
 use QuickBooksOnline\API\Core\Http\Serialization\XmlObjectSerializer;
 use QuickBooksOnline\API\Facades\Customer;
 
-echo 'Hello World';
-exit();
+//echo 'Hello World';
+//exit();
 
 // Prep Data Services
 /*
@@ -76,6 +76,9 @@ if ($error) {
 } else {
     var_dump($resultingCustomerObj);
 }
+
+echo "Hello World";
+exit();
 
 /*
 Created Customer Id=801. Reconstructed response body:
