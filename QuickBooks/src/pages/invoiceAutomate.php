@@ -12,6 +12,9 @@ use QuickBooksOnline\API\PlatformService\PlatformService;
 use QuickBooksOnline\API\Core\Http\Serialization\XmlObjectSerializer;
 use QuickBooksOnline\API\Facades\Customer;
 
+echo 'Hello World';
+exit();
+
 // Prep Data Services
 /*
 $dataService = DataService::Configure(array(
