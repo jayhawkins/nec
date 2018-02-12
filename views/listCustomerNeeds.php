@@ -348,15 +348,15 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                         async: false,
                                         success: function(notification){
                                 */
-                                   
-                                   
-                                   
+
+
+
                                 if ($("#id").val() > '') {
                                     var logParams = {logTypeName: "Customer Needs", logMessage: "Availability has been Updated.", referenceID: $("#id").val()};
                                 } else {
                                     var logParams = {logTypeName: "Customer Needs", logMessage: "Availability has been Created.", referenceID: data};
                                 }
-                                   
+
                                    // This is will enter into the log
                                    $.ajax({
                                        url: '<?php echo HTTP_HOST."/save_to_log" ?>',
@@ -365,11 +365,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                         contentType: "application/json",
                                         async: false,
                                         success: function(logResult){
-                                            
+
                                             console.log(logResult);
                                         },
                                         error: function(error){
-                                            
+
                                             $("#errorAlertTitle").html("Error");
                                             $("#errorAlertBody").html(error);
                                             $("#errorAlert").modal('show');
@@ -425,7 +425,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                     $("#load").html("Save Changes");
                                     $("#load").prop("disabled", false);
                                   passValidation = true;
-                                } 
+                                }
                                 else {
                                     $("#load").html("Save Changes");
                                     $("#load").prop("disabled", false);
@@ -767,7 +767,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
           var type = "PUT";
 
         var logParams = {logTypeName: "Customer Needs", logMessage: "Availability has been made " + newStatus + ".", referenceID: $("#id").val()};
-        
+
 
            // This is will enter into the log
            $.ajax({
@@ -787,7 +787,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                     $("#errorAlert").modal('show');
                 }
            });
-           
+
           $.ajax({
              url: url,
              type: type,
