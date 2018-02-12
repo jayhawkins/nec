@@ -219,26 +219,29 @@ if ($_SESSION['entityid'] > 0) {
 <html>
 <head>
     <title>Nationwide Equipment Control - Dashboard</title>
-    <link href="css/application.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="vendor/select2/select2.css">
-    <link rel="stylesheet" href="vendor/select2/select2-bootstrap.css">
-    <link rel="stylesheet" href="vendor/bootstrap-datepicker/css/bootstrap-datepicker3.min.css">
-    <link rel="stylesheet" href="vendor/bootstrap-datepicker/css/bootstrap-datepicker3.min.css.map">
+    <link href="css/application.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="vendor/select2/select2.css" />
+    <link rel="stylesheet" href="vendor/select2/select2-bootstrap.css" />
+    <link rel="stylesheet" href="vendor/bootstrap-datepicker/css/bootstrap-datepicker3.min.css" />
+    <link rel="stylesheet" href="vendor/bootstrap-datepicker/css/bootstrap-datepicker3.min.css.map" />
     <!-- as of IE9 cannot parse css files with more that 4K classes separating in two files -->
     <!--[if IE 9]>
         <link href="css/application-ie9-part2.css" rel="stylesheet">
     <![endif]-->
 
-    <link href="css/new-styles.css?v=20180101" rel="stylesheet">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="css/new-styles.css?v=20180101" rel="stylesheet" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
 <?php if(ENVIRONMENT == 'development') { ?>
 	<link rel="stylesheet" type="text/css" href="vendor/datatables/media/css/dataTables-r-2_2_0.min.css"/>
 <?php } else { ?>
 	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.16/b-1.4.2/r-2.2.0/datatables.min.css"/>
 <?php } ?>
 
-    <link rel="stylesheet" href="css/jquery-ui.css">
-    <link rel="shortcut icon" href="img/favicon.png">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.5.1/css/buttons.bootstrap.min.css" />
+    <!--link rel="stylesheet" href="vendor/datatables/css/buttons.bootstrap.min.css"-->
+
+    <link rel="stylesheet" href="css/jquery-ui.css" />
+    <link rel="shortcut icon" href="img/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -1548,6 +1551,7 @@ if ($_SESSION['entityid'] > 0) {
                   <li><a href="#" onclick="ajaxFormCall('listReportsUndelivered');">Undelivered Reports</a></li>
                   <li><a href="#" onclick="ajaxFormCall('listReportsARSummary');">A/R Summary</a></li>
                   <li><a href="#" onclick="ajaxFormCall('listReportsARDetail');">A/R Detail</a></li>
+                  <li><a href="#" onclick="ajaxFormCall('listReportsRevenueAnalysis');">Revenue Analysis</a></li>
               </ul>
             </li>
 
@@ -2515,7 +2519,13 @@ if ($_SESSION['entitytype'] == 0) {
 <script src="vendor/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
 
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=<?php echo GOOGLE_MAPS_API ?>&callback=initMap"></script>
+
 <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.16/b-1.4.2/r-2.2.0/datatables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.1/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.1/js/buttons.bootstrap.min.js"></script>
+<!--script src="vendor/datatables/js/dataTables.buttons.min.js"></script-->
+<!--script src="vendor/datatables/js/buttons.bootstrap.min.js"></script-->
+
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/1.1.1/chroma.min.js" charset="utf-8"></script>
 
