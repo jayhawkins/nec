@@ -108,7 +108,7 @@ Created Customer Id=801. Reconstructed response body:
 
 //db call 
 
-$dbh = mysqli_connect("localhost", "root", "pqlamz", "nec")
+$dbh = mysqli_connect("45.55.1.81", "nec_qa", "pqlamz", "Yellow10!")
      or die ('cannot connect to database because ' . mysqli_connect_error());
    
 
