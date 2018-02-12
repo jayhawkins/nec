@@ -924,6 +924,94 @@ class Users
       }
     }
 
+    public function proxylogin(&$db,$username) {
+
+        try {
+
+              $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
+              $result = $dbhandle->query("select users.id, users.username, users.status, users.userTypeID,
+                                          members.id as memberID, members.entityID,
+                                          entities.entityTypeID,
+                                          user_types.name
+                                         from users
+                                         left join members on users.id = members.userID
+                                         left join entities on entities.id = members.entityID
+                                         left join user_types on user_types.id = users.userTypeID
+                                         where users.username = '" . $username . "'");
+
+              if (count($result) > 0) {
+                  $row = $result->FetchAll();
+                  if ($row[0]['status'] == "Active") {
+                        $_SESSION['existinguserid'] = $_SESSION['userid'];
+                        $_SESSION['userid'] = $row[0]['id'];
+                        $_SESSION['user'] = $row[0]['id']; // Setup for api authentication
+                        $_SESSION['usertypeid'] = $row[0]['userTypeID'];
+                        $_SESSION['memberid'] = $row[0]['memberID'];
+                        $_SESSION['entityid'] = $row[0]['entityID'];
+                        $_SESSION['entitytype'] = $row[0]['entityTypeID'];
+                        $_SESSION['usertypename'] = $row[0]['name'];
+                        unset($_SESSION['invalidPassword']);
+                        return $_SESSION['existinguserid'];
+                  } else {
+                    $_SESSION['invalidPassword'] = 'Account Has Not Been Activated!';
+                    return false;
+                  }
+              } else {
+                $_SESSION['invalidPassword'] = 'Username Not Found!';
+                return false;
+              }
+        } catch (Exception $e) { // The authorization query failed verification
+              //header('HTTP/1.1 404 Not Found');
+              //header('Content-Type: text/plain; charset=utf8');
+              //echo $e->getMessage();
+              //exit();
+              $_SESSION['invalidPassword'] = 'Username Not Found!';
+              return false;
+        }
+    }
+
+    public function proxylogout(&$db,$existinguserid) {
+
+        try {
+
+              $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
+              $result = $dbhandle->query("select users.id, users.username, users.status, users.userTypeID,
+                                          members.id as memberID, members.entityID,
+                                          entities.entityTypeID,
+                                          user_types.name
+                                          from users
+                                          left join members on users.id = members.userID
+                                          left join entities on entities.id = members.entityID
+                                          left join user_types on user_types.id = users.userTypeID
+                                          where users.id = '" . $existinguserid . "'
+                                          and users.status = 'Active'");
+
+              if (count($result) > 0) {
+                    $row = $result->FetchAll();
+                    $_SESSION['userid'] = $row[0]['id'];
+                    $_SESSION['user'] = $row[0]['id']; // Setup for api authentication
+                    $_SESSION['usertypeid'] = $row[0]['userTypeID'];
+                    $_SESSION['memberid'] = $row[0]['memberID'];
+                    $_SESSION['entityid'] = $row[0]['entityID'];
+                    $_SESSION['entitytype'] = $row[0]['entityTypeID'];
+                    $_SESSION['usertypename'] = $row[0]['name'];
+                    unset($_SESSION['existinguserid']);
+                    unset($_SESSION['invalidPassword']);
+                    return true;
+              } else {
+                    $_SESSION['invalidPassword'] = 'Username Not Found!';
+                    return false;
+              }
+        } catch (Exception $e) { // The authorization query failed verification
+              //header('HTTP/1.1 404 Not Found');
+              //header('Content-Type: text/plain; charset=utf8');
+              //echo $e->getMessage();
+              //exit();
+              $_SESSION['invalidPassword'] = 'Username Not Found!';
+              return false;
+        }
+    }
+
 }
 
 //$user = new User();

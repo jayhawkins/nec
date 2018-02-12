@@ -83,6 +83,7 @@ $app->route('GET /forgot', function() {
 
 $app->route('GET /logout', function() {
   unset($_SESSION['userid']);
+  unset($_SESSION['existinguserid']);
   Flight::redirect('/login');
 });
 
@@ -167,6 +168,32 @@ $app->route('POST /setpasswordvalidate', function() {
     } else {
       $invalidPassword = (isset($_SESSION['invalidPassword'])) ? $_SESSION['invalidPassword']:''; // Just use the invalidPassword session var since it's just an error
       Flight::render('setpassword', array('invalidPassword'=> $invalidPassword));
+    }
+});
+
+$app->route('POST /proxylogin', function() {
+    $username = Flight::request()->data['proxyid'];
+    $user = Flight::users();
+    $db = Flight::db();
+    $return = $user->proxylogin($db,$username);
+    if ($return) {
+      Flight::redirect('dashboard');
+    } else {
+      echo $return;
+      //$invalidPassword = (isset($_SESSION['invalidPassword'])) ? $_SESSION['invalidPassword']:'';
+      //Flight::render('login', array('invalidPassword'=> $invalidPassword));
+    }
+});
+
+$app->route('POST /proxylogout', function() {
+    $existinguserid = Flight::request()->data['identifier'];
+    $user = Flight::users();
+    $db = Flight::db();
+    $return = $user->proxylogout($db,$existinguserid);
+    if ($return) {
+        Flight::redirect('dashboard');
+    } else {
+        echo $return;
     }
 });
 
@@ -546,8 +573,10 @@ $app->route('POST /createcustomerneedsfromexisting', function() {
     $transportation_type = Flight::request()->data->transportation_type;
     $pickupDate = Flight::request()->data->pickupDate;
     $deliveryDate = Flight::request()->data->deliveryDate;
+    $rate = Flight::request()->data->rate;
+    $rateType = Flight::request()->data->rateType;
     $customerneed = Flight::customerNeeds();
-    $result = $customerneed->createFromExisting(API_HOST,$id,$rootCustomerNeedsID,$carrierID,$qty,$originationAddress1,$originationCity,$originationState,$originationZip,$destinationAddress1,$destinationCity,$destinationState,$destinationZip,$originationLat,$originationLng,$destinationLat,$destinationLng,$distance,$transportationMode,$transportation_mode,$transportation_type,$pickupDate,$deliveryDate,GOOGLE_MAPS_API);
+    $result = $customerneed->createFromExisting(API_HOST,$id,$rootCustomerNeedsID,$carrierID,$qty,$originationAddress1,$originationCity,$originationState,$originationZip,$destinationAddress1,$destinationCity,$destinationState,$destinationZip,$originationLat,$originationLng,$destinationLat,$destinationLng,$distance,$transportationMode,$transportation_mode,$transportation_type,$pickupDate,$deliveryDate,$rate,$rateType,GOOGLE_MAPS_API);
     if ($result == "success") {
         print_r($result);
         //echo "success";
@@ -1519,6 +1548,38 @@ $app->route('GET|POST /oauth', function() {
  */
 
 
+/*****************************************************************************/
+// Logs API Calls
+/*****************************************************************************/
+
+$app->route('POST /save_to_log', function() {
+
+    $log_type_name = Flight::request()->data->logTypeName;
+    $log_msg = Flight::request()->data->logMessage;
+    $ref_id = Flight::request()->data->referenceID;
+
+    $logsAPI = Flight::logs();
+
+    $apiResponse = $logsAPI->enter_log($log_type_name, $log_msg, $ref_id);
+
+    print_r($apiResponse);
+});
+
+$app->route('GET /customer_needs_log/@customerNeedsID', function($customerNeedsID) {
+    $logsAPI = Flight::logs();
+
+    $apiResponse = $logsAPI->get_log_for_customer_needs($customerNeedsID);
+
+    print_r($apiResponse);
+});
+
+$app->route('GET /orders_log/@orderID', function($ordersID) {
+    $logsAPI = Flight::logs();
+
+    $apiResponse = $logsAPI->get_log_for_orders($ordersID);
+
+    print_r($apiResponse);
+});
 
 // Start the framework
 $app->start();

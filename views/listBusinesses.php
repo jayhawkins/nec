@@ -97,9 +97,23 @@ $cdpvList = $cdpvresult["configuration_data_points"];
                     configurationSettings.push(item);
                 }
 
+                 var towAwayRateType = "";
+                if ($('input[name="towAwayRateType"]:checked').val() == "Flat Rate") {
+                    towAwayRateType = "Flat Rate";
+                } else {
+                    towAwayRateType = "Mileage";
+                }
+
+                var loadOutRateType = "";
+                if ($('input[name="loadOutRateType"]:checked').val() == "Flat Rate") {
+                    loadOutRateType = "Flat Rate";
+                } else {
+                    loadOutRateType = "Mileage";
+                }
+
                 if (type == "PUT") {
                     var date = today;
-                    var data = {contactID: $("#contactID").val(), entityRating: $("#entityRating").val(), rateType: $("input[name='rateType']:checked").val(), negotiatedRate: $("#negotiatedRate").val(), towAwayRateMin: $("#towAwayRateMin").val(), towAwayRateMax: $("#towAwayRateMax").val(), towAwayRateType: $("input[name='towAwayRateType']:checked").val(), loadOutRateMin: $("#loadOutRateMin").val(), loadOutRateMax: $("#loadOutRateMax").val(), loadOutRateType: $("input[name='loadOutRateType']:checked").val(), configuration_settings: configurationSettings, updatedAt: date};
+                    var data = {contactID: $("#contactID").val(), entityRating: $("#entityRating").val(), rateType: $("input[name='rateType']:checked").val(), negotiatedRate: $("#negotiatedRate").val(), towAwayRateMin: $("#towAwayRateMin").val(), towAwayRateMax: $("#towAwayRateMax").val(), towAwayRateType: towAwayRateType, loadOutRateMin: $("#loadOutRateMin").val(), loadOutRateMax: $("#loadOutRateMax").val(), loadOutRateType: loadOutRateType, configuration_settings: configurationSettings, updatedAt: date};
                 } else {
                     // Should never do this at this point
                     //var date = today;
@@ -125,10 +139,10 @@ $cdpvList = $cdpvresult["configuration_data_points"];
                         $("#negotiatedRate").val('');
                         $("#towAwayRateMin").val('');
                         $("#towAwayRateMax").val('');
-                        $("#towAwayRateType").val('');
+                        //$("#towAwayRateType").val('');
                         $("#loadOutRateMin").val('');
                         $("#loadOutRateMax").val('');
-                        $("#loadOutRateType").val('');
+                        //$("#loadOutRateType").val('');
                         passValidation = true;
                       } else {
                         alert("Updating Business Information Failed!");
@@ -536,12 +550,27 @@ $cdpvList = $cdpvresult["configuration_data_points"];
           $('input[id="rateType"]').attr('checked', false);
           $('input:radio[name="rateType"]').val([data["rateType"]]);
           $("#negotiatedRate").val(data["negotiatedRate"]);
-          $('input:radio[name="towAwayRateType"]').val([data["towAwayRateType"]]);
+
           $("#towAwayRateMin").val(data["towAwayRateMin"]);
           $("#towAwayRateMax").val(data["towAwayRateMax"]);
-          $('input:radio[name="loadOutRateType"]').val([data["loadOutRateType"]]);
+
           $("#loadOutRateMin").val(data["loadOutRateMin"]);
           $("#loadOutRateMax").val(data["loadOutRateMax"]);
+
+          //$('input:radio[name=towAwayRateType]').val([data["towAwayRateType"]]);
+          if (data["towAwayRateType"] == "Flat Rate") {
+              $('input:radio[name=towAwayRateType]').filter('[value="Flat Rate"]').prop('checked', true);
+          } else {
+              $('input:radio[name=towAwayRateType]').filter('[value="Mileage"]').prop('checked', true);
+          }
+
+          //$('input:radio[name=loadOutRateType]').val([data["loadOutRateType"]]);
+          if (data["loadOutRateType"] == "Flat Rate") {
+              $('input:radio[name=loadOutRateType]').filter('[value="Flat Rate"]').prop('checked', true);
+          } else {
+              $('input:radio[name=loadOutRateType]').filter('[value="Mileage"]').prop('checked', true);
+          }
+
           contactdropdown += '<select id="contactID" name="contactID" data-placeholder="NEC Rep" class="form-control chzn-select" data-ui-jq="select2" required="required">';
           for (var i = 0; i < contacts.contacts.length; i++) {
               selected = (contacts.contacts[i].id == data["contactID"]) ? 'selected=selected':'';

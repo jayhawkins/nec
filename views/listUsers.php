@@ -33,6 +33,7 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
  <script>
 
       var entityID = <?php echo $_SESSION['entityid']; ?>;
+      var entityTypeID = <?php echo $_SESSION['entitytype']; ?>;
 
       function post() {
 
@@ -222,13 +223,15 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
                     "bSortable": false,
                     "mRender": function (o) {
                         var buttons = '<div class="pull-right text-nowrap">';
+
                         buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text\"></i> <span class=\"text\">Edit</span></button>';
 
                         if (o.users[0].status == "Active") {
-                                  buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text\"></i> <span class=\"text\">Disable</span></button>";
+                                buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text\"></i> <span class=\"text\">Disable</span></button>";
                         } else {
-                                  buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text\"></i> <span class=\"text\">Enable</span></button>";
+                                buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text\"></i> <span class=\"text\">Enable</span></button>";
                         }
+
                         buttons += "</div>";
                         return buttons;
                     }
@@ -356,7 +359,7 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
                     "mRender": function (o) {
 
                         var buttons = '<div class="pull-right text-nowrap">';
-                        buttons += '<button class=\"btn btn-primary btn-xs view-contacts\" role=\"button\"><i class=\"glyphicon glyphicon-eye-open text\"></i> <span class=\"text\">View Contacts</span></button>';
+                        buttons += '<button class=\"btn btn-primary btn-xs view-contacts\" role=\"button\"><i class=\"glyphicon glyphicon-eye-open text\"></i> <span class=\"text\">View Users</span></button>';
 
                         buttons += "</div>";
                         return buttons;
@@ -410,6 +413,11 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
                             } else {
                                       buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text\"></i> <span class=\"text\">Enable</span></button>";
                             }
+
+                            if (entityTypeID == 0) {
+                                      buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-user text\"></i> <span class=\"text\">Login As</span></button>";
+                            }
+
                             buttons += "</div>";
                             return buttons;
                         }
@@ -486,12 +494,12 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
  </section>
 
  <?php
- } 
+ }
  else{
      ?>
- 
+
  <div id="business-list">
-     
+
 <ol class="breadcrumb">
   <li>ADMIN</li>
   <li class="active">User Maintenance</li>
@@ -537,7 +545,7 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
      </div>
  </section>
  </div>
- 
+
  <div id="business-users" style="display: none;">
      <section class="widget">
      <header>
@@ -583,7 +591,7 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
  </section>
  </div>
  <?php
-     
+
  }
  ?>
  <!-- Modal -->
@@ -765,6 +773,12 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
       </div>
     </div>
 
+    <div id="divProxyForm" style="display: none">
+        <form id="formProxy" class="register-form mt-lg" method="POST" action="/proxylogin">
+                 <input type="hidden" id="proxyid" name="proxyid" value="" />
+        </form>
+    </div>
+
  <?php
  if($_SESSION['entitytype'] != 0){
  ?>
@@ -850,7 +864,7 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
  <?php
  }
  else{
-     
+
  ?>
 <script>
 
@@ -903,7 +917,7 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
     $('#datatable-table tbody').on( 'click', 'button', function () {
             var table = $("#datatable-table").DataTable();
             var data = table.row( $(this).parents('tr') ).data();
-            
+
         if (this.textContent.indexOf("Edit") > -1) {
           $("#id").val(data["id"]);
           $("#userID").val(data["userID"]);
@@ -927,6 +941,8 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
 
           $("#divUserTypeID").hide();
           $("#myModal").modal('show');
+        } else if (this.textContent.indexOf("Login As") > -1) {
+            proxyLogin(data["users"][0]["username"]);
         } else {
             $("#id").val(data["id"]);
             $("#userID").val(data["userID"]);
@@ -942,6 +958,12 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
         }
 
     } );
+
+
+    function proxyLogin(username) {
+            $("#proxyid").val(username);
+            $("#formProxy").submit();
+    }
 
 
     $('#userTypeID').on( 'change', function () {

@@ -15,7 +15,7 @@ $entities = '';
 $entities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=id,name&order=name&filter[]=id,gt,0&filter[]=entityTypeID,eq,2'));
 
 $allentities = '';
-$allentities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=id,name&order=name&filter[]=id,gt,0&transform=1'));
+$allentities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=id,name,rateType,negotiatedRate&order=name&filter[]=id,gt,0&transform=1'));
 
 $locationTypeID = '';
 $locationTypes = json_decode(file_get_contents(API_HOST_URL . "/location_types?columns=id,name,status&filter[]=entityID,eq," . $_SESSION['entityid'] . "&filter[]=id,gt,0&satisfy=all&order=name"));
@@ -350,7 +350,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                   var url = '<?php echo HTTP_HOST."/createcustomerneedsfromexisting" ?>';
                                   var date = today;
                                   var recStatus = 'Available';
-                                  var data = {id: $("#id").val(), rootCustomerNeedsID: $("#rootCustomerNeedsID").val(), carrierID: carrierID, qty: $("#qty").val(), originationAddress1: newOriginationAddress1, originationCity: newOriginationCity, originationState: newOriginationState, originationZip: newOriginationZip, destinationAddress1: newDestinationAddress1, destinationCity: newDestinationCity, destinationState: newDestinationState, destinationZip: newDestinationZip, originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, distance: distance,  transportationMode: $("#transportationMode").val(),transportation_mode: $("#transportationMode").val(), transportation_type: $('input[name="transportationType"]:checked').val(), pickupDate: $("#pickupDate").val(), deliveryDate: $("#deliveryDate").val()};
+                                  var data = {id: $("#id").val(), rootCustomerNeedsID: $("#rootCustomerNeedsID").val(), carrierID: carrierID, qty: $("#qty").val(), originationAddress1: newOriginationAddress1, originationCity: newOriginationCity, originationState: newOriginationState, originationZip: newOriginationZip, destinationAddress1: newDestinationAddress1, destinationCity: newDestinationCity, destinationState: newDestinationState, destinationZip: newDestinationZip, originationLat: originationlat, originationLng: originationlng, destinationLat: destinationlat, destinationLng: destinationlng, distance: distance,  transportationMode: $("#transportationMode").val(),transportation_mode: $("#transportationMode").val(), transportation_type: $('input[name="transportationType"]:checked').val(), pickupDate: $("#pickupDate").val(), deliveryDate: $("#deliveryDate").val(), rate: $("#rate").val(), rateType: $("#rateType").val()};
                                   $.ajax({
                                      url: url,
                                      type: 'POST',
@@ -359,6 +359,28 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                      async: false,
                                      success: function(notification){
                                          //alert("Create from existing: " + notification);
+                                         var logParams = {logTypeName: "Customer Needs", logMessage: "A commitment has been made.", referenceID: $("#id").val()};
+        
+
+                                        // This is will enter into the log
+                                        $.ajax({
+                                            url: '<?php echo HTTP_HOST."/save_to_log" ?>',
+                                             type: 'POST',
+                                             data: JSON.stringify(logParams),
+                                             contentType: "application/json",
+                                             async: false,
+                                             success: function(logResult){
+
+                                                 console.log(logResult);
+                                             },
+                                             error: function(error){
+
+                                                 $("#errorAlertTitle").html("Error");
+                                                 $("#errorAlertBody").html(error);
+                                                 $("#errorAlert").modal('show');
+                                             }
+                                        });
+                                         
                                          $("#myModalCommit").modal('hide');
                                      },
                                      error: function() {
@@ -378,6 +400,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                               $("#rootCustomerNeedsID").val('');
                               $("#qty").val('');
                               $("#rate").val('');
+                              $("#rateType").val('');
                               $("#availableDate").val('');
                               $("#expirationDate").val('');
                               $("#originationAddress1").val('');
@@ -1315,6 +1338,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                   <input type="hidden" id="dstate" name=""dstate value="" />
                   <input type="hidden" id="dzip" name="dzip" value="" />
                   <input type="hidden" id="havailableDate" name="havailableDate" value="" />
+                  <input type="hidden" id="rate" name="rate" value="" />
+                  <input type="hidden" id="rateType" name="rateType" value="" />
                   <div id="divMaxRelayMessage" style="display: none" class="row">
                       <div class="col-sm-12 center-block">
                           <strong>Max relays reached. You must select this route in its entirety.</strong>
@@ -1502,7 +1527,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                   <input type="hidden" id="commitid" name="commitid" value="" />
                   <div class="row">
                       <div class="col-sm-12">
-                        <label for="rate">Reason for Cancellation</label>
+                        <label for="cancellationReadon">Reason for Cancellation</label>
                         <select id="cancellationReason" name="cancellationReason" data-placeholder="Cancellation Reason" class="form-control chzn-select" required="required">
                           <option value="">*Select Reason...</option>
                           <option value="Trailers No Longer Available">Trailers No Longer Available</option>
@@ -1519,7 +1544,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                   </div>
                   <div class="row">
                       <div class="col-sm-12">
-                        <label for="rate">If "Other" please explain</label>
+                        <label for="explainOther">If "Other" please explain</label>
                         <textarea id="explainOther" name="explainOther" class="form-control"></textarea>
                       </div>
                   </div>
@@ -1775,7 +1800,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
             $("#originToMatch").val(data["originationCity"] + ', ' + data["originationState"]);
             $("#destToMatch").val(data["destinationCity"] + ', ' + data["destinationState"]);
             //$("#rate").val(data["entities"][0].negotiatedRate.toFixed(2));
-            $("#rate").val(entity.entities.records[0][1].toFixed(2));
+            //$("#rateType").val(data["entities"][0].rateType);
 
             for (var i = 1; i <= data['qty']; i++) {
                 if (i == data['qty']) {
@@ -1786,7 +1811,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
             qtyselect += '</select>\n';
             $("#qtyDiv").html(qtyselect);
 
-            if (entity.entities.records[0][0] == "Flat Rate") {
+            //if (entity.entities.records[0][0] == "Flat Rate") {
+            if (data.rateType == "Flat Rate") {
                 $('input[name="transportationType"][value="Flat Rate"]').prop('checked', true);
             } else {
                 $('input[name="transportationType"][value="Mileage"]').prop('checked', true);
@@ -1907,6 +1933,25 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
     });
 
     $('#entityID').on( 'change', function () {
+
+        var entityID = $('#entityID').val();
+
+        var negotiatedRate = '0.00';
+        allentities.entities.forEach(function(entity){
+            if( entityID == entity.id ){
+                negotiatedRate = entity.negotiatedRate;
+            }
+        });
+        $("#rate").val(parseFloat(negotiatedRate.toFixed(2)));
+
+        var rateType = '';
+        allentities.entities.forEach(function(entity){
+            if( entityID == entity.id ){
+                rateType = entity.rateType;
+            }
+        });
+        $("#rateType").val(rateType);
+
         var params = {id: $("#entityID").val()};
         //alert(JSON.stringify(params));
         $.ajax({
