@@ -156,5 +156,33 @@ Created Customer Id=801. Reconstructed response body:
 */
 
 
+function createCustomerInvoice(Array $cust){
+    
+    //query for cutomer
+    
+    
+    
+    
+    
+    
+    
+    //create customer
+    
+    
+    
+    
+    
+    //create invoice
+    
+    
+    
+    
+    
+    //update db
+    
+    
+}
+
+
    
 ?>
