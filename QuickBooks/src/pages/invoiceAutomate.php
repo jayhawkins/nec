@@ -18,14 +18,38 @@ $dbh = mysqli_connect("45.55.1.81", "nec_qa", "Yellow10!", "nec")
 //see joins
    
    //run the query
-$loop = mysqli_query($dbh, "SELECT p.id,p.customerID,p.cost, p.orderID, p.orderDetailID,d.originationCity,d.originationState,d.destinationCity,d.destinationState ,e.name,l.address1,l.city,l.state,l.zip FROM nec.approved_pod p join order_details d on p.orderDetailID = d.id join entities e on p.customerID = e.id join locations l on e.id = l.entityID where l.locationTypeID = 1 and p.hasBeenInvoiced = 0")
+$loop = mysqli_query($dbh, "SELECT p.id as line_id,p.customerID,p.cost, p.orderID, p.orderDetailID,c.*,d.originationCity,d.originationState,d.destinationCity,d.destinationState ,e.name,l.address1,l.city,l.state,l.zip FROM nec.approved_pod p join order_details d on p.orderDetailID = d.id join entities e on p.customerID = e.id join locations l on e.id = l.entityID  join contacts c on e.contactID = c.id  where l.locationTypeID = 1 and p.hasBeenInvoiced = 0")
    or die (mysqli_error($dbh));
 
 while ($row = mysqli_fetch_array($loop))
 {
      //echo $row['id'] . " " .echo $row['orderID'] . " " . $row['originationCity'] . " " . $row['originationState'] . " " . $row['destinationCity'] . " " . $row['destinationState'] . " " . $row['name'] . " " . $row['address1']." " . $row['city']." " . $row['state'] ." " . $row['zip'].   "<br/>";
 
-    echo 'from '.$row['originationCity'] . " to " . $row['originationState'] . " for ". $row['name'] ." ". $row['address1'] ." ". $row['city'] ." ". $row['state'] ." ".$row['zip'] . " Cost:". $row['cost']. " <br>" ; 
+    echo $row['line_id'] .' from '.$row['originationCity'] . " to " . $row['originationState'] . " for ". $row['name'] ." ". $row['address1'] ." ". $row['city'] ." ". $row['state'] ." ".$row['zip'] . " Cost:". $row['cost']. " <br>" ; 
+
+    $customer['origin_city'] = $row['originationCity'];
+    $customer['origin_state'] = $row['originationState'];
+    
+    
+    $customer['destination_city'] = $row['destinationCity'];
+    $customer['destination_state'] = $row['destinationState'];
+    
+    $customer['customer_name'] = $row['name'];
+    $customer['customer_contact'] = $row['firstName'] + ' ' + $row['lastName'];
+    $customer['customer_address'] = $row['address1'];
+    $customer['customer_city'] = $row['city'];
+    $customer['customer_state'] = $row['state'];
+    $customer['customer_zip'] = $row['zip'];
+    $customer['customer_phone'] = $row['primaryPhone'];
+    $customer['customer_email'] = $row['emailAddress'];
+    $customer['cid'] = $row['line_id'];
+    
+    
+    print_r($customer);
+    
+    
+    
+    
 }
 
 exit();
