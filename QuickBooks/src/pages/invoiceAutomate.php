@@ -73,10 +73,10 @@ if ($error) {
     echo "The Helper message is: " . $error->getOAuthHelperError() . "\n";
     echo "The Response message is: " . $error->getResponseBody() . "\n";
 } else {
-    var_dump($resultingCustomerObj);
+    print_r($resultingCustomerObj);
 }
 
-var_dump($resultingCustomerObj);
+//var_dump($resultingCustomerObj);
 
 echo "Hello World";
 exit();
