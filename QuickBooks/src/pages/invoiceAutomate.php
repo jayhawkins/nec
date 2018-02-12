@@ -1,6 +1,6 @@
 <?php
 //Replace the line with require "vendor/autoload.php" if you are using the Samples from outside of _Samples folder
-error_reporting(E_ALL ^ E_WARNING); 
+error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 
@@ -12,8 +12,7 @@ use QuickBooksOnline\API\PlatformService\PlatformService;
 use QuickBooksOnline\API\Core\Http\Serialization\XmlObjectSerializer;
 use QuickBooksOnline\API\Facades\Customer;
 
-echo 'Hello World';
-exit();
+
 
 // Prep Data Services
 /*
