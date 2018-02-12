@@ -3,8 +3,7 @@
 error_reporting(E_ALL ^ E_WARNING); 
 ini_set('display_errors', 1);
 
-echo 'Hello World';
-exit();
+
 include('../config.php');
 
 use QuickBooksOnline\API\Core\ServiceContext;
