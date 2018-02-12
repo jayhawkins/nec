@@ -9,7 +9,7 @@ include('../config.php');
 
 //db call 
 
-$dbh = mysqli_connect("45.55.1.81", "nec_qa", "pqlamz", "Yellow10!")
+$dbh = mysqli_connect("45.55.1.81", "nec_qa", "Yellow10!", "nec")
      or die ('cannot connect to database because ' . mysqli_connect_error());
    
 
