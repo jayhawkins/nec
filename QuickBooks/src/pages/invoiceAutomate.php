@@ -3,7 +3,8 @@
 error_reporting(E_ALL ^ E_WARNING); 
 ini_set('display_errors', 1);
 
-
+echo 'Hello World';
+exit();
 include('../config.php');
 
 use QuickBooksOnline\API\Core\ServiceContext;
@@ -11,6 +12,9 @@ use QuickBooksOnline\API\DataService\DataService;
 use QuickBooksOnline\API\PlatformService\PlatformService;
 use QuickBooksOnline\API\Core\Http\Serialization\XmlObjectSerializer;
 use QuickBooksOnline\API\Facades\Customer;
+
+//echo 'Hello World';
+//exit();
 
 // Prep Data Services
 /*
@@ -29,8 +33,8 @@ $dataService = DataService::Configure(array(
        'auth_mode' => 'oauth2',
          'ClientID' => "Q0bCkjuFuWa8MxjEDqYenaCreMUZjyAJ2UyNhnOmdVGEDNkkkD",
          'ClientSecret' => "ahfR70aIvIatES37ZeoJztAJx7Ki1PvoGhfNVTja",
-         'accessTokenKey' =>  "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..MRNnerq8F5SKj_KnMXWrbQ._dt0d8cVr0lcigDa8UXlfuwn3pPGhfpSuNrJaVIjeLe2zKNQZQCrxr7QV7hZuF1gaIqO5qiRkPi5Zi0pE-eR_9v-8hHdHMvO_h-Ju04ELURCOAo7g4hKdHAWqRGIfqAsXHQA_gbTc2uewl-J_XBF5WE596CkXKrZRk9E3ltuPIO4M2mSNMX7JhgOEGpU5HlCzv6-f22d2eaze_PoRTTyos0MgqVkw2NOYSHNqmbea6QdrRglaeYTeWmmd3FDF4uxjgko0ota5BkPe9ou_NZ_17S6YL1jHbD3MCUF7fGf7pM8TIyH8hrcfKUTUCVH64BahbeLa9UBrLPnE8epwo1GeqEzW_-d3ylniBbtHkYD-t8WkitNU4XmQ3BJVwiLHEDIwyRrf9KmhpZvU0hnV6q6Zing0v5uunQswF1_0qpa0AX5IvVcrW8_Cv-fL5Drn_uVRsrC45N2N0Rko2O7L8gJUlpUaSEBklvYLgwu9u2HSUsu2Fftqn7fl6n0casMlhshaFQWdkDNkXqr6jcUDLvnuoUk1eH-NaDxJvQfi1qTnFWtL8jsH5LEBVhGPTee2v6iUrbNkwlo4rc_tsNG1PL73nmBro8IIOAWUJlrshQ7afUCxbmBXYUtt6gKFHGLQxt2Kh5zIUHWfe7q8MftLV2EWGnVEwoVxGhB2Ed05B5H_LH3s3d3JhALWaxRws1yLuEz.Z-je2nwFz7bFZNb7vtF2RA",
-         'refreshTokenKey' => 'Q011526678725GQClwArE1ZkxBsnhO7Pm6TGebswxbqgAbBixl',
+         'accessTokenKey' =>  "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..VmkkrayPQJM_FsZ0ceaMaQ.tndsFPvZwzBWzx7wTg6hwePquHz0NNeYb6UaWfVn7XCfMHOJPMC5RWhrSq7NI6M3mg04JrWHc7RFsrKUdYsKQFi_7spBH1mr0H4qTtRyyUh1kEmrY72riYt8Dt39gDTRe5EQALSiWni6M82FSvqKfDVsvZtA0V5dbPxpx1Dkbxm-uD_A3VneyWHzoZRupeTJxRBgiA9K6kArx1LilUwB0cyE-VhR8TI_sgNXSxpsv7ricRKRkpHx-epxgQXczKjQdwlNukZFkQ27mgZfOpjz9ADICwmx-BglFz6pVLoh-iVHarwfXqxMTIGEJNsauKdr2gJVCqGri2KJ-vMlf41q53gmW3IapdYROJQwCcWdWCX6_dxs1e9q4DaMCU6QCQDbCBHgBWKjAb7-2k7OpEeTu3fNJ12A3Ox6pKtqQm2Y_fNQavTGffoJcy4fFqQRIEUKHDqsC_lAn3q9px8vp3BJ8sGl8gplhj7lsqVaPuz-3K98WJCPjWIaWO1jdMkhAZ6eaosJJRReFyFTb36puHCkJynM8t6eDRWOGVlDcCI3CwnwxBX-kxecXjr1sMoU8iQ2yPzCiIhlx-XZVKB1iHnn39CSuOn2202F5hUR4TpnSJj3TFrYTh0sbAKNKZCu1we8VueTzlvSxk1m-Nk1m3Pg0OSmbOyiRQzQvAwy06qHoRio8vtpX7LRiyCOMyCiroEF.SUKnOG_PnkC4O40wVmAetw",
+         'refreshTokenKey' => 'Q011527164735Em4EA5PF9oFruj5yV684DTMLPFFZnehd6IuC1',
          'QBORealmID' => "123145985783569",
          'baseUrl' => "development"
 ));
@@ -41,23 +45,23 @@ $dataService = DataService::Configure(array(
 // Add a customer
 $customerObj = Customer::create([
   "BillAddr" => [
-     "Line1"=>  "123 Main Street",
+     "Line1"=>  "123 Main Ave",
      "City"=>  "Mountain View",
      "Country"=>  "USA",
      "CountrySubDivisionCode"=>  "CA",
      "PostalCode"=>  "94042"
  ],
- "Notes" =>  "Here are other details.",
+ "Notes" =>  "Test 2",
  "Title"=>  "Mr",
- "GivenName"=>  "Yaw",
- "MiddleName"=>  "Gyebi",
- "FamilyName"=>  "Tandoh",
+ "GivenName"=>  "Dennis",
+ "MiddleName"=>  "Michael",
+ "FamilyName"=>  "Smith",
  "Suffix"=>  "Jr",
- "FullyQualifiedName"=>  "Yaw Tandoh",
- "CompanyName"=>  "YGTSolutions",
- "DisplayName"=>  "YGTSolutions",
+ "FullyQualifiedName"=>  "Dennis Smith",
+ "CompanyName"=>  "Dubtel",
+ "DisplayName"=>  "Dubtel",
  "PrimaryPhone"=>  [
-     "FreeFormNumber"=>  "(513) 781-8585"
+     "FreeFormNumber"=>  "(513) 418-3718"
  ],
  "PrimaryEmailAddr"=>  [
      "Address" => "ygtandoh@gmail.com"
@@ -72,6 +76,11 @@ if ($error) {
 } else {
     var_dump($resultingCustomerObj);
 }
+
+var_dump($resultingCustomerObj);
+
+echo "Hello World";
+exit();
 
 /*
 Created Customer Id=801. Reconstructed response body:
