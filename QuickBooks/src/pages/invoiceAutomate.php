@@ -2,14 +2,14 @@
 //Replace the line with require "vendor/autoload.php" if you are using the Samples from outside of _Samples folder
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-
+Yellow10!
 
 include('../config.php');
 
 
 //db call 
 
-$dbh = mysqli_connect("45.55.1.81", "nec_qa", "pqlamz", "Yellow10!")
+$dbh = mysqli_connect("45.55.1.81", "nec_qa", "Yellow10!", "nec")
      or die ('cannot connect to database because ' . mysqli_connect_error());
    
 
