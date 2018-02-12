@@ -45,23 +45,23 @@ $dataService = DataService::Configure(array(
 // Add a customer
 $customerObj = Customer::create([
   "BillAddr" => [
-     "Line1"=>  "123 Main Street",
+     "Line1"=>  "123 Main Ave",
      "City"=>  "Mountain View",
      "Country"=>  "USA",
      "CountrySubDivisionCode"=>  "CA",
      "PostalCode"=>  "94042"
  ],
- "Notes" =>  "Here are other details.",
+ "Notes" =>  "Test 2",
  "Title"=>  "Mr",
- "GivenName"=>  "Yaw",
- "MiddleName"=>  "Gyebi",
- "FamilyName"=>  "Tandoh",
+ "GivenName"=>  "Dennis",
+ "MiddleName"=>  "Michael",
+ "FamilyName"=>  "Smith",
  "Suffix"=>  "Jr",
- "FullyQualifiedName"=>  "Yaw Tandoh",
- "CompanyName"=>  "YGTSolutions",
- "DisplayName"=>  "YGTSolutions",
+ "FullyQualifiedName"=>  "Dennis Smith",
+ "CompanyName"=>  "Dubtel",
+ "DisplayName"=>  "Dubtel",
  "PrimaryPhone"=>  [
-     "FreeFormNumber"=>  "(513) 781-8585"
+     "FreeFormNumber"=>  "(513) 418-3718"
  ],
  "PrimaryEmailAddr"=>  [
      "Address" => "ygtandoh@gmail.com"
