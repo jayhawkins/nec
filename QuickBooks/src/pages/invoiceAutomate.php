@@ -77,6 +77,8 @@ if ($error) {
     var_dump($resultingCustomerObj);
 }
 
+var_dump($resultingCustomerObj);
+
 echo "Hello World";
 exit();
 
