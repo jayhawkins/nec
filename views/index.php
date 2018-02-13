@@ -62,7 +62,7 @@ $loccount = 0;
 
 // Get the states the Customer/Carrier has locations in for queries below
 $db = Flight::db();
-$dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
+$dbhandle = new $db('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS);
 $result = $dbhandle->query("select distinct state
                          from locations
                          where entityID = '" . $_SESSION['entityid'] . "'

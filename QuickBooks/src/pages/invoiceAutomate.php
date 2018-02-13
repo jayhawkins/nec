@@ -5,6 +5,13 @@ ini_set('display_errors', 1);
 
 
 include('../config.php');
+use QuickBooksOnline\API\Core\ServiceContext;
+use QuickBooksOnline\API\DataService\DataService;
+use QuickBooksOnline\API\PlatformService\PlatformService;
+use QuickBooksOnline\API\Core\Http\Serialization\XmlObjectSerializer;
+use QuickBooksOnline\API\Facades\Customer;
+use QuickBooksOnline\API\Facades\Invoice;
+
 
 
 //db call 
@@ -34,8 +41,14 @@ while ($row = mysqli_fetch_array($loop))
     $customer['destination_city'] = $row['destinationCity'];
     $customer['destination_state'] = $row['destinationState'];
     
+    
+    $customer['description'] = $customer['origin_city'].", ".$customer['origin_state']." to ".$customer['destination_city'].", ".$customer['destination_state']; 
+            
+            
+    $customer['customer_fname'] = $row['firstName'];
+    $customer['customer_lname'] = $row['lastName'];
     $customer['customer_name'] = $row['name'];
-    $customer['customer_contact'] = $row['firstName'] + ' ' + $row['lastName'];
+    $customer['customer_contact'] = $customer['customer_fname'] + ' ' + $customer['customer_lname'];
     $customer['customer_address'] = $row['address1'];
     $customer['customer_city'] = $row['city'];
     $customer['customer_state'] = $row['state'];
@@ -43,11 +56,11 @@ while ($row = mysqli_fetch_array($loop))
     $customer['customer_phone'] = $row['primaryPhone'];
     $customer['customer_email'] = $row['emailAddress'];
     $customer['cid'] = $row['line_id'];
+    $customer['cost'] = $row['cost'];
     
-    
-    print_r($customer);
-    echo '<hr>';
-    
+    //print_r($customer);
+    //echo '<hr>';
+   createCustomerInvoice($customer);
     
     
     
@@ -55,11 +68,6 @@ while ($row = mysqli_fetch_array($loop))
 
 exit();
 
-use QuickBooksOnline\API\Core\ServiceContext;
-use QuickBooksOnline\API\DataService\DataService;
-use QuickBooksOnline\API\PlatformService\PlatformService;
-use QuickBooksOnline\API\Core\Http\Serialization\XmlObjectSerializer;
-use QuickBooksOnline\API\Facades\Customer;
 
 
 
@@ -76,58 +84,10 @@ $dataService = DataService::Configure(array(
 ));
 
 */
-$dataService = DataService::Configure(array(
-       'auth_mode' => 'oauth2',
-         'ClientID' => "Q0bCkjuFuWa8MxjEDqYenaCreMUZjyAJ2UyNhnOmdVGEDNkkkD",
-         'ClientSecret' => "ahfR70aIvIatES37ZeoJztAJx7Ki1PvoGhfNVTja",
-         'accessTokenKey' =>  "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..BQHzO8guehposne17tDweg.yuUkeci4FL6WhKL5_fvCSP8FYVfy1mZF_Qrl9mW20wKYHojKwpNfpXyGKUEe8UUudqFaak47YAS6IKGPJiJz9W6oGqByYpGwr1xDP8WwuRlEWXOigqcJC9QMXgHSD5Ld7-lZ68dnIeCwMKY2k7-fR7qv9IYp790jpOwebSgGbhK3AmnUgIBr_Y885OHsJbaRHGmIQGdhXV6IQHSoHBU7-lrLHruJiOB50KzpGkn6gNIZHTBECCm3X4wqXWMrWjyOJ56dZKqwiCKCoWA-RbhWuunbiln9EeGxK0qB7IZPd1Ozcc0emMCWUvrKTpcFHyAzL5F-qJtlhFDIlyImyT678Ya0esM8p0sdVuKQsOHGN2nTH1zhuYD0vYVHZEL_NJXHV_W_c8MY-sE36yelL8gI4G9UAs6iJEp0mV0-E8FvV6bCwScyLjskIu7GbdYaCl1wolKoDLKO6xrsbM65np7OgU1zTlGWDRwQ8NO9zuCzcGo2CkdCDf8sRKepid8s_S1HJ18JT69qpAjYUiC5Cc2YqJD-BOr26cwHqLAjPo1oA2sLAT0XOKA5CF8gwNuJ-tdAJ6J9VgvE_h-7XfOrfTFFrBqgRUl013ERd229PSdcyZFU92J7QA-4JpC50iBRiAS3QpDYIPrC4ZEprHMdLT1mnKDM88x34k9P06PTZF2BjQdBKECdyS7s4nNwS_jubITX.aOcohUp4tavS4Ils4Jug5g",
-         'refreshTokenKey' => 'Q011527180159s7nYP5Sx9GZyHaMPBA2qmTyK78BgQTvIBi0Dt',
-         'QBORealmID' => "123145985783569",
-         'baseUrl' => "development"
-));
-
-//$dataService->setLogLocation("/Users/hlu2/Desktop/newFolderForLog");
-
-
-// Add a customer
-$customerObj = Customer::create([
-  "BillAddr" => [
-     "Line1"=>  "123 Main Ave",
-     "City"=>  "Mountain View",
-     "Country"=>  "USA",
-     "CountrySubDivisionCode"=>  "CA",
-     "PostalCode"=>  "94042"
- ],
- "Notes" =>  "Test 2",
- "Title"=>  "Mr",
- "GivenName"=>  "Dennis",
- "MiddleName"=>  "Michael",
- "FamilyName"=>  "Smith",
- "Suffix"=>  "Jr",
- "FullyQualifiedName"=>  "Dennis Smith",
- "CompanyName"=>  "Dubtel",
- "DisplayName"=>  "Dubtel",
- "PrimaryPhone"=>  [
-     "FreeFormNumber"=>  "(513) 418-3718"
- ],
- "PrimaryEmailAddr"=>  [
-     "Address" => "ygtandoh@gmail.com"
- ]
-]);
-$resultingCustomerObj = $dataService->Add($customerObj);
-$error = $dataService->getLastError();
-if ($error) {
-    echo "The Status code is: " . $error->getHttpStatusCode() . "\n";
-    echo "The Helper message is: " . $error->getOAuthHelperError() . "\n";
-    echo "The Response message is: " . $error->getResponseBody() . "\n";
-} else {
-    print_r($resultingCustomerObj);
-}
 
 //var_dump($resultingCustomerObj);
 
-echo "Hello World";
-exit();
+
 
 /*
 Created Customer Id=801. Reconstructed response body:
@@ -154,6 +114,200 @@ Created Customer Id=801. Reconstructed response body:
   <ns0:PreferredDeliveryMethod>Print</ns0:PreferredDeliveryMethod>
 </ns0:Customer>
 */
+
+
+function createCustomerInvoice(Array $cust){
+    
+   print_r($cust);
+
+    
+    //query for cutomer// Prep Data Services
+$dataService = DataService::Configure(array(
+       'auth_mode' => 'oauth2',
+         'ClientID' => "Q0bCkjuFuWa8MxjEDqYenaCreMUZjyAJ2UyNhnOmdVGEDNkkkD",
+         'ClientSecret' => "ahfR70aIvIatES37ZeoJztAJx7Ki1PvoGhfNVTja",
+         'accessTokenKey' =>  "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..MYCjL9qsSTiEUkAkNa2xww.8yIxASMsMf_Ja0KrKdcsl3uSxvIAeDDZSL1_7UVI5wnC-WjF296B7MkgS1wVGCOf3B__gM0AZod906l3k8Xzi2VkuxAJdk62SCfH_F-VH7ZqMOA4mJ6EoI-7ModHVioBhHbeIn8SymnEdwRYZaPvjKH992tarI5975Zd5p9LL5K2xLh6paSmmeyFz4hqxvIbtJBRhTG9qqd-dzpCRq8H0hLQcNG1J76Tj3rhHiCUGn37oJ-YNsHFFbcJugJCxUjeMZn3-dsyL75x1heu-NZ5E00RQGNwhj1O2cRkwy_rOqNrDgkMfIkV0qdX6S5VHNraElrCTFcFXJbveGw_nYZYlMloQqUhOYcG5G-tERHxjK3c4hxkW-l829xgxdcD08E1zhfsiPZEqRRCqS4qs4v93hDQHG_oHvFOkNncz9_rb7DC5AcbvqWV0WXuCOyxnB8a5iCHG0EMBbnZXyuighZ4rpQXfsErS9AyZ8ie3gAaaALgk51oyiDdmbWgVKJe2l4nRfJJw2gHxpw9E7EC9Cq0dF7NLz0O3qFnY54pExA79hWeUl6pjyGWEYbt8IG_UIaeYPph37Z2SGaDkpUAPHChTzhZLk-pnSXwBtiTbjJLAJ7NLhjIr5DHKKa73S8u417K-zSmGAt1S5VVwhQFuoXrQ0rG52plaE-jBPqhWscD2nCwdZWJl7HUgTGHT0mCpqZl.Qw3m05El6lMYHC98z1_0Gg",
+         'refreshTokenKey' => 'Q011527248404CPAzFuTBTfBq3PpXD20z9GYqacJYxVbkVID9L',
+         'QBORealmID' => "123145985783569",
+         'baseUrl' => "https://sandbox-quickbooks.api.intuit.com"
+));
+
+$found_customer_id = 0;
+
+
+$entities = $dataService->Query("SELECT * FROM Customer");
+$error = $dataService->getLastError();
+    if ($error != null) {
+        echo "The Status code is: " . $error->getHttpStatusCode() . "\n";
+        echo "The Helper message is: " . $error->getOAuthHelperError() . "\n";
+        echo "The Response message is: " . $error->getResponseBody() . "\n";
+        exit();
+    }
+
+
+// Echo some formatted output
+$i = 0;
+foreach($entities as $oneCustomer)
+{
+	//echo $oneCustomer->DisplayName;
+        //echo '<hr>';
+    
+    if ($cust['customer_name']==$oneCustomer->DisplayName){
+        $customer_found = TRUE;
+        $found_customer_id = $oneCustomer->Id;
+        //echo $vendorid;
+        //exit();
+    }
+    
+   
+	$i++;
+}
+
+
+echo $found_customer_id;
+  
+
+if ($found_customer_id==0){
+    //create new customer
+    
+    $dataService = DataService::Configure(array(
+           'auth_mode' => 'oauth2',
+         'ClientID' => "Q0bCkjuFuWa8MxjEDqYenaCreMUZjyAJ2UyNhnOmdVGEDNkkkD",
+         'ClientSecret' => "ahfR70aIvIatES37ZeoJztAJx7Ki1PvoGhfNVTja",
+          'accessTokenKey' =>  "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..MYCjL9qsSTiEUkAkNa2xww.8yIxASMsMf_Ja0KrKdcsl3uSxvIAeDDZSL1_7UVI5wnC-WjF296B7MkgS1wVGCOf3B__gM0AZod906l3k8Xzi2VkuxAJdk62SCfH_F-VH7ZqMOA4mJ6EoI-7ModHVioBhHbeIn8SymnEdwRYZaPvjKH992tarI5975Zd5p9LL5K2xLh6paSmmeyFz4hqxvIbtJBRhTG9qqd-dzpCRq8H0hLQcNG1J76Tj3rhHiCUGn37oJ-YNsHFFbcJugJCxUjeMZn3-dsyL75x1heu-NZ5E00RQGNwhj1O2cRkwy_rOqNrDgkMfIkV0qdX6S5VHNraElrCTFcFXJbveGw_nYZYlMloQqUhOYcG5G-tERHxjK3c4hxkW-l829xgxdcD08E1zhfsiPZEqRRCqS4qs4v93hDQHG_oHvFOkNncz9_rb7DC5AcbvqWV0WXuCOyxnB8a5iCHG0EMBbnZXyuighZ4rpQXfsErS9AyZ8ie3gAaaALgk51oyiDdmbWgVKJe2l4nRfJJw2gHxpw9E7EC9Cq0dF7NLz0O3qFnY54pExA79hWeUl6pjyGWEYbt8IG_UIaeYPph37Z2SGaDkpUAPHChTzhZLk-pnSXwBtiTbjJLAJ7NLhjIr5DHKKa73S8u417K-zSmGAt1S5VVwhQFuoXrQ0rG52plaE-jBPqhWscD2nCwdZWJl7HUgTGHT0mCpqZl.Qw3m05El6lMYHC98z1_0Gg",
+         'refreshTokenKey' => 'Q011527248404CPAzFuTBTfBq3PpXD20z9GYqacJYxVbkVID9L',
+         'QBORealmID' => "123145985783569",
+         'baseUrl' => "development"
+));
+    
+            // Add a customer
+            $customerObj = Customer::create([
+              "BillAddr" => [
+                 "Line1"=>  $cust['customer_address'],
+                 "City"=>  $cust['customer_city'],
+                 "Country"=>  "USA",
+                 "CountrySubDivisionCode"=>  $cust['customer_state'],
+                 "PostalCode"=>  $cust['customer_zip']
+             ],
+             "Notes" =>  "",
+             "GivenName"=>  $cust['customer_fname'],
+             "FamilyName"=>  $cust['customer_lname'],
+             "FullyQualifiedName"=>  $cust['customer_contact'],
+             "CompanyName"=>  $cust['customer_name'],
+             "DisplayName"=>  $cust['customer_name'],
+             "PrimaryPhone"=>  [
+                 "FreeFormNumber"=>  $cust['customer_phone']
+             ],
+             "PrimaryEmailAddr"=>  [
+                 "Address" => $cust['customer_email']
+             ]
+            ]);
+            $resultingCustomerObj = $dataService->Add($customerObj);
+            $error = $dataService->getLastError();
+            if ($error) {
+                echo "The Status code is: " . $error->getHttpStatusCode() . "\n";
+                echo "The Helper message is: " . $error->getOAuthHelperError() . "\n";
+                echo "The Response message is: " . $error->getResponseBody() . "\n";
+            } else {
+                $found_customer_id = $resultingCustomerObj->Id;
+                //print_r($resultingCustomerObj);
+            }
+    
+    
+}
+
+ echo $found_customer_id;
+    echo '<hr>';
+    //exit();
+
+
+           //create invoice
+    
+ $dataService = DataService::Configure(array(
+          'auth_mode' => 'oauth2',
+         'ClientID' => "Q0bCkjuFuWa8MxjEDqYenaCreMUZjyAJ2UyNhnOmdVGEDNkkkD",
+         'ClientSecret' => "ahfR70aIvIatES37ZeoJztAJx7Ki1PvoGhfNVTja",
+          'accessTokenKey' =>  "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..MYCjL9qsSTiEUkAkNa2xww.8yIxASMsMf_Ja0KrKdcsl3uSxvIAeDDZSL1_7UVI5wnC-WjF296B7MkgS1wVGCOf3B__gM0AZod906l3k8Xzi2VkuxAJdk62SCfH_F-VH7ZqMOA4mJ6EoI-7ModHVioBhHbeIn8SymnEdwRYZaPvjKH992tarI5975Zd5p9LL5K2xLh6paSmmeyFz4hqxvIbtJBRhTG9qqd-dzpCRq8H0hLQcNG1J76Tj3rhHiCUGn37oJ-YNsHFFbcJugJCxUjeMZn3-dsyL75x1heu-NZ5E00RQGNwhj1O2cRkwy_rOqNrDgkMfIkV0qdX6S5VHNraElrCTFcFXJbveGw_nYZYlMloQqUhOYcG5G-tERHxjK3c4hxkW-l829xgxdcD08E1zhfsiPZEqRRCqS4qs4v93hDQHG_oHvFOkNncz9_rb7DC5AcbvqWV0WXuCOyxnB8a5iCHG0EMBbnZXyuighZ4rpQXfsErS9AyZ8ie3gAaaALgk51oyiDdmbWgVKJe2l4nRfJJw2gHxpw9E7EC9Cq0dF7NLz0O3qFnY54pExA79hWeUl6pjyGWEYbt8IG_UIaeYPph37Z2SGaDkpUAPHChTzhZLk-pnSXwBtiTbjJLAJ7NLhjIr5DHKKa73S8u417K-zSmGAt1S5VVwhQFuoXrQ0rG52plaE-jBPqhWscD2nCwdZWJl7HUgTGHT0mCpqZl.Qw3m05El6lMYHC98z1_0Gg",
+         'refreshTokenKey' => 'Q011527248404CPAzFuTBTfBq3PpXD20z9GYqacJYxVbkVID9L',
+         'QBORealmID' => "123145985783569",
+         'baseUrl' => "development"
+));       
+//$dataService->throwExceptionOnError(true);
+//Add a new Invoice
+$theResourceObj = Invoice::create([
+     "Line" => [
+   [
+     "Amount" => floatval($cust['cost']),
+     "DetailType" => "SalesItemLineDetail",
+       "Description" =>  $cust['description'],
+     "SalesItemLineDetail" => [
+       "ItemRef" => [
+         "value" => 1,
+         "name" => "Hours"
+        ]
+      ]
+      ]
+    ],
+"CustomerRef"=> [
+  "value"=> $found_customer_id
+],
+      "BillEmail" => [
+            "Address" => $cust['customer_email']
+      ],
+      "BillEmailCc" => [
+            "Address" => "ygtandoh@gmail.com"
+      ]//,
+      //"BillEmailBcc" => [
+        //    "Address" => "v@intuit.com"
+      //]
+]);
+$resultingObj = $dataService->Add($theResourceObj);
+
+
+$error = $dataService->getLastError();
+if ($error != null) {
+    echo "The Status code is: " . $error->getHttpStatusCode() . "\n";
+    echo "The Helper message is: " . $error->getOAuthHelperError() . "\n";
+    echo "The Response message is: " . $error->getResponseBody() . "\n";
+}
+else {
+    $invoice_id = $resultingObj->Id;
+    echo "Created Id={$resultingObj->Id}. Reconstructed response body:\n\n";
+    //$xmlBody = XmlObjectSerializer::getPostXmlFromArbitraryEntity($resultingObj, $urlResource);
+    //echo $xmlBody . "\n";
+}
+
+$servername = "45.55.1.81";
+$username = "nec_qa";
+$password = "Yellow10!";
+$dbname = "nec";
+
+// Create connection
+$conn = new mysqli("45.55.1.81", "nec_qa", "Yellow10!", "nec");
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+} 
+
+$id = $cust['cid'];
+
+$sql = "UPDATE approved_pod SET hasBeenInvoiced=1, qbInvoiceNumber ='".$invoice_id."' WHERE id=$id";
+echo $sql;
+if ($conn->query($sql) === TRUE) {
+    echo "Record updated successfully";
+} else {
+    echo "Error updating record: " . $conn->error;
+}
+
+$conn->close();
+exit();
+
+
+
+    //update db
+    
+    
+}
 
 
    

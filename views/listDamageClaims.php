@@ -929,7 +929,10 @@ if($_SESSION['entitytype'] != 0){
                 data: JSON.stringify(note),
                 contentType: "application/json",
                 async: false,
-                success: function(){
+                success: function(data){
+                    
+                    console.log(data);
+                    
                     loadDamageClaimNotes(damageClaimID);
                     $("#addNoteModal").modal('hide');
                 },
@@ -1156,13 +1159,17 @@ else {
 
             var note = {damageClaimID: damageClaimID, userID: userid, note: $("#txtAdminNote").val(), createdAt: today, updatedAt: today};
 
+            console.log(note);
+
             $.ajax({
                 url: '<?php echo API_HOST_URL . "/damage_claim_notes/"; ?>',
                 type: "POST",
                 data: JSON.stringify(note),
                 contentType: "application/json",
                 async: false,
-                success: function(){
+                success: function(data){
+                    console.log(data);
+                    
                     loadDamageClaimNotes(damageClaimID);
                     $("#addNoteModal").modal('hide');
                 },
