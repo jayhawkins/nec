@@ -148,7 +148,8 @@ $error = $dataService->getLastError();
 $i = 0;
 foreach($entities as $oneCustomer)
 {
-	
+	echo $oneCustomer->DisplayName;
+        echo '<hr>';
     
     if ($cust['customer_name']==$oneCustomer->DisplayName){
         $customer_found = TRUE;
