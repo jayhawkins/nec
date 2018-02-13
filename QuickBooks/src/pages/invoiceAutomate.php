@@ -133,30 +133,32 @@ $dataService = DataService::Configure(array(
 
 $found_customer_id = 0;
 
-// Iterate through all Customers, even if it takes multiple pages
-$i = 0;
-while (1) {
-    $allCustomers = $dataService->FindAll('Customer', $i, 500);
-    $error = $dataService->getLastError();
+
+$entities = $dataService->Query("SELECT * FROM Customer");
+$error = $dataService->getLastError();
     if ($error != null) {
         echo "The Status code is: " . $error->getHttpStatusCode() . "\n";
         echo "The Helper message is: " . $error->getOAuthHelperError() . "\n";
         echo "The Response message is: " . $error->getResponseBody() . "\n";
         exit();
     }
-    if (!$allCustomers || (0==count($allCustomers))) {
-        break;
-    }
 
-    foreach ($allCustomers as $oneCustomer) {
-        //echo "Customer[".($i++)."]: {$oneCustomer->DisplayName}\n";
-        //echo "\t * Id: [{$oneCustomer->Id}]\n";
-        //echo "\t * Active: [{$oneCustomer->Active}]\n";
-        //echo "\n";
-        if ($oneCustomer->DisplayName==$cust['customer_name']){
-            $found_customer_id = $oneCustomer->Id;
-        }
+
+// Echo some formatted output
+$i = 0;
+foreach($entities as $oneCustomer)
+{
+	
+    
+    if ($cust['customer_name']==$oneCustomer->DisplayName){
+        $customer_found = TRUE;
+        $found_customer_id = $oneCustomer->Id;
+        //echo $vendorid;
+        //exit();
     }
+    
+   
+	$i++;
 }
 
 
