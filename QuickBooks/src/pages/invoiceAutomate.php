@@ -292,7 +292,7 @@ if ($conn->connect_error) {
 $id = $cust['cid'];
 
 $sql = "UPDATE approved_pod SET hasBeenInvoiced=1, qbInvoiceNumber ='".$invoice_id."' WHERE id=$id";
-
+echo $sql;
 if ($conn->query($sql) === TRUE) {
     echo "Record updated successfully";
 } else {
