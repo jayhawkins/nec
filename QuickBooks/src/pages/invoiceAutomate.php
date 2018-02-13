@@ -242,8 +242,8 @@ $theResourceObj = Invoice::create([
        "Description" =>  $cust['description'],
      "SalesItemLineDetail" => [
        "ItemRef" => [
-         "value" => 19,
-         "name" => "Carrier"
+         "value" => 1,
+         "name" => "Hours"
         ]
       ]
       ]
