@@ -1165,7 +1165,7 @@ else {
                 data: JSON.stringify(note),
                 contentType: "application/json",
                 async: false,
-                success: function(){
+                success: function(data){
                     console.log(data);
                     
                     loadDamageClaimNotes(damageClaimID);
