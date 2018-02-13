@@ -7,7 +7,7 @@ class Reports
 
           $returnArray = "";
 
-          $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
+          $dbhandle = new $db('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS);
           $querystring = "select *, order_statuses.status as statusesstatus, orders.customerID as custID
                                      from order_details
                                      join order_statuses on order_statuses.orderDetailID = order_details.id
@@ -53,7 +53,7 @@ class Reports
     }
 
     public function getdeliveredtrailerscsv(&$db, $entitytype, $entityid) {
-          $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
+          $dbhandle = new $db('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS);
           $querystring = "select *, order_statuses.status as statusesstatus, orders.customerID as custID
                                      from order_details
                                      join order_statuses on order_statuses.orderDetailID = order_details.id
@@ -98,7 +98,7 @@ class Reports
 
           $returnArray = "";
 
-          $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
+          $dbhandle = new $db('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS);
           $querystring = "select *, order_statuses.status as statusesstatus, orders.customerID as custID
                                      from order_details
                                      join order_statuses on order_statuses.orderDetailID = order_details.id
@@ -144,7 +144,7 @@ class Reports
     }
 
     public function getundeliveredtrailerscsv(&$db, $entitytype, $entityid) {
-          $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
+          $dbhandle = new $db('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS);
           $querystring = "select *, order_statuses.status as statusesstatus, orders.customerID as custID
                                      from order_details
                                      join order_statuses on order_statuses.orderDetailID = order_details.id
@@ -197,7 +197,7 @@ class Reports
           $monthPayout = 0;
           $monthDifference = 0;
 
-          $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
+          $dbhandle = new $db('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS);
 
           /* Current Week */
           $querystring = "SELECT *
@@ -306,7 +306,7 @@ class Reports
           $data = "A/R Summary,,,\n\n";
           $data .= ",Revenue,Payout,Difference\n";
 
-          $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
+          $dbhandle = new $db('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS);
 
           /* Current Week */
           $querystring = "SELECT *
@@ -405,7 +405,7 @@ class Reports
 
           $returnArray = "";
 
-          $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
+          $dbhandle = new $db('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS);
 
           /* Get approved_pod records */
           $querystring = "SELECT approved_pod.orderID, approved_pod.orderDetailID, approved_pod.carrierID, approved_pod.cost, approved_pod.qbInvoiceNumber, approved_pod.qbInvoiceStatus, entities.name
@@ -478,7 +478,7 @@ class Reports
           $data = "Date Range,".$startDate.",".$endDate."\n";
           $data .= "Order ID,Customer Name,Carrier Name,Cost To Customer,Cost To Carrier,QB Invoice #,QB Status\n";
 
-          $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
+          $dbhandle = new $db('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS);
 
           /* Get approved_pod records */
           $querystring = "SELECT approved_pod.orderID, approved_pod.orderDetailID, approved_pod.carrierID, approved_pod.cost, approved_pod.qbInvoiceNumber, approved_pod.qbInvoiceStatus, entities.name
@@ -544,7 +544,7 @@ class Reports
           $returnArray = "";
           $entityArray = array();
 
-          $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
+          $dbhandle = new $db('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS);
 
           /* Get Entities for Report */
           $querystring = "SELECT entities.id, entities.name, entities.rateType, entities.negotiatedRate
@@ -702,7 +702,7 @@ class Reports
           $data = "Date Range,".$startDate.",".$endDate."\n";
           $data .= "Order ID,Customer Name,Carrier Name,Cost To Customer,Cost To Carrier,QB Invoice #,QB Status\n";
 
-          $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
+          $dbhandle = new $db('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS);
 
           /* Get approved_pod records */
           $querystring = "SELECT approved_pod.orderID, approved_pod.orderDetailID, approved_pod.carrierID, approved_pod.cost, approved_pod.qbInvoiceNumber, approved_pod.qbInvoiceStatus, entities.name
