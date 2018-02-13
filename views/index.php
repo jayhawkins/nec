@@ -1596,11 +1596,11 @@ if ($_SESSION['entityid'] > 0) {
                     ?>
 
                     <li><a href="#" onclick="ajaxFormCall('listContacts');">Contacts</a></li>
-                    <li><a class="collapsed" href="#sidebar-sub-levels" data-toggle="collapse" data-parent="#sidebar-levels">
+                    <li><a class="collapsed" href="#sidebar-sub-levels-location" data-toggle="collapse" data-parent="#sidebar-levels-location">
                               Location
                               <i class="toggle fa fa-angle-down"></i>
                         </a>
-                      <ul id="sidebar-sub-levels" class="collapse">
+                      <ul id="sidebar-sub-levels-location" class="collapse">
                           <li><a href="#" onclick="ajaxFormCall('listLocationTypes');">Location Types</a></li>
                           <li><a href="#" onclick="ajaxFormCall('listLocations');">Locations</a></li>
                       </ul>
