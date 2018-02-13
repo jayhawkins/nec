@@ -243,24 +243,33 @@ else {
     //echo $xmlBody . "\n";
 }
 
-    
-    
-    
-    
-    
-    
-    
-  
-    
-    
-    
-    
-    
- 
-    
-    
-    
-    
+$servername = "45.55.1.81";
+$username = "nec_qa";
+$password = "Yellow10!";
+$dbname = "nec";
+
+// Create connection
+$conn = new mysqli("45.55.1.81", "nec_qa", "Yellow10!", "nec");
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+} 
+
+$id = $cust['cid'];
+
+$sql = "UPDATE approved_pod SET hasBeenInvoiced=1, qbInvoiceNumber ='".$invoice_id."' WHERE id=$id";
+
+if ($conn->query($sql) === TRUE) {
+    echo "Record updated successfully";
+} else {
+    echo "Error updating record: " . $conn->error;
+}
+
+$conn->close();
+
+
+
+
     //update db
     
     
