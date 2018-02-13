@@ -126,7 +126,7 @@ $dataService = DataService::Configure(array(
        'auth_mode' => 'oauth2',
          'ClientID' => "Q0bCkjuFuWa8MxjEDqYenaCreMUZjyAJ2UyNhnOmdVGEDNkkkD",
          'ClientSecret' => "ahfR70aIvIatES37ZeoJztAJx7Ki1PvoGhfNVTja",
-         'accessTokenKey' =>  "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..xq7eT42Kh5ypbvGaHNzTVw.asbKUXGno_cCTC1vUObBIc7eAvAD_GFNmTUp2HzGn1jlBUUU1-6jX45pu7w-6tJmhpYxpJJMhDgjyjT_emG6wh9S-HTcp5QbEFzeDbh2zngYkXn0jhgJY8vvyOdvmHJVmDtb1wjGxOiCBtD3GYSV9h8HtD6mEmQltoHN5x0Y1fSZxdnwuUYi3g2am8FYmk4FYvwE9_dRrMjyMocVggirB0p6l2ANfr_iFaFUKc5QrDnuzBqdS3yUEkn_RKCFvQAb1ZqMHQ59TRa8o15nwXCwOj8nGIBCn9f0qVK0QM66WH-GcgYg3rSQAFiH_dezxBdaZUUbJUYI-L_KAOYEqn7mtzayb2NFSEcapJTybU13UfgDmuDV9XBr1Siqy3kOypnha504q-HfiyqLuM5am38RhFFgYTJBzYOKx2-O9HEScVAXBedquR0ppM_9ovl734H2mXY-mdJJsxf3DciIFqzKYkqf6Ht3m7IsozXkrMBbMAS3jEovf8_VE9raC0B9wjFJDVepCTRkXR2ulj8So-Zod1bjDGZFoJnuTYarGHUz17Mo3Ltc6wc0IIaKQlK71GmAm-HCaCXJD_sj_2_CJRmx1UmweSN6vZMP2nJrzyRy8mTpHQBkCyXOiVZ1Dan-IQoLmsR2mujmbDacVFfn36dx2Jib0PrJIFZAKOK3o4rqYxhVZAQc_VoTFewaCP8wNWSR.JYsX5fVQ3EDaXvI1gmv_Ag",
+         'accessTokenKey' =>  "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..OsbOraVLSHzDcGQiLo-SLQ.aBmZg9g0FFkdwAaFON0bFQEJjvSsh0viTWzGM_-n6yWBwJywh6_ml6K20heU6FLHepAKbrtpuG0X06b1aYRZUS5Q2Rp5iLm5r1cW-kPyz7gyBdQM__wLon9i-ryP64ZamHkZhGGsGmyoX5I1y6asdfwzPuK5qURl_RSpPZVk7aY38iUQF8KPfA0pxVR3zqmgtGrjWfCxQqdpptH2wFuEIyNWcaJWpZaoIGJ64s78Z0o9R_0WmZ7sDdwoe70gH60HydkWtPIG7yTs2dOgQuo8Q-N3Z3rEnpmEko0lsJ3WkiMwhxmEC4JqnRYNXFgVKO5rYOLLUp7ajmcSG2oI6NExxY_3D3TFSkoA9zJ_WS_F6gqvl7lQIg-DxZlSBhyOy43jyr9wfk6oyUxbdyK4P1rTQrmtqE8XY8JSStX-J280Ql9hA6yBd_bBfrnhkmlGlyo35zuP5AoCjt2NzKzPOM9SSf2Zc0xorg5_Im_5GIwmSqLcsei-Co_KmkKtqL-dVVsF0srQxaSo3lR7o-cLk6FE3NYaxfuOK1HMhDrVPIR8lOS5w-ohHrQlLxA3wmBTU0yNZ77V2OEeig0mOw77mpR-YasgSkzLf-MaKonmZCx-AdoHObOouCdbzXJmqAnQ1VkOHY5-1XiK0RHT2dGK8VkdxnyZlxkGWNqutreHvjWBmqG2i6CR31ZFKSyDfTbuwR2G.JLGQJ04S7W74hfFfao6k0Q",
          'refreshTokenKey' => 'Q011527248404CPAzFuTBTfBq3PpXD20z9GYqacJYxVbkVID9L',
          'QBORealmID' => "123145985783569",
          'baseUrl' => "https://sandbox-quickbooks.api.intuit.com"
@@ -171,10 +171,10 @@ if ($found_customer_id==0){
     //create new customer
     
     $dataService = DataService::Configure(array(
-        'auth_mode' => 'oauth2',
+           'auth_mode' => 'oauth2',
          'ClientID' => "Q0bCkjuFuWa8MxjEDqYenaCreMUZjyAJ2UyNhnOmdVGEDNkkkD",
          'ClientSecret' => "ahfR70aIvIatES37ZeoJztAJx7Ki1PvoGhfNVTja",
-         'accessTokenKey' =>  "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..xq7eT42Kh5ypbvGaHNzTVw.asbKUXGno_cCTC1vUObBIc7eAvAD_GFNmTUp2HzGn1jlBUUU1-6jX45pu7w-6tJmhpYxpJJMhDgjyjT_emG6wh9S-HTcp5QbEFzeDbh2zngYkXn0jhgJY8vvyOdvmHJVmDtb1wjGxOiCBtD3GYSV9h8HtD6mEmQltoHN5x0Y1fSZxdnwuUYi3g2am8FYmk4FYvwE9_dRrMjyMocVggirB0p6l2ANfr_iFaFUKc5QrDnuzBqdS3yUEkn_RKCFvQAb1ZqMHQ59TRa8o15nwXCwOj8nGIBCn9f0qVK0QM66WH-GcgYg3rSQAFiH_dezxBdaZUUbJUYI-L_KAOYEqn7mtzayb2NFSEcapJTybU13UfgDmuDV9XBr1Siqy3kOypnha504q-HfiyqLuM5am38RhFFgYTJBzYOKx2-O9HEScVAXBedquR0ppM_9ovl734H2mXY-mdJJsxf3DciIFqzKYkqf6Ht3m7IsozXkrMBbMAS3jEovf8_VE9raC0B9wjFJDVepCTRkXR2ulj8So-Zod1bjDGZFoJnuTYarGHUz17Mo3Ltc6wc0IIaKQlK71GmAm-HCaCXJD_sj_2_CJRmx1UmweSN6vZMP2nJrzyRy8mTpHQBkCyXOiVZ1Dan-IQoLmsR2mujmbDacVFfn36dx2Jib0PrJIFZAKOK3o4rqYxhVZAQc_VoTFewaCP8wNWSR.JYsX5fVQ3EDaXvI1gmv_Ag",
+         'accessTokenKey' =>  "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..OsbOraVLSHzDcGQiLo-SLQ.aBmZg9g0FFkdwAaFON0bFQEJjvSsh0viTWzGM_-n6yWBwJywh6_ml6K20heU6FLHepAKbrtpuG0X06b1aYRZUS5Q2Rp5iLm5r1cW-kPyz7gyBdQM__wLon9i-ryP64ZamHkZhGGsGmyoX5I1y6asdfwzPuK5qURl_RSpPZVk7aY38iUQF8KPfA0pxVR3zqmgtGrjWfCxQqdpptH2wFuEIyNWcaJWpZaoIGJ64s78Z0o9R_0WmZ7sDdwoe70gH60HydkWtPIG7yTs2dOgQuo8Q-N3Z3rEnpmEko0lsJ3WkiMwhxmEC4JqnRYNXFgVKO5rYOLLUp7ajmcSG2oI6NExxY_3D3TFSkoA9zJ_WS_F6gqvl7lQIg-DxZlSBhyOy43jyr9wfk6oyUxbdyK4P1rTQrmtqE8XY8JSStX-J280Ql9hA6yBd_bBfrnhkmlGlyo35zuP5AoCjt2NzKzPOM9SSf2Zc0xorg5_Im_5GIwmSqLcsei-Co_KmkKtqL-dVVsF0srQxaSo3lR7o-cLk6FE3NYaxfuOK1HMhDrVPIR8lOS5w-ohHrQlLxA3wmBTU0yNZ77V2OEeig0mOw77mpR-YasgSkzLf-MaKonmZCx-AdoHObOouCdbzXJmqAnQ1VkOHY5-1XiK0RHT2dGK8VkdxnyZlxkGWNqutreHvjWBmqG2i6CR31ZFKSyDfTbuwR2G.JLGQJ04S7W74hfFfao6k0Q",
          'refreshTokenKey' => 'Q011527248404CPAzFuTBTfBq3PpXD20z9GYqacJYxVbkVID9L',
          'QBORealmID' => "123145985783569",
          'baseUrl' => "development"
@@ -224,10 +224,10 @@ if ($found_customer_id==0){
            //create invoice
     
  $dataService = DataService::Configure(array(
-       'auth_mode' => 'oauth2',
+          'auth_mode' => 'oauth2',
          'ClientID' => "Q0bCkjuFuWa8MxjEDqYenaCreMUZjyAJ2UyNhnOmdVGEDNkkkD",
          'ClientSecret' => "ahfR70aIvIatES37ZeoJztAJx7Ki1PvoGhfNVTja",
-         'accessTokenKey' =>  "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..xq7eT42Kh5ypbvGaHNzTVw.asbKUXGno_cCTC1vUObBIc7eAvAD_GFNmTUp2HzGn1jlBUUU1-6jX45pu7w-6tJmhpYxpJJMhDgjyjT_emG6wh9S-HTcp5QbEFzeDbh2zngYkXn0jhgJY8vvyOdvmHJVmDtb1wjGxOiCBtD3GYSV9h8HtD6mEmQltoHN5x0Y1fSZxdnwuUYi3g2am8FYmk4FYvwE9_dRrMjyMocVggirB0p6l2ANfr_iFaFUKc5QrDnuzBqdS3yUEkn_RKCFvQAb1ZqMHQ59TRa8o15nwXCwOj8nGIBCn9f0qVK0QM66WH-GcgYg3rSQAFiH_dezxBdaZUUbJUYI-L_KAOYEqn7mtzayb2NFSEcapJTybU13UfgDmuDV9XBr1Siqy3kOypnha504q-HfiyqLuM5am38RhFFgYTJBzYOKx2-O9HEScVAXBedquR0ppM_9ovl734H2mXY-mdJJsxf3DciIFqzKYkqf6Ht3m7IsozXkrMBbMAS3jEovf8_VE9raC0B9wjFJDVepCTRkXR2ulj8So-Zod1bjDGZFoJnuTYarGHUz17Mo3Ltc6wc0IIaKQlK71GmAm-HCaCXJD_sj_2_CJRmx1UmweSN6vZMP2nJrzyRy8mTpHQBkCyXOiVZ1Dan-IQoLmsR2mujmbDacVFfn36dx2Jib0PrJIFZAKOK3o4rqYxhVZAQc_VoTFewaCP8wNWSR.JYsX5fVQ3EDaXvI1gmv_Ag",
+         'accessTokenKey' =>  "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..OsbOraVLSHzDcGQiLo-SLQ.aBmZg9g0FFkdwAaFON0bFQEJjvSsh0viTWzGM_-n6yWBwJywh6_ml6K20heU6FLHepAKbrtpuG0X06b1aYRZUS5Q2Rp5iLm5r1cW-kPyz7gyBdQM__wLon9i-ryP64ZamHkZhGGsGmyoX5I1y6asdfwzPuK5qURl_RSpPZVk7aY38iUQF8KPfA0pxVR3zqmgtGrjWfCxQqdpptH2wFuEIyNWcaJWpZaoIGJ64s78Z0o9R_0WmZ7sDdwoe70gH60HydkWtPIG7yTs2dOgQuo8Q-N3Z3rEnpmEko0lsJ3WkiMwhxmEC4JqnRYNXFgVKO5rYOLLUp7ajmcSG2oI6NExxY_3D3TFSkoA9zJ_WS_F6gqvl7lQIg-DxZlSBhyOy43jyr9wfk6oyUxbdyK4P1rTQrmtqE8XY8JSStX-J280Ql9hA6yBd_bBfrnhkmlGlyo35zuP5AoCjt2NzKzPOM9SSf2Zc0xorg5_Im_5GIwmSqLcsei-Co_KmkKtqL-dVVsF0srQxaSo3lR7o-cLk6FE3NYaxfuOK1HMhDrVPIR8lOS5w-ohHrQlLxA3wmBTU0yNZ77V2OEeig0mOw77mpR-YasgSkzLf-MaKonmZCx-AdoHObOouCdbzXJmqAnQ1VkOHY5-1XiK0RHT2dGK8VkdxnyZlxkGWNqutreHvjWBmqG2i6CR31ZFKSyDfTbuwR2G.JLGQJ04S7W74hfFfao6k0Q",
          'refreshTokenKey' => 'Q011527248404CPAzFuTBTfBq3PpXD20z9GYqacJYxVbkVID9L',
          'QBORealmID' => "123145985783569",
          'baseUrl' => "development"
@@ -239,13 +239,13 @@ $theResourceObj = Invoice::create([
    [
      "Amount" => floatval($cust['cost']),
      "DetailType" => "SalesItemLineDetail",
-       "Description" =>  $customer['description'],
-     "SalesItemLineDetail" => [
-       "ItemRef" => [
-         "value" => floatval($cust['cost']),
-         "name" => "Amount"
-        ]
-      ]
+       "Description" =>  $cust['description'],
+     //"SalesItemLineDetail" => [
+       //"ItemRef" => [
+         //"value" => floatval($cust['cost']),
+         //"name" => "Amount"
+        //]
+      //]
       ]
     ],
 "CustomerRef"=> [
