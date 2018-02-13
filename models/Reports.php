@@ -539,4 +539,228 @@ class Reports
           }
     }
 
+    public function getrevenueanalysis(&$db,$startDate,$endDate,$entitytype,$entityid) {
+
+          $returnArray = "";
+          $entityArray = array();
+
+          $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
+
+          /* Get Entities for Report */
+          $querystring = "SELECT entities.id, entities.name, entities.rateType, entities.negotiatedRate
+                          FROM entities";
+
+          if ($entityid > 0) {
+              $querystring .= " WHERE id = '" . $entityid . "'";
+          } else {
+              $querystring .= " WHERE entityTypeID = '1'";
+          }
+
+          $querystring .= " ORDER BY entities.name";
+
+          $result = $dbhandle->query($querystring);
+
+          if (count($result) > 0) {
+              $entityData = $result->fetchAll();
+              foreach ($entityData as $entityRow) {
+                  $entityArray[$entityRow['id']]['name'] = $entityRow['name'];
+                  $entityArray[$entityRow['id']]['rateType'] = $entityRow['rateType'];
+                  $entityArray[$entityRow['id']]['negotiatedRate'] = $entityRow['negotiatedRate'];
+                  $entityArray[$entityRow['id']]['potentialSales'] = 0; // Set up for the Customer to keep track below
+                  $entityArray[$entityRow['id']]['actualSales'] = 0; // Set up for the Customer to keep track below
+                  $entityArray[$entityRow['id']]['repairCosts'] = 0; // Set up for the Customer to keep track below
+                  $entityArray[$entityRow['id']]['totalRevenue'] = 0; // Set up for the Customer to keep track below
+              }
+          }
+
+          /* Get Potential Sales */
+          $querystring = "SELECT customer_needs.entityID, customer_needs.distance, customer_needs.qty, customer_needs.rate, customer_needs.rateType
+                          FROM customer_needs
+                          WHERE customer_needs.availableDate BETWEEN '" . $startDate . "' AND '" . $endDate . "'";
+
+          if ($entityid > 0) {
+              if ($entitytype == 1) {
+                  $querystring .= " AND customer_needs.entityID = '" . $entityid . "'";
+              }
+          }
+
+          $querystring .= " ORDER BY customer_needs.availableDate desc";
+
+          $result = $dbhandle->query($querystring);
+
+          if (count($result) > 0) {
+              $needsData = $result->fetchAll();
+              foreach ($needsData as $needs) {
+                    $potentialSales = 0;
+                    if (!isset($entityArray[$needs['entityID']]['potentialSales'])) {
+                        $entityArray[$needs['entityID']]['potentialSales'] = 0;
+                    }
+                    if ($needs['rateType'] == "Flat Rate") {
+                        $potentialSales = $needs['rate'];
+                    } else {
+                        $potentialSales = ($needs['rate'] * $needs['qty']) * $needs['distance'];
+                    }
+                    $entityArray[$needs['entityID']]['potentialSales'] += $potentialSales;
+
+              }
+          }
+
+          /* Get Actual Sales */
+          $querystring = "SELECT approved_pod.orderID, approved_pod.orderDetailID, approved_pod.cost, entities.id
+                          FROM approved_pod
+                          JOIN `orders` on orders.id = approved_pod.orderID
+                          LEFT JOIN `entities` on entities.id = approved_pod.customerID
+                          WHERE approved_pod.createdAt BETWEEN '" . $startDate . "' AND '" . $endDate . "'
+                          AND approved_pod.hasBeenInvoiced = 1";
+
+          if ($entityid > 0) {
+              if ($entitytype == 1) {
+                  $querystring .= " AND orders.customerID = '" . $entityid . "'";
+              }
+          }
+
+          $querystring .= " ORDER BY approved_pod.createdAt desc";
+
+          $result = $dbhandle->query($querystring);
+
+          if (count($result) > 0) {
+              $approvedPodData = $result->fetchAll();
+              foreach ($approvedPodData as $approvedData) {
+                    $actualSales = 0;
+                    if (!isset($entityArray[$approvedData['id']]['actualSales'])) {
+                        $entityArray[$approvedData['id']]['actualSales'] = 0;
+                    }
+
+                    $entityArray[$approvedData['id']]['actualSales'] += approvedData['cost'];
+              }
+          }
+
+          /* Get Damage Claims */
+          $querystring = "SELECT entityID, negotiatedRepairCost
+                          FROM damage_claims
+                          WHERE damage_claims.createdAt BETWEEN '" . $startDate . "' AND '" . $endDate . "'
+                          AND damage_claims.status = 'Active'";
+
+          if ($entityid > 0) {
+              if ($entitytype == 1) {
+                  $querystring .= " AND damage_claims.entityID = '" . $entityid . "'";
+              }
+          }
+
+          $querystring .= " ORDER BY damage_claims.createdAt desc";
+
+          $result = $dbhandle->query($querystring);
+
+          if (count($result) > 0) {
+              $damageClaimData = $result->fetchAll();
+              foreach ($damageClaimData as $damageClaim) {
+                    $damageAmount = 0;
+                    if (!isset($entityArray[$damageClaim['entityID']]['cost']) && isset($entityArray[$damageClaim['entityID']]['name'])) {
+                        $entityArray[$damageClaim['entityID']]['repairCosts'] = 0;
+                    }
+
+                    if (isset($entityArray[$damageClaim['entityID']]['name'])) {
+                        $entityArray[$damageClaim['entityID']]['repairCosts'] += $damageClaim['negotiatedRepairCost'];
+                    }
+              }
+          }
+
+          // Setup to return $entityArray as a JSON object array
+          $counter = 0;
+          foreach($entityArray as $k => $v) {
+            $jcounter = 0;
+            $returnArray .= "{";
+            foreach($v as $key => $value) {
+                if ($jcounter > 0) {
+                    $returnArray .= ", ";
+                }
+                $returnArray .= "\"{$key}\": \"{$value}\"";
+                $jcounter++;
+
+            }
+
+            $returnArray .= "}";
+
+            if ($counter < count($entityArray) - 1) {
+                $returnArray .= ",";
+                $counter++;
+            }
+
+          }
+
+          $return = "{ \"analysis\": [".$returnArray."]}";
+
+          if ($return) {
+              echo $return;
+          } else {
+              echo '{}';
+          }
+    }
+
+    public function getrevenueanalysiscsv(&$db,$startDate,$endDate,$entitytype,$entityid) {
+
+          $data = "Date Range,".$startDate.",".$endDate."\n";
+          $data .= "Order ID,Customer Name,Carrier Name,Cost To Customer,Cost To Carrier,QB Invoice #,QB Status\n";
+
+          $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
+
+          /* Get approved_pod records */
+          $querystring = "SELECT approved_pod.orderID, approved_pod.orderDetailID, approved_pod.carrierID, approved_pod.cost, approved_pod.qbInvoiceNumber, approved_pod.qbInvoiceStatus, entities.name
+                                     FROM approved_pod
+                                     JOIN `orders` on orders.id = approved_pod.orderID
+                                     LEFT JOIN `entities` on entities.id = approved_pod.customerID
+                                     WHERE approved_pod.createdAt BETWEEN '" . $startDate . "' AND '" . $endDate . "'";
+
+          if ($entityid > 0) {
+              if ($entitytype == 1) {
+                  $querystring .= " and orders.customerID = '" . $entityid . "'";
+              } else {
+                  $querystring .= " and approved_pod.carrierID = '" . $entityid . "'";
+              }
+          }
+
+          $querystring .= " order by approved_pod.createdAt desc";
+
+          $result = $dbhandle->query($querystring);
+
+          if (count($result) > 0) {
+              $approvedPodData = $result->fetchAll();
+              for ($c = 0; $c < count($approvedPodData); $c++) {
+                    $orderID = $approvedPodData[$c]['orderID'];
+                    $costToCustomer = $approvedPodData[$c]['cost'];
+                    $costToCarrier = $approvedPodData[$c]['cost'];
+                    $customerName = $approvedPodData[$c]['name'];
+                    $qbInvoiceNumber = $approvedPodData[$c]['qbInvoiceNumber'];
+                    $qbInvoiceStatus = $approvedPodData[$c]['qbInvoiceStatus'];
+
+                    /* Get carrier name for approved_pod record */
+                    $detailsResult = $dbhandle->query("SELECT order_details.carrierRate, order_details.qty, entities.name
+                                                        FROM order_details
+                                                        JOIN entities on entities.id = order_details.carrierID
+                                                        WHERE order_details.carrierID = '" . $approvedPodData[$c]['carrierID'] . "'
+                                                        AND order_details.orderID = '" . $approvedPodData[$c]['orderID'] . "'
+                                                        AND order_details.id = '" . $approvedPodData[$c]['orderDetailID'] . "'");
+                    $costToCarrier = 0;
+                    $carrierName = "";
+                    $detailsData = $detailsResult->fetchAll();
+                    for ($d = 0; $d < count($detailsData); $d++) {
+                        $carrierName = $detailsData[$d]['name'];
+                        if ($detailsData[$d]['qty'] > 0) {
+                            $costToCarrier = $detailsData[$d]['carrierRate'] / $detailsData[$d]['qty'];
+                        }
+
+                    }
+
+                    $data .= $orderID.",".$customerName.",".$carrierName.",".$costToCustomer.",".$costToCarrier.",".$qbInvoiceNumber.",".$qbInvoiceStatus."\n";
+
+              }
+          }
+
+          if ($data) {
+              echo $data;
+          } else {
+              echo '{}';
+          }
+    }
+
 }

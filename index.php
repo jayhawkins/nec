@@ -891,6 +891,38 @@ $app->route('POST /getardetailcsv', function() {
     }
 });
 
+$app->route('POST /getrevenueanalysis', function() {
+    $entityType = Flight::request()->data->entitytype;
+    $entityID = Flight::request()->data->entityid;
+    $startDate = Flight::request()->data->startDate;
+    $endDate = Flight::request()->data->endDate;
+    $reports = Flight::reports();
+    $db = Flight::db();
+    $result = $reports->getrevenueanalysis($db,$startDate,$endDate,$entityType,$entityID);
+    if ($result) {
+        print_r($result);
+        //echo "success";
+    } else {
+        print_r($result);
+    }
+});
+
+$app->route('POST /getrevenueanalysiscsv', function() {
+    $entityType = Flight::request()->data->entitytype;
+    $entityID = Flight::request()->data->entityid;
+    $startDate = Flight::request()->data->startDate;
+    $endDate = Flight::request()->data->endDate;
+    $reports = Flight::reports();
+    $db = Flight::db();
+    $result = $reports->getrevenueanalysiscsv($db,$startDate,$endDate,$entityType,$entityID);
+    if ($result) {
+        print_r($result);
+        //echo "success";
+    } else {
+        print_r($result);
+    }
+});
+
 
 /*****************************************************************************/
 // POD API Process
