@@ -148,8 +148,8 @@ $error = $dataService->getLastError();
 $i = 0;
 foreach($entities as $oneCustomer)
 {
-	echo $oneCustomer->DisplayName;
-        echo '<hr>';
+	//echo $oneCustomer->DisplayName;
+        //echo '<hr>';
     
     if ($cust['customer_name']==$oneCustomer->DisplayName){
         $customer_found = TRUE;
@@ -217,7 +217,7 @@ if ($found_customer_id==0){
 
  echo $found_customer_id;
     echo '<hr>';
-    exit();
+    //exit();
 
 
            //create invoice
@@ -291,7 +291,7 @@ if ($conn->query($sql) === TRUE) {
 }
 
 $conn->close();
-
+exit();
 
 
 
