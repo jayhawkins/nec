@@ -57,8 +57,9 @@ while ($row = mysqli_fetch_array($loop))
     $customer['cid'] = $row['line_id'];
     $customer['cost'] = $row['cost'];
     
-    
-   createCustomerInvoice($customer);
+    print_r($customer);
+    echo '<hr>';
+   //createCustomerInvoice($customer);
     
     
     
