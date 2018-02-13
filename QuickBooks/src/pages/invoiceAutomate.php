@@ -222,10 +222,10 @@ $theResourceObj = Invoice::create([
       ],
       "BillEmailCc" => [
             "Address" => "ygtandoh@gmail.com"
-      ],
-      "BillEmailBcc" => [
-            "Address" => "v@intuit.com"
-      ]
+      ]//,
+      //"BillEmailBcc" => [
+        //    "Address" => "v@intuit.com"
+      //]
 ]);
 $resultingObj = $dataService->Add($theResourceObj);
 
