@@ -10,9 +10,9 @@ use QuickBooksOnline\API\Core\Http\Serialization\XmlObjectSerializer;
 
 $dataService = DataService::Configure(array(
   'auth_mode' => 'oauth2',
-  'ClientID' => "Q0fXL014zAv3wzmlhwXMEHTrKepfAshCRjztEu58ZokzCD5T7D",
-  'ClientSecret' => "stfnZfuSZUDay6cJSWtvQ9HkWiKFbcI9YuBTET5P",
-  'RedirectURI' => "https://b200efd8.ngrok.io/OAuth2_c/OAuth_2/OAuth2PHPExample.php",
+  'ClientID' => "Q0bCkjuFuWa8MxjEDqYenaCreMUZjyAJ2UyNhnOmdVGEDNkkkD",
+  'ClientSecret' => "ahfR70aIvIatES37ZeoJztAJx7Ki1PvoGhfNVTja",
+  'RedirectURI' => "http://nec.dubtel.com/QuickBooks/src/pages/OAuth2TokenGeneration.php",
   'scope' => "com.intuit.quickbooks.accounting",
   'baseUrl' => "development"
 ));
@@ -23,7 +23,7 @@ $OAuth2LoginHelper = $dataService->getOAuth2LoginHelper();
 $url = $OAuth2LoginHelper->getAuthorizationCodeURL();
 //It will return something like:https://b200efd8.ngrok.io/OAuth2_c/OAuth_2/OAuth2PHPExample.php?state=RandomState&code=Q0115106996168Bqap6xVrWS65f2iXDpsePOvB99moLCdcUwHq&realmId=193514538214074
 //get the Code and realmID, use for the exchangeAuthorizationCodeForToken
-$accessToken = $OAuth2LoginHelper->exchangeAuthorizationCodeForToken("Q011510688430mhfd9mAwpsiB8eWAMPqjDO4j2WKmMWyeN96Ru", "193514538214074");
+$accessToken = $OAuth2LoginHelper->exchangeAuthorizationCodeForToken("Q011518513620yZ7eWjWC3QTmRgTBo6Popay6nhmOVDXzzzDCf", "123145985783569");
 $dataService->updateOAuth2Token($accessToken);
 $dataService->throwExceptionOnError(true);
 $CompanyInfo = $dataService->getCompanyInfo();
