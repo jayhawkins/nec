@@ -71,7 +71,7 @@ class Users
             //$result = json_decode(file_get_contents(API_HOST_URL . '/users?filter=username,eq,' . $username));
             //$result = json_decode(file_get_contents(API_HOST_URL . '/users?include=members,entities&filter=username,eq,' . $username));
 
-              $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
+              $dbhandle = new $db('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS);
               $result = $dbhandle->query("select users.id, users.username, users.password, users.status, users.userTypeID,
                                           members.id as memberID, members.entityID,
                                           entities.entityTypeID,
@@ -128,7 +128,7 @@ class Users
 
         try {
 
-              $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
+              $dbhandle = new $db('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS);
 
               $result = $dbhandle->query("select users.id, users.username, users.password, users.status, users.userTypeID,
                                           members.id as memberID, members.entityID,
@@ -928,7 +928,7 @@ class Users
 
         try {
 
-              $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
+              $dbhandle = new $db('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS);
               $result = $dbhandle->query("select users.id, users.username, users.status, users.userTypeID,
                                           members.id as memberID, members.entityID,
                                           entities.entityTypeID,
@@ -974,7 +974,7 @@ class Users
 
         try {
 
-              $dbhandle = new $db('mysql:host=localhost;dbname=' . DBNAME, DBUSER, DBPASS);
+              $dbhandle = new $db('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS);
               $result = $dbhandle->query("select users.id, users.username, users.status, users.userTypeID,
                                           members.id as memberID, members.entityID,
                                           entities.entityTypeID,
