@@ -240,12 +240,12 @@ $theResourceObj = Invoice::create([
      "Amount" => floatval($cust['cost']),
      "DetailType" => "SalesItemLineDetail",
        "Description" =>  $cust['description'],
-     //"SalesItemLineDetail" => [
-       //"ItemRef" => [
-         //"value" => floatval($cust['cost']),
-         //"name" => "Amount"
-        //]
-      //]
+     "SalesItemLineDetail" => [
+       "ItemRef" => [
+         "value" => 19,
+         "name" => "Carrier"
+        ]
+      ]
       ]
     ],
 "CustomerRef"=> [
