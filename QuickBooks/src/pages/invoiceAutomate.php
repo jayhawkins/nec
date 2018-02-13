@@ -218,7 +218,7 @@ if ($found_customer_id==0){
 
  echo $found_customer_id;
     echo '<hr>';
-    //exit();
+    exit();
 
 
            //create invoice
