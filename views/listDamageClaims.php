@@ -1166,6 +1166,8 @@ else {
                 contentType: "application/json",
                 async: false,
                 success: function(){
+                    console.log(data);
+                    
                     loadDamageClaimNotes(damageClaimID);
                     $("#addNoteModal").modal('hide');
                 },
