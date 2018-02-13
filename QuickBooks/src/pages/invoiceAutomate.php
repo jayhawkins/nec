@@ -164,7 +164,7 @@ foreach($entities as $oneCustomer)
 
 
 echo $found_customer_id;
-   exit();
+  
 
 if ($found_customer_id==0){
     //create new customer
