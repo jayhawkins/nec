@@ -218,13 +218,21 @@ if ($found_customer_id==0){
 
  echo $found_customer_id;
     echo '<hr>';
-    exit();
+    //exit();
 
 
            //create invoice
     
-        
-$dataService->throwExceptionOnError(true);
+ $dataService = DataService::Configure(array(
+       'auth_mode' => 'oauth2',
+         'ClientID' => "Q0bCkjuFuWa8MxjEDqYenaCreMUZjyAJ2UyNhnOmdVGEDNkkkD",
+         'ClientSecret' => "ahfR70aIvIatES37ZeoJztAJx7Ki1PvoGhfNVTja",
+         'accessTokenKey' =>  "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..xq7eT42Kh5ypbvGaHNzTVw.asbKUXGno_cCTC1vUObBIc7eAvAD_GFNmTUp2HzGn1jlBUUU1-6jX45pu7w-6tJmhpYxpJJMhDgjyjT_emG6wh9S-HTcp5QbEFzeDbh2zngYkXn0jhgJY8vvyOdvmHJVmDtb1wjGxOiCBtD3GYSV9h8HtD6mEmQltoHN5x0Y1fSZxdnwuUYi3g2am8FYmk4FYvwE9_dRrMjyMocVggirB0p6l2ANfr_iFaFUKc5QrDnuzBqdS3yUEkn_RKCFvQAb1ZqMHQ59TRa8o15nwXCwOj8nGIBCn9f0qVK0QM66WH-GcgYg3rSQAFiH_dezxBdaZUUbJUYI-L_KAOYEqn7mtzayb2NFSEcapJTybU13UfgDmuDV9XBr1Siqy3kOypnha504q-HfiyqLuM5am38RhFFgYTJBzYOKx2-O9HEScVAXBedquR0ppM_9ovl734H2mXY-mdJJsxf3DciIFqzKYkqf6Ht3m7IsozXkrMBbMAS3jEovf8_VE9raC0B9wjFJDVepCTRkXR2ulj8So-Zod1bjDGZFoJnuTYarGHUz17Mo3Ltc6wc0IIaKQlK71GmAm-HCaCXJD_sj_2_CJRmx1UmweSN6vZMP2nJrzyRy8mTpHQBkCyXOiVZ1Dan-IQoLmsR2mujmbDacVFfn36dx2Jib0PrJIFZAKOK3o4rqYxhVZAQc_VoTFewaCP8wNWSR.JYsX5fVQ3EDaXvI1gmv_Ag",
+         'refreshTokenKey' => 'Q011527248404CPAzFuTBTfBq3PpXD20z9GYqacJYxVbkVID9L',
+         'QBORealmID' => "123145985783569",
+         'baseUrl' => "development"
+));       
+//$dataService->throwExceptionOnError(true);
 //Add a new Invoice
 $theResourceObj = Invoice::create([
      "Line" => [
@@ -264,7 +272,7 @@ if ($error != null) {
 }
 else {
     $invoice_id = $resultingObj->Id;
-    //echo "Created Id={$resultingObj->Id}. Reconstructed response body:\n\n";
+    echo "Created Id={$resultingObj->Id}. Reconstructed response body:\n\n";
     //$xmlBody = XmlObjectSerializer::getPostXmlFromArbitraryEntity($resultingObj, $urlResource);
     //echo $xmlBody . "\n";
 }
