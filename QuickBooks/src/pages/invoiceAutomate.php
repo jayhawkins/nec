@@ -117,7 +117,8 @@ Created Customer Id=801. Reconstructed response body:
 
 function createCustomerInvoice(Array $cust){
     
-   
+   print_r($cust);
+   exit();
     
     //query for cutomer// Prep Data Services
 $dataService = DataService::Configure(array(
