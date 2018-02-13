@@ -1159,6 +1159,8 @@ else {
 
             var note = {damageClaimID: damageClaimID, userID: userid, note: $("#txtAdminNote").val(), createdAt: today, updatedAt: today};
 
+            console.log(note);
+
             $.ajax({
                 url: '<?php echo API_HOST_URL . "/damage_claim_notes/"; ?>',
                 type: "POST",
