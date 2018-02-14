@@ -797,7 +797,7 @@ class Reports
                             $customerName = $entitiesData[$e]['name'];
                         }
 
-                        $returnArray .= json_encode(array('customerName' => $customerName, 'originationCity' => $data[$c]['originationCity'], 'originationState' => $data[$c]['originationState'], 'destinationCity' => $data[$c]['destinationCity'], 'destinationState' => $data[$c]['destinationState'], 'distance' => $data[$c]['distance']));
+                        $returnArray .= json_encode(array('customerName' => $customerName, 'originationCity' => $data[$c]['originationCity'], 'originationState' => $data[$c]['originationState'], 'destinationCity' => $data[$c]['destinationCity'], 'destinationState' => $data[$c]['destinationState'], 'availableDate' => $data[$c]['availableDate'], 'expirationDate' => $data[$c]['expirationDate'], 'distance' => $data[$c]['distance']));
 
                         if ($c < count($data) - 1) {
                             $returnArray .= ",";
@@ -805,6 +805,54 @@ class Reports
 
                   }
                   echo "{ \"customer_needs\": [".$returnArray."]}";
+              } else {
+                  echo '{}';
+              }
+        } catch(Exception $e) {
+            echo $e->getMessage();
+        }
+    }
+
+    public function getavailabilitywithnocommitscsv(&$db, $entitytype, $entityid) {
+
+        try {
+              $data = "Customer Name,Origination City,Origination State,Destination City,Destination State,Available Date,Expiration Date,Distance\n";
+
+              $returnArray = "";
+
+              $dbhandle = new $db('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS);
+              $querystring = "SELECT *
+                              FROM customer_needs
+                              WHERE id NOT IN (SELECT customerNeedsID FROM customer_needs_commit)
+                              AND status = 'Available'
+                              AND expirationDate < NOW()";
+
+              if ($entityid > 0) {
+                  if ($entitytype == 1) {
+                      $querystring .= " AND entityID = '" . $entityid . "'";
+                  }
+              }
+
+              $querystring .= " ORDER BY createdAt desc";
+
+              $result = $dbhandle->query($querystring);
+
+              if (count($result) > 0) {
+                  $data = $result->fetchAll();
+                  for ($c = 0; $c < count($data); $c++) {
+                        $customerName = "*UNAVAILABLE*";
+                        /* Get carrier name for approved_pod record */
+                        $entitiesResult = $dbhandle->query("SELECT name FROM entities WHERE id = '" . $data[$c]['entityID'] . "'");
+
+                        $entitiesData = $entitiesResult->fetchAll();
+                        for ($e = 0; $e < count($entitiesData); $e++) {
+                            $customerName = $entitiesData[$e]['name'];
+                        }
+
+                        $data .= $customerName.",".$data[$c]['originationCity'].",".$data[$c]['originationState'].",".$data[$c]['destinationCity'].",".$data[$c]['destinationState'].",".$data[$c]['availableDate'].",".$data[$c]['expirationDate'].",".$data[$c]['distance']."\n";
+
+                  }
+                  echo $data;
               } else {
                   echo '{}';
               }

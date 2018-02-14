@@ -992,8 +992,20 @@ $app->route('POST /getavailabilitywithnocommits', function() {
     $reports = Flight::reports();
     $db = Flight::db();
     $result = $reports->getavailabilitywithnocommits($db,$entityType,$entityID);
-echo($result);
-die();
+    if ($result) {
+        print_r($result);
+        //echo "success";
+    } else {
+        print_r($result);
+    }
+});
+
+$app->route('POST /getavailabilitywithnocommitscsv', function() {
+    $entityType = Flight::request()->data->entitytype;
+    $entityID = Flight::request()->data->entityid;
+    $reports = Flight::reports();
+    $db = Flight::db();
+    $result = $reports->getavailabilitywithnocommitscsv($db,$entityType,$entityID);
     if ($result) {
         print_r($result);
         //echo "success";

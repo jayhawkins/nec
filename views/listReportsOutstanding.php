@@ -34,7 +34,29 @@ require '../lib/common.php';
                 { data: "originationState" },
                 { data: "destinationCity" },
                 { data: "destinationState" },
-                { data: "distance" }
+                {
+                    data: null,
+                    "bSortable": true,
+                    "mRender": function(o) {
+                      if (o.availableDate == "0000-00-00") {
+                          return '';
+                      } else {
+                          return formatDate(new Date(o.availableDate)); // Use the formatDate from common.js to display Month, Day Year on listing
+                      }
+                    }
+                },
+                {
+                    data: null,
+                    "bSortable": true,
+                    "mRender": function(o) {
+                      if (o.expirationDate == "0000-00-00") {
+                          return '';
+                      } else {
+                          return formatDate(new Date(o.expirationDate)); // Use the formatDate from common.js to display Month, Day Year on listing
+                      }
+                    }
+                },
+                { data: "distance", render: $.fn.dataTable.render.number(',', '.', 0, '') }
             ]
           });
 
@@ -51,11 +73,11 @@ require '../lib/common.php';
  <ol class="breadcrumb">
    <li>ADMIN</li>
    <li>Reporting</li>
-   <li class="active">Outstanding Orders</li>
+   <li class="active">Outstanding Availability</li>
  </ol>
  <section class="widget">
      <header>
-         <h4><span class="fw-semi-bold">Outstanding Orders</span></h4>
+         <h4><span class="fw-semi-bold">Outstanding Availability</span></h4>
          <div class="widget-controls">
              <a data-widgster="expand" title="Expand" href="#"><i class="glyphicon glyphicon-chevron-up"></i></a>
              <a data-widgster="collapse" title="Collapse" href="#"><i class="glyphicon glyphicon-chevron-down"></i></a>
@@ -75,10 +97,12 @@ require '../lib/common.php';
                  <thead>
                  <tr>
                      <th class="hidden-sm-down text-nowrap" width="20%">Customer</th>
-                     <th class="hidden-sm-down text-nowrap">Origination City</th>
-                     <th class="hidden-sm-down text-nowrap">Origination State</th>
+                     <th class="hidden-sm-down text-nowrap">Origin City</th>
+                     <th class="hidden-sm-down text-nowrap">Origin State</th>
                      <th class="hidden-sm-down text-nowrap">Destination City</th>
                      <th class="hidden-sm-down text-nowrap">Destination State</th>
+                     <th class="hidden-sm-down">Available</th>
+                     <th class="hidden-sm-down">Expires</th>
                      <th class="hidden-sm-down">Distance</th>
                  </tr>
                  </thead>
@@ -127,7 +151,7 @@ require '../lib/common.php';
 
     function downloadTemplateClick() {
 
-            url = '<?php echo HTTP_HOST."/getundeliveredtrailerscsv" ?>';
+            url = '<?php echo HTTP_HOST."/getavailabilitywithnocommitscsv" ?>';
 
             var params = {entitytype: <?php echo $_SESSION['entitytype'] ?>,
                           entityid: <?php echo $_SESSION['entityid'] ?>};
@@ -141,7 +165,7 @@ require '../lib/common.php';
                 success: function(data){
                     var element = document.createElement('a');
                     element.setAttribute('href', "data:application/octet-stream;charset=utf-8;base64,"+btoa(data.replace(/\n/g, '\r\n')));
-                    element.setAttribute('download', "carrier_needs_bulk_import_template.csv");
+                    element.setAttribute('download', "customer_outstanding_availability.csv");
                     //$("#downloadTemplate").attr("href","data:application/octet-stream;charset=utf-8;base64,"+btoa(data.replace(/\n/g, '\r\n')));
                     //$("#downloadTemplate").attr("download","carrier_needs_bulk_import_template.csv");
                     document.body.appendChild(element);
