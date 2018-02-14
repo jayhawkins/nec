@@ -63,7 +63,7 @@ while ($row = mysqli_fetch_array($loop))
     
     print_r($customer);
     echo '<hr>';
-   createCustomerInvoice($customer);
+   //createCustomerInvoice($customer);
     
     
     
