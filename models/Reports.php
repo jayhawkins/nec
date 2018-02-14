@@ -818,8 +818,6 @@ class Reports
         try {
               $data = "Customer Name,Origination City,Origination State,Destination City,Destination State,Available Date,Expiration Date,Distance\n";
 
-              $returnArray = "";
-
               $dbhandle = new $db('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS);
               $querystring = "SELECT *
                               FROM customer_needs
@@ -838,18 +836,18 @@ class Reports
               $result = $dbhandle->query($querystring);
 
               if (count($result) > 0) {
-                  $data = $result->fetchAll();
-                  for ($c = 0; $c < count($data); $c++) {
+                  $resultData = $result->fetchAll();
+                  for ($c = 0; $c < count($resultData); $c++) {
                         $customerName = "*UNAVAILABLE*";
                         /* Get carrier name for approved_pod record */
-                        $entitiesResult = $dbhandle->query("SELECT name FROM entities WHERE id = '" . $data[$c]['entityID'] . "'");
+                        $entitiesResult = $dbhandle->query("SELECT name FROM entities WHERE id = '" . $resultData[$c]['entityID'] . "'");
 
                         $entitiesData = $entitiesResult->fetchAll();
                         for ($e = 0; $e < count($entitiesData); $e++) {
                             $customerName = $entitiesData[$e]['name'];
                         }
 
-                        $data .= $customerName.",".$data[$c]['originationCity'].",".$data[$c]['originationState'].",".$data[$c]['destinationCity'].",".$data[$c]['destinationState'].",".$data[$c]['availableDate'].",".$data[$c]['expirationDate'].",".$data[$c]['distance']."\n";
+                        $data .= $customerName.",".$resultData[$c]['originationCity'].",".$resultData[$c]['originationState'].",".$resultData[$c]['destinationCity'].",".$resultData[$c]['destinationState'].",".$resultData[$c]['availableDate'].",".$resultData[$c]['expirationDate'].",".$resultData[$c]['distance']."\n";
 
                   }
                   echo $data;
