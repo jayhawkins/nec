@@ -816,8 +816,7 @@ class Reports
     public function getavailabilitywithnocommitscsv(&$db, $entitytype, $entityid) {
 
         try {
-              $data = "Date Range,".$startDate.",".$endDate."\n";
-              $data .= "Customer Name,Origination City,Origination State,Destination City,Destination State,Available Date,Expiration Date,Distance\n";
+              $data = "Customer Name,Origination City,Origination State,Destination City,Destination State,Available Date,Expiration Date,Distance\n";
 
               $returnArray = "";
 
