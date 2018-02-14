@@ -16,10 +16,30 @@ use QuickBooksOnline\API\Facades\Invoice;
 
 //db call 
 
-$dbh = mysqli_connect("45.55.1.81", "nec_qa", "Yellow10!", "nec")
+$dbh = mysqli_connect("hometree.dubtel.com", "nec_qa", "Yellow10!", "nec")
      or die ('cannot connect to database because ' . mysqli_connect_error());
-   
 
+
+$dataService = DataService::Configure(array(
+  'auth_mode' => 'oauth2',
+  'ClientID' => "Q0bCkjuFuWa8MxjEDqYenaCreMUZjyAJ2UyNhnOmdVGEDNkkkD",
+         'ClientSecret' => "ahfR70aIvIatES37ZeoJztAJx7Ki1PvoGhfNVTja",
+  'RedirectURI' => "http://nec.dubtel.com/QuickBooks/src/pages/invoiceAutomate.php",
+  'scope' => "com.intuit.quickbooks.accounting",
+  'baseUrl' => "development"
+));
+
+
+$OAuth2LoginHelper = $dataService->getOAuth2LoginHelper();
+
+$url = $OAuth2LoginHelper->getAuthorizationCodeURL();
+//It will return something like:https://b200efd8.ngrok.io/OAuth2_c/OAuth_2/OAuth2PHPExample.php?state=RandomState&code=Q0115106996168Bqap6xVrWS65f2iXDpsePOvB99moLCdcUwHq&realmId=193514538214074
+//get the Code and realmID, use for the exchangeAuthorizationCodeForToken
+$accessToken = $OAuth2LoginHelper->exchangeAuthorizationCodeForToken("Q011518627183B8Yyu0bX0E03haVbXWSAwDuTsJo0fzYTA2Bwm", "123145985783569");
+$dataService->updateOAuth2Token($accessToken);
+   
+print_r($accessToken);
+exit();
 
 //select from orders that have not been invoiced
 //see joins
@@ -58,9 +78,9 @@ while ($row = mysqli_fetch_array($loop))
     $customer['cid'] = $row['line_id'];
     $customer['cost'] = $row['cost'];
     
-    //print_r($customer);
-    //echo '<hr>';
-   createCustomerInvoice($customer);
+    print_r($customer);
+    echo '<hr>';
+   //createCustomerInvoice($customer);
     
     
     
@@ -119,6 +139,8 @@ Created Customer Id=801. Reconstructed response body:
 function createCustomerInvoice(Array $cust){
     
    print_r($cust);
+   
+   
 
     
     //query for cutomer// Prep Data Services
@@ -126,8 +148,8 @@ $dataService = DataService::Configure(array(
        'auth_mode' => 'oauth2',
          'ClientID' => "Q0bCkjuFuWa8MxjEDqYenaCreMUZjyAJ2UyNhnOmdVGEDNkkkD",
          'ClientSecret' => "ahfR70aIvIatES37ZeoJztAJx7Ki1PvoGhfNVTja",
-         'accessTokenKey' =>  "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..MYCjL9qsSTiEUkAkNa2xww.8yIxASMsMf_Ja0KrKdcsl3uSxvIAeDDZSL1_7UVI5wnC-WjF296B7MkgS1wVGCOf3B__gM0AZod906l3k8Xzi2VkuxAJdk62SCfH_F-VH7ZqMOA4mJ6EoI-7ModHVioBhHbeIn8SymnEdwRYZaPvjKH992tarI5975Zd5p9LL5K2xLh6paSmmeyFz4hqxvIbtJBRhTG9qqd-dzpCRq8H0hLQcNG1J76Tj3rhHiCUGn37oJ-YNsHFFbcJugJCxUjeMZn3-dsyL75x1heu-NZ5E00RQGNwhj1O2cRkwy_rOqNrDgkMfIkV0qdX6S5VHNraElrCTFcFXJbveGw_nYZYlMloQqUhOYcG5G-tERHxjK3c4hxkW-l829xgxdcD08E1zhfsiPZEqRRCqS4qs4v93hDQHG_oHvFOkNncz9_rb7DC5AcbvqWV0WXuCOyxnB8a5iCHG0EMBbnZXyuighZ4rpQXfsErS9AyZ8ie3gAaaALgk51oyiDdmbWgVKJe2l4nRfJJw2gHxpw9E7EC9Cq0dF7NLz0O3qFnY54pExA79hWeUl6pjyGWEYbt8IG_UIaeYPph37Z2SGaDkpUAPHChTzhZLk-pnSXwBtiTbjJLAJ7NLhjIr5DHKKa73S8u417K-zSmGAt1S5VVwhQFuoXrQ0rG52plaE-jBPqhWscD2nCwdZWJl7HUgTGHT0mCpqZl.Qw3m05El6lMYHC98z1_0Gg",
-         'refreshTokenKey' => 'Q011527248404CPAzFuTBTfBq3PpXD20z9GYqacJYxVbkVID9L',
+         'accessTokenKey' =>  "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..5zrZ5uxkyctRt-iPzugZLQ.n9vOOT30bUtpYoPsJKqzZAkMQBHTrCtBxGwy2AMzVZQvZ1okQyo_5C499xkYCC3K5jfKZwcJpcItMUBaWjSSJakI1rvGfce7e4_ePpahAjPsZBFbe01aV1LaMbRXWgJ6q2blJre7lVwBUgT4kIZUr0O24ttdaOyihqWtfzMBrGFVCMQjYxh26Jsdan0FTqEF_vOfX8WHZvl6q1x8NrVV5IqxxvRO6iwAG93m5GazwKqiwIjWecbcfKbKcStU6sDiJb8wdIude6jv4xaQBVkSIblIFleAEyjGeV10lMHM9K7Wbu554Hz92qMeHXubfp0j18tt667fYNxCdGsdP_Ld-Fzsnh9pAdW9Pyt0RBLCvHKW8Go0etTp9iIBx4bFUwDuqZ-wHwncni9ZydQigIkLdOV08g4ZlsGFZTv-Ere6gtxn5xFLmlatvvI0tA7bfJLxU-xtYnX3pWBBij09hB7-jv5-0Dknzl1gISql4Raf6PNGRw4rxSNDSPsv_LMAqjkJwUDcaGZ2UvKsE0RwWU_dup30AGSbeVJMX0zOA1vBAt0LyvAP6J4XgFflL_c9kxIbj5DrGTGBsQey1hrJpgXcCD74AWR77bR43EXuGgrPSzvaQW8l8xEgh49l0tktU6tqYjLZPo3WK4_y_E-sU56U7Mq6QawXDy6qJy7-fQMAJTtBOAvc884FY_pWSfuPbj9L.8WeZexLYvdILPxu5TpGQCA",
+         'refreshTokenKey' => 'Q011527271104pCRJPVlzeR49cqe0L50IVGTUgYfJ5BC9CXYsp',
          'QBORealmID' => "123145985783569",
          'baseUrl' => "https://sandbox-quickbooks.api.intuit.com"
 ));
@@ -171,11 +193,11 @@ if ($found_customer_id==0){
     //create new customer
     
     $dataService = DataService::Configure(array(
-           'auth_mode' => 'oauth2',
+          'auth_mode' => 'oauth2',
          'ClientID' => "Q0bCkjuFuWa8MxjEDqYenaCreMUZjyAJ2UyNhnOmdVGEDNkkkD",
          'ClientSecret' => "ahfR70aIvIatES37ZeoJztAJx7Ki1PvoGhfNVTja",
-          'accessTokenKey' =>  "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..MYCjL9qsSTiEUkAkNa2xww.8yIxASMsMf_Ja0KrKdcsl3uSxvIAeDDZSL1_7UVI5wnC-WjF296B7MkgS1wVGCOf3B__gM0AZod906l3k8Xzi2VkuxAJdk62SCfH_F-VH7ZqMOA4mJ6EoI-7ModHVioBhHbeIn8SymnEdwRYZaPvjKH992tarI5975Zd5p9LL5K2xLh6paSmmeyFz4hqxvIbtJBRhTG9qqd-dzpCRq8H0hLQcNG1J76Tj3rhHiCUGn37oJ-YNsHFFbcJugJCxUjeMZn3-dsyL75x1heu-NZ5E00RQGNwhj1O2cRkwy_rOqNrDgkMfIkV0qdX6S5VHNraElrCTFcFXJbveGw_nYZYlMloQqUhOYcG5G-tERHxjK3c4hxkW-l829xgxdcD08E1zhfsiPZEqRRCqS4qs4v93hDQHG_oHvFOkNncz9_rb7DC5AcbvqWV0WXuCOyxnB8a5iCHG0EMBbnZXyuighZ4rpQXfsErS9AyZ8ie3gAaaALgk51oyiDdmbWgVKJe2l4nRfJJw2gHxpw9E7EC9Cq0dF7NLz0O3qFnY54pExA79hWeUl6pjyGWEYbt8IG_UIaeYPph37Z2SGaDkpUAPHChTzhZLk-pnSXwBtiTbjJLAJ7NLhjIr5DHKKa73S8u417K-zSmGAt1S5VVwhQFuoXrQ0rG52plaE-jBPqhWscD2nCwdZWJl7HUgTGHT0mCpqZl.Qw3m05El6lMYHC98z1_0Gg",
-         'refreshTokenKey' => 'Q011527248404CPAzFuTBTfBq3PpXD20z9GYqacJYxVbkVID9L',
+         'accessTokenKey' =>  "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..5zrZ5uxkyctRt-iPzugZLQ.n9vOOT30bUtpYoPsJKqzZAkMQBHTrCtBxGwy2AMzVZQvZ1okQyo_5C499xkYCC3K5jfKZwcJpcItMUBaWjSSJakI1rvGfce7e4_ePpahAjPsZBFbe01aV1LaMbRXWgJ6q2blJre7lVwBUgT4kIZUr0O24ttdaOyihqWtfzMBrGFVCMQjYxh26Jsdan0FTqEF_vOfX8WHZvl6q1x8NrVV5IqxxvRO6iwAG93m5GazwKqiwIjWecbcfKbKcStU6sDiJb8wdIude6jv4xaQBVkSIblIFleAEyjGeV10lMHM9K7Wbu554Hz92qMeHXubfp0j18tt667fYNxCdGsdP_Ld-Fzsnh9pAdW9Pyt0RBLCvHKW8Go0etTp9iIBx4bFUwDuqZ-wHwncni9ZydQigIkLdOV08g4ZlsGFZTv-Ere6gtxn5xFLmlatvvI0tA7bfJLxU-xtYnX3pWBBij09hB7-jv5-0Dknzl1gISql4Raf6PNGRw4rxSNDSPsv_LMAqjkJwUDcaGZ2UvKsE0RwWU_dup30AGSbeVJMX0zOA1vBAt0LyvAP6J4XgFflL_c9kxIbj5DrGTGBsQey1hrJpgXcCD74AWR77bR43EXuGgrPSzvaQW8l8xEgh49l0tktU6tqYjLZPo3WK4_y_E-sU56U7Mq6QawXDy6qJy7-fQMAJTtBOAvc884FY_pWSfuPbj9L.8WeZexLYvdILPxu5TpGQCA",
+         'refreshTokenKey' => 'Q011527271104pCRJPVlzeR49cqe0L50IVGTUgYfJ5BC9CXYsp',
          'QBORealmID' => "123145985783569",
          'baseUrl' => "development"
 ));
@@ -227,8 +249,8 @@ if ($found_customer_id==0){
           'auth_mode' => 'oauth2',
          'ClientID' => "Q0bCkjuFuWa8MxjEDqYenaCreMUZjyAJ2UyNhnOmdVGEDNkkkD",
          'ClientSecret' => "ahfR70aIvIatES37ZeoJztAJx7Ki1PvoGhfNVTja",
-          'accessTokenKey' =>  "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..MYCjL9qsSTiEUkAkNa2xww.8yIxASMsMf_Ja0KrKdcsl3uSxvIAeDDZSL1_7UVI5wnC-WjF296B7MkgS1wVGCOf3B__gM0AZod906l3k8Xzi2VkuxAJdk62SCfH_F-VH7ZqMOA4mJ6EoI-7ModHVioBhHbeIn8SymnEdwRYZaPvjKH992tarI5975Zd5p9LL5K2xLh6paSmmeyFz4hqxvIbtJBRhTG9qqd-dzpCRq8H0hLQcNG1J76Tj3rhHiCUGn37oJ-YNsHFFbcJugJCxUjeMZn3-dsyL75x1heu-NZ5E00RQGNwhj1O2cRkwy_rOqNrDgkMfIkV0qdX6S5VHNraElrCTFcFXJbveGw_nYZYlMloQqUhOYcG5G-tERHxjK3c4hxkW-l829xgxdcD08E1zhfsiPZEqRRCqS4qs4v93hDQHG_oHvFOkNncz9_rb7DC5AcbvqWV0WXuCOyxnB8a5iCHG0EMBbnZXyuighZ4rpQXfsErS9AyZ8ie3gAaaALgk51oyiDdmbWgVKJe2l4nRfJJw2gHxpw9E7EC9Cq0dF7NLz0O3qFnY54pExA79hWeUl6pjyGWEYbt8IG_UIaeYPph37Z2SGaDkpUAPHChTzhZLk-pnSXwBtiTbjJLAJ7NLhjIr5DHKKa73S8u417K-zSmGAt1S5VVwhQFuoXrQ0rG52plaE-jBPqhWscD2nCwdZWJl7HUgTGHT0mCpqZl.Qw3m05El6lMYHC98z1_0Gg",
-         'refreshTokenKey' => 'Q011527248404CPAzFuTBTfBq3PpXD20z9GYqacJYxVbkVID9L',
+         'accessTokenKey' =>  "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..5zrZ5uxkyctRt-iPzugZLQ.n9vOOT30bUtpYoPsJKqzZAkMQBHTrCtBxGwy2AMzVZQvZ1okQyo_5C499xkYCC3K5jfKZwcJpcItMUBaWjSSJakI1rvGfce7e4_ePpahAjPsZBFbe01aV1LaMbRXWgJ6q2blJre7lVwBUgT4kIZUr0O24ttdaOyihqWtfzMBrGFVCMQjYxh26Jsdan0FTqEF_vOfX8WHZvl6q1x8NrVV5IqxxvRO6iwAG93m5GazwKqiwIjWecbcfKbKcStU6sDiJb8wdIude6jv4xaQBVkSIblIFleAEyjGeV10lMHM9K7Wbu554Hz92qMeHXubfp0j18tt667fYNxCdGsdP_Ld-Fzsnh9pAdW9Pyt0RBLCvHKW8Go0etTp9iIBx4bFUwDuqZ-wHwncni9ZydQigIkLdOV08g4ZlsGFZTv-Ere6gtxn5xFLmlatvvI0tA7bfJLxU-xtYnX3pWBBij09hB7-jv5-0Dknzl1gISql4Raf6PNGRw4rxSNDSPsv_LMAqjkJwUDcaGZ2UvKsE0RwWU_dup30AGSbeVJMX0zOA1vBAt0LyvAP6J4XgFflL_c9kxIbj5DrGTGBsQey1hrJpgXcCD74AWR77bR43EXuGgrPSzvaQW8l8xEgh49l0tktU6tqYjLZPo3WK4_y_E-sU56U7Mq6QawXDy6qJy7-fQMAJTtBOAvc884FY_pWSfuPbj9L.8WeZexLYvdILPxu5TpGQCA",
+         'refreshTokenKey' => 'Q011527271104pCRJPVlzeR49cqe0L50IVGTUgYfJ5BC9CXYsp',
          'QBORealmID' => "123145985783569",
          'baseUrl' => "development"
 ));       
@@ -277,13 +299,13 @@ else {
     //echo $xmlBody . "\n";
 }
 
-$servername = "45.55.1.81";
+$servername = "hometree.dubtel.com";
 $username = "nec_qa";
 $password = "Yellow10!";
 $dbname = "nec";
 
 // Create connection
-$conn = new mysqli("45.55.1.81", "nec_qa", "Yellow10!", "nec");
+$conn = new mysqli("hometree.dubtel.com", "nec_qa", "Yellow10!", "nec");
 // Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
@@ -300,7 +322,7 @@ if ($conn->query($sql) === TRUE) {
 }
 
 $conn->close();
-exit();
+//exit();
 
 
 
