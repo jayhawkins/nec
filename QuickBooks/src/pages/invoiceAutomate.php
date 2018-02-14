@@ -18,8 +18,28 @@ use QuickBooksOnline\API\Facades\Invoice;
 
 $dbh = mysqli_connect("hometree.dubtel.com", "nec_qa", "Yellow10!", "nec")
      or die ('cannot connect to database because ' . mysqli_connect_error());
-   
 
+
+$dataService = DataService::Configure(array(
+  'auth_mode' => 'oauth2',
+  'ClientID' => "Q0bCkjuFuWa8MxjEDqYenaCreMUZjyAJ2UyNhnOmdVGEDNkkkD",
+         'ClientSecret' => "ahfR70aIvIatES37ZeoJztAJx7Ki1PvoGhfNVTja",
+  'RedirectURI' => "http://nec.dubtel.com/QuickBooks/src/pages/invoiceAutomate.php",
+  'scope' => "com.intuit.quickbooks.accounting",
+  'baseUrl' => "development"
+));
+
+
+$OAuth2LoginHelper = $dataService->getOAuth2LoginHelper();
+
+$url = $OAuth2LoginHelper->getAuthorizationCodeURL();
+//It will return something like:https://b200efd8.ngrok.io/OAuth2_c/OAuth_2/OAuth2PHPExample.php?state=RandomState&code=Q0115106996168Bqap6xVrWS65f2iXDpsePOvB99moLCdcUwHq&realmId=193514538214074
+//get the Code and realmID, use for the exchangeAuthorizationCodeForToken
+$accessToken = $OAuth2LoginHelper->exchangeAuthorizationCodeForToken("Q011518627183B8Yyu0bX0E03haVbXWSAwDuTsJo0fzYTA2Bwm", "123145985783569");
+$dataService->updateOAuth2Token($accessToken);
+   
+print_r($accessToken);
+exit();
 
 //select from orders that have not been invoiced
 //see joins
@@ -58,9 +78,9 @@ while ($row = mysqli_fetch_array($loop))
     $customer['cid'] = $row['line_id'];
     $customer['cost'] = $row['cost'];
     
-    //print_r($customer);
-    //echo '<hr>';
-   createCustomerInvoice($customer);
+    print_r($customer);
+    echo '<hr>';
+   //createCustomerInvoice($customer);
     
     
     
@@ -119,6 +139,8 @@ Created Customer Id=801. Reconstructed response body:
 function createCustomerInvoice(Array $cust){
     
    print_r($cust);
+   
+   
 
     
     //query for cutomer// Prep Data Services
