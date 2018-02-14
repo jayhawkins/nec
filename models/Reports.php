@@ -797,7 +797,7 @@ class Reports
                             $customerName = $entitiesData[$e]['name'];
                         }
 
-                        $returnArray .= json_encode(array('customerName' => $customerName, 'originationCity' => $data[$c]['originationCity'], 'originationState' => $data[$c]['originationState'], 'destinationCity' => $data[$c]['destinationCity'], 'destinationState' => $data[$c]['destinationState'], 'distance' => $data[$c]['distance']));
+                        $returnArray .= json_encode(array('customerName' => $customerName, 'originationCity' => $data[$c]['originationCity'], 'originationState' => $data[$c]['originationState'], 'destinationCity' => $data[$c]['destinationCity'], 'destinationState' => $data[$c]['destinationState'], 'availableDate' => $data[$c]['availableDate'], 'expirationDate' => $data[$c]['expirationDate'], 'distance' => $data[$c]['distance']));
 
                         if ($c < count($data) - 1) {
                             $returnArray .= ",";
