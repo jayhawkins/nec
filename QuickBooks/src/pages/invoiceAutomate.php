@@ -60,7 +60,7 @@ while ($row = mysqli_fetch_array($loop))
     $customer['customer_email'] = $row['emailAddress'];
     $customer['cid'] = $row['line_id'];
     $customer['cost'] = $row['cost'];
-    
+    $customer['orderDetailId'] = $row['orderDetailID'];
     print_r($customer);
     echo '<hr>';
    //createCustomerInvoice($customer);
@@ -179,6 +179,9 @@ if ($found_customer_id==0){
  echo $found_customer_id;
     echo '<hr>';
     //exit();
+    
+     //Query db for all $cust['orderDetailID']
+ //eg SELECT * FROM nec.approved_pod where orderDetailID = 83;
 
 
            //create invoice
@@ -191,7 +194,14 @@ if ($found_customer_id==0){
          'refreshTokenKey' => 'Q011527355634fFmbiEHSiomgcIYhgkd4C2gkLJHajvwq8PbSD',
          'QBORealmID' => "123145985783569",
          'baseUrl' => "development"
-));       
+)); 
+ 
+ 
+
+ 
+ 
+ 
+ 
 //$dataService->throwExceptionOnError(true);
 //Add a new Invoice
 $theResourceObj = Invoice::create([
@@ -250,8 +260,9 @@ if ($conn->connect_error) {
 } 
 
 $id = $cust['cid'];
+$orderDetailID = $cust['orderDetailID'];
 
-$sql = "UPDATE approved_pod SET hasBeenInvoiced=1, qbInvoiceNumber ='".$invoice_id."' WHERE id=$id";
+$sql = "UPDATE approved_pod SET hasBeenInvoiced=1, qbInvoiceNumber ='".$invoice_id."' WHERE orderDetialID=$orderDetailID";
 echo $sql;
 if ($conn->query($sql) === TRUE) {
     echo "Record updated successfully";
