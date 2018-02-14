@@ -66,6 +66,8 @@ require '../lib/common.php';
           //See DataTables.net for more information about the reload method
           example_table.ajax.reload();
 
+          $("#recordCount").html('Total Outstanding Availability: ' + example_table.data().length);
+
       }
 
  </script>
@@ -120,7 +122,6 @@ require '../lib/common.php';
     loadTableAJAX();
 
     var table = $("#datatable-table").DataTable();
-    $("#recordCount").html('Total Outstanding Availability: ' + table.data().length);
 
     $('#datatable-table tbody').on( 'click', 'button', function () {
         var data = table.row( $(this).parents('tr') ).data();
