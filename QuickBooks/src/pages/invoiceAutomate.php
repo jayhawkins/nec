@@ -40,7 +40,7 @@ while($orderRow = mysqli_fetch_array($orderDetailLoop)){
     $loop = mysqli_query($dbh, "SELECT p.id as line_id,p.customerID,p.cost, p.orderID, p.orderDetailID, p.vinNumber, p.unitNumber,c.*,d.originationCity,d.originationState,d.destinationCity,d.destinationState ,e.name,l.address1,l.city,l.state,l.zip FROM nec.approved_pod p join order_details d on p.orderDetailID = d.id join entities e on p.customerID = e.id join locations l on e.id = l.entityID  join contacts c on e.contactID = c.id  where l.locationTypeID = 1 and p.orderDetailID = {$orderDetailID} and p.hasBeenInvoiced = 0")
        or die (mysqli_error($dbh));
 
-    $lineItemList = array();
+    $lineItemList = [];
     
     while ($row = mysqli_fetch_array($loop))
     {
@@ -72,7 +72,7 @@ while($orderRow = mysqli_fetch_array($orderDetailLoop)){
         $customer['cid'] = $row['line_id'];
         $customer['cost'] = $row['cost'];
         $customer['orderDetailId'] = $row['orderDetailID'];
-        $lineItem = array(
+        $lineItem = [
             "Amount" => floatval($row["cost"]), 
             "DetailType" => "SalesItemLineDetail",
             "Description" => "Trailer Vin#: " . $row['vinNumber'] . " | Unit #: " . $row['unitNumber'] . " | From " . $customer['description'],
@@ -82,7 +82,7 @@ while($orderRow = mysqli_fetch_array($orderDetailLoop)){
                     "name" => "Hours"
                 ]
             ]
-        );
+        ];
         
         array_push($lineItemList, $lineItem);
     }
