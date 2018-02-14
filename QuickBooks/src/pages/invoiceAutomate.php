@@ -102,7 +102,7 @@ exit();
 
 function createCustomerInvoice(Array $cust, Array $lineItems){
     
-    print_r($cust);
+    print_r($lineItems);
     
     //query for cutomer// Prep Data Services
     $dataService = DataService::Configure(array(
