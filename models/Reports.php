@@ -763,4 +763,54 @@ class Reports
           }
     }
 
+    public function getavailabilitywithnocommits(&$db, $entitytype, $entityid) {
+
+        try {
+              $returnArray = "";
+
+              $dbhandle = new $db('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS);
+              $querystring = "SELECT *
+                              FROM customer_needs
+                              WHERE id NOT IN (SELECT customerNeedsID FROM customer_needs_commit)
+                              AND status = 'Available'
+                              AND expirationDate < NOW()";
+
+              if ($entityid > 0) {
+                  if ($entitytype == 1) {
+                      $querystring .= " AND entityID = '" . $entityid . "'";
+                  }
+              }
+
+              $querystring .= " ORDER BY createdAt desc";
+
+              $result = $dbhandle->query($querystring);
+
+              if (count($result) > 0) {
+                  $data = $result->fetchAll();
+                  for ($c = 0; $c < count($data); $c++) {
+                        $customerName = "*UNAVAILABLE*";
+                        /* Get carrier name for approved_pod record */
+                        $entitiesResult = $dbhandle->query("SELECT name FROM entities WHERE id = '" . $data[$c]['entityID'] . "'");
+
+                        $entitiesData = $entitiesResult->fetchAll();
+                        for ($e = 0; $e < count($entitiesData); $e++) {
+                            $customerName = $entitiesData[$e]['name'];
+                        }
+
+                        $returnArray .= json_encode(array('customerName' => $customerName, 'originationCity' => $data[$c]['originationCity'], 'originationState' => $data[$c]['originationState'], 'destinationCity' => $data[$c]['destinationCity'], 'destinationState' => $data[$c]['destinationState'], 'distance' => $data[$c]['distance']));
+
+                        if ($c < count($data) - 1) {
+                            $returnArray .= ",";
+                        }
+
+                  }
+                  echo "{ \"customer_needs\": [".$returnArray."]}";
+              } else {
+                  echo '{}';
+              }
+        } catch(Exception $e) {
+            echo $e->getMessage();
+        }
+    }
+
 }

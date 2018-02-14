@@ -348,6 +348,69 @@ $app->route('POST /entities', function() {
     }
 });
 
+$app->route('PUT|POST /addentity', function() { // This is the add via the admin, not the front-end registration
+
+    // url encode the address
+    $address = urlencode(Flight::request()->data['address1'].", ".Flight::request()->data['city'].", ".Flight::request()->data['state'].", ".Flight::request()->data['zip']);
+
+    // google map geocode api url
+    $url = "https://maps.google.com/maps/api/geocode/json?key=".GOOGLE_MAPS_API."&address={$address}";
+
+    // get the json response
+    $resp_json = file_get_contents($url);
+
+    // decode the json
+    $resp = json_decode($resp_json, true);
+
+    // response status will be 'OK', if able to geocode given address
+    if($resp['status']=='OK'){
+        // get the important data
+        $lati = $resp['results'][0]['geometry']['location']['lat'];
+        $longi = $resp['results'][0]['geometry']['location']['lng'];
+        $formatted_address = $resp['results'][0]['formatted_address'];
+    } else {
+      $lati = 0.00;
+      $longi = 0.00;
+      $formatted_address = $resp['results'][0]['formatted_address'];
+    }
+
+    //$password = Flight::request()->data['password'];
+    $password = Flight::request()->data['zip'];
+    $firstName = Flight::request()->data['firstName'];
+    $lastName = Flight::request()->data['lastName'];
+    $title = Flight::request()->data['title'];
+    $address1 = Flight::request()->data['address1'];
+    $address2 = Flight::request()->data['address2'];
+    $city = Flight::request()->data['city'];
+    $state = Flight::request()->data['state'];
+    $zip = Flight::request()->data['zip'];
+    $latitude = $lati;
+    $longitude = $longi;
+    $phone = Flight::request()->data['phone'];
+    $phoneExt = Flight::request()->data['phoneExt'];
+    $fax = Flight::request()->data['fax'];
+    $email = Flight::request()->data['email'];
+    $entityName = Flight::request()->data['entityName'];
+    $entityTypeID = Flight::request()->data['entityTypeID'];
+    $contactID = Flight::request()->data['contactID'];
+    $negotiatedRate = Flight::request()->data['negotiatedRate'];
+    $rateType = Flight::request()->data['rateType'];
+    $towAwayRateMin = Flight::request()->data['towAwayRateMin'];
+    $towAwayRateMax = Flight::request()->data['towAwayRateMax'];
+    $towAwayRateType = Flight::request()->data['towAwayRateType'];
+    $loadOutRateMin = Flight::request()->data['loadOutRateMin'];
+    $loadOutRateMax = Flight::request()->data['loadOutRateMax'];
+    $loadOutRateType = Flight::request()->data['loadOutRateType'];
+    $configurationSettings = Flight::request()->data['configuration_settings'];
+    $entity = Flight::entities();
+    $returnentity = $entity->post($email,$password,$entityTypeID,$entityName,$contactID,$rateType,$negotiatedRate,$towAwayRateMin,$towAwayRateMax,$towAwayRateType,$loadOutRateMin,$loadOutRateMax,$loadOutRateType,$configurationSettings,$firstName,$lastName,$address1,$address2,$city,$state,$zip,$latitude,$longitude,$title,$phone,$phoneExt,$fax);
+    if ($returnentity) {
+      return true;
+    } else {
+      return $returnentity;
+    }
+});
+
 $app->route('PUT|POST /usermaintenance', function() {
     $userID = Flight::request()->data['userID'];
     $member_id = Flight::request()->data['member_id'];
@@ -915,6 +978,22 @@ $app->route('POST /getrevenueanalysiscsv', function() {
     $reports = Flight::reports();
     $db = Flight::db();
     $result = $reports->getrevenueanalysiscsv($db,$startDate,$endDate,$entityType,$entityID);
+    if ($result) {
+        print_r($result);
+        //echo "success";
+    } else {
+        print_r($result);
+    }
+});
+
+$app->route('POST /getavailabilitywithnocommits', function() {
+    $entityType = Flight::request()->data->entitytype;
+    $entityID = Flight::request()->data->entityid;
+    $reports = Flight::reports();
+    $db = Flight::db();
+    $result = $reports->getavailabilitywithnocommits($db,$entityType,$entityID);
+echo($result);
+die();
     if ($result) {
         print_r($result);
         //echo "success";
