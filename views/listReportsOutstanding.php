@@ -62,11 +62,11 @@ require '../lib/common.php';
 
           example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
 
+          $("#recordCount").html('Total Outstanding Availability: ' + table.data().length);
+
           //To Reload The Ajax
           //See DataTables.net for more information about the reload method
-          example_table.ajax.reload();
-
-          $("#recordCount").html('Total Outstanding Availability: ' + example_table.data().length);
+          //example_table.ajax.reload();
 
       }
 
@@ -121,35 +121,9 @@ require '../lib/common.php';
 
     loadTableAJAX();
 
-    var table = $("#datatable-table").DataTable();
-
-    $('#datatable-table tbody').on( 'click', 'button', function () {
-        var data = table.row( $(this).parents('tr') ).data();
-        if (this.textContent.indexOf("Edit") > -1) {
-          $("#id").val(data["id"]);
-          $("#name").val(data["name"]);
-          $("#link").val(data["link"]);
-          $("#myModal").modal('show');
-        } else {
-            $("#id").val(data["id"]);
-            if (this.textContent.indexOf("Disable") > -1) {
-              $("#disableDialogLabel").html('Disable <strong>' + data['name'] + '</strong>');
-              $("#myDisableDialog").modal('show');
-            } else {
-              if (this.textContent.indexOf("Enable") > -1) {
-                $("#enableDialogLabel").html('Enable <strong>' + data['name'] + '</strong>');
-                $("#myEnableDialog").modal('show');
-              }
-            }
-        }
-
-    } );
-
     // We have to handle downloading the report as a .csv file
     $("#downloadCSVButton").unbind('click').bind('click',function(){ // Doing it like this because it was double posting document giving me duplicates
-
         downloadTemplateClick();
-
     });
 
     function downloadTemplateClick() {
