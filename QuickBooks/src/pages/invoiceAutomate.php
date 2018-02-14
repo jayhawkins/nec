@@ -86,7 +86,6 @@ while($orderRow = mysqli_fetch_array($orderDetailLoop)){
         
         array_push($lineItemList, $lineItem);
     }
-    
     print_r($customer);
     echo '<hr>';
     print_r($lineItemList);
