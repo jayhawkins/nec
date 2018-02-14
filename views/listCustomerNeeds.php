@@ -1092,7 +1092,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                           var destinationlat = response.destinationlat;
                           var destinationlng = response.destinationlng;
                           var distance = response.distance;
-console.log(entity.entities[0]);
+
                             var minAmount;
                             var maxAmount;
                             if (entity.entities[0].towAwayRateType == "Flat Rate") {
