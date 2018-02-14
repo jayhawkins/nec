@@ -26,7 +26,7 @@ require '../lib/common.php';
                     d.entityid = <?php echo $_SESSION['entityid'] ?>;
                     return;
                 },
-                dataSrc: 'customer_needs'
+                dataSrc: "customer_needs",
             },
             columns: [
                 { data: "customerName" },
@@ -66,6 +66,8 @@ require '../lib/common.php';
           //See DataTables.net for more information about the reload method
           example_table.ajax.reload();
 
+          $("#recordCount").html('Total Outstanding Availability: ' + example_table.data().count());
+
       }
 
  </script>
@@ -89,6 +91,7 @@ require '../lib/common.php';
              Column sorting, live search, pagination. Built with
              <a href="http://www.datatables.net/" target="_blank">jQuery DataTables</a>
          </p -->
+         <div class="btn btn-danger" id="recordCount"></div>
          <button type="button" id="downloadCSVButton" class="btn btn-primary pull-right">Download CSV</button>
          <a id="downloadCSV"></a>
          <br /><br />
