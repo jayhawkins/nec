@@ -849,7 +849,7 @@ class Reports
                             $customerName = $entitiesData[$e]['name'];
                         }
 
-                        $data .= $customerName.",".$entitiesData[$c]['originationCity'].",".$entitiesData[$c]['originationState'].",".$entitiesData[$c]['destinationCity'].",".$entitiesData[$c]['destinationState'].",".$entitiesData[$c]['availableDate'].",".$entitiesData[$c]['expirationDate'].",".$entitiesData[$c]['distance']."\n";
+                        $data .= $customerName.",".$data[$c]['originationCity'].",".$data[$c]['originationState'].",".$data[$c]['destinationCity'].",".$data[$c]['destinationState'].",".$data[$c]['availableDate'].",".$data[$c]['expirationDate'].",".$data[$c]['distance']."\n";
 
                   }
                   echo $data;
