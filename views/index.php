@@ -1552,6 +1552,7 @@ if ($_SESSION['entityid'] > 0) {
                   <li><a href="#" onclick="ajaxFormCall('listReportsARSummary');">A/R Summary</a></li>
                   <li><a href="#" onclick="ajaxFormCall('listReportsARDetail');">A/R Detail</a></li>
                   <li><a href="#" onclick="ajaxFormCall('listReportsRevenueAnalysis');">Revenue Analysis</a></li>
+                  <li><a href="#" onclick="ajaxFormCall('listReportsOutstanding');">Outstanding Availability</a></li>
               </ul>
             </li>
 

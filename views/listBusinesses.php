@@ -5,6 +5,9 @@ session_start();
 require '../../nec_config.php';
 require '../lib/common.php';
 
+$state = '';
+$states = json_decode(file_get_contents(API_HOST_URL . '/states?columns=abbreviation,name&order=name'));
+
 $contacts = file_get_contents(API_HOST_URL . '/contacts?columns=id,firstName,lastName,title&filter=entityID,eq,0&order=lastName&transform=1');
 
 // Get Configuration Settings for Availability or Needs
@@ -163,6 +166,131 @@ $cdpvList = $cdpvresult["configuration_data_points"];
 
       }
 
+      function verifyAndAdd() {
+
+        if ( $('#formAddBusiness').parsley().validate() ) {
+                var passValidation = false;
+                var type = "";
+                var today = new Date();
+                var dd = today.getDate();
+                var mm = today.getMonth()+1; //January is 0!
+                var yyyy = today.getFullYear();
+                var hours = today.getHours();
+                var min = today.getMinutes();
+                var sec = today.getSeconds();
+
+                if(dd<10) {
+                    dd='0'+dd;
+                }
+
+                if(mm<10) {
+                    mm='0'+mm;
+                }
+
+                if(hours<10) {
+                    hours='0'+hours;
+                }
+
+                if(min<10) {
+                    min='0'+min;
+                }
+
+                today = mm+'/'+dd+'/'+yyyy;
+                today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+
+                var url = '<?php echo HTTP_HOST . "/addentity" ?>';
+                type = "POST";
+
+                // Build the configuration_settings
+                var configurationSettings = [];
+                var obj = $("#dp-check-list-box-add li select");
+                for (var i = 0; i < obj.length; i++) {
+                    item = {};
+                    item[obj[i].id] = obj[i].value;
+                    configurationSettings.push(item);
+                }
+
+                var date = today;
+                var data = {businessTypeID: $('input[name="addBusinessTypeID"]:checked').val(),
+                            firstName: $("#addFirstName").val(),
+                            lastName: $("#addLastName").val(),
+                            city: $("#addCity").val(),
+                            address1: $("#addAddress1").val(),
+                            address2: $("#addAddress2").val(),
+                            state: $("#addState").val(),
+                            zip: $("#addZip").val(),
+                            phone: $("#addPhone").val(),
+                            phoneExt: $("#addPhoneExt").val(),
+                            email: $("#addEmail").val(),
+                            title: $("#addTitle").val(),
+                            entityName: $("#addEntityName").val(),
+                            fax: $("#addFax").val(),
+                            contactID: $("#addContactID").val(),
+                            negotiatedRate: $("#addNegotiatedRate").val(),
+                            rateType: $("input[name='addRateType']:checked").val(),
+                            towAwayRateMin: $("#addTowAwayRateMin").val(),
+                            towAwayRateMax: $("#addTowAwayRateMax").val(),
+                            towAwayRateType: $('input[name="addTowAwayRateType"]:checked').val(),
+                            loadOutRateMin: $("#addLoadOutRateMin").val(),
+                            loadOutRateMax: $("#addLoadOutRateMax").val(),
+                            loadOutRateType: $('input[name="addLoadOutRateType"]:checked').val(),
+                            configuration_settings: configurationSettings,
+                            createdAt: date,
+                            updatedAt: date};
+
+                $.ajax({
+                   url: url,
+                   type: type,
+                   data: JSON.stringify(data),
+                   contentType: "application/json",
+                   async: false,
+                   success: function(data){
+                      if (data > 0) {
+                        $("#myModal").modal('hide');
+                        loadTableAJAX();
+                        $("#id").val('');
+                        $("#entityTypeID").val('');
+                        $("#addFirstName").val(''),
+                        $("#addLastName").val(''),
+                        $("#addCity").val(''),
+                        $("#addAddress1").val(''),
+                        $("#addAddress2").val(''),
+                        $("#addState").val(''),
+                        $("#addZip").val(''),
+                        $("#addPhone").val(''),
+                        $("#addPhoneExt").val(''),
+                        $("#addEmail").val(''),
+                        $("#addTitle").val(''),
+                        $("#addEntityName").val(''),
+                        $("#addFax").val(''),
+                        $("#addContactID").val('');
+                        $("#addEntityRating").val('');
+                        $("#addRateType").val('');
+                        $("#addNegotiatedRate").val('');
+                        $("#addTowAwayRateMin").val('');
+                        $("#addTowAwayRateMax").val('');
+                        $("#addLoadOutRateMin").val('');
+                        $("#addLoadOutRateMax").val('');
+                        passValidation = true;
+                      } else {
+                        alert("Updating Business Information Failed! \n\n" + data);
+                      }
+                   },
+                   error: function(error) {
+                      alert("There Was An Error Adding Business! \n\n" + error);
+                   }
+                });
+
+                return passValidation;
+
+          } else {
+
+                return false;
+
+          }
+
+      }
+
       function loadTableAJAX() {
         var url = '<?php echo API_HOST_URL; ?>' + '/entities?include=locations&columns=id,entityTypeID,name,entityRating,contactID,status,rateType,negotiatedRate,towAwayRateMin,towAwayRateMax,towAwayRateType,loadOutRateMin,loadOutRateMax,loadOutRateType,locations.name,locations.city,locations.state,locations.zip&filter[]=id,gt,0&filter[]=locations.locationTypeID,eq,1&order=name&transform=1';
         var example_table = $('#datatable-table').DataTable({
@@ -301,6 +429,9 @@ $cdpvList = $cdpvresult["configuration_data_points"];
              <a href="http://www.datatables.net/" target="_blank">jQuery DataTables</a>
          </p -->
          <!--button type="button" id="addBusiness" class="btn btn-primary pull-xs-right" data-target="#myModal">Add Business</button-->
+         <!--div class="pull-right text-nowrap">
+            <button type="button" id="addBusiness" class="btn btn-primary" data-target="#myModal">Add New Business</button>
+         </div-->
          <br /><br />
          <div id="dataTable" class="mt">
              <table id="datatable-table" class="table table-striped table-hover" width="100%">
@@ -524,6 +655,225 @@ $cdpvList = $cdpvresult["configuration_data_points"];
       </div>
     </div>
 
+<!-- Modal -->
+ <div class="modal fade" id="myAddModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+   <div class="modal-dialog modal-lg" role="document">
+     <div class="modal-content">
+       <div class="modal-header">
+         <h5 class="modal-title" id="formTitle"><strong>Business</strong></h5>
+         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+           <span aria-hidden="true">&times;</span>
+         </button>
+       </div>
+       <div class="modal-body">
+         <form id="formAddBusiness" class="register-form mt-lg">
+           <input type="hidden" id="id" name="id" value="" />
+           <input type="hidden" id="configuration_settings" name="configuration_settings" />
+           <div class="row">
+               <div class="col-sm-4">
+                   <label for="negotiatedRate">Business Type</label>
+                   <div class="form-group" style="align: middle">
+                     <input type="radio" id="addBusinessTypeID" name="addBusinessTypeID" value="1"> Customer
+                     &nbsp;&nbsp;
+                     <input type="radio" id="addBusinessTypeID" name="addBusinessTypeID" value="2"> Carrier
+                   </div>
+               </div>
+               <div class="col-sm-4">
+                   <label for="rep">NEC Rep Contact</label>
+                   <div class="form-group" id="contact-list-box-add">
+
+                   </div>
+               </div>
+           </div>
+           <div class="row">
+                <div class="col-sm-4">
+                    <label for="firstName">First Name</label>
+                    <div class="form-group">
+                      <input type="text" class="form-control" id="addFirstName" name="addFirstName" placeholder="*First Name" value=""
+                              required="required" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <label for="lastName">Last Name</label>
+                    <div class="form-group">
+                      <input type="text" id="addLastName" name="addLastName" class="form-control" placeholder="*Last Name" value=""
+                             required="required" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                  <label for="title">Title</label>
+                  <div class="form-group">
+                    <input type="text" id="addTitle" name="addTitle" class="form-control" placeholder="Title" value="" />
+                  </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <label for="entityName">Company Name</label>
+                    <div class="form-group">
+                      <input type="text" id="addEntityName" name="addEntityName" class="form-control" placeholder="*Company Name" value=""
+                             required="required" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <label for="address1">Address 1</label>
+                    <div class="form-group">
+                      <input type="text" id="addAddress1" name="addAddress1" class="form-control mb-sm" placeholder="Company Address" value="" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <label for="address2">Suite # / Apt #</label>
+                    <div class="form-group">
+                      <input type="text" id="addAddress2" name="addAddress2" class="form-control mb-sm" placeholder="Bldg. Number/Suite" value="" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <label for="city">City</label>
+                    <div class="form-group">
+                      <input type="text" id="addCity" name="addCity" class="form-control" placeholder="*City" value=""
+                             required="required" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <label for="state">State</label>
+                    <div class="form-group">
+                      <select id="addState" name="addState" data-placeholder="State" class="form-control chzn-select" data-ui-jq="select2" required="required">
+                        <option value="">*Select State...</option>
+<?php
+                        foreach($states->states->records as $value) {
+                            $selected = ($value[0] == $state) ? 'selected=selected':'';
+                            echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
+                        }
+?>
+                      </select>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <label for="zip">Zip</label>
+                    <div class="form-group">
+                      <input type="text" id="addZip" name="addZip" class="form-control mb-sm" placeholder="Zip" value="" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <label for="phone">Phone</label>
+                    <div class="form-group">
+                       <div class="col-sm-7" style="padding-left: 0; padding-right: 0">
+                        <input type="text" id="addPhone" name="addPhone" class="form-control" placeholder="*Phone" value="" required="required" />
+                       </div>
+                       <div class="col-sm-5" style="padding-right: 0;">
+                          <input type="text" maxlength="15" id="addPhoneExt" name="addPhoneExt" class="form-control" placeholder="Ext" value="" />
+                       </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <label for="fax">Fax</label>
+                    <div class="form-group">
+                        <input type="text" id="addFax" name="addFax" class="form-control" placeholder="Fax" value="" />
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <label for="email">Email Address</label>
+                    <div class="form-group">
+                      <input type="addEmail" id="addEmail" name="addEmail" class="form-control" placeholder="*Email Address" value=""
+                             data-parsley-trigger="change"
+                             required="required" />
+                    </div>
+                </div>
+           </div>
+           <div class="row">
+               <div class="col-sm-4">
+                   <label for="negotiatedRate">NEC Negotiated Rate</label>
+                   <div class="form-group">
+                     <input type="text" id="addNegotiatedRate" name="addNegotiatedRate" class="form-control mb-sm" placeholder="Negotiated Rate" />
+                   </div>
+               </div>
+               <div class="col-sm-4">
+                   <label for="negotiatedRate">NEC Negotiated Rate Type</label>
+                   <div class="form-group" style="align: middle">
+                     <input type="radio" id="addRateType" name="addRateType" value="Flat Rate" checked> Flat Rate
+                     &nbsp;&nbsp;
+                     <input type="radio" id="addRateType" name="addRateType" value="Mileage"> Mileage
+                   </div>
+               </div>
+               <div class="col-sm-4">
+               </div>
+           </div>
+           <div class="row">
+               <div class="col-sm-4">
+                   <label for="negotiatedRate">Tow Away Rate Min</label>
+                   <div class="form-group">
+                     <input type="text" id="addTowAwayRateMin" name="addTowAwayRateMin" class="form-control mb-sm" placeholder="Tow Away Rate Min" />
+                   </div>
+               </div>
+               <div class="col-sm-4">
+                   <label for="negotiatedRate">Tow Away Rate Max</label>
+                   <div class="form-group">
+                     <input type="text" id="addTowAwayRateMax" name="addTowAwayRateMax" class="form-control mb-sm" placeholder="Tow Away Rate Max" />
+                   </div>
+               </div>
+               <div class="col-sm-4">
+                   <label for="negotiatedRate">Tow Away Rate Type</label>
+                   <div class="form-group" style="align: middle">
+                     <input type="radio" id="addTowAwayRateType" name="addTowAwayRateType" value="Flat Rate" checked> Flat Rate
+                     &nbsp;&nbsp;
+                     <input type="radio" id="addTowAwayRateType" name="addTowAwayRateType" value="Mileage"> Mileage
+                   </div>
+               </div>
+           </div>
+           <div class="row">
+               <div class="col-sm-4">
+                   <label for="negotiatedRate">Load Out Rate Min</label>
+                   <div class="form-group">
+                     <input type="text" id="addLoadOutRateMin" name="addLoadOutRateMin" class="form-control mb-sm" placeholder="Load Out Rate Min" />
+                   </div>
+               </div>
+                <div class="col-sm-4">
+                   <label for="negotiatedRate">Load Out Rate Max</label>
+                   <div class="form-group">
+                     <input type="text" id="addLoadOutRateMax" name="addLoadOutRateMax" class="form-control mb-sm" placeholder="Load Out Rate Max" />
+                   </div>
+               </div>
+               <div class="col-sm-4">
+                   <label for="negotiatedRate">Load Out Rate Type</label>
+                   <div class="form-group" style="align: middle">
+                     <input type="radio" id="addLoadOutRateType" name="addLoadOutRateType" value="Flat Rate" checked> Flat Rate
+                     &nbsp;&nbsp;
+                     <input type="radio" id="addLoadOutRateType" name="addLoadOutRateType" value="Mileage"> Mileage
+                   </div>
+               </div>
+           </div>
+           <hr />
+           <div class="row">
+                 <div class="container" style="margin-top:20px;">
+                     <div class="row">
+                       <div class="col-xs-6">
+                            <h5 class="text-center"><strong>Configuration Settings</strong></h5>
+                            <div class="well" style="max-height: 200px;overflow: auto;">
+                                <ul id="dp-check-list-box-add" class="list-group">
+
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                            &nbsp;
+                        </div>
+                     </div>
+                 </div>
+           </div>
+           <div class="modal-footer">
+             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+             <button type="button" class="btn btn-primary" onclick="return verifyAndAdd();">Save Changes</button>
+           </div>
+         </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
  <script>
 
     //var contacts = <?php echo $contacts; ?>;
@@ -533,9 +883,15 @@ $cdpvList = $cdpvresult["configuration_data_points"];
     var table = $("#datatable-table").DataTable();
 
     $("#addBusiness").click(function(){
-        $("#id").val('');
-        $("#name").val('');
-  		$("#myModal").modal('show');
+
+        var contactdropdown = '<select id="addContactID" name="addContactID" data-placeholder="NEC Rep" class="form-control chzn-select" data-ui-jq="select2" required="required">';
+        for (var i = 0; i < contacts.contacts.length; i++) {
+             contactdropdown += '<option value="'+ contacts.contacts[i].id + '">' + contacts.contacts[i].firstName + ' ' + contacts.contacts[i].lastName + '</option>\n';
+        }
+        contactdropdown += '</select>\n';
+        $("#contact-list-box-add").html(contactdropdown);
+
+  		$("#myAddModal").modal('show');
   	});
 
     $('#datatable-table tbody').on( 'click', 'button', function () {
@@ -659,5 +1015,31 @@ $cdpvList = $cdpvresult["configuration_data_points"];
         }
 
     } );
+
+    $('input[name="addBusinessTypeID"]').click(function() {
+        $("#dp-check-list-box-add").html('');
+        var li = '';
+        var dpli = '';
+        var entityTypeID = $('input[name="addBusinessTypeID"]:checked').val();
+        for (var i = 0; i < cdpvList.length; i++) {
+             if ( entityTypeID == cdpvList[i].entityTypeID ) {
+                    var selected = '';
+                    var value = '';
+
+                    dpli += '<li>' + cdpvList[i].title +
+                            ' <select class="form-control mb-sm" id="' + cdpvList[i].columnName + '" name="' + cdpvList[i].columnName + '">' +
+                            ' <option value="">-Select From List-</option>\n';
+
+                    for (var v = 0; v < cdpvList[i].configuration_data_point_values.length; v++) {
+                        dpli += '<option value="' + cdpvList[i].configuration_data_point_values[v].value + '" ' + selected + '>' + cdpvList[i].configuration_data_point_values[v].title + '</option>\n';
+                    }
+
+                    dpli += '</select>' +
+                          '</li>\n';
+             }
+
+         }
+         $("#dp-check-list-box-add").html(dpli);
+    });
 
  </script>
