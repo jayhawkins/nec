@@ -63,7 +63,7 @@ while ($row = mysqli_fetch_array($loop))
     
     print_r($customer);
     echo '<hr>';
-   //createCustomerInvoice($customer);
+   createCustomerInvoice($customer);
     
     
     
@@ -73,50 +73,6 @@ exit();
 
 
 
-
-// Prep Data Services
-/*
-$dataService = DataService::Configure(array(
-       'auth_mode' => 'oauth1',
-         'consumerKey' => "qyprdUSoVpIHrtBp0eDMTHGz8UXuSz",
-         'consumerSecret' => "TKKBfdlU1I1GEqB9P3AZlybdC8YxW5qFSbuShkG7",
-         'accessTokenKey' => "qyprdxUakMagH93t01x1Z5wmIfIy3OiZcTqzI2EALXqhOaGE",
-         'accessTokenSecret' => "QqQhCSvDgMvnJmoMbXI5d9TIVj9wKU1w4yIEaFNC",
-         'QBORealmID' => "193514340994122",
-         'baseUrl' => "https://sandbox-quickbooks.api.intuit.com"
-));
-
-*/
-
-//var_dump($resultingCustomerObj);
-
-
-
-/*
-Created Customer Id=801. Reconstructed response body:
-
-<?xml version="1.0" encoding="UTF-8"?>
-<ns0:Customer xmlns:ns0="http://schema.intuit.com/finance/v3">
-  <ns0:Id>801</ns0:Id>
-  <ns0:SyncToken>0</ns0:SyncToken>
-  <ns0:MetaData>
-    <ns0:CreateTime>2013-08-05T07:41:45-07:00</ns0:CreateTime>
-    <ns0:LastUpdatedTime>2013-08-05T07:41:45-07:00</ns0:LastUpdatedTime>
-  </ns0:MetaData>
-  <ns0:GivenName>GivenName21574516</ns0:GivenName>
-  <ns0:FullyQualifiedName>GivenName21574516</ns0:FullyQualifiedName>
-  <ns0:CompanyName>CompanyName426009111</ns0:CompanyName>
-  <ns0:DisplayName>GivenName21574516</ns0:DisplayName>
-  <ns0:PrintOnCheckName>CompanyName426009111</ns0:PrintOnCheckName>
-  <ns0:Active>true</ns0:Active>
-  <ns0:Taxable>true</ns0:Taxable>
-  <ns0:Job>false</ns0:Job>
-  <ns0:BillWithParent>false</ns0:BillWithParent>
-  <ns0:Balance>0</ns0:Balance>
-  <ns0:BalanceWithJobs>0</ns0:BalanceWithJobs>
-  <ns0:PreferredDeliveryMethod>Print</ns0:PreferredDeliveryMethod>
-</ns0:Customer>
-*/
 
 
 function createCustomerInvoice(Array $cust){
