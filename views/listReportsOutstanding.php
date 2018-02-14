@@ -41,7 +41,7 @@ require '../lib/common.php';
                       if (o.availableDate == "0000-00-00") {
                           return '';
                       } else {
-                          return formatDate(new Date(o.avaialableDate)); // Use the formatDate from common.js to display Month, Day Year on listing
+                          return formatDate(new Date(o.availableDate)); // Use the formatDate from common.js to display Month, Day Year on listing
                       }
                     }
                 },
@@ -56,7 +56,7 @@ require '../lib/common.php';
                       }
                     }
                 },
-                { data: "distance", render: $.fn.dataTable.render.number(',', '.', 0, '')  }
+                { data: "distance", render: $.fn.dataTable.render.number(',', '.', 0, '') }
             ]
           });
 
