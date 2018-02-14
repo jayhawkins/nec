@@ -86,11 +86,6 @@ while($orderRow = mysqli_fetch_array($orderDetailLoop)){
         
         array_push($lineItemList, $lineItem);
     }
-    print_r($customer);
-    echo '<hr>';
-    print_r($lineItemList);
-    echo '<hr>';
-    echo '<hr>';
    createCustomerInvoice($customer, $lineItemList);
 }
 
@@ -102,8 +97,11 @@ exit();
 
 function createCustomerInvoice(Array $cust, Array $lineItems){
     
-    print_r($lineItems);
-    
+    print_r($cust);
+    echo '<hr>';
+    print_r(json_encode($lineItems));
+    echo '<hr>';
+    echo '<hr>';
     //query for cutomer// Prep Data Services
     $dataService = DataService::Configure(array(
            'auth_mode' => 'oauth2',
