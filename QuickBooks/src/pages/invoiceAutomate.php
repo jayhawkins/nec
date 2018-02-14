@@ -86,12 +86,6 @@ while($orderRow = mysqli_fetch_array($orderDetailLoop)){
         
         array_push($lineItemList, $lineItem);
     }
-    
-    print_r($customer);
-    echo '<hr>';
-    print_r($lineItemList);
-    echo '<hr>';
-    echo '<hr>';
    createCustomerInvoice($customer, $lineItemList);
 }
 
@@ -104,7 +98,10 @@ exit();
 function createCustomerInvoice(Array $cust, Array $lineItems){
     
     print_r($cust);
-    
+    echo '<hr>';
+    print_r($lineItems);
+    echo '<hr>';
+    echo '<hr>';
     //query for cutomer// Prep Data Services
     $dataService = DataService::Configure(array(
            'auth_mode' => 'oauth2',
@@ -210,16 +207,25 @@ function createCustomerInvoice(Array $cust, Array $lineItems){
 
     //create invoice
 
-    $dataService = DataService::Configure(array(
-        'auth_mode' => 'oauth2',
-        'ClientID' => "Q0bCkjuFuWa8MxjEDqYenaCreMUZjyAJ2UyNhnOmdVGEDNkkkD",
-        'ClientSecret' => "ahfR70aIvIatES37ZeoJztAJx7Ki1PvoGhfNVTja",
-        'accessTokenKey' =>  "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..j_JnY_hCsAPxvL_gr51pKw.PlmdIn1vTE-EB15FBlczoeqXP6XRWVpaoEVeq-TavZAMoYtv4dB6G6N2R9_jW83ecgOkYSpbGP7moZgWfmwVyU5SWn4_tRJlTGzmsLwwjgkjpWc4aEBl3_0xntiePSQOBZl5NqCEJYL82QG48y1V8xHHwCI81g5gGUxFg88ZwrpyJyzhiKkNZeSQbGh09Ik-6aV4zVbuAQUaTjPVi9eZnRhop19KRikbk233j-lSVDrol1c7W4fLccXghHSllEb8mY-ju6AQXxiJKMtT9zehFXdmBwIQVnvU1R538za1ad3jp55GCTi4qE-svUznEnjJ9umnKUA6dJS9fTvJq1c1Q6rofLCCx0ORofXOHZ247TfqwyjJOxUU3a-bqQmtOEj7jWDwtw8M-5Ayt2gIZWOQEJraYLI1DK91jRIGvABpSd9G4wqRN6kqc6o1rnAu8J-YAav9YwDbs_xeagmoUE5mHvkwX79Zl0YBPVQYMcF5iiaZ2RKdZkDL4urgo_tDPHECKGyAqWRyc0s_CWN8JP4q5oC5fonps_M3aBXke_hLCkekQvkFp7r9FuZ1M79nT94u0n5x9bQF3ZJfte-Gwc7hNGYHPdl5pBfF3-ujb6aSQbMTAeMOrpqVNEw7fyzPY1g66CBfAL-0TNa_J7f5UcN949GNXfW2ejbToW3TvcII0KU2OMDAUchtQW4Tej7ou5hd.8CfRT-gGSE5qiZvWLaShbw",
-        'refreshTokenKey' => 'Q011527355634fFmbiEHSiomgcIYhgkd4C2gkLJHajvwq8PbSD',
-        'QBORealmID' => "123145985783569",
-        'baseUrl' => "development"
-    )); 
-
+//    $dataService = DataService::Configure(array(
+//        'auth_mode' => 'oauth2',
+//        'ClientID' => "Q0bCkjuFuWa8MxjEDqYenaCreMUZjyAJ2UyNhnOmdVGEDNkkkD",
+//        'ClientSecret' => "ahfR70aIvIatES37ZeoJztAJx7Ki1PvoGhfNVTja",
+//        'accessTokenKey' =>  "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..j_JnY_hCsAPxvL_gr51pKw.PlmdIn1vTE-EB15FBlczoeqXP6XRWVpaoEVeq-TavZAMoYtv4dB6G6N2R9_jW83ecgOkYSpbGP7moZgWfmwVyU5SWn4_tRJlTGzmsLwwjgkjpWc4aEBl3_0xntiePSQOBZl5NqCEJYL82QG48y1V8xHHwCI81g5gGUxFg88ZwrpyJyzhiKkNZeSQbGh09Ik-6aV4zVbuAQUaTjPVi9eZnRhop19KRikbk233j-lSVDrol1c7W4fLccXghHSllEb8mY-ju6AQXxiJKMtT9zehFXdmBwIQVnvU1R538za1ad3jp55GCTi4qE-svUznEnjJ9umnKUA6dJS9fTvJq1c1Q6rofLCCx0ORofXOHZ247TfqwyjJOxUU3a-bqQmtOEj7jWDwtw8M-5Ayt2gIZWOQEJraYLI1DK91jRIGvABpSd9G4wqRN6kqc6o1rnAu8J-YAav9YwDbs_xeagmoUE5mHvkwX79Zl0YBPVQYMcF5iiaZ2RKdZkDL4urgo_tDPHECKGyAqWRyc0s_CWN8JP4q5oC5fonps_M3aBXke_hLCkekQvkFp7r9FuZ1M79nT94u0n5x9bQF3ZJfte-Gwc7hNGYHPdl5pBfF3-ujb6aSQbMTAeMOrpqVNEw7fyzPY1g66CBfAL-0TNa_J7f5UcN949GNXfW2ejbToW3TvcII0KU2OMDAUchtQW4Tej7ou5hd.8CfRT-gGSE5qiZvWLaShbw",
+//        'refreshTokenKey' => 'Q011527355634fFmbiEHSiomgcIYhgkd4C2gkLJHajvwq8PbSD',
+//        'QBORealmID' => "123145985783569",
+//        'baseUrl' => "development"
+//    )); 
+    
+        $dataService = DataService::Configure(array(
+           'auth_mode' => 'oauth2',
+                 'ClientID' => "Q0bCkjuFuWa8MxjEDqYenaCreMUZjyAJ2UyNhnOmdVGEDNkkkD",
+                 'ClientSecret' => "ahfR70aIvIatES37ZeoJztAJx7Ki1PvoGhfNVTja",
+                 'accessTokenKey' =>  "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..j_JnY_hCsAPxvL_gr51pKw.PlmdIn1vTE-EB15FBlczoeqXP6XRWVpaoEVeq-TavZAMoYtv4dB6G6N2R9_jW83ecgOkYSpbGP7moZgWfmwVyU5SWn4_tRJlTGzmsLwwjgkjpWc4aEBl3_0xntiePSQOBZl5NqCEJYL82QG48y1V8xHHwCI81g5gGUxFg88ZwrpyJyzhiKkNZeSQbGh09Ik-6aV4zVbuAQUaTjPVi9eZnRhop19KRikbk233j-lSVDrol1c7W4fLccXghHSllEb8mY-ju6AQXxiJKMtT9zehFXdmBwIQVnvU1R538za1ad3jp55GCTi4qE-svUznEnjJ9umnKUA6dJS9fTvJq1c1Q6rofLCCx0ORofXOHZ247TfqwyjJOxUU3a-bqQmtOEj7jWDwtw8M-5Ayt2gIZWOQEJraYLI1DK91jRIGvABpSd9G4wqRN6kqc6o1rnAu8J-YAav9YwDbs_xeagmoUE5mHvkwX79Zl0YBPVQYMcF5iiaZ2RKdZkDL4urgo_tDPHECKGyAqWRyc0s_CWN8JP4q5oC5fonps_M3aBXke_hLCkekQvkFp7r9FuZ1M79nT94u0n5x9bQF3ZJfte-Gwc7hNGYHPdl5pBfF3-ujb6aSQbMTAeMOrpqVNEw7fyzPY1g66CBfAL-0TNa_J7f5UcN949GNXfW2ejbToW3TvcII0KU2OMDAUchtQW4Tej7ou5hd.8CfRT-gGSE5qiZvWLaShbw",
+                 'refreshTokenKey' => 'Q011527355634fFmbiEHSiomgcIYhgkd4C2gkLJHajvwq8PbSD',
+                 'QBORealmID' => "123145985783569",
+          'baseUrl' => "https://sandbox-quickbooks.api.intuit.com"
+        ));
 
     //$dataService->throwExceptionOnError(true);
     //Add a new Invoice
@@ -244,13 +250,13 @@ function createCustomerInvoice(Array $cust, Array $lineItems){
 
     $error = $dataService->getLastError();
     if ($error != null) {
-        echo "The Status code is: " . $error->getHttpStatusCode() . "\n";
-        echo "The Helper message is: " . $error->getOAuthHelperError() . "\n";
-        echo "The Response message is: " . $error->getResponseBody() . "\n";
+        echo "The Status code is: " . $error->getHttpStatusCode() . "<br>";
+        echo "The Helper message is: " . $error->getOAuthHelperError() . "<br>";
+        echo "The Response message is: " . $error->getResponseBody() . "<br>";
     }
     else {
         $invoice_id = $resultingObj->Id;
-        echo "Created Id={$resultingObj->Id}. Reconstructed response body:\n\n";
+        echo "Created Id={$resultingObj->Id}. Reconstructed response body:<br><br>";
         //$xmlBody = XmlObjectSerializer::getPostXmlFromArbitraryEntity($resultingObj, $urlResource);
         //echo $xmlBody . "\n";
     }
