@@ -223,7 +223,7 @@ function createCustomerInvoice(Array $cust, Array $lineItems){
     //$dataService->throwExceptionOnError(true);
     //Add a new Invoice
     $theResourceObj = Invoice::create([
-        "Line" => $lineItems,
+        "Line" => [ $lineItems ],
         "CustomerRef"=> [
             "value"=> $found_customer_id
         ],
