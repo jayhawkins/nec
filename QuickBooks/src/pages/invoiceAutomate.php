@@ -14,11 +14,14 @@ use QuickBooksOnline\API\Facades\Invoice;
 
 
 
+
+
+
 //db call 
 
-$dbh = mysqli_connect("45.55.1.81", "nec_qa", "Yellow10!", "nec")
+$dbh = mysqli_connect("hometree.dubtel.com", "nec_qa", "Yellow10!", "nec")
      or die ('cannot connect to database because ' . mysqli_connect_error());
-   
+
 
 
 //select from orders that have not been invoiced
@@ -57,10 +60,10 @@ while ($row = mysqli_fetch_array($loop))
     $customer['customer_email'] = $row['emailAddress'];
     $customer['cid'] = $row['line_id'];
     $customer['cost'] = $row['cost'];
-    
-    //print_r($customer);
-    //echo '<hr>';
-   createCustomerInvoice($customer);
+    $customer['orderDetailId'] = $row['orderDetailID'];
+    print_r($customer);
+    echo '<hr>';
+   //createCustomerInvoice($customer);
     
     
     
@@ -71,54 +74,12 @@ exit();
 
 
 
-// Prep Data Services
-/*
-$dataService = DataService::Configure(array(
-       'auth_mode' => 'oauth1',
-         'consumerKey' => "qyprdUSoVpIHrtBp0eDMTHGz8UXuSz",
-         'consumerSecret' => "TKKBfdlU1I1GEqB9P3AZlybdC8YxW5qFSbuShkG7",
-         'accessTokenKey' => "qyprdxUakMagH93t01x1Z5wmIfIy3OiZcTqzI2EALXqhOaGE",
-         'accessTokenSecret' => "QqQhCSvDgMvnJmoMbXI5d9TIVj9wKU1w4yIEaFNC",
-         'QBORealmID' => "193514340994122",
-         'baseUrl' => "https://sandbox-quickbooks.api.intuit.com"
-));
-
-*/
-
-//var_dump($resultingCustomerObj);
-
-
-
-/*
-Created Customer Id=801. Reconstructed response body:
-
-<?xml version="1.0" encoding="UTF-8"?>
-<ns0:Customer xmlns:ns0="http://schema.intuit.com/finance/v3">
-  <ns0:Id>801</ns0:Id>
-  <ns0:SyncToken>0</ns0:SyncToken>
-  <ns0:MetaData>
-    <ns0:CreateTime>2013-08-05T07:41:45-07:00</ns0:CreateTime>
-    <ns0:LastUpdatedTime>2013-08-05T07:41:45-07:00</ns0:LastUpdatedTime>
-  </ns0:MetaData>
-  <ns0:GivenName>GivenName21574516</ns0:GivenName>
-  <ns0:FullyQualifiedName>GivenName21574516</ns0:FullyQualifiedName>
-  <ns0:CompanyName>CompanyName426009111</ns0:CompanyName>
-  <ns0:DisplayName>GivenName21574516</ns0:DisplayName>
-  <ns0:PrintOnCheckName>CompanyName426009111</ns0:PrintOnCheckName>
-  <ns0:Active>true</ns0:Active>
-  <ns0:Taxable>true</ns0:Taxable>
-  <ns0:Job>false</ns0:Job>
-  <ns0:BillWithParent>false</ns0:BillWithParent>
-  <ns0:Balance>0</ns0:Balance>
-  <ns0:BalanceWithJobs>0</ns0:BalanceWithJobs>
-  <ns0:PreferredDeliveryMethod>Print</ns0:PreferredDeliveryMethod>
-</ns0:Customer>
-*/
-
 
 function createCustomerInvoice(Array $cust){
     
    print_r($cust);
+   
+   
 
     
     //query for cutomer// Prep Data Services
@@ -126,9 +87,8 @@ $dataService = DataService::Configure(array(
        'auth_mode' => 'oauth2',
          'ClientID' => "Q0bCkjuFuWa8MxjEDqYenaCreMUZjyAJ2UyNhnOmdVGEDNkkkD",
          'ClientSecret' => "ahfR70aIvIatES37ZeoJztAJx7Ki1PvoGhfNVTja",
-         'accessTokenKey' =>  "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..MYCjL9qsSTiEUkAkNa2xww.8yIxASMsMf_Ja0KrKdcsl3uSxvIAeDDZSL1_7UVI5wnC-WjF296B7MkgS1wVGCOf3B__gM0AZod906l3k8Xzi2VkuxAJdk62SCfH_F-VH7ZqMOA4mJ6EoI-7ModHVioBhHbeIn8SymnEdwRYZaPvjKH992tarI5975Zd5p9LL5K2xLh6paSmmeyFz4hqxvIbtJBRhTG9qqd-dzpCRq8H0hLQcNG1J76Tj3rhHiCUGn37oJ-YNsHFFbcJugJCxUjeMZn3-dsyL75x1heu-NZ5E00RQGNwhj1O2cRkwy_rOqNrDgkMfIkV0qdX6S5VHNraElrCTFcFXJbveGw_nYZYlMloQqUhOYcG5G-tERHxjK3c4hxkW-l829xgxdcD08E1zhfsiPZEqRRCqS4qs4v93hDQHG_oHvFOkNncz9_rb7DC5AcbvqWV0WXuCOyxnB8a5iCHG0EMBbnZXyuighZ4rpQXfsErS9AyZ8ie3gAaaALgk51oyiDdmbWgVKJe2l4nRfJJw2gHxpw9E7EC9Cq0dF7NLz0O3qFnY54pExA79hWeUl6pjyGWEYbt8IG_UIaeYPph37Z2SGaDkpUAPHChTzhZLk-pnSXwBtiTbjJLAJ7NLhjIr5DHKKa73S8u417K-zSmGAt1S5VVwhQFuoXrQ0rG52plaE-jBPqhWscD2nCwdZWJl7HUgTGHT0mCpqZl.Qw3m05El6lMYHC98z1_0Gg",
-         'refreshTokenKey' => 'Q011527248404CPAzFuTBTfBq3PpXD20z9GYqacJYxVbkVID9L',
-         'QBORealmID' => "123145985783569",
+         'accessTokenKey' =>  "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..j_JnY_hCsAPxvL_gr51pKw.PlmdIn1vTE-EB15FBlczoeqXP6XRWVpaoEVeq-TavZAMoYtv4dB6G6N2R9_jW83ecgOkYSpbGP7moZgWfmwVyU5SWn4_tRJlTGzmsLwwjgkjpWc4aEBl3_0xntiePSQOBZl5NqCEJYL82QG48y1V8xHHwCI81g5gGUxFg88ZwrpyJyzhiKkNZeSQbGh09Ik-6aV4zVbuAQUaTjPVi9eZnRhop19KRikbk233j-lSVDrol1c7W4fLccXghHSllEb8mY-ju6AQXxiJKMtT9zehFXdmBwIQVnvU1R538za1ad3jp55GCTi4qE-svUznEnjJ9umnKUA6dJS9fTvJq1c1Q6rofLCCx0ORofXOHZ247TfqwyjJOxUU3a-bqQmtOEj7jWDwtw8M-5Ayt2gIZWOQEJraYLI1DK91jRIGvABpSd9G4wqRN6kqc6o1rnAu8J-YAav9YwDbs_xeagmoUE5mHvkwX79Zl0YBPVQYMcF5iiaZ2RKdZkDL4urgo_tDPHECKGyAqWRyc0s_CWN8JP4q5oC5fonps_M3aBXke_hLCkekQvkFp7r9FuZ1M79nT94u0n5x9bQF3ZJfte-Gwc7hNGYHPdl5pBfF3-ujb6aSQbMTAeMOrpqVNEw7fyzPY1g66CBfAL-0TNa_J7f5UcN949GNXfW2ejbToW3TvcII0KU2OMDAUchtQW4Tej7ou5hd.8CfRT-gGSE5qiZvWLaShbw",
+         'refreshTokenKey' => 'Q011527355634fFmbiEHSiomgcIYhgkd4C2gkLJHajvwq8PbSD',
          'baseUrl' => "https://sandbox-quickbooks.api.intuit.com"
 ));
 
@@ -171,11 +131,11 @@ if ($found_customer_id==0){
     //create new customer
     
     $dataService = DataService::Configure(array(
-           'auth_mode' => 'oauth2',
+         'auth_mode' => 'oauth2',
          'ClientID' => "Q0bCkjuFuWa8MxjEDqYenaCreMUZjyAJ2UyNhnOmdVGEDNkkkD",
          'ClientSecret' => "ahfR70aIvIatES37ZeoJztAJx7Ki1PvoGhfNVTja",
-          'accessTokenKey' =>  "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..MYCjL9qsSTiEUkAkNa2xww.8yIxASMsMf_Ja0KrKdcsl3uSxvIAeDDZSL1_7UVI5wnC-WjF296B7MkgS1wVGCOf3B__gM0AZod906l3k8Xzi2VkuxAJdk62SCfH_F-VH7ZqMOA4mJ6EoI-7ModHVioBhHbeIn8SymnEdwRYZaPvjKH992tarI5975Zd5p9LL5K2xLh6paSmmeyFz4hqxvIbtJBRhTG9qqd-dzpCRq8H0hLQcNG1J76Tj3rhHiCUGn37oJ-YNsHFFbcJugJCxUjeMZn3-dsyL75x1heu-NZ5E00RQGNwhj1O2cRkwy_rOqNrDgkMfIkV0qdX6S5VHNraElrCTFcFXJbveGw_nYZYlMloQqUhOYcG5G-tERHxjK3c4hxkW-l829xgxdcD08E1zhfsiPZEqRRCqS4qs4v93hDQHG_oHvFOkNncz9_rb7DC5AcbvqWV0WXuCOyxnB8a5iCHG0EMBbnZXyuighZ4rpQXfsErS9AyZ8ie3gAaaALgk51oyiDdmbWgVKJe2l4nRfJJw2gHxpw9E7EC9Cq0dF7NLz0O3qFnY54pExA79hWeUl6pjyGWEYbt8IG_UIaeYPph37Z2SGaDkpUAPHChTzhZLk-pnSXwBtiTbjJLAJ7NLhjIr5DHKKa73S8u417K-zSmGAt1S5VVwhQFuoXrQ0rG52plaE-jBPqhWscD2nCwdZWJl7HUgTGHT0mCpqZl.Qw3m05El6lMYHC98z1_0Gg",
-         'refreshTokenKey' => 'Q011527248404CPAzFuTBTfBq3PpXD20z9GYqacJYxVbkVID9L',
+         'accessTokenKey' =>  "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..j_JnY_hCsAPxvL_gr51pKw.PlmdIn1vTE-EB15FBlczoeqXP6XRWVpaoEVeq-TavZAMoYtv4dB6G6N2R9_jW83ecgOkYSpbGP7moZgWfmwVyU5SWn4_tRJlTGzmsLwwjgkjpWc4aEBl3_0xntiePSQOBZl5NqCEJYL82QG48y1V8xHHwCI81g5gGUxFg88ZwrpyJyzhiKkNZeSQbGh09Ik-6aV4zVbuAQUaTjPVi9eZnRhop19KRikbk233j-lSVDrol1c7W4fLccXghHSllEb8mY-ju6AQXxiJKMtT9zehFXdmBwIQVnvU1R538za1ad3jp55GCTi4qE-svUznEnjJ9umnKUA6dJS9fTvJq1c1Q6rofLCCx0ORofXOHZ247TfqwyjJOxUU3a-bqQmtOEj7jWDwtw8M-5Ayt2gIZWOQEJraYLI1DK91jRIGvABpSd9G4wqRN6kqc6o1rnAu8J-YAav9YwDbs_xeagmoUE5mHvkwX79Zl0YBPVQYMcF5iiaZ2RKdZkDL4urgo_tDPHECKGyAqWRyc0s_CWN8JP4q5oC5fonps_M3aBXke_hLCkekQvkFp7r9FuZ1M79nT94u0n5x9bQF3ZJfte-Gwc7hNGYHPdl5pBfF3-ujb6aSQbMTAeMOrpqVNEw7fyzPY1g66CBfAL-0TNa_J7f5UcN949GNXfW2ejbToW3TvcII0KU2OMDAUchtQW4Tej7ou5hd.8CfRT-gGSE5qiZvWLaShbw",
+         'refreshTokenKey' => 'Q011527355634fFmbiEHSiomgcIYhgkd4C2gkLJHajvwq8PbSD',
          'QBORealmID' => "123145985783569",
          'baseUrl' => "development"
 ));
@@ -219,19 +179,29 @@ if ($found_customer_id==0){
  echo $found_customer_id;
     echo '<hr>';
     //exit();
+    
+     //Query db for all $cust['orderDetailID']
+ //eg SELECT * FROM nec.approved_pod where orderDetailID = 83;
 
 
            //create invoice
     
  $dataService = DataService::Configure(array(
-          'auth_mode' => 'oauth2',
+        'auth_mode' => 'oauth2',
          'ClientID' => "Q0bCkjuFuWa8MxjEDqYenaCreMUZjyAJ2UyNhnOmdVGEDNkkkD",
          'ClientSecret' => "ahfR70aIvIatES37ZeoJztAJx7Ki1PvoGhfNVTja",
-          'accessTokenKey' =>  "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..MYCjL9qsSTiEUkAkNa2xww.8yIxASMsMf_Ja0KrKdcsl3uSxvIAeDDZSL1_7UVI5wnC-WjF296B7MkgS1wVGCOf3B__gM0AZod906l3k8Xzi2VkuxAJdk62SCfH_F-VH7ZqMOA4mJ6EoI-7ModHVioBhHbeIn8SymnEdwRYZaPvjKH992tarI5975Zd5p9LL5K2xLh6paSmmeyFz4hqxvIbtJBRhTG9qqd-dzpCRq8H0hLQcNG1J76Tj3rhHiCUGn37oJ-YNsHFFbcJugJCxUjeMZn3-dsyL75x1heu-NZ5E00RQGNwhj1O2cRkwy_rOqNrDgkMfIkV0qdX6S5VHNraElrCTFcFXJbveGw_nYZYlMloQqUhOYcG5G-tERHxjK3c4hxkW-l829xgxdcD08E1zhfsiPZEqRRCqS4qs4v93hDQHG_oHvFOkNncz9_rb7DC5AcbvqWV0WXuCOyxnB8a5iCHG0EMBbnZXyuighZ4rpQXfsErS9AyZ8ie3gAaaALgk51oyiDdmbWgVKJe2l4nRfJJw2gHxpw9E7EC9Cq0dF7NLz0O3qFnY54pExA79hWeUl6pjyGWEYbt8IG_UIaeYPph37Z2SGaDkpUAPHChTzhZLk-pnSXwBtiTbjJLAJ7NLhjIr5DHKKa73S8u417K-zSmGAt1S5VVwhQFuoXrQ0rG52plaE-jBPqhWscD2nCwdZWJl7HUgTGHT0mCpqZl.Qw3m05El6lMYHC98z1_0Gg",
-         'refreshTokenKey' => 'Q011527248404CPAzFuTBTfBq3PpXD20z9GYqacJYxVbkVID9L',
+         'accessTokenKey' =>  "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..j_JnY_hCsAPxvL_gr51pKw.PlmdIn1vTE-EB15FBlczoeqXP6XRWVpaoEVeq-TavZAMoYtv4dB6G6N2R9_jW83ecgOkYSpbGP7moZgWfmwVyU5SWn4_tRJlTGzmsLwwjgkjpWc4aEBl3_0xntiePSQOBZl5NqCEJYL82QG48y1V8xHHwCI81g5gGUxFg88ZwrpyJyzhiKkNZeSQbGh09Ik-6aV4zVbuAQUaTjPVi9eZnRhop19KRikbk233j-lSVDrol1c7W4fLccXghHSllEb8mY-ju6AQXxiJKMtT9zehFXdmBwIQVnvU1R538za1ad3jp55GCTi4qE-svUznEnjJ9umnKUA6dJS9fTvJq1c1Q6rofLCCx0ORofXOHZ247TfqwyjJOxUU3a-bqQmtOEj7jWDwtw8M-5Ayt2gIZWOQEJraYLI1DK91jRIGvABpSd9G4wqRN6kqc6o1rnAu8J-YAav9YwDbs_xeagmoUE5mHvkwX79Zl0YBPVQYMcF5iiaZ2RKdZkDL4urgo_tDPHECKGyAqWRyc0s_CWN8JP4q5oC5fonps_M3aBXke_hLCkekQvkFp7r9FuZ1M79nT94u0n5x9bQF3ZJfte-Gwc7hNGYHPdl5pBfF3-ujb6aSQbMTAeMOrpqVNEw7fyzPY1g66CBfAL-0TNa_J7f5UcN949GNXfW2ejbToW3TvcII0KU2OMDAUchtQW4Tej7ou5hd.8CfRT-gGSE5qiZvWLaShbw",
+         'refreshTokenKey' => 'Q011527355634fFmbiEHSiomgcIYhgkd4C2gkLJHajvwq8PbSD',
          'QBORealmID' => "123145985783569",
          'baseUrl' => "development"
-));       
+)); 
+ 
+ 
+
+ 
+ 
+ 
+ 
 //$dataService->throwExceptionOnError(true);
 //Add a new Invoice
 $theResourceObj = Invoice::create([
@@ -277,21 +247,22 @@ else {
     //echo $xmlBody . "\n";
 }
 
-$servername = "45.55.1.81";
+$servername = "hometree.dubtel.com";
 $username = "nec_qa";
 $password = "Yellow10!";
 $dbname = "nec";
 
 // Create connection
-$conn = new mysqli("45.55.1.81", "nec_qa", "Yellow10!", "nec");
+$conn = new mysqli("hometree.dubtel.com", "nec_qa", "Yellow10!", "nec");
 // Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 } 
 
 $id = $cust['cid'];
+$orderDetailID = $cust['orderDetailID'];
 
-$sql = "UPDATE approved_pod SET hasBeenInvoiced=1, qbInvoiceNumber ='".$invoice_id."' WHERE id=$id";
+$sql = "UPDATE approved_pod SET hasBeenInvoiced=1, qbInvoiceNumber ='".$invoice_id."' WHERE orderDetialID=$orderDetailID";
 echo $sql;
 if ($conn->query($sql) === TRUE) {
     echo "Record updated successfully";
@@ -300,7 +271,7 @@ if ($conn->query($sql) === TRUE) {
 }
 
 $conn->close();
-exit();
+//exit();
 
 
 

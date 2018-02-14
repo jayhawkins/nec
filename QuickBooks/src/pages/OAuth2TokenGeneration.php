@@ -11,7 +11,7 @@ use QuickBooksOnline\API\Core\Http\Serialization\XmlObjectSerializer;
 $dataService = DataService::Configure(array(
   'auth_mode' => 'oauth2',
   'ClientID' => "Q0bCkjuFuWa8MxjEDqYenaCreMUZjyAJ2UyNhnOmdVGEDNkkkD",
-  'ClientSecret' => "ahfR70aIvIatES37ZeoJztAJx7Ki1PvoGhfNVTja",
+         'ClientSecret' => "ahfR70aIvIatES37ZeoJztAJx7Ki1PvoGhfNVTja",
   'RedirectURI' => "http://nec.dubtel.com/QuickBooks/src/pages/OAuth2TokenGeneration.php",
   'scope' => "com.intuit.quickbooks.accounting",
   'baseUrl' => "development"
