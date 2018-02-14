@@ -813,4 +813,53 @@ class Reports
         }
     }
 
+    public function getavailabilitywithnocommitscsv(&$db, $entitytype, $entityid) {
+
+        try {
+              $data = "Date Range,".$startDate.",".$endDate."\n";
+              $data .= "Customer Name,Origination City,Origination State,Destination City,Destination State,Available Date,Expiration Date,Distance\n";
+
+              $returnArray = "";
+
+              $dbhandle = new $db('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS);
+              $querystring = "SELECT *
+                              FROM customer_needs
+                              WHERE id NOT IN (SELECT customerNeedsID FROM customer_needs_commit)
+                              AND status = 'Available'
+                              AND expirationDate < NOW()";
+
+              if ($entityid > 0) {
+                  if ($entitytype == 1) {
+                      $querystring .= " AND entityID = '" . $entityid . "'";
+                  }
+              }
+
+              $querystring .= " ORDER BY createdAt desc";
+
+              $result = $dbhandle->query($querystring);
+
+              if (count($result) > 0) {
+                  $data = $result->fetchAll();
+                  for ($c = 0; $c < count($data); $c++) {
+                        $customerName = "*UNAVAILABLE*";
+                        /* Get carrier name for approved_pod record */
+                        $entitiesResult = $dbhandle->query("SELECT name FROM entities WHERE id = '" . $data[$c]['entityID'] . "'");
+
+                        $entitiesData = $entitiesResult->fetchAll();
+                        for ($e = 0; $e < count($entitiesData); $e++) {
+                            $customerName = $entitiesData[$e]['name'];
+                        }
+
+                        $data .= $name.",".$entitiesData[$e]['origninationCity'].",".$entitiesData[$e]['originationState'].",".$entitiesData[$e]['destinationCity'].",".$entitiesData[$e]['destinationState'].",".$entitiesData[$e]['destinationState'].",".$entitiesData[$e]['availableDate'].",".$entitiesData[$e]['expirationDate'].",".$entitiesData[$e]['distance']."\n";
+
+                  }
+                  echo $data;
+              } else {
+                  echo '{}';
+              }
+        } catch(Exception $e) {
+            echo $e->getMessage();
+        }
+    }
+
 }
