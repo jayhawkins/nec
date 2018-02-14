@@ -120,7 +120,7 @@ require '../lib/common.php';
     loadTableAJAX();
 
     var table = $("#datatable-table").DataTable();
-    $("#recordCount").html('Total Outstanding Availability: ' + table.column(0).data().length);
+    $("#recordCount").html('Total Outstanding Availability: ' + table.data().length);
 
     $('#datatable-table tbody').on( 'click', 'button', function () {
         var data = table.row( $(this).parents('tr') ).data();
