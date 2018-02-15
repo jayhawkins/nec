@@ -109,9 +109,6 @@ function createCustomerInvoice(Array $cust, Array $lineItems){
 
     $found_customer_id = 0;
 
-    echo "Making Connection Before Checking for Customer";
-    echo '<hr>';
-
     $entities = $dataService->Query("SELECT * FROM Customer");
     $error = $dataService->getLastError();
     
@@ -140,12 +137,6 @@ function createCustomerInvoice(Array $cust, Array $lineItems){
 
         $i++;
     }
-
-
-    echo "Customer ID: " . $found_customer_id;
-    echo '<hr>';
-    exit();
-
 
     if ($found_customer_id==0){
         //create new customer
@@ -199,16 +190,16 @@ function createCustomerInvoice(Array $cust, Array $lineItems){
         }
     }
 
-    echo "Customer ID: " . $found_customer_id;
-    echo '<hr>';
+//    echo "Customer ID: " . $found_customer_id;
+//    echo '<hr>';
     //exit();
 
     //Query db for all $cust['orderDetailID']
     //eg SELECT * FROM nec.approved_pod where orderDetailID = 83;
 
 
-    echo "Making Connection Before Creating New Invoice";
-    echo '<hr>';
+//    echo "Making Connection Before Creating New Invoice";
+//    echo '<hr>';
 
     //create invoice
     $dataService = DataService::Configure(array(
@@ -240,6 +231,7 @@ function createCustomerInvoice(Array $cust, Array $lineItems){
     ]);
     
     print_r($theResourceObj);
+    exit();
     
     $resultingObj = $dataService->Add($theResourceObj);
 
