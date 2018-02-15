@@ -19,50 +19,23 @@ define("DBNAME", "nec");
 define("DBUSER", "nec_qa"); 
 define("DBPASS", "Yellow10!");
 
-
-
-
-
-
 //db call 
 
 $dbh = mysqli_connect(DBHOST, DBUSER, DBPASS, DBNAME)
      or die ('cannot connect to database because ' . mysqli_connect_error());
 
-
-
 //select from orders that have not been invoiced
 //see joins
    
    //run the query
-$orderDetailLoop = mysqli_query($dbh, "select distinct(orderDetailID) as orderDetailID from approved_pod where hasBeenInvoiced = 0")
-   or die (mysqli_error($dbh));
-
-
-while($orderRow = mysqli_fetch_array($orderDetailLoop)){
-    
-    $orderDetailID = $orderRow['orderDetailID'];
-    
-    $loop = mysqli_query($dbh, "SELECT p.id as line_id,p.customerID,p.cost, p.orderID, p.orderDetailID, p.vinNumber, p.unitNumber,c.*,d.originationCity,d.originationState,d.destinationCity,d.destinationState ,e.name,l.address1,l.city,l.state,l.zip FROM nec.approved_pod p join order_details d on p.orderDetailID = d.id join entities e on p.customerID = e.id join locations l on e.id = l.entityID  join contacts c on e.contactID = c.id  where l.locationTypeID = 1 and p.orderDetailID = {$orderDetailID} and p.hasBeenInvoiced = 0")
+    $loop = mysqli_query($dbh, "SELECT p.id as line_id, p.atFaultEntityID, p.cost, p.damageClaimID, p.vinNumber, p.damage_description, c.*, e.name,l.address1,l.city,l.state,l.zip FROM nec.approved_damage_claims p join entities e on p.atFaultEntityID = e.id join locations l on e.id = l.entityID  join contacts c on e.contactID = c.id  where l.locationTypeID = 1 and p.hasBeenInvoiced = 0")
        or die (mysqli_error($dbh));
 
-    $lineItemList = array();
-    
     while ($row = mysqli_fetch_array($loop))
     {
-         //echo $row['id'] . " " .echo $row['orderID'] . " " . $row['originationCity'] . " " . $row['originationState'] . " " . $row['destinationCity'] . " " . $row['destinationState'] . " " . $row['name'] . " " . $row['address1']." " . $row['city']." " . $row['state'] ." " . $row['zip'].   "<br/>";
-
-        //echo $row['line_id'] .' from '.$row['originationCity'] . " to " . $row['originationState'] . " for ". $row['name'] ." ". $row['address1'] ." ". $row['city'] ." ". $row['state'] ." ".$row['zip'] . " Cost:". $row['cost']. " <br>" ; 
-
-        $customer['origin_city'] = $row['originationCity'];
-        $customer['origin_state'] = $row['originationState'];
-
-
-        $customer['destination_city'] = $row['destinationCity'];
-        $customer['destination_state'] = $row['destinationState'];
-
-
-        $customer['description'] = $customer['origin_city'].", ".$customer['origin_state']." to ".$customer['destination_city'].", ".$customer['destination_state']; 
+        $lineItemList = array();
+    
+        $customer['description'] = "Damage Claim on Trailer VIN #: " . $row['vinNumber'] .  " | Damage: " . $row['damage_description']; 
 
 
         $customer['customer_fname'] = $row['firstName'];
@@ -77,11 +50,11 @@ while($orderRow = mysqli_fetch_array($orderDetailLoop)){
         $customer['customer_email'] = $row['emailAddress'];
         $customer['cid'] = $row['line_id'];
         $customer['cost'] = $row['cost'];
-        $customer['orderDetailId'] = $row['orderDetailID'];
+        $customer['damageClaimID'] = $row['damageClaimID'];
         $lineItem = array(
             "Amount" => floatval($row["cost"]), 
             "DetailType" => "SalesItemLineDetail",
-            "Description" => "Trailer Vin#: " . $row['vinNumber'] . " | Unit #: " . $row['unitNumber'] . " | From " . $customer['description'],
+            "Description" => $customer['description'],
             "SalesItemLineDetail" => [
                 "ItemRef" => [
                     "value" => 1,
@@ -91,13 +64,12 @@ while($orderRow = mysqli_fetch_array($orderDetailLoop)){
         );
         
         array_push($lineItemList, $lineItem);
+        //print_r($customer);
+        //echo '<hr>';
+        //print_r($lineItemList);
+       createCustomerInvoice($customer, $lineItemList);
     }
-    //print_r($customer);
-    //echo '<hr>';
-    //print_r($lineItemList);
-   createCustomerInvoice($customer, $lineItemList);
-}
-
+   
 exit();
 
 
@@ -281,9 +253,9 @@ function createCustomerInvoice(Array $cust, Array $lineItems){
     } 
 
     $id = $cust['cid'];
-    $orderDetailID = $cust['orderDetailId'];
+    $damageClaimID = $cust['damageClaimID'];
 
-    $sql = "UPDATE approved_pod SET hasBeenInvoiced=1, qbInvoiceNumber ='".$invoice_id."', updatedAt = NOW() WHERE orderDetailID=".$orderDetailID;
+    $sql = "UPDATE approved_damage_claims SET hasBeenInvoiced=1, qbInvoiceNumber ='".$invoice_id."', updatedAt = NOW() WHERE damageClaimID=".$damageClaimID;
     echo $sql;
     if ($conn->query($sql) === TRUE) {
         echo "Record updated successfully";

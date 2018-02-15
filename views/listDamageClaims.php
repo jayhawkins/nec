@@ -296,7 +296,9 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
 				if (data > 0) {
 					//$("#myModal").modal('hide');
 					$(myDialog).modal('hide');
-					loadTableAJAX();
+                                        if(entityid > 0) loadTableAJAX();
+                                        else loadBusinessClaims($("#entityID").val());
+
 					passValidation = true;
 				} else {
 					$(myDialog).modal('hide');
@@ -428,10 +430,18 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
                                 buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text\"></i> <span class=\"text\">Edit</span></button> &nbsp;';
                                 
                                 if (o.status == "Active") {
-                                        buttons += "<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text\"></i> <span class=\"text\">Disable</span></button>";
-                                } else {
-                                        buttons += "<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text\"></i> <span class=\"text\">Enable</span></button>";
-                                }
+                                    buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-ok text\"></i> <span class=\"text\">Approve</span></button> &nbsp;';
+                                    buttons += "<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text\"></i> <span class=\"text\">Disable</span></button>";
+                                } 
+                                else if (o.status == "Inactive") {
+                                    buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\" disabled><i class=\"glyphicon glyphicon-ok text\"></i> <span class=\"text\">Approve</span></button> &nbsp;';
+                                    buttons += "<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text\"></i> <span class=\"text\">Enable</span></button>";
+                                } 
+                                else if (o.status == "Invoiced") {
+                                    buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\" disabled><i class=\"glyphicon glyphicon-ok text\"></i> <span class=\"text\">Approve</span></button> &nbsp;';
+                                    buttons += "<button class=\"btn btn-primary btn-xs\" role=\"button\" disabled><i class=\"glyphicon glyphicon-remove text\"></i> <span class=\"text\">Disable</span></button>";
+                                } 
+                                
                                 buttons += '</div>';
                                 return buttons;
                             }
@@ -864,6 +874,40 @@ else {
     </div>
   </div>
 
+<!-- confirmClaimApproval -->
+
+<div class="modal fade" id="confirmClaimApproval" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-md" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Approve Damage Claim</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<form id="frmClaimApproval" class="register-form mt-lg">
+					<input type="hidden" id="approvedClaimID" name="approvedClaimID" />
+					<input type="hidden" id="approvedEntityID" name="approvedEntityID" />
+					<input type="hidden" id="approvedVinNumber" name="approvedVinNumber" />
+					<input type="hidden" id="approvedDamage" name="approvedDamage" />
+					<input type="hidden" id="approvedRepairCost" name="approvedRepairCost" />
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="form-group">
+								<h5>Do you wish to approve this claim and invoice the party at fault?</h5>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+				<button type="button" class="btn btn-primary" id="btnConfirmClaimApproval">Yes</button>
+			</div>
+		</div>
+	</div>
+</div>
 <?php
 if($_SESSION['entitytype'] != 0){
 ?>
@@ -1117,6 +1161,83 @@ else {
             format: "yyyy-mm-dd"
         });
 
+        $('#btnConfirmClaimApproval').off('click').on('click', function(){
+            
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth()+1; //January is 0!
+            var yyyy = today.getFullYear();
+            var hours = today.getHours();
+            var min = today.getMinutes();
+            var sec = today.getSeconds();
+
+            if(dd<10) {
+                dd='0'+dd;
+            }
+
+            if(mm<10) {
+                mm='0'+mm;
+            }
+
+            if(hours<10) {
+                hours='0'+hours;
+            }
+
+            if(min<10) {
+                min='0'+min;
+            }
+
+            if(sec<10) {
+                sec='0'+sec;
+            }
+
+            today = mm+'/'+dd+'/'+yyyy;
+            today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
+
+            var damageClaimID = $('#approvedClaimID').val();
+            var atFaultEntityID = $("#approvedEntityID").val();
+            var vinNumber = $("#approvedVinNumber").val();
+            var damage_description = $("#approvedDamage").val();
+            var cost = $("#approvedRepairCost").val();
+
+            var approved_damage_claim = {damageClaimID: damageClaimID, atFaultEntityID: atFaultEntityID, vinNumber: vinNumber, damage_description: damage_description, cost: cost, userID: userid, note: $("#txtAdminNote").val(), createdAt: today, updatedAt: today};
+
+            $.ajax({
+                url: '<?php echo API_HOST_URL . "/approved_damage_claims/"; ?>',
+                type: "POST",
+                data: JSON.stringify(approved_damage_claim),
+                contentType: "application/json",
+                async: false,
+                success: function(data){
+                    
+                    if(data > 0){
+                        var newStatus = {status: "Invoiced"};
+                        
+                        $.ajax({
+                            url: '<?php echo API_HOST_URL . "/damage_claims/"; ?>' + damageClaimID,
+                            type: "PUT",
+                            data: JSON.stringify(newStatus),
+                            contentType: "application/json",
+                            async: false,
+                            success: function(data){
+                                loadBusinessClaims($("#entityID").val());
+                                $("#confirmClaimApproval").modal('hide');
+                                $("#errorAlertTitle").html("Success!");
+                                $("#errorAlertBody").html("Claim Approved.");
+                                $("#errorAlert").modal('show');
+                            }
+                        });
+                    }
+                },
+                error: function(error){
+                    $("#errorAlertTitle").html("Error");
+                    $("#errorAlertBody").html("Unable to Approve Claim.");
+                    $("#errorAlert").modal('show');
+                }
+            });
+
+        });
+
         $('#addDamageNote').off('click').on('click', function(){
             $("#txtAdminNote").val("");
             $("#addNoteModal").modal('show');
@@ -1224,6 +1345,14 @@ else {
                 loadDamageClaimNotes(data['id']);
                 
                 $("#viewNotesModal").modal('show');
+            } else if (this.textContent.indexOf("Approve") > -1) {
+                $("#approvedClaimID").val(data['id']);
+                $("#approvedEntityID").val(data['entityAtFaultID']);
+                $("#approvedVinNumber").val(data["vinNumber"]);
+                $("#approvedDamage").val(data["damage"]);
+                $("#approvedRepairCost").val(data["negotiatedRepairCost"]);
+                
+                $("#confirmClaimApproval").modal('show');
             } else {
                 $("#id").val(data["id"]);
                 if (this.textContent.indexOf("Disable") > -1) {
