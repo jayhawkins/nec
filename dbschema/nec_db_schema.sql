@@ -1023,6 +1023,46 @@ ALTER TABLE `route_images` ADD CONSTRAINT `lnk_routes_route_images`
 FOREIGN KEY (`routeID`) REFERENCES `routes`(`id`);
 
 
+CREATE TABLE IF NOT EXISTS `log_types` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `type_name` varchar(255) CHARACTER SET latin1 NOT NULL,
+  `createdAt` DateTime NOT NULL DEFAULT NOW(),
+  `updatedAt` DateTime NOT NULL DEFAULT NOW(),
+  `active` char(1) CHARACTER SET latin1 NOT NULL DEFAULT 'Y',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=COMPACT;
+
+
+CREATE TABLE IF NOT EXISTS `logs` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `log_type_id` int(11) NOT NULL,
+  `log_descr` text CHARACTER SET latin1,
+  `ref_id` int(11) NOT NULL DEFAULT '0',
+  `user_id` int(11) unsigned not NULL,
+  `createdAt` DateTime NOT NULL DEFAULT NOW(),
+  `updatedAt` DateTime NOT NULL DEFAULT NOW(),
+  `active` char(1) CHARACTER SET latin1 NOT NULL DEFAULT 'Y',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=COMPACT;
+
+
+ALTER TABLE `logs`
+ADD CONSTRAINT `fk_logs_log_types` FOREIGN KEY (`log_type_id`) REFERENCES `log_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+ALTER TABLE `logs`
+ADD CONSTRAINT `fk_logs_members` FOREIGN KEY (`user_id`) REFERENCES `members`( `userID` ) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+
+INSERT INTO log_types
+VALUES 	 (1, 'Customer Needs', NOW(), NOW(), 'Y')
+        ,(2, 'Orders', NOW(), NOW(), 'Y');
+
+CREATE TABLE IF NOT EXISTS `customer_needs_to_orders` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `customerNeedsID` int(11) unsigned NOT NULL,
+  `orderID` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=COMPACT;
 
 CREATE TABLE IF NOT EXISTS `damage_claim_notes` (
 	`id` Int( 11 ) UNSIGNED AUTO_INCREMENT NOT NULL,
