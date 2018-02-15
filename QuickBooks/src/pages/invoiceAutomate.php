@@ -281,7 +281,7 @@ function createCustomerInvoice(Array $cust, Array $lineItems){
     } 
 
     $id = $cust['cid'];
-    $orderDetailID = $cust['orderDetailID'];
+    $orderDetailID = $cust['orderDetailId'];
 
     $sql = "UPDATE approved_pod SET hasBeenInvoiced=1, qbInvoiceNumber ='".$invoice_id."' WHERE orderDetailID=".$orderDetailID;
     echo $sql;
