@@ -105,8 +105,8 @@ function createCustomerInvoice(Array $cust, Array $lineItems){
            'auth_mode' => 'oauth2',
              'ClientID' => "Q0bCkjuFuWa8MxjEDqYenaCreMUZjyAJ2UyNhnOmdVGEDNkkkD",
              'ClientSecret' => "ahfR70aIvIatES37ZeoJztAJx7Ki1PvoGhfNVTja",
-             'accessTokenKey' =>  "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..ITW5E3vqInW5MNwJBbqGcw.bA5DpR6ErMN5G99xTEG4gVXgdIFGI--SQrOiHDpzXLDyeP6MPMEQm850S3j439huD5KgdE2DDTf441jM1-J1jx2SwMTDKOrS4pT6EPj5YuP-vn7wRzIIVPRsDZBhXlMFnGPzifx2roVAj1y5plMHMZ1OLXfEhi_YGEwovzdavDkkshaJ7lJdMExu3PYt89EWGHGvefFLNx8U1B76GrQpm1a2rcI7xObVwGafdSsa0iVHnArOiC3NErnu6jBJy8xAxqosdsydmc84tSKhSWuq2RLtlrhqCnCfA2wVzg9w1c5l8-WBRt6BY2ljZs_GmR0Qc3sI5e9mlcGn8Uzl5q7xgB6ljmNAzmkpYNvwWxX6nbw6x47jXWTYsb5UPIcJ8qmnV3-BnCdYpSbJ4osUDtYpnW5Nr4PXAOnaC1WOF__FX0d1cm8zdgFsfVyiqW1CW3yUCNntVlYZt1nSh8CeXLTbetm4vNUXzJSXpOF-1wvduawTfksscPL0_1NVEB01f4pTwKKlbb8DG75u6ZTlz1giknob8pphO7MwtJegKStkmzQYeqwEsgCWv7YykDxoC2TuldUj1BYyMwsEFl1ExJb1yTxl1N1MnKuV5CmhdB85emr6a8I3wvZneCKknU4aRh72Gj2_U8wW-AJ73ghMnhi3j9I9q4VgO2_302Ck8V3w5vT7zKPR2ExZCADgId7TVnls.Dsw1tAFJm89R_dg4R7lDdw",
-             'refreshTokenKey' => 'Q011527438107CNPRG7G95W9DNU4tXwESsQ6Vmp9Gw8K6nSgO4',
+             'refresh_token'=>  "Q011527439580itWQTWhIRztT4o7UGo1S2ees1K8Oo4pjJsFt7",
+  'access_token'=>  "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..aO495yFJtl4mRAXgOnPIYg.zJvjH4qg52Kt18rnFe7n33kdBBzGKvTPkA1_xnVHMGmeJkobPeuBIbam2t60KVIYRoRMAA85ZyzOOJMmasMES40yiLa75-mlE25v9mdSjOZk5z9Y_vYDKZKRiSWLm1WyPMKqVm1sCtZECRX8Y-voIcSiyDB5T-vUEOGfyhxmeg7NGFvrp--SH_h818LegYyVxSx5n4rvhgUyQmEZPMRAXIEULT4ydcfqJluIdfbVrI7j8hJ_zpHht5yaIv4ewo9JLA8XHKsBsGXtHK1o9WbSxwASXHTqrQxq1dK9R117-3FR_kHnesezQtAzfjOjNn34TUrcgNdX1V4Sw54XTlwR6Dh53gkBThrcV-nnVGWjnpxmrhHUEDZFUHtQbKGMCZjtvKy8_-3D-2eNbDN71DALkUuV8rUSBjtdts_4nUx7y9JigHNDuolVuviyj4bSlxfZJvQR8XWRQY3esKZIZC-b0VNDzME1Y2WazpbIB1oYBY8GPELebB2jO-6u9UmljAS4Rno9VNqAuXWh6T5c5_fMYsw2kDnjNgI7TpOnFeVWHz6pjVrEtqv2KDp8Xc3L17Em5I9dqVPueMq5aWB9cvq6U-teuLTZB6R37NbIH-k3TXEq5znbFReH1djrD1t6Z9DTYrvrq0a3z9lTOXnX9snOyAWHFcXTeKrdfb8IXHFPdFiLfSST0nruR8w3_IN802aW.DRc5hMfCGr8CZreeDnqpGQ",
              'baseUrl' => "https://sandbox-quickbooks.api.intuit.com"
     ));
 
@@ -166,8 +166,8 @@ function createCustomerInvoice(Array $cust, Array $lineItems){
              'auth_mode' => 'oauth2',
              'ClientID' => "Q0bCkjuFuWa8MxjEDqYenaCreMUZjyAJ2UyNhnOmdVGEDNkkkD",
              'ClientSecret' => "ahfR70aIvIatES37ZeoJztAJx7Ki1PvoGhfNVTja",
-             'accessTokenKey' =>  "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..ITW5E3vqInW5MNwJBbqGcw.bA5DpR6ErMN5G99xTEG4gVXgdIFGI--SQrOiHDpzXLDyeP6MPMEQm850S3j439huD5KgdE2DDTf441jM1-J1jx2SwMTDKOrS4pT6EPj5YuP-vn7wRzIIVPRsDZBhXlMFnGPzifx2roVAj1y5plMHMZ1OLXfEhi_YGEwovzdavDkkshaJ7lJdMExu3PYt89EWGHGvefFLNx8U1B76GrQpm1a2rcI7xObVwGafdSsa0iVHnArOiC3NErnu6jBJy8xAxqosdsydmc84tSKhSWuq2RLtlrhqCnCfA2wVzg9w1c5l8-WBRt6BY2ljZs_GmR0Qc3sI5e9mlcGn8Uzl5q7xgB6ljmNAzmkpYNvwWxX6nbw6x47jXWTYsb5UPIcJ8qmnV3-BnCdYpSbJ4osUDtYpnW5Nr4PXAOnaC1WOF__FX0d1cm8zdgFsfVyiqW1CW3yUCNntVlYZt1nSh8CeXLTbetm4vNUXzJSXpOF-1wvduawTfksscPL0_1NVEB01f4pTwKKlbb8DG75u6ZTlz1giknob8pphO7MwtJegKStkmzQYeqwEsgCWv7YykDxoC2TuldUj1BYyMwsEFl1ExJb1yTxl1N1MnKuV5CmhdB85emr6a8I3wvZneCKknU4aRh72Gj2_U8wW-AJ73ghMnhi3j9I9q4VgO2_302Ck8V3w5vT7zKPR2ExZCADgId7TVnls.Dsw1tAFJm89R_dg4R7lDdw",
-             'refreshTokenKey' => 'Q011527438107CNPRG7G95W9DNU4tXwESsQ6Vmp9Gw8K6nSgO4',
+              'refresh_token'=>  "Q011527439580itWQTWhIRztT4o7UGo1S2ees1K8Oo4pjJsFt7",
+  'access_token'=>  "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..aO495yFJtl4mRAXgOnPIYg.zJvjH4qg52Kt18rnFe7n33kdBBzGKvTPkA1_xnVHMGmeJkobPeuBIbam2t60KVIYRoRMAA85ZyzOOJMmasMES40yiLa75-mlE25v9mdSjOZk5z9Y_vYDKZKRiSWLm1WyPMKqVm1sCtZECRX8Y-voIcSiyDB5T-vUEOGfyhxmeg7NGFvrp--SH_h818LegYyVxSx5n4rvhgUyQmEZPMRAXIEULT4ydcfqJluIdfbVrI7j8hJ_zpHht5yaIv4ewo9JLA8XHKsBsGXtHK1o9WbSxwASXHTqrQxq1dK9R117-3FR_kHnesezQtAzfjOjNn34TUrcgNdX1V4Sw54XTlwR6Dh53gkBThrcV-nnVGWjnpxmrhHUEDZFUHtQbKGMCZjtvKy8_-3D-2eNbDN71DALkUuV8rUSBjtdts_4nUx7y9JigHNDuolVuviyj4bSlxfZJvQR8XWRQY3esKZIZC-b0VNDzME1Y2WazpbIB1oYBY8GPELebB2jO-6u9UmljAS4Rno9VNqAuXWh6T5c5_fMYsw2kDnjNgI7TpOnFeVWHz6pjVrEtqv2KDp8Xc3L17Em5I9dqVPueMq5aWB9cvq6U-teuLTZB6R37NbIH-k3TXEq5znbFReH1djrD1t6Z9DTYrvrq0a3z9lTOXnX9snOyAWHFcXTeKrdfb8IXHFPdFiLfSST0nruR8w3_IN802aW.DRc5hMfCGr8CZreeDnqpGQ",
              'QBORealmID' => "123145985783569",
              'baseUrl' => "development"
         ));
@@ -224,9 +224,9 @@ function createCustomerInvoice(Array $cust, Array $lineItems){
         'auth_mode' => 'oauth2',
         'ClientID' => "Q0bCkjuFuWa8MxjEDqYenaCreMUZjyAJ2UyNhnOmdVGEDNkkkD",
         'ClientSecret' => "ahfR70aIvIatES37ZeoJztAJx7Ki1PvoGhfNVTja",
-        'accessTokenKey' =>  "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..ITW5E3vqInW5MNwJBbqGcw.bA5DpR6ErMN5G99xTEG4gVXgdIFGI--SQrOiHDpzXLDyeP6MPMEQm850S3j439huD5KgdE2DDTf441jM1-J1jx2SwMTDKOrS4pT6EPj5YuP-vn7wRzIIVPRsDZBhXlMFnGPzifx2roVAj1y5plMHMZ1OLXfEhi_YGEwovzdavDkkshaJ7lJdMExu3PYt89EWGHGvefFLNx8U1B76GrQpm1a2rcI7xObVwGafdSsa0iVHnArOiC3NErnu6jBJy8xAxqosdsydmc84tSKhSWuq2RLtlrhqCnCfA2wVzg9w1c5l8-WBRt6BY2ljZs_GmR0Qc3sI5e9mlcGn8Uzl5q7xgB6ljmNAzmkpYNvwWxX6nbw6x47jXWTYsb5UPIcJ8qmnV3-BnCdYpSbJ4osUDtYpnW5Nr4PXAOnaC1WOF__FX0d1cm8zdgFsfVyiqW1CW3yUCNntVlYZt1nSh8CeXLTbetm4vNUXzJSXpOF-1wvduawTfksscPL0_1NVEB01f4pTwKKlbb8DG75u6ZTlz1giknob8pphO7MwtJegKStkmzQYeqwEsgCWv7YykDxoC2TuldUj1BYyMwsEFl1ExJb1yTxl1N1MnKuV5CmhdB85emr6a8I3wvZneCKknU4aRh72Gj2_U8wW-AJ73ghMnhi3j9I9q4VgO2_302Ck8V3w5vT7zKPR2ExZCADgId7TVnls.Dsw1tAFJm89R_dg4R7lDdw",
-             'refreshTokenKey' => 'Q011527438107CNPRG7G95W9DNU4tXwESsQ6Vmp9Gw8K6nSgO4',
-        'QBORealmID' => "123145985783569",
+         'refresh_token'=>  "Q011527439580itWQTWhIRztT4o7UGo1S2ees1K8Oo4pjJsFt7",
+  'access_token'=>  "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..aO495yFJtl4mRAXgOnPIYg.zJvjH4qg52Kt18rnFe7n33kdBBzGKvTPkA1_xnVHMGmeJkobPeuBIbam2t60KVIYRoRMAA85ZyzOOJMmasMES40yiLa75-mlE25v9mdSjOZk5z9Y_vYDKZKRiSWLm1WyPMKqVm1sCtZECRX8Y-voIcSiyDB5T-vUEOGfyhxmeg7NGFvrp--SH_h818LegYyVxSx5n4rvhgUyQmEZPMRAXIEULT4ydcfqJluIdfbVrI7j8hJ_zpHht5yaIv4ewo9JLA8XHKsBsGXtHK1o9WbSxwASXHTqrQxq1dK9R117-3FR_kHnesezQtAzfjOjNn34TUrcgNdX1V4Sw54XTlwR6Dh53gkBThrcV-nnVGWjnpxmrhHUEDZFUHtQbKGMCZjtvKy8_-3D-2eNbDN71DALkUuV8rUSBjtdts_4nUx7y9JigHNDuolVuviyj4bSlxfZJvQR8XWRQY3esKZIZC-b0VNDzME1Y2WazpbIB1oYBY8GPELebB2jO-6u9UmljAS4Rno9VNqAuXWh6T5c5_fMYsw2kDnjNgI7TpOnFeVWHz6pjVrEtqv2KDp8Xc3L17Em5I9dqVPueMq5aWB9cvq6U-teuLTZB6R37NbIH-k3TXEq5znbFReH1djrD1t6Z9DTYrvrq0a3z9lTOXnX9snOyAWHFcXTeKrdfb8IXHFPdFiLfSST0nruR8w3_IN802aW.DRc5hMfCGr8CZreeDnqpGQ",
+             'QBORealmID' => "123145985783569",
         'baseUrl' => "development"
     )); 
     
