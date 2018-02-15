@@ -163,6 +163,8 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
             processing: true,
+            bsort: true,
+            "pageLength": 50,
             ajax: {
                 url: url,
                 dataSrc: 'locations'

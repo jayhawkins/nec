@@ -607,6 +607,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             var orders_table = $('#admin-note-table').DataTable({
             retrieve: true,
             processing: true,
+            "pageLength": 50,
             ajax: {
                 url: url,
                 dataSrc: 'order_notes'
@@ -653,6 +654,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             var orders_table = $('#order-ledger-table').DataTable({
                 retrieve: true,
                 processing: true,
+                "pageLength": 50,
                 ajax: {
                     url: url,
                     //dataSrc: 'logs',
@@ -710,6 +712,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             var orders_table = $('#orders-table').DataTable({
             retrieve: true,
             processing: true,
+            "pageLength": 50,
             ajax: {
                 url: url,
                 //dataSrc: 'orders',
@@ -1250,6 +1253,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             var order_details_table = $('#order-details-table').DataTable({
                 retrieve: true,
                 processing: true,
+                "pageLength": 50,
                 ajax: {
                     url: url,
                     //dataSrc: 'order_details',
@@ -1410,6 +1414,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             var order_history_table = $('#order-history-table').DataTable({
                 retrieve: true,
                 processing: true,
+                "pageLength": 50,
                 ajax: {
                     url: url,
                     //dataSrc: 'order_statuses'
@@ -1477,6 +1482,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             var order_history_table = $('#pod-list-table').DataTable({
                 retrieve: true,
                 processing: true,
+                "pageLength": 50,
                 ajax: {
                     url: url,
                     //dataSrc: 'orders[0].podList',
@@ -2644,7 +2650,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         $('#orderLedger').css('display', 'none');
         closeAddStatus();
     }
-    
+
     function showOrderLedger(){
         $('#orderSummary').css('display', 'none');
         $('#trackingHistory').css('display', 'none');
@@ -3051,7 +3057,7 @@ console.log(order);
             <li>
                 <a href="#" onclick="showOrderLedger();">Order Ledger</a>
             </li>
-            
+
             <?php
                 if($_SESSION['entitytype'] == 0){
             ?>
@@ -3867,7 +3873,7 @@ console.log(order);
 
             <div id="dataTable-9000" class="col-md-12">
                 <h5><span class="fw-semi-bold">Order Ledger</span></h5>
-                
+
                 <br>
                 <br>
                 <table id="order-ledger-table" class="table table-striped table-hover" width="100%">
@@ -5696,7 +5702,7 @@ console.log(order);
                                     var activeCarrier = $("#activeCarrier").val();
                                     displayOrderStatuses(orderID, activeCarrier, vinNumber);
 
-                                    var logParams = {logTypeName: "Orders", logMessage: "POD has been approved for VIN#: " + vinNumber, referenceID: orderID};        
+                                    var logParams = {logTypeName: "Orders", logMessage: "POD has been approved for VIN#: " + vinNumber, referenceID: orderID};
 
                                     // This is will enter into the log
                                     $.ajax({
@@ -5816,7 +5822,7 @@ console.log(order);
                 contentType: "application/json",
                 async: false,
                 success: function(){
-                    loadOrderNotes(orderID);                  
+                    loadOrderNotes(orderID);
                     $("#adminNoteModal").modal('hide');
                 },
                 error: function(error){
@@ -6507,7 +6513,7 @@ console.log(order);
                                 $("#errorAlertBody").html("POD Successfully Uploaded.");
                                 $("#errorAlert").modal('show');
 
-                                var logParams = {logTypeName: "Orders", logMessage: "POD has been uploaded.", referenceID: $('#orderID').val()};        
+                                var logParams = {logTypeName: "Orders", logMessage: "POD has been uploaded.", referenceID: $('#orderID').val()};
 
                                 // This is will enter into the log
                                 $.ajax({
@@ -6527,7 +6533,7 @@ console.log(order);
                                          $("#errorAlert").modal('show');
                                      }
                                 });
-                                    
+
                                 // Clear Form
                                 $('#statusID').val('');
                                 //$("#uploadPOD").modal('hide');
@@ -6905,7 +6911,7 @@ console.log(order);
                                 $("#errorAlertBody").html("Purchase Order Successfully Uploaded");
                                 $("#errorAlert").modal('show');
 
-                                var logParams = {logTypeName: "Orders", logMessage: "Purchase Order has been uploaded.", referenceID: $('#orderID').val()};        
+                                var logParams = {logTypeName: "Orders", logMessage: "Purchase Order has been uploaded.", referenceID: $('#orderID').val()};
 
                                 // This is will enter into the log
                                 $.ajax({
@@ -7070,8 +7076,8 @@ console.log(order);
                         contentType: "application/json",
                         async: false,
                         success: function(data){
-                            
-                            var logParams = {logTypeName: "Orders", logMessage: "Trailer status has been updated.", referenceID: $('#orderID').val()};        
+
+                            var logParams = {logTypeName: "Orders", logMessage: "Trailer status has been updated.", referenceID: $('#orderID').val()};
 
                             // This is will enter into the log
                             $.ajax({
@@ -7091,7 +7097,7 @@ console.log(order);
                                      $("#errorAlert").modal('show');
                                  }
                             });
-                            
+
                             $("#statusID").val(data);
                             $("#statusAddANote").val('');
                             $("#noStatusRecordsExist").css("display", "none");
@@ -7201,8 +7207,8 @@ console.log(order);
                         contentType: "application/json",
                         async: false,
                         success: function(data){
-                            
-                            var logParams = {logTypeName: "Orders", logMessage: "Trailer status has been added.", referenceID: $('#orderID').val()};        
+
+                            var logParams = {logTypeName: "Orders", logMessage: "Trailer status has been added.", referenceID: $('#orderID').val()};
 
                             // This is will enter into the log
                             $.ajax({
@@ -7222,7 +7228,7 @@ console.log(order);
                                      $("#errorAlert").modal('show');
                                  }
                             });
-                            
+
                             $("#statusID").val(data);
                             $("#statusAddANote").val('');
                             $("#noStatusRecordsExist").css("display", "none");
@@ -7314,8 +7320,8 @@ console.log(order);
                         contentType: "application/json",
                         async: false,
                         success: function(){
-                            
-                            var logParams = {logTypeName: "Orders", logMessage: "Note has been added to the Trailer Status.", referenceID: statusOrderID};        
+
+                            var logParams = {logTypeName: "Orders", logMessage: "Note has been added to the Trailer Status.", referenceID: statusOrderID};
 
                             // This is will enter into the log
                             $.ajax({
@@ -7335,7 +7341,7 @@ console.log(order);
                                      $("#errorAlert").modal('show');
                                  }
                             });
-                            
+
                             displayOrderStatuses(statusOrderID, statusCarrierID, statusVinNumber);
                             $("#errorAlertTitle").html("Success");
                             $("#errorAlertBody").html("Trailer Note Saved!");
@@ -7571,8 +7577,8 @@ console.log(order);
                                     }
 
                                 }
- 
-                                var logParams = {logTypeName: "Orders", logMessage: "Order has been updated.", referenceID: id};        
+
+                                var logParams = {logTypeName: "Orders", logMessage: "Order has been updated.", referenceID: id};
 
                                 // This is will enter into the log
                                 $.ajax({
@@ -7592,7 +7598,7 @@ console.log(order);
                                          $("#errorAlert").modal('show');
                                      }
                                 });
-                            
+
                                 $("#saveCommit").html("Save");
                                 $("#saveCommit").prop("disabled", false);
                                 loadNewOrderDetailsAJAX(id);
@@ -7877,9 +7883,9 @@ console.log(order);
                     $("#errorAlert").modal('show');
 
                     var orderID = $("#orderID").val();
-                    loadNewOrderDetailsAJAX(orderID);                    
-                    
-                    var logParams = {logTypeName: "Orders", logMessage: "Order relay has been updated.", referenceID: orderID};        
+                    loadNewOrderDetailsAJAX(orderID);
+
+                    var logParams = {logTypeName: "Orders", logMessage: "Order relay has been updated.", referenceID: orderID};
 
                     // This is will enter into the log
                     $.ajax({
@@ -7899,7 +7905,7 @@ console.log(order);
                              $("#errorAlert").modal('show');
                          }
                     });
-                            
+
                 },
                 error: function(error){
                     $("#errorAlertTitle").html("Error");

@@ -553,6 +553,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
             processing: true,
+            bsort: true,
+            "pageLength": 50,
             ajax: {
                 url: url,
                 dataSrc: 'customer_needs'
@@ -3372,7 +3374,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                             }
                         }
-        
+
                         $("#saveCommit").html("Save");
                         $("#saveCommit").prop("disabled", false);
                         closeEditCommit();
@@ -3381,9 +3383,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         $("#errorAlertTitle").html("Success");
                         $("#errorAlertBody").html("Commit Updated");
                         $("#errorAlert").modal('show');
-                        
-                        
-                        var logParams = {logTypeName: "Customer Needs", logMessage: "Commitment has been edited edited by Admin.", referenceID: id};        
+
+
+                        var logParams = {logTypeName: "Customer Needs", logMessage: "Commitment has been edited edited by Admin.", referenceID: id};
 
                         // This is will enter into the log
                         $.ajax({
@@ -3403,7 +3405,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                  $("#errorAlert").modal('show');
                              }
                         });
-                                 
+
                     }
                     else{
                         console.log(data);
@@ -3850,7 +3852,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                         var customer_needs_to_orders = {customerNeedsID: id, orderID: data};
                         var orderID = data;
-                        
+
                         $.ajax({
                             url: '<?php echo API_HOST_URL ?>' + "/customer_needs_to_orders",
                             type: "POST",
@@ -3858,8 +3860,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             contentType: "application/json",
                             async: false,
                             success: function(data){
-                                
-                                var logParams = {logTypeName: "Orders", logMessage: "Commitments has been converted to order", referenceID: orderID};        
+
+                                var logParams = {logTypeName: "Orders", logMessage: "Commitments has been converted to order", referenceID: orderID};
 
                                 // This is will enter into the log
                                 $.ajax({
