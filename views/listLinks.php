@@ -110,6 +110,8 @@ require '../lib/common.php';
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
             processing: true,
+            bsort: true,
+            "pageLength": 50,
             ajax: {
                 url: url,
                 dataSrc: 'links'

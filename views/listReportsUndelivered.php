@@ -18,6 +18,7 @@ require '../lib/common.php';
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
             processing: true,
+            "pageLength": 50,
             ajax: {
                 url: url,
                 type: 'POST',

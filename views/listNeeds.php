@@ -358,6 +358,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                 retrieve: true,
                 processing: true,
                 bSort: true,
+                "pageLength": 50,
                 ajax: {
                     url: url,
                     dataSrc: 'carrier_needs'
@@ -373,8 +374,28 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                     { data: "id", visible: false },
                     { data: "entityID", visible: false },
                     { data: "qty" },
-                    { data: "availableDate" },
-                    { data: "expirationDate" },
+                    {
+                        data: null,
+                        "bSortable": true,
+                        "render": function(o) {
+                          if (o.availableDate == "0000-00-00") {
+                              return '';
+                          } else {
+                              return formatDate(new Date(o.availableDate));
+                          }
+                        }
+                    },
+                    {
+                        data: null,
+                        "bSortable": true,
+                        "render": function(o) {
+                          if (o.expirationDate == "0000-00-00") {
+                              return '';
+                          } else {
+                              return formatDate(new Date(o.expirationDate));
+                          }
+                        }
+                    },
                     { data: "originationAddress1", visible: false },
                     { data: "originationCity" },
                     { data: "originationState" },

@@ -2,8 +2,8 @@
 	session_start();
 	require '../../nec_config.php';
 	require '../lib/common.php';
-        
-        
+
+
 $allEntities = '';
 $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=id,name&order=name&filter[]=id,gt,0'));
 
@@ -15,7 +15,7 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
     var entityid = <?php echo $_SESSION['entityid']; ?>;
 
     var userid = <?php echo $_SESSION['userid']; ?>;
-    
+
 	var myApp;
 	myApp = myApp || (function () {
 		var pleaseWaitDiv = $('<div class="modal hide" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false"><div class="modal-header"><h1>Processing...</h1></div><div class="modal-body"><div class="progress progress-striped active"><div class="bar" style="width: 100%;"></div></div></div></div>');
@@ -36,7 +36,7 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
             url += '/damage_claim_notes?include=members&columns=id,userID,note,createdAt,updatedAt,members.firstName,members.lastName&filter=damageClaimID,eq,' + damageClaimID + '&order=createdAt,desc&transform=1';
 
             var blnShow = false;
-            
+
             if(entityid == 0) blnShow = true;
 
             if ( ! $.fn.DataTable.isDataTable( '#damage-note-table' ) ) {
@@ -101,16 +101,16 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
 
             var documentURL = '<?php echo API_HOST_URL; ?>' + '/documents/' + documentID;
 
-            $.get(documentURL, function(data){               
-                
+            $.get(documentURL, function(data){
+
                 window.open( data.documentURL, '_blank');
             });
-    
+
         }
-        
+
         function loadFileUploadDiv(){
             if($('#documentIDs').val() != "null"){
-                
+
                 var jsnDocuments = JSON.parse($('#documentIDs').val());
                 var viewDocumentsButtons = "";
                 $.each(jsnDocuments, function(key, document){
@@ -121,7 +121,7 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
                 $('#uploadedFiles').html(viewDocumentsButtons);
             }
         }
-        
+
 	function verifyAndPost() {
 		if ( $('#formDamageClaim').parsley().validate() ) {
 			var data,date;
@@ -165,10 +165,10 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
 					success: function(data){
 						if (data > 0) {
 							$("#claimsModal").modal('hide');
-                                                        
+
                                                         if(entityid > 0) loadTableAJAX();
                                                         else loadBusinessClaims($("#entityID").val());
-                                                        
+
 							$("#id").val('');
                                                         $("#entityAtFaultID").val('');
 							$("#vinNumber").val('');
@@ -185,13 +185,13 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
 					}
 				});
 
-			} 
+			}
                         else {
 
                                 // update listDamageClaims
                                 url = '<?php echo API_HOST_URL . "/damage_claims" ?>';
                                 type = "POST";
-                                
+
                                 date = today;
                                 data = {entityID: $("#entityID").val(), entityAtFaultID: $("#entityAtFaultID").val(), vinNumber: $("#vinNumber").val(), estimatedRepairCost: $("#estimatedRepairCost").val(), negotiatedRepairCost: $("#negotiatedRepairCost").val(), damage: $("#damage").val(), status: "Active", createdAt: date, updatedAt: date};
                                 $.ajax({
@@ -203,10 +203,10 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
                                         success: function(data){
                                                 if (data > 0) {
                                                         $("#claimsModal").modal('hide');
-                                                        
+
                                                         if(entityid > 0) loadTableAJAX();
                                                         else loadBusinessClaims($("#entityID").val());
-                                                        
+
                                                         $("#id").val('');
                                                         $("#entityAtFaultID").val('');
                                                         $("#vinNumber").val('');
@@ -223,7 +223,7 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
                                                 alert("There Was An Error Adding Damage Claim!");
                                         }
                                 });
-                              
+
 			}
 			return passValidation;
 		} else {
@@ -236,6 +236,7 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
             var example_table = $('#datatable-table').DataTable({
                 retrieve: true,
                 processing: true,
+                "pageLength": 50,
                 ajax: {
                         url: url,
                         dataSrc: 'damage_claims'
@@ -317,6 +318,7 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
         var example_table = $('#business-datatable-table').DataTable({
             retrieve: true,
             processing: true,
+            "pageLength": 50,
             ajax: {
                 url: url,
                 //dataSrc: 'entities',
@@ -424,24 +426,24 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
                             "bSortable": false,
                             "mRender": function (o) {
                                 var buttons = '<div class="pull-right text-nowrap">';
-                                
+
                                 buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-eye-open text\"></i> <span class=\"text\">Upload/View Claim</span></button> &nbsp;';
                                 buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-eye-open text\"></i> <span class=\"text\">View Notes</span></button> &nbsp;';
                                 buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text\"></i> <span class=\"text\">Edit</span></button> &nbsp;';
-                                
+
                                 if (o.status == "Active") {
                                     buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-ok text\"></i> <span class=\"text\">Approve</span></button> &nbsp;';
                                     buttons += "<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text\"></i> <span class=\"text\">Disable</span></button>";
-                                } 
+                                }
                                 else if (o.status == "Inactive") {
                                     buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\" disabled><i class=\"glyphicon glyphicon-ok text\"></i> <span class=\"text\">Approve</span></button> &nbsp;';
                                     buttons += "<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text\"></i> <span class=\"text\">Enable</span></button>";
-                                } 
+                                }
                                 else if (o.status == "Invoiced") {
                                     buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\" disabled><i class=\"glyphicon glyphicon-ok text\"></i> <span class=\"text\">Approve</span></button> &nbsp;';
                                     buttons += "<button class=\"btn btn-primary btn-xs\" role=\"button\" disabled><i class=\"glyphicon glyphicon-remove text\"></i> <span class=\"text\">Disable</span></button>";
-                                } 
-                                
+                                }
+
                                 buttons += '</div>';
                                 return buttons;
                             }
@@ -469,7 +471,7 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
     .mg-top-5{
         margin-top: 10px;
     }
-    
+
 </style>
 
 <?php
@@ -493,7 +495,7 @@ if($_SESSION['entitytype'] != 0){
 		Column sorting, live search, pagination. Built with
 		<a href="http://www.datatables.net/" target="_blank">jQuery DataTables</a>
 		</p -->
-		
+
                 <button type="button" id="addClaim" class="btn btn-primary pull-xs-right" data-target="#myModal">Add Claim</button>
 		<br /><br />
 		<div id="dataTable" class="mt">
@@ -522,7 +524,7 @@ if($_SESSION['entitytype'] != 0){
 
 <?php
 
-} 
+}
 else {
 
 ?>
@@ -807,7 +809,7 @@ else {
                         <div class="col-md-12">
                             <label for="updatePolicyFile">Files Uploaded</label>
                             <div id="uploadedFiles" class="form-group">
-                                
+
                             </div>
                         </div>
                     </div>
@@ -974,9 +976,9 @@ if($_SESSION['entitytype'] != 0){
                 contentType: "application/json",
                 async: false,
                 success: function(data){
-                    
+
                     console.log(data);
-                    
+
                     loadDamageClaimNotes(damageClaimID);
                     $("#addNoteModal").modal('hide');
                 },
@@ -1013,12 +1015,12 @@ if($_SESSION['entitytype'] != 0){
                 $('#fileType').val("");
                 $('#filClaimFile').val("");
                 loadFileUploadDiv();
-                
+
                 $("#viewPolicy").modal('show');
             }  else if (this.textContent.indexOf("View Notes") > -1) {
                 $("#damageClaimID").val(data['id']);
                 loadDamageClaimNotes(data['id']);
-                
+
                 $("#viewNotesModal").modal('show');
             } else {
                 $("#id").val(data["id"]);
@@ -1058,11 +1060,11 @@ if($_SESSION['entitytype'] != 0){
             }
             today = mm+'/'+dd+'/'+yyyy;
             today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
-            
+
             var file = $('#filClaimFile')[0].files[0];
             var fileType = $('#fileType').val();
             if(fileType == "" || file == undefined || file == ""){
-                
+
                 $("#errorAlertTitle").html("Error");
                 $("#errorAlertBody").html("Please Make sure you are selecting a file and a file type.");
                 $("#errorAlert").modal('show');
@@ -1088,13 +1090,13 @@ if($_SESSION['entitytype'] != 0){
                             if($('#documentIDs').val() != "null") documentIDs = JSON.parse($('#documentIDs').val());
 
                             var newDocument = {documentID: data, documentType: fileType, documentName: $('#filClaimFile')[0].files[0].name};
-                            
+
                             documentIDs.push(newDocument);
-                            
+
                             url = '<?php echo API_HOST_URL . "/damage_claims" ?>/' + $("#claimID").val();
                             type = "PUT";
                             var claimData = {documentIDs: documentIDs, updatedAt: today};
-                            
+
                             $.ajax({
                                 url: url,
                                 type: type,
@@ -1106,7 +1108,7 @@ if($_SESSION['entitytype'] != 0){
                                         $('#documentIDs').val(JSON.stringify(documentIDs));
                                         $('#fileType').val("");
                                         $('#filClaimFile').val("");
-                                        
+
                                         loadFileUploadDiv();
                                     } else {
                                         alert("Adding Damage Claim Failed!");
@@ -1125,14 +1127,14 @@ if($_SESSION['entitytype'] != 0){
                 });
 
             }
-            
+
         });
-        
+
 </script>
 
 <?php
 
-} 
+}
 else {
 
 ?>
@@ -1162,7 +1164,7 @@ else {
         });
 
         $('#btnConfirmClaimApproval').off('click').on('click', function(){
-            
+
             var today = new Date();
             var dd = today.getDate();
             var mm = today.getMonth()+1; //January is 0!
@@ -1209,10 +1211,10 @@ else {
                 contentType: "application/json",
                 async: false,
                 success: function(data){
-                    
+
                     if(data > 0){
                         var newStatus = {status: "Invoiced"};
-                        
+
                         $.ajax({
                             url: '<?php echo API_HOST_URL . "/damage_claims/"; ?>' + damageClaimID,
                             type: "PUT",
@@ -1290,7 +1292,7 @@ else {
                 async: false,
                 success: function(data){
                     console.log(data);
-                    
+
                     loadDamageClaimNotes(damageClaimID);
                     $("#addNoteModal").modal('hide');
                 },
@@ -1338,12 +1340,12 @@ else {
                 $('#fileType').val("");
                 $('#filClaimFile').val("");
                 loadFileUploadDiv();
-                
+
                 $("#viewPolicy").modal('show');
             } else if (this.textContent.indexOf("View Notes") > -1) {
                 $("#damageClaimID").val(data['id']);
                 loadDamageClaimNotes(data['id']);
-                
+
                 $("#viewNotesModal").modal('show');
             } else if (this.textContent.indexOf("Approve") > -1) {
                 $("#approvedClaimID").val(data['id']);
@@ -1351,7 +1353,7 @@ else {
                 $("#approvedVinNumber").val(data["vinNumber"]);
                 $("#approvedDamage").val(data["damage"]);
                 $("#approvedRepairCost").val(data["negotiatedRepairCost"]);
-                
+
                 $("#confirmClaimApproval").modal('show');
             } else {
                 $("#id").val(data["id"]);
@@ -1391,11 +1393,11 @@ else {
             }
             today = mm+'/'+dd+'/'+yyyy;
             today = yyyy+"-"+mm+"-"+dd+" "+hours+":"+min+":"+sec;
-            
+
             var file = $('#filClaimFile')[0].files[0];
             var fileType = $('#fileType').val();
             if(fileType == "" || file == undefined || file == ""){
-                
+
                 $("#errorAlertTitle").html("Error");
                 $("#errorAlertBody").html("Please Make sure you are selecting a file and a file type.");
                 $("#errorAlert").modal('show');
@@ -1421,13 +1423,13 @@ else {
                             if($('#documentIDs').val() != "null") documentIDs = JSON.parse($('#documentIDs').val());
 
                             var newDocument = {documentID: data, documentType: fileType, documentName: $('#filClaimFile')[0].files[0].name};
-                            
+
                             documentIDs.push(newDocument);
-                            
+
                             var url = '<?php echo API_HOST_URL . "/damage_claims" ?>/' + $("#claimID").val();
                             var type = "PUT";
                             var claimData = {documentIDs: documentIDs, updatedAt: today};
-                            
+
                             $.ajax({
                                 url: url,
                                 type: type,
@@ -1439,7 +1441,7 @@ else {
                                         $('#documentIDs').val(JSON.stringify(documentIDs));
                                         $('#fileType').val("");
                                         $('#filClaimFile').val("");
-                                        
+
                                         loadFileUploadDiv();
                                     } else {
                                         alert("Adding Damage Claim Failed!");
@@ -1458,9 +1460,9 @@ else {
                 });
 
             }
-            
+
         });
-        
+
  </script>
 
 <?php
