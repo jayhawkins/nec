@@ -44,6 +44,7 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
                 var orders_table = $('#damage-note-table').DataTable({
                 retrieve: true,
                 processing: true,
+                "pageLength": 50,
                 ajax: {
                     url: url,
                     dataSrc: 'damage_claim_notes'
@@ -408,6 +409,7 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
                 var example_table = $('#datatable-table').DataTable({
                     retrieve: true,
                     processing: true,
+                    "pageLength": 50,
                     ajax: {
                             url: url,
                             dataSrc: 'damage_claims'
