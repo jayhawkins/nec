@@ -86,7 +86,10 @@ while($orderRow = mysqli_fetch_array($orderDetailLoop)){
         
         array_push($lineItemList, $lineItem);
     }
-   createCustomerInvoice($customer, $lineItemList);
+    print_r($customer);
+    echo '<hr>';
+    print_r($lineItemList);
+   //createCustomerInvoice($customer, $lineItemList);
 }
 
 exit();
