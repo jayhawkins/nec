@@ -86,10 +86,10 @@ while($orderRow = mysqli_fetch_array($orderDetailLoop)){
         
         array_push($lineItemList, $lineItem);
     }
-    print_r($customer);
-    echo '<hr>';
-    print_r($lineItemList);
-   //createCustomerInvoice($customer, $lineItemList);
+    //print_r($customer);
+    //echo '<hr>';
+    //print_r($lineItemList);
+   createCustomerInvoice($customer, $lineItemList);
 }
 
 exit();
@@ -124,6 +124,13 @@ function createCustomerInvoice(Array $cust, Array $lineItems){
         echo "The Response message is: " . $error->getResponseBody() . "<br><br>";
         exit();
     }
+    else{
+        
+        print_r($entities);
+    }
+    
+    
+    exit();
 
 
     // Echo some formatted output
