@@ -26,7 +26,7 @@ require '../lib/common.php';
                     d.entityid = <?php echo $_SESSION['entityid'] ?>;
                     return;
                 },
-                dataSrc: 'customer_needs'
+                dataSrc: "customer_needs",
             },
             columns: [
                 { data: "customerName" },
@@ -62,9 +62,11 @@ require '../lib/common.php';
 
           example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
 
+          $("#recordCount").html('Total Outstanding Availability: ' + table.data().length);
+
           //To Reload The Ajax
           //See DataTables.net for more information about the reload method
-          example_table.ajax.reload();
+          //example_table.ajax.reload();
 
       }
 
@@ -89,6 +91,7 @@ require '../lib/common.php';
              Column sorting, live search, pagination. Built with
              <a href="http://www.datatables.net/" target="_blank">jQuery DataTables</a>
          </p -->
+         <div class="btn btn-danger" id="recordCount"></div>
          <button type="button" id="downloadCSVButton" class="btn btn-primary pull-right">Download CSV</button>
          <a id="downloadCSV"></a>
          <br /><br />
@@ -118,35 +121,9 @@ require '../lib/common.php';
 
     loadTableAJAX();
 
-    var table = $("#datatable-table").DataTable();
-
-    $('#datatable-table tbody').on( 'click', 'button', function () {
-        var data = table.row( $(this).parents('tr') ).data();
-        if (this.textContent.indexOf("Edit") > -1) {
-          $("#id").val(data["id"]);
-          $("#name").val(data["name"]);
-          $("#link").val(data["link"]);
-          $("#myModal").modal('show');
-        } else {
-            $("#id").val(data["id"]);
-            if (this.textContent.indexOf("Disable") > -1) {
-              $("#disableDialogLabel").html('Disable <strong>' + data['name'] + '</strong>');
-              $("#myDisableDialog").modal('show');
-            } else {
-              if (this.textContent.indexOf("Enable") > -1) {
-                $("#enableDialogLabel").html('Enable <strong>' + data['name'] + '</strong>');
-                $("#myEnableDialog").modal('show');
-              }
-            }
-        }
-
-    } );
-
     // We have to handle downloading the report as a .csv file
     $("#downloadCSVButton").unbind('click').bind('click',function(){ // Doing it like this because it was double posting document giving me duplicates
-
         downloadTemplateClick();
-
     });
 
     function downloadTemplateClick() {
