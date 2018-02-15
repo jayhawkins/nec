@@ -859,4 +859,196 @@ class Reports
         }
     }
 
+    public function gettrends(&$db, $entitytype, $entityid, $timeFrame, $trendEntityType = "Customers") {
+
+        try {
+              $returnArray = "";
+
+              $dbhandle = new $db('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS);
+
+              if ($trendEntityType == "Customers") {
+                  $querystring = "SELECT customer_needs.originationCity, customer_needs.originationState, SUM(customer_needs.qty) AS qty
+                                  FROM customer_needs
+                                  WHERE customer_needs.rootCustomerNeedsID > 0";
+              } else {
+                  $querystring = "SELECT carrier_needs.originationCity, carrier_needs.originationState, SUM(carrier_needs.qty) AS qty
+                                  FROM carrier_needs
+                                  WHERE carrier_needs.entityID > 0";
+              }
+
+              if ($entityid > 0) {
+                  if ($entitytype == 1) {
+                      $querystring .= " AND customer_needs.entityID = '" . $entityid . "'";
+                  } else {
+                      $querystring .= " AND carrier_needs.entityID = '" . $entityid . "'";
+                  }
+              }
+
+              switch($timeFrame) {
+                  case "Yearly":
+                        $startDate = date("Y") . "-01-01";
+                        $endDate = date("Y") . "-12-31";
+                        break;
+                  case "Quarterly":
+                        $year = date("Y");
+                        $month = date("m");
+                        if ($month == 1 ||$month == 2 ||$month == 3) {
+                            $startDate = date("Y") . "-01-01";
+                            $endDate = date("Y") . "-03-31";
+                        } else if ($month == 4 ||$month == 5 ||$month == 6) {
+                            $startDate = date("Y") . "-04-01";
+                            $endDate = date("Y") . "-06-30";
+                        } else if ($month == 7 ||$month == 8 ||$month == 9) {
+                            $startDate = date("Y") . "-07-01";
+                            $endDate = date("Y") . "-09-30";
+                        } else {
+                            $startDate = date("Y") . "-10-01";
+                            $endDate = date("Y") . "-12-31";
+                        }
+                        break;
+                  case "Monthly":
+                        $lastDayOfMonth = date("t");
+                        $startDate = date("Y-m") . "-01";
+                        $endDate = date("Y-m-") . $lastDayOfMonth;
+                        break;
+                  default:
+                        $startDate = date("Y") . "-01-01";
+                        $endDate = date("Y") . "-12-31";
+              }
+
+              if ($trendEntityType == "Customers") {
+                  $querystring .= " AND customer_needs.availableDate BETWEEN '" . $startDate . "' AND '" . $endDate . "'
+                                    GROUP BY customer_needs.originationCity, customer_needs.originationState
+                                    ORDER BY customer_needs.originationCity, customer_needs.originationState";
+              } else {
+                  $querystring .= " AND carrier_needs.availableDate BETWEEN '" . $startDate . "' AND '" . $endDate . "'
+                                    GROUP BY carrier_needs.originationCity, carrier_needs.originationState
+                                    ORDER BY carrier_needs.originationCity, carrier_needs.originationState";
+              }
+
+              $result = $dbhandle->query($querystring);
+
+              if (count($result) > 0) {
+                  $data = $result->fetchAll();
+                  for ($c = 0; $c < count($data); $c++) {
+                        //$customerName = $data[$c]['name'];
+
+                        /* Get carrier name for approved_pod record */
+                        //$entitiesResult = $dbhandle->query("SELECT name FROM entities WHERE id = '" . $data[$c]['entityID'] . "'");
+
+                        //$entitiesData = $entitiesResult->fetchAll();
+                        //for ($e = 0; $e < count($entitiesData); $e++) {
+                        //    $customerName = $entitiesData[$e]['name'];
+                        //}
+
+                        $returnArray .= json_encode(array('originationCity' => $data[$c]['originationCity'], 'originationState' => $data[$c]['originationState'], 'qty' => $data[$c]['qty']));
+
+                        if ($c < count($data) - 1) {
+                            $returnArray .= ",";
+                        }
+
+                  }
+                  echo "{ \"customer_needs\": [".$returnArray."]}";
+              } else {
+                  echo '{}';
+              }
+        } catch(Exception $e) {
+            echo $e->getMessage();
+        }
+    }
+
+    public function gettrendscsv(&$db, $entitytype, $entityid, $timeFrame, $trendEntityType = "Customers") {
+
+        try {
+              $data = "Origination City,Origination State,Quantity\n";
+
+              $dbhandle = new $db('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS);
+
+              if ($trendEntityType == "Customers") {
+                  $querystring = "SELECT customer_needs.originationCity, customer_needs.originationState, SUM(customer_needs.qty) AS qty
+                                  FROM customer_needs
+                                  WHERE customer_needs.rootCustomerNeedsID > 0";
+              } else {
+                  $querystring = "SELECT carrier_needs.originationCity, carrier_needs.originationState, SUM(carrier_needs.qty) AS qty
+                                  FROM carrier_needs
+                                  WHERE carrier_needs.entityID > 0";
+              }
+
+              if ($entityid > 0) {
+                  if ($entitytype == 1) {
+                      $querystring .= " AND customer_needs.entityID = '" . $entityid . "'";
+                  } else {
+                      $querystring .= " AND carrier_needs.entityID = '" . $entityid . "'";
+                  }
+              }
+
+              switch($timeFrame) {
+                  case "Yearly":
+                        $startDate = date("Y") . "-01-01";
+                        $endDate = date("Y") . "-12-31";
+                        break;
+                  case "Quarterly":
+                        $year = date("Y");
+                        $month = date("m");
+                        if ($month == 1 ||$month == 2 ||$month == 3) {
+                            $startDate = date("Y") . "-01-01";
+                            $endDate = date("Y") . "-03-31";
+                        } else if ($month == 4 ||$month == 5 ||$month == 6) {
+                            $startDate = date("Y") . "-04-01";
+                            $endDate = date("Y") . "-06-30";
+                        } else if ($month == 7 ||$month == 8 ||$month == 9) {
+                            $startDate = date("Y") . "-07-01";
+                            $endDate = date("Y") . "-09-30";
+                        } else {
+                            $startDate = date("Y") . "-10-01";
+                            $endDate = date("Y") . "-12-31";
+                        }
+                        break;
+                  case "Monthly":
+                        $lastDayOfMonth = date("t");
+                        $startDate = date("Y-m") . "-01";
+                        $endDate = date("Y-m-") . $lastDayOfMonth;
+                        break;
+                  default:
+                        $startDate = date("Y") . "-01-01";
+                        $endDate = date("Y") . "-12-31";
+              }
+
+              if ($trendEntityType == "Customers") {
+                  $querystring .= " AND customer_needs.availableDate BETWEEN '" . $startDate . "' AND '" . $endDate . "'
+                                    GROUP BY customer_needs.originationCity, customer_needs.originationState
+                                    ORDER BY customer_needs.originationCity, customer_needs.originationState";
+              } else {
+                  $querystring .= " AND carrier_needs.availableDate BETWEEN '" . $startDate . "' AND '" . $endDate . "'
+                                    GROUP BY carrier_needs.originationCity, carrier_needs.originationState
+                                    ORDER BY carrier_needs.originationCity, carrier_needs.originationState";
+              }
+
+              $result = $dbhandle->query($querystring);
+
+              if (count($result) > 0) {
+                  $resultData = $result->fetchAll();
+                  for ($c = 0; $c < count($resultData); $c++) {
+                        //$customerName = $data[$c]['name'];
+
+                        /* Get carrier name for approved_pod record */
+                        //$entitiesResult = $dbhandle->query("SELECT name FROM entities WHERE id = '" . $data[$c]['entityID'] . "'");
+
+                        //$entitiesData = $entitiesResult->fetchAll();
+                        //for ($e = 0; $e < count($entitiesData); $e++) {
+                        //    $customerName = $entitiesData[$e]['name'];
+                        //}
+
+                        $data .= $resultData[$c]['originationCity'].",".$resultData[$c]['originationState'].",".$resultData[$c]['qty']."\n";
+
+                  }
+                  echo $data;
+              } else {
+                  echo '{}';
+              }
+        } catch(Exception $e) {
+            echo $e->getMessage();
+        }
+    }
+
 }

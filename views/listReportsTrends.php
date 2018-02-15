@@ -11,7 +11,7 @@ require '../lib/common.php';
 
       function loadTableAJAX() {
 
-        var url = '<?php echo HTTP_HOST."/getavailabilitywithnocommits" ?>';
+        var url = '<?php echo HTTP_HOST."/gettrends" ?>';
         var params = {entitytype: <?php echo $_SESSION['entitytype'] ?>,
                       entityid: <?php echo $_SESSION['entityid'] ?>};
 
@@ -24,16 +24,16 @@ require '../lib/common.php';
                 data: function(d) {
                     d.entitytype = <?php echo $_SESSION['entitytype'] ?>;
                     d.entityid = <?php echo $_SESSION['entityid'] ?>;
+                    d.trendEntityType = $('input[name="trendEntityType"]:checked').val();
+                    d.timeFrame = $('input[name="timeFrame"]:checked').val();
                     return;
                 },
                 dataSrc: "customer_needs",
             },
             columns: [
-                { data: "customerName" },
                 { data: "originationCity" },
                 { data: "originationState" },
-                { data: "destinationCity" },
-                { data: "destinationState" },
+                /*
                 {
                     data: null,
                     "bSortable": true,
@@ -44,19 +44,9 @@ require '../lib/common.php';
                           return formatDate(new Date(o.availableDate)); // Use the formatDate from common.js to display Month, Day Year on listing
                       }
                     }
-                },
-                {
-                    data: null,
-                    "bSortable": true,
-                    "mRender": function(o) {
-                      if (o.expirationDate == "0000-00-00") {
-                          return '';
-                      } else {
-                          return formatDate(new Date(o.expirationDate)); // Use the formatDate from common.js to display Month, Day Year on listing
-                      }
-                    }
-                },
-                { data: "distance", render: $.fn.dataTable.render.number(',', '.', 0, '') }
+                }
+                */
+                { data: "qty" }
             ]
           })
           .on('xhr.dt', function ( e, settings, json, xhr ) {
@@ -67,7 +57,7 @@ require '../lib/common.php';
 
           //To Reload The Ajax
           //See DataTables.net for more information about the reload method
-          //example_table.ajax.reload();
+          example_table.ajax.reload();
 
       }
 
@@ -76,11 +66,11 @@ require '../lib/common.php';
  <ol class="breadcrumb">
    <li>ADMIN</li>
    <li>Reporting</li>
-   <li class="active">Outstanding Availability</li>
+   <li class="active">Availability/Needs Trends</li>
  </ol>
  <section class="widget">
      <header>
-         <h4><span class="fw-semi-bold">Outstanding Availability</span></h4>
+         <h4><span class="fw-semi-bold">Availability/Needs Trends</span></h4>
          <div class="widget-controls">
              <a data-widgster="expand" title="Expand" href="#"><i class="glyphicon glyphicon-chevron-up"></i></a>
              <a data-widgster="collapse" title="Collapse" href="#"><i class="glyphicon glyphicon-chevron-down"></i></a>
@@ -94,20 +84,30 @@ require '../lib/common.php';
          </p -->
          <div class="btn btn-danger" id="recordCount"></div>
          <button type="button" id="downloadCSVButton" class="btn btn-primary pull-right">Download CSV</button>
+         <div class="pull-right">
+             <span class="fw-semi-bold">Trends For: &nbsp;</span>
+             <input type="radio" id="trendEntityType" name="trendEntityType" value="Customers" checked> Customers
+             &nbsp;&nbsp;
+             <input type="radio" id="trendEntityType" name="trendEntityType" value="Carriers"> Carriers
+             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+             <span class="fw-semi-bold">Timeframe: &nbsp;</span>
+             <input type="radio" id="timeFrame" name="timeFrame" value="Yearly"> Yearly
+             &nbsp;&nbsp;
+             <input type="radio" id="timeFrame" name="timeFrame" value="Quarterly"> Quarterly
+             &nbsp;&nbsp;
+             <input type="radio" id="timeFrame" name="timeFrame" value="Monthly" checked> Monthly
+             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+         </div>
          <a id="downloadCSV"></a>
          <br /><br />
          <div id="dataTable" class="mt">
              <table id="datatable-table" class="table table-striped table-hover" width="100%">
                  <thead>
                  <tr>
-                     <th class="hidden-sm-down text-nowrap">Customer</th>
                      <th class="hidden-sm-down text-nowrap">Origin City</th>
                      <th class="hidden-sm-down text-nowrap">Origin State</th>
-                     <th class="hidden-sm-down text-nowrap">Destination City</th>
-                     <th class="hidden-sm-down text-nowrap">Destination State</th>
-                     <th class="hidden-sm-down">Available</th>
-                     <th class="hidden-sm-down">Expires</th>
-                     <th class="hidden-sm-down">Distance</th>
+                     <th class="hidden-sm-down">Quantity</th>
                  </tr>
                  </thead>
                  <tbody>
@@ -127,12 +127,24 @@ require '../lib/common.php';
         downloadTemplateClick();
     });
 
+    $("input[type=radio][name=timeFrame]").unbind('change').bind('change',function(){ // Doing it like this because it was double posting document giving me duplicates
+        loadTableAJAX();
+    });
+
+    $("input[type=radio][name=trendEntityType]").unbind('change').bind('change',function(){ // Doing it like this because it was double posting document giving me duplicates
+        loadTableAJAX();
+    });
+
     function downloadTemplateClick() {
 
-            url = '<?php echo HTTP_HOST."/getavailabilitywithnocommitscsv" ?>';
+            url = '<?php echo HTTP_HOST."/gettrendscsv" ?>';
 
             var params = {entitytype: <?php echo $_SESSION['entitytype'] ?>,
-                          entityid: <?php echo $_SESSION['entityid'] ?>};
+                          entityid: <?php echo $_SESSION['entityid'] ?>,
+                          timeFrame: $('input[name="timeFrame"]:checked').val(),
+                          trendEntityType: $('input[name="trendEntityType"]:checked').val()
+                         };
+            console.log(params);
 
             $.ajax({
                 url: url,
