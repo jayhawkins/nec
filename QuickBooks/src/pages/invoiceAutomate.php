@@ -120,6 +120,8 @@ function createCustomerInvoice(Array $cust, Array $lineItems){
     
     $found_customer_id = 0;
 
+    echo "Making Connection Before Checking for Customer";
+    echo '<hr>';
 
     $entities = $dataService->Query("SELECT * FROM Customer");
     $error = $dataService->getLastError();
