@@ -161,6 +161,9 @@ function createCustomerInvoice(Array $cust, Array $lineItems){
     if ($found_customer_id==0){
         //create new customer
 
+        echo "Making Connection Before Creating New Customer";
+        echo '<hr>';
+
         $dataService = DataService::Configure(array(
              'auth_mode' => 'oauth2',
              'ClientID' => "Q0bCkjuFuWa8MxjEDqYenaCreMUZjyAJ2UyNhnOmdVGEDNkkkD",
@@ -214,6 +217,9 @@ function createCustomerInvoice(Array $cust, Array $lineItems){
     //Query db for all $cust['orderDetailID']
     //eg SELECT * FROM nec.approved_pod where orderDetailID = 83;
 
+
+    echo "Making Connection Before Creating New Invoice";
+    echo '<hr>';
 
     //create invoice
     $dataService = DataService::Configure(array(
