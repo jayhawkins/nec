@@ -116,9 +116,9 @@ function createCustomerInvoice(Array $cust, Array $lineItems){
     $error = $dataService->getLastError();
     
     if ($error != null) {
-        echo "The Status code is: " . $error->getHttpStatusCode() . "<br>";
-        echo "The Helper message is: " . $error->getOAuthHelperError() . "<br>";
-        echo "The Response message is: " . $error->getResponseBody() . "<br>";
+        echo "The Status code is: " . $error->getHttpStatusCode() . "<br><br>";
+        echo "The Helper message is: " . $error->getOAuthHelperError() . "<br><br>";
+        echo "The Response message is: " . $error->getResponseBody() . "<br><br>";
         exit();
     }
 
@@ -190,9 +190,9 @@ function createCustomerInvoice(Array $cust, Array $lineItems){
         $error = $dataService->getLastError();
         
         if ($error) {
-            echo "The Status code is: " . $error->getHttpStatusCode() . "<br>";
-            echo "The Helper message is: " . $error->getOAuthHelperError() . "<br>";
-            echo "The Response message is: " . $error->getResponseBody() . "<br>";
+            echo "The Status code is: " . $error->getHttpStatusCode() . "<br><br>";
+            echo "The Helper message is: " . $error->getOAuthHelperError() . "<br><br>";
+            echo "The Response message is: " . $error->getResponseBody() . "<br><br>";
         } else {
             $found_customer_id = $resultingCustomerObj->Id;
             //print_r($resultingCustomerObj);
@@ -245,10 +245,10 @@ function createCustomerInvoice(Array $cust, Array $lineItems){
 
 
     $error = $dataService->getLastError();
-    if ($error != null) {
-        echo "The Status code is: " . $error->getHttpStatusCode() . "<br>";
-        echo "The Helper message is: " . $error->getOAuthHelperError() . "<br>";
-        echo "The Response message is: " . $error->getResponseBody() . "<br>";
+    if ($error != null) {        
+        echo "The Status code is: " . $error->getHttpStatusCode() . "<br><br>";
+        echo "The Helper message is: " . $error->getOAuthHelperError() . "<br><br>";
+        echo "The Response message is: " . $error->getResponseBody() . "<br><br>";
     }
     else {
         $invoice_id = $resultingObj->Id;
