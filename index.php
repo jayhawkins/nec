@@ -1014,6 +1014,38 @@ $app->route('POST /getavailabilitywithnocommitscsv', function() {
     }
 });
 
+$app->route('POST /gettrends', function() {
+    $entityType = Flight::request()->data->entitytype;
+    $entityID = Flight::request()->data->entityid;
+    $trendEntityType = Flight::request()->data->trendEntityType;
+    $timeFrame = Flight::request()->data->timeFrame;
+    $reports = Flight::reports();
+    $db = Flight::db();
+    $result = $reports->gettrends($db,$entityType,$entityID,$timeFrame,$trendEntityType);
+    if ($result) {
+        print_r($result);
+        //echo "success";
+    } else {
+        print_r($result);
+    }
+});
+
+$app->route('POST /gettrendscsv', function() {
+    $entityType = Flight::request()->data->entitytype;
+    $entityID = Flight::request()->data->entityid;
+    $trendEntityType = Flight::request()->data->trendEntityType;
+    $timeFrame = Flight::request()->data->timeFrame;
+    $reports = Flight::reports();
+    $db = Flight::db();
+    $result = $reports->gettrendscsv($db,$entityType,$entityID,$timeFrame,$trendEntityType);
+    if ($result) {
+        print_r($result);
+        //echo "success";
+    } else {
+        print_r($result);
+    }
+});
+
 
 /*****************************************************************************/
 // POD API Process
