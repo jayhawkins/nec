@@ -283,7 +283,7 @@ function createCustomerInvoice(Array $cust, Array $lineItems){
     $id = $cust['cid'];
     $orderDetailID = $cust['orderDetailID'];
 
-    $sql = "UPDATE approved_pod SET hasBeenInvoiced=1, qbInvoiceNumber ='".$invoice_id."' WHERE orderDetialID=$orderDetailID";
+    $sql = "UPDATE approved_pod SET hasBeenInvoiced=1, qbInvoiceNumber ='".$invoice_id."' WHERE orderDetailID=".$orderDetailID;
     echo $sql;
     if ($conn->query($sql) === TRUE) {
         echo "Record updated successfully";
