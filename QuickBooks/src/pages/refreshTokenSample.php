@@ -8,6 +8,7 @@ use QuickBooksOnline\API\DataService\DataService;
 use QuickBooksOnline\API\PlatformService\PlatformService;
 use QuickBooksOnline\API\Core\Http\Serialization\XmlObjectSerializer;
 
+exit();
 
 $dataService = DataService::Configure(array(
    'auth_mode' => 'oauth2',
