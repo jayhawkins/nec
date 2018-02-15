@@ -133,11 +133,11 @@ function createCustomerInvoice(Array $cust, Array $lineItems){
     }
     else{
         
-        print_r( $entities);
+        //print_r( $entities);
     }
     
     
-    exit();
+    //exit();
 
 
     // Echo some formatted output
