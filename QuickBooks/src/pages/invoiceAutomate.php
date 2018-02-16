@@ -21,10 +21,10 @@ define("DBPASS", "Yellow10!");
 
 // enter the IP numbers here, who you want to have access
 $allowed_ips = array(
-"/127.0.0.1/",
-"/127.0.0.2/",
-"/127.0.0.3/",
-"/127.0.0.4/");
+"127.0.0.1",
+"127.0.0.2",
+"127.0.0.3",
+"127.0.0.4");
 
 // set the loops to 0 before we start the check 
  $a = 0;
