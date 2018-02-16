@@ -5,7 +5,6 @@ ini_set('display_errors', 1);
 
 include('../config.php');
 //require '../../../../nec_config.php';
-
 use QuickBooksOnline\API\Core\ServiceContext;
 use QuickBooksOnline\API\DataService\DataService;
 use QuickBooksOnline\API\PlatformService\PlatformService;
@@ -13,31 +12,6 @@ use QuickBooksOnline\API\Core\Http\Serialization\XmlObjectSerializer;
 use QuickBooksOnline\API\Facades\Customer;
 use QuickBooksOnline\API\Facades\Invoice;
 
-// enter the IP numbers here, who you want to have access
-$allowed_ips = array(
-"127.0.0.1",
-"127.0.0.2",
-"127.0.0.3",
-"127.0.0.4");
-
-// set the loops to 0 before we start the check 
- $a = 0;
- $i = 0;
- 
-// start checking the ip numbers to see if they are allowed
-foreach ($allowed_ips as $key => $value){
-     
-    if (preg_match($value, $_SERVER['REMOTE_ADDR']))
-    { 
-        $a++;
-    }
-}
- 
-// if ip address is not found send them somewhere else ...
-if ($a == 0)   {
- echo ("Sorry, you do not have access to this section, please <a href=\"http://www.google.com\">click here</a>");
- exit();
-}
 
 define("DBHOST", "hometree.dubtel.com"); 
 define("DBNAME", "nec"); 
