@@ -25,7 +25,7 @@ $allowed_ips = array(
  $i = 0;
  
  // start checking the ip numbers to see if they are allowed
-while ($allowed_ips[$i+1] !== null)
+while ($allowed_ips[$i] !== null)
 {
 if (preg_match($allowed_ips[$i], $_SERVER['REMOTE_ADDR']))
 { $a=$a+1; }
