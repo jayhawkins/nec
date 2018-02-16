@@ -21,23 +21,24 @@ define("DBPASS", "Yellow10!");
 
 // enter the IP numbers here, who you want to have access
 $allowed_ips = array(
-"127.0.0.1",
-"127.0.0.2",
-"127.0.0.3",
-"127.0.0.4");
+"/127.0.0.1/",
+"/127.0.0.2/",
+"/127.0.0.3/",
+"/127.0.0.4/");
 
 // set the loops to 0 before we start the check 
  $a = 0;
  $i = 0;
  
- // start checking the ip numbers to see if they are allowed
-while ($allowed_ips[$i] !== null)
-{
-if (preg_match($allowed_ips[$i], $_SERVER['REMOTE_ADDR']))
-{ $a=$a+1; }
-  $i=$i+1;
+// start checking the ip numbers to see if they are allowed
+foreach ($allowed_ips as $key => $value){
+     
+    if (preg_match($value, $_SERVER['REMOTE_ADDR']))
+    { 
+        $a++;
+    }
 }
-
+ 
 // if ip address is not found send them somewhere else ...
 if ($a == 0)   {
  echo ("Sorry, you do not have access to this section, please <a href=\"http://www.google.com\">click here</a>");
