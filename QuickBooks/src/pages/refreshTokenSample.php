@@ -4,7 +4,7 @@
 include('../config.php');
 
 
-exit();
+
 use QuickBooksOnline\API\Core\ServiceContext;
 use QuickBooksOnline\API\DataService\DataService;
 use QuickBooksOnline\API\PlatformService\PlatformService;
