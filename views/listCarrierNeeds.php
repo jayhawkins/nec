@@ -460,6 +460,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                 retrieve: true,
                 processing: true,
                 bSort: true,
+                "pageLength": 50,
                 ajax: {
                     url: url,
                     dataSrc: 'carrier_needs'
@@ -515,6 +516,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                 retrieve: true,
                 processing: true,
                 bSort: false,
+                "pageLength": 50,
                 ajax: {
                     url: url,
                     dataSrc: 'carrier_needs'

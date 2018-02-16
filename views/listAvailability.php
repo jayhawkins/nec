@@ -360,7 +360,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                      success: function(notification){
                                          //alert("Create from existing: " + notification);
                                          var logParams = {logTypeName: "Customer Needs", logMessage: "A commitment has been made.", referenceID: $("#id").val()};
-        
+
 
                                         // This is will enter into the log
                                         $.ajax({
@@ -380,7 +380,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                                  $("#errorAlert").modal('show');
                                              }
                                         });
-                                         
+
                                          $("#myModalCommit").modal('hide');
                                      },
                                      error: function() {
@@ -465,6 +465,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
             retrieve: true,
             processing: true,
             bSort: true,
+            "pageLength": 50,
             ajax: {
                 url: url,
                 dataSrc: 'customer_needs'
@@ -541,7 +542,17 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                 { data: "rootCustomerNeedsID", visible: false},
                 { data: "entityID", visible: false },
                 { data: "qty" },
-                { data: "availableDate" },
+                {
+                    data: null,
+                    "bSortable": true,
+                    "render": function(o) {
+                      if (o.availableDate == "0000-00-00") {
+                          return '';
+                      } else {
+                          return formatDate(new Date(o.availableDate));
+                      }
+                    }
+                },
                 {
                     data: null,
                     "bSortable": true,
@@ -549,24 +560,24 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                       if (o.expirationDate == "0000-00-00") {
                           return '';
                       } else {
-                          return o.expirationDate;
+                          return formatDate(new Date(o.expirationDate));
                       }
                     }
                 },
                 { data: "transportationMode", visible: false },
                 { data: "originationAddress1", visible: false },
                 { data: "originationCity" },
-                { data: "originationState", visible: false },
+                { data: "originationState" },
                 { data: "originationZip", visible: false },
                 { data: "originationLat", visible: false },
                 { data: "originationLng", visible: false },
                 { data: "destinationAddress1", visible: false },
                 { data: "destinationCity" },
-                { data: "destinationState", visible: false },
+                { data: "destinationState" },
                 { data: "destinationZip", visible: false },
                 { data: "destinationLat", visible: false },
                 { data: "destinationLng", visible: false },
-                { data: "distance", render: $.fn.dataTable.render.number(',', '.', 0, '')  },
+                { data: "distance", render: $.fn.dataTable.render.number(',', '.', 0, ''), visible: false  },
                 { data: "needsDataPoints", visible: false },
                 { data: "entities[0].name", visible: false },
                 { data: "entities[0].rateType", visible: false },

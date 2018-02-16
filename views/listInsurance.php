@@ -235,6 +235,8 @@
 		var example_table = $('#datatable-table').DataTable({
 			retrieve: true,
 			processing: true,
+			bsort: true,
+			"pageLength": 50,
 			ajax: {
 				url: url,
 				dataSrc: 'insurance_carriers'
@@ -328,6 +330,7 @@
         var example_table = $('#business-datatable-table').DataTable({
             retrieve: true,
             processing: true,
+            "pageLength": 50,
             ajax: {
                 url: url,
                 //dataSrc: 'entities',

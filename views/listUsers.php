@@ -201,6 +201,8 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
             processing: true,
+            bsort: true,
+            "pageLength": 50,
             ajax: {
                 url: url,
                 dataSrc: 'members'
@@ -296,7 +298,8 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
         var example_table = $('#business-datatable-table').DataTable({
             retrieve: true,
             processing: true,
-            bSort: false,
+            bSort: true,
+            "pageLength": 50,
             ajax: {
                 url: url,
                 //dataSrc: 'entities',
