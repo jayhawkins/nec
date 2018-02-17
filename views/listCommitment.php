@@ -710,7 +710,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
         var url = baseUrl + '&satisfy=any&order[]=entityID&order[]=rootCustomerNeedsID&order[]=availableDate,desc&transform=1';
 
-        var relayURL = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,deliveryInformation,pickupInformation,transportationMode,rate,originationAddress1,originationCity,originationState,originationZip,originationNotes,destinationNotes,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,unitData,status,customer_needs_commit.id,customer_needs_commit.entityID,customer_needs_commit.status,customer_needs_commit.pickupDate,customer_needs_commit.deliveryDate,customer_needs_commit.rate,customer_needs_commit.transportation_mode,customer_needs_commit.distance,customer_needs_commit.rateType,entities.name,entities.rateType,customer_needs_commit.qty,entities.negotiatedRate&filter[]=rootCustomerNeedsID,eq,' + id + '&filter[]=status,eq,Available&satisfy=all&order[]=id&transform=1';
+        var relayURL = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=customer_needs_commit,entities&columns=id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,deliveryInformation,pickupInformation,transportationMode,rate,originationAddress1,originationCity,originationState,originationZip,originationNotes,destinationNotes,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,unitData,status,customer_needs_commit.id,customer_needs_commit.entityID,customer_needs_commit.status,customer_needs_commit.pickupDate,customer_needs_commit.deliveryDate,customer_needs_commit.rate,customer_needs_commit.transportation_mode,customer_needs_commit.originationLng,customer_needs_commit.originationLat,customer_needs_commit.destinationLng,customer_needs_commit.destinationLat,customer_needs_commit.distance,customer_needs_commit.rateType,entities.name,entities.rateType,customer_needs_commit.qty,entities.negotiatedRate&filter[]=rootCustomerNeedsID,eq,' + id + '&filter[]=status,eq,Available&satisfy=all&order[]=id&transform=1';
 
         $.get(url, function(data){
 
@@ -727,6 +727,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             if(customer_needs.destinationAddress2 == null) customer_needs.destinationAddress2 = "";
             if(customer_needs.originationZip == null) customer_needs.originationZip = "";
             if(customer_needs.destinationZip == null) customer_needs.destinationZip = "";
+            if(customer_needs.originationLng == null) customer_needs.originationLng = "";
+            if(customer_needs.destinationLng == null) customer_needs.destinationLng = "";
+            if(customer_needs.originationLat == null) customer_needs.originationLat = "";
+            if(customer_needs.destinationLat == null) customer_needs.destinationLat = "";
+            if(customer_needs.distance == null) customer_needs.distance = "";
+
             if(customer_needs.unitData == null) customer_needs.unitData = [];
 
             $('#customerID').val(customer_needs.entityID);
@@ -744,6 +750,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             $('#originationCity').val(customer_needs.originationCity);
             $('#originationState').val(customer_needs.originationState);
             $('#originationZip').val(customer_needs.originationZip);
+            $('#originationLng').val(customer_needs.originationLng);
+            $('#originationLat').val(customer_needs.originationLat);
             $('#originationNotes').val(customer_needs.originationNotes);
 
 
@@ -759,7 +767,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             $('#destinationCity').val(customer_needs.destinationCity);
             $('#destinationState').val(customer_needs.destinationState);
             $('#destinationZip').val(customer_needs.destinationZip);
+            $('#destinationLng').val(customer_needs.destinationLng);
+            $('#destinationLat').val(customer_needs.destinationLat);
             $('#destinationNotes').val(customer_needs.destinationNotes);
+
+            $('#distance').val(customer_needs.distance);
 
             var pickupInformation = "";
             var deliveryInformation = "";
@@ -1046,6 +1058,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     $('#pickupDate_relay' + relayNumber).val(customer_needs.customer_needs_commit[0].pickupDate);
                     $('#deliveryDate_relay' + relayNumber).val(customer_needs.customer_needs_commit[0].deliveryDate);
                     $('#rate_relay' + relayNumber).val();
+
+                    $('#originationLng_relay' + relayNumber).val(customer_needs.customer_needs_commit[0].originationLng);
+                    $('#originationLat_relay' + relayNumber).val(customer_needs.customer_needs_commit[0].originationLat);
+                    $('#destinationLng_relay' + relayNumber).val(customer_needs.customer_needs_commit[0].destinationLng);
+                    $('#destinationLat_relay' + relayNumber).val(customer_needs.customer_needs_commit[0].destinationLat);
+                    $('#distance_relay' + relayNumber).val(customer_needs.customer_needs_commit[0].distance);
 
                     $('#deliveryLocation_relay' + relayNumber).val(customer_needs.deliveryInformation.deliveryLocation);
                     $('#contactPerson_relay' + relayNumber).val(customer_needs.deliveryInformation.contactPerson);
@@ -1399,6 +1417,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     <h2>Pickup Address</h2>
                     <form>
                         <input type="hidden" id="customerNeedsID" name="customerNeedsID" value="" />
+                        <input class="form-control" id="originationLng" type="hidden">
+                        <input class="form-control" id="originationLat" type="hidden">
+                        <input class="form-control" id="destinationLng" type="hidden">
+                        <input class="form-control" id="destinationLat" type="hidden">
+                        <input class="form-control" id="distance" type="hidden">
                             <div class="form-group row">
                                     <label for="pickupLocation" class="col-sm-3 col-form-label">Location</label>
                                     <div class="col-sm-9">
@@ -1685,6 +1708,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         <h4>Relay Address 1</h4>
                             <input class="form-control" id="relay_id1" placeholder="" type="hidden">
                             <input class="form-control" id="commit_id1" placeholder="" type="hidden">
+                            <input class="form-control" id="originationLng_relay1" type="hidden">
+                            <input class="form-control" id="originationLat_relay1" type="hidden">
+                            <input class="form-control" id="destinationLng_relay1" type="hidden">
+                            <input class="form-control" id="destinationLat_relay1" type="hidden">
+                            <input class="form-control" id="distance_relay1" type="hidden">
                             <!--<input class="form-control" id="entityID_relay1" placeholder="" type="hidden">-->
                             <div class="form-group">
                                 <label for="entityID_relay1">Carrier</label>
@@ -1821,6 +1849,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         <h4>Relay Address 2</h4>
                             <input class="form-control" id="relay_id2" placeholder="" type="hidden">
                             <input class="form-control" id="commit_id2" placeholder="" type="hidden">
+                            <input class="form-control" id="originationLng_relay2" type="hidden">
+                            <input class="form-control" id="originationLat_relay2" type="hidden">
+                            <input class="form-control" id="destinationLng_relay2" type="hidden">
+                            <input class="form-control" id="destinationLat_relay2" type="hidden">
+                            <input class="form-control" id="distance_relay2" type="hidden">
                             <!--<input class="form-control" id="entityID_relay2" placeholder="" type="hidden">-->
                             <div class="form-group">
                             <label for="entityID_relay2">Carrier</label>
@@ -1957,6 +1990,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         <h4>Relay Address 3</h4>
                             <input class="form-control" id="relay_id3" placeholder="" type="hidden">
                             <input class="form-control" id="commit_id3" placeholder="" type="hidden">
+                            <input class="form-control" id="originationLng_relay3" type="hidden">
+                            <input class="form-control" id="originationLat_relay3" type="hidden">
+                            <input class="form-control" id="destinationLng_relay3" type="hidden">
+                            <input class="form-control" id="destinationLat_relay3" type="hidden">
+                            <input class="form-control" id="distance_relay3" type="hidden">
                             <!--<input class="form-control" id="entityID_relay3" placeholder="" type="hidden">-->
                             <div class="form-group">
                             <label for="entityID_relay3">Carrier</label>
@@ -2093,6 +2131,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         <h4>Relay Address 4</h4>
                             <input class="form-control" id="relay_id4" placeholder="" type="hidden">
                             <input class="form-control" id="commit_id4" placeholder="" type="hidden">
+                            <input class="form-control" id="originationLng_relay4" type="hidden">
+                            <input class="form-control" id="originationLat_relay4" type="hidden">
+                            <input class="form-control" id="destinationLng_relay4" type="hidden">
+                            <input class="form-control" id="destinationLat_relay4" type="hidden">
+                            <input class="form-control" id="distance_relay4" type="hidden">
                             <!--<input class="form-control" id="entityID_relay4" placeholder="" type="hidden">-->
                             <div class="form-group">
                             <label for="entityID_relay4">Carrier</label>
@@ -2788,6 +2831,32 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
     }
 
+    function closeRootCustomerCommitLegs(id){
+
+        $.ajax({
+            url: '<?php echo API_HOST_URL ?>' + '/customer_needs/' + id,
+            type: "PUT",
+            data: JSON.stringify({status: "Closed"}),
+            contentType: "application/json",
+            async: false,
+            success: function(data){
+                if(data > 0){
+                    console.log("Leg Closed.");
+                }
+                else{
+                    console.log("Could not close root leg:", id);
+                }
+            },
+            error: function(){
+                //alert("Could not close availability leg.");
+                $("#errorAlertTitle").html("Error");
+                $("#errorAlertBody").html("Could not close availability root leg.");
+                $("#errorAlert").modal('show');
+            }
+        });
+
+    }
+
 
 
 // Part III Removed
@@ -3078,10 +3147,13 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             });
 
             table += '<td>' + dataPoints.object_type_data_points[i].title;
-            for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
-
-                if (dataPoints.object_type_data_points[i].object_type_data_point_values[v].value === value) {
-                    table += ' <br/> <strong>' + dataPoints.object_type_data_points[i].object_type_data_point_values[v].value + '</strong>';
+            if (dataPoints.object_type_data_points[i].title == "Decals") {
+                table += ' <br/> <strong>' + value + '</strong>';
+            } else {
+                for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
+                    if (dataPoints.object_type_data_points[i].object_type_data_point_values[v].value === value) {
+                        table += ' <br/> <strong>' + dataPoints.object_type_data_points[i].object_type_data_point_values[v].value + '</strong>';
+                    }
                 }
             }
 
@@ -3744,6 +3816,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
             var transportationMode = $('#transportationMode').val().trim();
 
+            var originationLng = $('#originationLng').val().trim();
+            var originationLat = $('#originationLat').val().trim();
+            var destinationLng = $('#destinationLng').val().trim();
+            var destinationLat = $('#destinationLat').val().trim();
+            var distance = $('#distance').val().trim();
+
 
             // Build the needsDataPoints
             var needsarray = [];
@@ -3770,7 +3848,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         comments: "", createdAt: today, updatedAt: today, qty: qty};
 */
             var orderData = {customerID: customerID, carrierIDs: carrierIDs, orderID: orderID, deliveryInformation: deliveryInformation, pickupInformation: pickupInformation, originationAddress: originationAddress1, originationCity: originationCity, originationState: originationState, originationZip: originationZip,
-                        destinationAddress: destinationAddress1,  destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, originationLng: "", originationLat: "", destinationLng: "", destinationLat: "", distance: 0, needsDataPoints: needsdatapoints, podList: unitDataList,
+                        destinationAddress: destinationAddress1,  destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, originationLng: originationLng, originationLat: originationLat, destinationLng: destinationLng, destinationLat: destinationLat, distance: distance, needsDataPoints: needsdatapoints, podList: unitDataList,
                         comments: "", createdAt: today, updatedAt: today, qty: qty, customerRate: rate, transportationMode: transportationMode};
 
             var url = '<?php echo API_HOST_URL . "/orders" ?>';
@@ -3817,6 +3895,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     var deliveryDate = $('#deliveryDate_relay' + relayNumber).val();
                                     var entityID = $('#entityID_relay' + relayNumber).val();
                                     var carrierRate = $('#rate_relay' + relayNumber).val();
+
+                                    var originationLng = $("#originationLng_relay"+relayNumber).val();
+                                    var originationLat = $("#originationLat_relay"+relayNumber).val();
+                                    var destinationLng = $("#destinationLng_relay"+relayNumber).val();
+                                    var destinationLat = $("#destinationLat_relay"+relayNumber).val();
+                                    var distance = $("#distance_relay"+relayNumber).val();
 /*
                                     relayData = {carrierID: 0, orderID: data, pickupInformation: pickupInformation, originationAddress: originationAddress1, originationCity: originationCity, originationState: originationState, originationZip: originationZip,
                                         deliveryInformation: deliveryInformation, destinationAddress: destinationAddress1, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, carrierRate: 0.00, transportationMode: "",
@@ -3824,6 +3908,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 */
                                     relayData = {carrierID: entityID, orderID: data, pickupInformation: pickupInformation, originationAddress: originationAddress1, originationCity: originationCity, originationState: originationState, originationZip: originationZip,
                                         deliveryInformation: deliveryInformation, destinationAddress: destinationAddress1, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, carrierRate: carrierRate, transportationMode: transportationMode,
+                                        originationLng: originationLng, originationLat: originationLat, destinationLng: destinationLng, destinationLat: destinationLat, distance: distance,
                                         qty: qty, createdAt: today, updatedAt: today, needsDataPoints: needsdatapoints, status: "Open", pickupDate: pickupDate, deliveryDate: deliveryDate};
 
                                 $.ajax({
@@ -3893,6 +3978,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
 
                         closeCustomerCommitLegs(id);
+                        closeRootCustomerCommitLegs(id);
                         $(document.body).css("cursor", "default");
 
                         $("#errorAlertTitle").html("Success");

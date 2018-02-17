@@ -2153,10 +2153,13 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
             });
 
             table += '<td>' + dataPoints.object_type_data_points[i].title;
-            for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
-
-                if (dataPoints.object_type_data_points[i].object_type_data_point_values[v].value === value) {
-                    table += ' <br/> <strong>' + dataPoints.object_type_data_points[i].object_type_data_point_values[v].value + '</strong>';
+            if (dataPoints.object_type_data_points[i].title == "Decals") {
+                table += ' <br/> <strong>' + value + '</strong>';
+            } else {
+                for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
+                    if (dataPoints.object_type_data_points[i].object_type_data_point_values[v].value === value) {
+                        table += ' <br/> <strong>' + dataPoints.object_type_data_points[i].object_type_data_point_values[v].value + '</strong>';
+                    }
                 }
             }
 

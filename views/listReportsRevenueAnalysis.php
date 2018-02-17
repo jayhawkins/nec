@@ -67,7 +67,7 @@ require '../lib/common.php';
             columns: [
                 { data: "name" },
                 { data: "rateType" },
-                { data: "negotiatedRate" },
+                { data: "negotiatedRate", render: $.fn.dataTable.render.number(',', '.', 2, '$') },
                 { data: "potentialSales", render: $.fn.dataTable.render.number(',', '.', 2, '$') },
                 { data: "actualSales", render: $.fn.dataTable.render.number(',', '.', 2, '$') },
                 { data: "repairCosts", render: $.fn.dataTable.render.number(',', '.', 2, '$') },
@@ -214,7 +214,7 @@ require '../lib/common.php';
 
     function downloadTemplateClick() {
 
-            url = '<?php echo HTTP_HOST."/getardetailcsv" ?>';
+            url = '<?php echo HTTP_HOST."/getrevenueanalysiscsv" ?>';
             var params = {
                       startDate: $("#startDate").val(),
                       endDate: $("#endDate").val(),
@@ -239,7 +239,7 @@ require '../lib/common.php';
                     document.body.removeChild(element);
                 },
                 error: function() {
-                    alert('Failed to Download A/R Summary Detail Report');
+                    alert('Failed to Download Revenue Analysis Report');
                 }
             });
 

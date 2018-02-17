@@ -51,7 +51,7 @@ require '../lib/common.php';
             ]
           })
           .on('xhr.dt', function ( e, settings, json, xhr ) {
-            $("#recordCount").html('Total Outstanding Availability: ' + example_table.rows().length);
+            //$("#recordCount").html('Total Outstanding Availability: ' + example_table.rows().length);
         });
 
           example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
@@ -83,7 +83,7 @@ require '../lib/common.php';
              Column sorting, live search, pagination. Built with
              <a href="http://www.datatables.net/" target="_blank">jQuery DataTables</a>
          </p -->
-         <div class="btn btn-danger" id="recordCount"></div>
+         <!--div class="btn btn-danger" id="recordCount"></div-->
          <button type="button" id="downloadCSVButton" class="btn btn-primary pull-right">Download CSV</button>
          <div class="pull-right">
              <span class="fw-semi-bold">Trends For: &nbsp;</span>

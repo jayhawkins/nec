@@ -100,12 +100,12 @@ class Reports
 
           $dbhandle = new $db('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS);
           $querystring = "select *, order_statuses.status as statusesstatus, orders.customerID as custID
-                                     from order_details
-                                     join order_statuses on order_statuses.orderDetailID = order_details.id
-                                     left join orders on orders.id = order_details.orderID
-                                     left join entities on entities.id = order_details.carrierID
-                                     where order_details.status = 'Open'
-                                     and order_statuses.status != 'Trailer Delivered'";
+                          from order_details
+                          join order_statuses on order_statuses.orderDetailID = order_details.id
+                          left join orders on orders.id = order_details.orderID
+                          left join entities on entities.id = order_details.carrierID
+                          where order_details.status = 'Open'";
+                          //and order_statuses.status != 'Trailer Delivered'";
 
           if ($entityid > 0) {
               if ($entitytype == 1) {
@@ -115,26 +115,28 @@ class Reports
               }
           }
 
-          $querystring .= " order by order_details.createdAt desc";
+          $querystring .= " order by order_statuses.createdAt desc limit 1";
 
           $result = $dbhandle->query($querystring);
 
           if (count($result) > 0) {
               $data = $result->fetchAll();
               for ($c = 0; $c < count($data); $c++) {
-                    /* Get carrier name for approved_pod record */
-                    $entitiesResult = $dbhandle->query("SELECT name FROM entities WHERE id = '" . $data[$c]['custID'] . "'");
+                  if ($data[$c]['statusesstatus'] != "Trailer Delivered") {
+                        /* Get carrier name for approved_pod record */
+                        $entitiesResult = $dbhandle->query("SELECT name FROM entities WHERE id = '" . $data[$c]['custID'] . "'");
 
-                    $entitiesData = $entitiesResult->fetchAll();
-                    for ($e = 0; $e < count($entitiesData); $e++) {
-                        $customerName = $entitiesData[$e]['name'];
-                    }
+                        $entitiesData = $entitiesResult->fetchAll();
+                        for ($e = 0; $e < count($entitiesData); $e++) {
+                            $customerName = $entitiesData[$e]['name'];
+                        }
 
-                    $returnArray .= json_encode(array('customerName' => $customerName, 'carrierName' => $data[$c]['name'], 'orderID' => $data[$c]['orderID'], 'unitNumber' => $data[$c]['unitNumber'], 'vinNumber' => $data[$c]['vinNumber'], 'city' => $data[$c]['city'], 'state' => $data[$c]['state'], 'statusesstatus' => $data[$c]['statusesstatus']));
+                        $returnArray .= json_encode(array('customerName' => $customerName, 'carrierName' => $data[$c]['name'], 'orderID' => $data[$c]['orderID'], 'unitNumber' => $data[$c]['unitNumber'], 'vinNumber' => $data[$c]['vinNumber'], 'city' => $data[$c]['city'], 'state' => $data[$c]['state'], 'statusesstatus' => $data[$c]['statusesstatus']));
 
-                    if ($c < count($data) - 1) {
-                        $returnArray .= ",";
-                    }
+                        if ($c < count($data) - 1) {
+                            $returnArray .= ",";
+                        }
+                  }
 
               }
               echo "{ \"order_details\": [".$returnArray."]}";
@@ -150,8 +152,8 @@ class Reports
                                      join order_statuses on order_statuses.orderDetailID = order_details.id
                                      left join orders on orders.id = order_details.orderID
                                      left join entities on entities.id = order_details.carrierID
-                                     where order_details.status = 'Open'
-                                     and order_statuses.status != 'Trailer Delivered'";
+                                     where order_details.status = 'Open'";
+                                     //and order_statuses.status != 'Trailer Delivered'";
 
           if ($entityid > 0) {
               if ($entitytype == 1) {
@@ -161,7 +163,7 @@ class Reports
               }
           }
 
-          $querystring .= " order by order_details.createdAt desc";
+          $querystring .= " order by order_statuses.createdAt desc limit 1";
 
           $result = $dbhandle->query($querystring);
 
@@ -169,15 +171,18 @@ class Reports
               $records = $result->fetchAll();
               $data = "Order ID,Customer Name,Carrier Name,Unit Number,VIN,Location, Status\n";
               foreach($records as $record) {
-                  /* Get carrier name for approved_pod record */
-                  $entitiesResult = $dbhandle->query("SELECT name FROM entities WHERE id = '" . $record['custID'] . "'");
+                  if ($data[$c]['statusesstatus'] != "Trailer Delivered") {
+                      /* Get carrier name for approved_pod record */
+                      $entitiesResult = $dbhandle->query("SELECT name FROM entities WHERE id = '" . $record['custID'] . "'");
 
-                  $entitiesData = $entitiesResult->fetchAll();
-                  for ($e = 0; $e < count($entitiesData); $e++) {
-                       $customerName = $entitiesData[$e]['name'];
+                      $entitiesData = $entitiesResult->fetchAll();
+                      for ($e = 0; $e < count($entitiesData); $e++) {
+                           $customerName = $entitiesData[$e]['name'];
+                      }
+                      $location = $record['city'] . " " . $record['state'];
+                      $data .= $record['orderID'].",".$customerName.",".$record['name'].",".$record['unitNumber'].",".$record['vinNumber'].",".$location.",".$record['statusesstatus']."\n";
+
                   }
-                  $location = $record['city'] . " " . $record['state'];
-                  $data .= $record['orderID'].",".$customerName.",".$record['name'].",".$record['unitNumber'].",".$record['vinNumber'].",".$location.",".$record['statusesstatus']."\n";
               }
               echo $data;
           } else {
@@ -201,26 +206,26 @@ class Reports
 
           /* Current Week */
           $querystring = "SELECT *
-                                     FROM approved_pod
-                                     JOIN `orders` on orders.id = approved_pod.orderDetailID
-                                     WHERE approved_pod.createdAt BETWEEN CURDATE()-INTERVAL 1 WEEK AND CURDATE()";
+                          FROM approved_pod
+                          JOIN `order_details` on order_details.id = approved_pod.orderDetailID
+                          WHERE approved_pod.createdAt BETWEEN CURDATE()-INTERVAL 1 WEEK AND CURDATE() + INTERVAL 1 DAY";
 
           if ($entityid > 0) {
               if ($entitytype == 1) {
-                  $querystring .= " and orders.customerID = '" . $entityid . "'";
+                  $querystring .= " AND orders.customerID = '" . $entityid . "'";
               } else {
-                  $querystring .= " and approved_pod.carrierID = '" . $entityid . "'";
+                  $querystring .= " AND approved_pod.carrierID = '" . $entityid . "'";
               }
           }
 
-          $querystring .= " order by approved_pod.createdAt desc";
+          $querystring .= " ORDER BY approved_pod.createdAt desc";
 
           $result = $dbhandle->query($querystring);
           if (count($result) > 0) {
               $currentData = $result->fetchAll();
               for ($c = 0; $c < count($currentData); $c++) {
-                    $currentRevenue += $currentData[$c]['totalRevenue'];
-                    $currentPayout += $currentData[$c]['carrierTotalRate'];
+                    $currentRevenue += $currentData[$c]['cost'];
+                    $currentPayout += $currentData[$c]['carrierRate'];
               }
               $currentDifference += $currentRevenue - $currentPayout;
           }
@@ -229,27 +234,27 @@ class Reports
 
           /* Previous Week */
           $querystring = "SELECT * FROM approved_pod
-                                        JOIN `orders` on orders.id = approved_pod.orderDetailID
-                                        WHERE approved_pod.createdAt >= CURDATE() - INTERVAL DAYOFWEEK(CURDATE())+6 DAY
-                                        AND approved_pod.createdAt < CURDATE() - INTERVAL DAYOFWEEK(CURDATE())-1 DAY";
+                          JOIN `order_details` on order_details.id = approved_pod.orderDetailID
+                          WHERE approved_pod.createdAt >= CURDATE() - INTERVAL DAYOFWEEK(CURDATE())+6 DAY
+                          AND approved_pod.createdAt < CURDATE() - INTERVAL DAYOFWEEK(CURDATE())-1 DAY";
 
           if ($entityid > 0) {
               if ($entitytype == 1) {
-                  $querystring .= " and orders.customerID = '" . $entityid . "'";
+                  $querystring .= " AND orders.customerID = '" . $entityid . "'";
               } else {
-                  $querystring .= " and approved_pod.carrierID = '" . $entityid . "'";
+                  $querystring .= " AND approved_pod.carrierID = '" . $entityid . "'";
               }
           }
 
-          $querystring .= " order by approved_pod.createdAt desc";
+          $querystring .= " ORDER BY approved_pod.createdAt desc";
 
           $result = $dbhandle->query($querystring);
 
           if (count($result) > 0) {
               $previousData = $result->fetchAll();
               for ($c = 0; $c < count($previousData); $c++) {
-                    $previousRevenue += $previousData[$c]['totalRevenue'];
-                    $previousPayout += $previousData[$c]['carrierTotalRate'];
+                    $previousRevenue += $previousData[$c]['rate'];
+                    $previousPayout += $previousData[$c]['carrierRate'];
               }
               $previousDifference += ($previousRevenue - $previousPayout);
           }
@@ -258,26 +263,26 @@ class Reports
 
           /* This Month */
           $querystring = "SELECT * FROM approved_pod
-                                      JOIN `orders` on orders.id = approved_pod.orderDetailID
-                                      WHERE MONTH(approved_pod.createdAt)=MONTH(NOW()) AND YEAR(approved_pod.createdAt)=YEAR(NOW())";
+                          JOIN `order_details` on order_details.id = approved_pod.orderDetailID
+                          WHERE MONTH(approved_pod.createdAt)=MONTH(NOW()) AND YEAR(approved_pod.createdAt)=YEAR(NOW())";
 
           if ($entityid > 0) {
               if ($entitytype == 1) {
-                  $querystring .= " and orders.customerID = '" . $entityid . "'";
+                  $querystring .= " AND orders.customerID = '" . $entityid . "'";
               } else {
-                  $querystring .= " and approved_pod.carrierID = '" . $entityid . "'";
+                  $querystring .= " AND approved_pod.carrierID = '" . $entityid . "'";
               }
           }
 
-          $querystring .= " order by approved_pod.createdAt desc";
+          $querystring .= " ORDER BY approved_pod.createdAt desc";
 
           $result = $dbhandle->query($querystring);
 
           if (count($result) > 0) {
               $monthData = $result->fetchAll();
               for ($c = 0; $c < count($monthData); $c++) {
-                    $monthRevenue += $monthData[$c]['totalRevenue'];
-                    $monthPayout += $monthData[$c]['carrierTotalRate'];
+                    $monthRevenue += $monthData[$c]['cost'];
+                    $monthPayout += $monthData[$c]['carrierRate'];
               }
               $monthDifference += $monthRevenue - $monthPayout;
           }
@@ -310,27 +315,27 @@ class Reports
 
           /* Current Week */
           $querystring = "SELECT *
-                                     FROM approved_pod
-                                     JOIN `orders` on orders.id = approved_pod.orderDetailID
-                                     WHERE approved_pod.createdAt BETWEEN CURDATE()-INTERVAL 1 WEEK AND CURDATE()";
+                          FROM approved_pod
+                          JOIN `order_details` on order_details.id = approved_pod.orderDetailID
+                          WHERE approved_pod.createdAt BETWEEN CURDATE()-INTERVAL 1 WEEK AND CURDATE() + INTERVAL 1 DAY";
 
           if ($entityid > 0) {
               if ($entitytype == 1) {
-                  $querystring .= " and orders.customerID = '" . $entityid . "'";
+                  $querystring .= " AND orders.customerID = '" . $entityid . "'";
               } else {
-                  $querystring .= " and approved_pod.carrierID = '" . $entityid . "'";
+                  $querystring .= " AND approved_pod.carrierID = '" . $entityid . "'";
               }
           }
 
-          $querystring .= " order by approved_pod.createdAt desc";
+          $querystring .= " ORDER BY approved_pod.createdAt desc";
 
           $result = $dbhandle->query($querystring);
 
           if (count($result) > 0) {
               $currentData = $result->fetchAll();
               for ($c = 0; $c < count($currentData); $c++) {
-                    $currentRevenue += $currentData[$c]['totalRevenue'];
-                    $currentPayout += $currentData[$c]['carrierTotalRate'];
+                    $currentRevenue += $currentData[$c]['cost'];
+                    $currentPayout += $currentData[$c]['carrierRate'];
               }
               $currentDifference += $currentRevenue - $currentPayout;
           }
@@ -339,27 +344,27 @@ class Reports
 
           /* Previous Week */
           $querystring = "SELECT * FROM approved_pod
-                                        JOIN `orders` on orders.id = approved_pod.orderDetailID
-                                        WHERE approved_pod.createdAt >= CURDATE() - INTERVAL DAYOFWEEK(CURDATE())+6 DAY
-                                        AND approved_pod.createdAt < CURDATE() - INTERVAL DAYOFWEEK(CURDATE())-1 DAY";
+                          JOIN `order_details` on order_details.id = approved_pod.orderDetailID
+                          WHERE approved_pod.createdAt >= CURDATE() - INTERVAL DAYOFWEEK(CURDATE())+6 DAY
+                          AND approved_pod.createdAt < CURDATE() - INTERVAL DAYOFWEEK(CURDATE())-1 DAY";
 
           if ($entityid > 0) {
               if ($entitytype == 1) {
-                  $querystring .= " and orders.customerID = '" . $entityid . "'";
+                  $querystring .= " AND orders.customerID = '" . $entityid . "'";
               } else {
-                  $querystring .= " and approved_pod.carrierID = '" . $entityid . "'";
+                  $querystring .= " AND approved_pod.carrierID = '" . $entityid . "'";
               }
           }
 
-          $querystring .= " order by approved_pod.createdAt desc";
+          $querystring .= " ORDER BY approved_pod.createdAt desc";
 
           $result = $dbhandle->query($querystring);
 
           if (count($result) > 0) {
               $previousData = $result->fetchAll();
               for ($c = 0; $c < count($previousData); $c++) {
-                    $previousRevenue += $previousData[$c]['totalRevenue'];
-                    $previousPayout += $previousData[$c]['carrierTotalRate'];
+                    $previousRevenue += $previousData[$c]['cost'];
+                    $previousPayout += $previousData[$c]['carrierRate'];
               }
               $previousDifference += ($previousRevenue - $previousPayout);
           }
@@ -368,26 +373,26 @@ class Reports
 
           /* This Month */
           $querystring = "SELECT * FROM approved_pod
-                                      JOIN `orders` on orders.id = approved_pod.orderDetailID
-                                      WHERE MONTH(approved_pod.createdAt)=MONTH(NOW()) AND YEAR(approved_pod.createdAt)=YEAR(NOW())";
+                          JOIN `order_details` on order_details.id = approved_pod.orderDetailID
+                          WHERE MONTH(approved_pod.createdAt)=MONTH(NOW()) AND YEAR(approved_pod.createdAt)=YEAR(NOW())";
 
           if ($entityid > 0) {
               if ($entitytype == 1) {
-                  $querystring .= " and orders.customerID = '" . $entityid . "'";
+                  $querystring .= " AND orders.customerID = '" . $entityid . "'";
               } else {
-                  $querystring .= " and approved_pod.carrierID = '" . $entityid . "'";
+                  $querystring .= " AND approved_pod.carrierID = '" . $entityid . "'";
               }
           }
 
-          $querystring .= " order by approved_pod.createdAt desc";
+          $querystring .= " ORDER BY approved_pod.createdAt desc";
 
           $result = $dbhandle->query($querystring);
 
           if (count($result) > 0) {
               $monthData = $result->fetchAll();
               for ($c = 0; $c < count($monthData); $c++) {
-                    $monthRevenue += $monthData[$c]['totalRevenue'];
-                    $monthPayout += $monthData[$c]['carrierTotalRate'];
+                    $monthRevenue += $monthData[$c]['cost'];
+                    $monthPayout += $monthData[$c]['carrierRate'];
               }
               $monthDifference += $monthRevenue - $monthPayout;
           }
@@ -576,7 +581,8 @@ class Reports
           /* Get Potential Sales */
           $querystring = "SELECT customer_needs.entityID, customer_needs.distance, customer_needs.qty, customer_needs.rate, customer_needs.rateType
                           FROM customer_needs
-                          WHERE customer_needs.availableDate BETWEEN '" . $startDate . "' AND '" . $endDate . "'";
+                          WHERE rootCustomerNeedsID > 0
+                          AND customer_needs.availableDate BETWEEN '" . $startDate . "' AND '" . $endDate . "'";
 
           if ($entityid > 0) {
               if ($entitytype == 1) {
@@ -598,7 +604,8 @@ class Reports
                     if ($needs['rateType'] == "Flat Rate") {
                         $potentialSales = $needs['rate'];
                     } else {
-                        $potentialSales = ($needs['rate'] * $needs['qty']) * $needs['distance'];
+                        //$potentialSales = ($needs['rate'] * $needs['qty']) * $needs['distance'];
+                        $potentialSales = ( ($entityArray[$needs['entityID']]['negotiatedRate'] * $needs['qty']) * $needs['distance'] ); // Use the rate for the customer to calc potential
                     }
                     $entityArray[$needs['entityID']]['potentialSales'] += $potentialSales;
 
@@ -631,7 +638,7 @@ class Reports
                         $entityArray[$approvedData['id']]['actualSales'] = 0;
                     }
 
-                    $entityArray[$approvedData['id']]['actualSales'] += approvedData['cost'];
+                    $entityArray[$approvedData['id']]['actualSales'] += $approvedData['cost'];
               }
           }
 
@@ -663,6 +670,11 @@ class Reports
                         $entityArray[$damageClaim['entityID']]['repairCosts'] += $damageClaim['negotiatedRepairCost'];
                     }
               }
+          }
+
+          // Calculate the Total Revenue
+          foreach($entityArray as $k => $v) {
+            $entityArray[$k]['totalRevenue'] = $entityArray[$k]['actualSales'] - $entityArray[$k]['repairCosts'];
           }
 
           // Setup to return $entityArray as a JSON object array
@@ -700,60 +712,155 @@ class Reports
     public function getrevenueanalysiscsv(&$db,$startDate,$endDate,$entitytype,$entityid) {
 
           $data = "Date Range,".$startDate.",".$endDate."\n";
-          $data .= "Order ID,Customer Name,Carrier Name,Cost To Customer,Cost To Carrier,QB Invoice #,QB Status\n";
+          $data .= "Customer Name,Rate Type,Negotiated Rate,Potential Sales,Actual Sales,Repair Costs,Total Revenue\n";
 
           $dbhandle = new $db('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS);
 
-          /* Get approved_pod records */
-          $querystring = "SELECT approved_pod.orderID, approved_pod.orderDetailID, approved_pod.carrierID, approved_pod.cost, approved_pod.qbInvoiceNumber, approved_pod.qbInvoiceStatus, entities.name
-                                     FROM approved_pod
-                                     JOIN `orders` on orders.id = approved_pod.orderID
-                                     LEFT JOIN `entities` on entities.id = approved_pod.customerID
-                                     WHERE approved_pod.createdAt BETWEEN '" . $startDate . "' AND '" . $endDate . "'";
+          /* Get Entities for Report */
+          $querystring = "SELECT entities.id, entities.name, entities.rateType, entities.negotiatedRate
+                          FROM entities";
 
           if ($entityid > 0) {
-              if ($entitytype == 1) {
-                  $querystring .= " and orders.customerID = '" . $entityid . "'";
-              } else {
-                  $querystring .= " and approved_pod.carrierID = '" . $entityid . "'";
+              $querystring .= " WHERE id = '" . $entityid . "'";
+          } else {
+              $querystring .= " WHERE entityTypeID = '1'";
+          }
+
+          $querystring .= " ORDER BY entities.name";
+
+          $result = $dbhandle->query($querystring);
+
+          if (count($result) > 0) {
+              $entityData = $result->fetchAll();
+              foreach ($entityData as $entityRow) {
+                  $entityArray[$entityRow['id']]['name'] = $entityRow['name'];
+                  $entityArray[$entityRow['id']]['rateType'] = $entityRow['rateType'];
+                  $entityArray[$entityRow['id']]['negotiatedRate'] = $entityRow['negotiatedRate'];
+                  $entityArray[$entityRow['id']]['potentialSales'] = 0; // Set up for the Customer to keep track below
+                  $entityArray[$entityRow['id']]['actualSales'] = 0; // Set up for the Customer to keep track below
+                  $entityArray[$entityRow['id']]['repairCosts'] = 0; // Set up for the Customer to keep track below
+                  $entityArray[$entityRow['id']]['totalRevenue'] = 0; // Set up for the Customer to keep track below
               }
           }
 
-          $querystring .= " order by approved_pod.createdAt desc";
+          /* Get Potential Sales */
+          $querystring = "SELECT customer_needs.entityID, customer_needs.distance, customer_needs.qty, customer_needs.rate, customer_needs.rateType
+                          FROM customer_needs
+                          WHERE rootCustomerNeedsID > 0
+                          AND customer_needs.availableDate BETWEEN '" . $startDate . "' AND '" . $endDate . "'";
+
+          if ($entityid > 0) {
+              if ($entitytype == 1) {
+                  $querystring .= " AND customer_needs.entityID = '" . $entityid . "'";
+              }
+          }
+
+          $querystring .= " ORDER BY customer_needs.availableDate desc";
+
+          $result = $dbhandle->query($querystring);
+
+          if (count($result) > 0) {
+              $needsData = $result->fetchAll();
+              foreach ($needsData as $needs) {
+                    $potentialSales = 0;
+                    if (!isset($entityArray[$needs['entityID']]['potentialSales'])) {
+                        $entityArray[$needs['entityID']]['potentialSales'] = 0;
+                    }
+                    if ($needs['rateType'] == "Flat Rate") {
+                        $potentialSales = $needs['rate'];
+                    } else {
+                        //$potentialSales = ($needs['rate'] * $needs['qty']) * $needs['distance'];
+                        $potentialSales = ( ($entityArray[$needs['entityID']]['negotiatedRate'] * $needs['qty']) * $needs['distance'] ); // Use the rate for the customer to calc potential
+                    }
+                    $entityArray[$needs['entityID']]['potentialSales'] += $potentialSales;
+
+              }
+          }
+
+          /* Get Actual Sales */
+          $querystring = "SELECT approved_pod.orderID, approved_pod.orderDetailID, approved_pod.cost, entities.id
+                          FROM approved_pod
+                          JOIN `orders` on orders.id = approved_pod.orderID
+                          LEFT JOIN `entities` on entities.id = approved_pod.customerID
+                          WHERE approved_pod.createdAt BETWEEN '" . $startDate . "' AND '" . $endDate . "'
+                          AND approved_pod.hasBeenInvoiced = 1";
+
+          if ($entityid > 0) {
+              if ($entitytype == 1) {
+                  $querystring .= " AND orders.customerID = '" . $entityid . "'";
+              }
+          }
+
+          $querystring .= " ORDER BY approved_pod.createdAt desc";
 
           $result = $dbhandle->query($querystring);
 
           if (count($result) > 0) {
               $approvedPodData = $result->fetchAll();
-              for ($c = 0; $c < count($approvedPodData); $c++) {
-                    $orderID = $approvedPodData[$c]['orderID'];
-                    $costToCustomer = $approvedPodData[$c]['cost'];
-                    $costToCarrier = $approvedPodData[$c]['cost'];
-                    $customerName = $approvedPodData[$c]['name'];
-                    $qbInvoiceNumber = $approvedPodData[$c]['qbInvoiceNumber'];
-                    $qbInvoiceStatus = $approvedPodData[$c]['qbInvoiceStatus'];
-
-                    /* Get carrier name for approved_pod record */
-                    $detailsResult = $dbhandle->query("SELECT order_details.carrierRate, order_details.qty, entities.name
-                                                        FROM order_details
-                                                        JOIN entities on entities.id = order_details.carrierID
-                                                        WHERE order_details.carrierID = '" . $approvedPodData[$c]['carrierID'] . "'
-                                                        AND order_details.orderID = '" . $approvedPodData[$c]['orderID'] . "'
-                                                        AND order_details.id = '" . $approvedPodData[$c]['orderDetailID'] . "'");
-                    $costToCarrier = 0;
-                    $carrierName = "";
-                    $detailsData = $detailsResult->fetchAll();
-                    for ($d = 0; $d < count($detailsData); $d++) {
-                        $carrierName = $detailsData[$d]['name'];
-                        if ($detailsData[$d]['qty'] > 0) {
-                            $costToCarrier = $detailsData[$d]['carrierRate'] / $detailsData[$d]['qty'];
-                        }
-
+              foreach ($approvedPodData as $approvedData) {
+                    $actualSales = 0;
+                    if (!isset($entityArray[$approvedData['id']]['actualSales'])) {
+                        $entityArray[$approvedData['id']]['actualSales'] = 0;
                     }
 
-                    $data .= $orderID.",".$customerName.",".$carrierName.",".$costToCustomer.",".$costToCarrier.",".$qbInvoiceNumber.",".$qbInvoiceStatus."\n";
-
+                    $entityArray[$approvedData['id']]['actualSales'] += $approvedData['cost'];
               }
+          }
+
+          /* Get Damage Claims */
+          $querystring = "SELECT entityID, negotiatedRepairCost
+                          FROM damage_claims
+                          WHERE damage_claims.createdAt BETWEEN '" . $startDate . "' AND '" . $endDate . "'
+                          AND damage_claims.status = 'Active'";
+
+          if ($entityid > 0) {
+              if ($entitytype == 1) {
+                  $querystring .= " AND damage_claims.entityID = '" . $entityid . "'";
+              }
+          }
+
+          $querystring .= " ORDER BY damage_claims.createdAt desc";
+
+          $result = $dbhandle->query($querystring);
+
+          if (count($result) > 0) {
+              $damageClaimData = $result->fetchAll();
+              foreach ($damageClaimData as $damageClaim) {
+                    $damageAmount = 0;
+                    if (!isset($entityArray[$damageClaim['entityID']]['cost']) && isset($entityArray[$damageClaim['entityID']]['name'])) {
+                        $entityArray[$damageClaim['entityID']]['repairCosts'] = 0;
+                    }
+
+                    if (isset($entityArray[$damageClaim['entityID']]['name'])) {
+                        $entityArray[$damageClaim['entityID']]['repairCosts'] += $damageClaim['negotiatedRepairCost'];
+                    }
+              }
+          }
+
+          // Calculate the Total Revenue
+          foreach($entityArray as $k => $v) {
+            $entityArray[$k]['totalRevenue'] = $entityArray[$k]['actualSales'] - $entityArray[$k]['repairCosts'];
+          }
+
+          // Setup to return $entityArray as a JSON object array
+          $counter = 0;
+          foreach($entityArray as $k => $v) {
+            $jcounter = 0;
+            foreach($v as $key => $value) {
+                if ($jcounter > 0) {
+                    $data .= ", ";
+                }
+                //$returnArray .= "\"{$key}\": \"{$value}\"";
+                $data .= $value;
+                $jcounter++;
+
+            }
+
+            if ($counter < count($entityArray) - 1) {
+                $data .= "\n";
+                $counter++;
+            }
+
           }
 
           if ($data) {
