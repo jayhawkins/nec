@@ -240,6 +240,9 @@ if ($_SESSION['entityid'] > 0) {
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.5.1/css/buttons.bootstrap.min.css" />
     <!--link rel="stylesheet" href="vendor/datatables/css/buttons.bootstrap.min.css"-->
 
+    <link rel="stylesheet" href="vendor/messenger/build/css/messenger.css">
+    <link rel="stylesheet" href="vendor/messenger/build/css/messenger-theme-future.css">
+
     <link rel="stylesheet" href="css/jquery-ui.css" />
     <link rel="shortcut icon" href="img/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -1536,7 +1539,7 @@ if ($_SESSION['entityid'] > 0) {
 <?php
     }
 
-    if ( ($_SESSION['entitytype'] > 0 || $_SESSION['entityid'] == 0 ) && in_array($_SESSION['usertypeid'], $reportsMenuAccessList) ) {
+    if ( ($_SESSION['entitytype'] == 0 || $_SESSION['entityid'] == 0 ) && in_array($_SESSION['usertypeid'], $reportsMenuAccessList) ) {
  ?>
 
             <li><a class="collapsed" href="#sidebar-sub-levels" data-toggle="collapse" data-parent="#sidebar-levels">
@@ -1554,18 +1557,45 @@ if ($_SESSION['entityid'] > 0) {
                   <li><a href="#" onclick="ajaxFormCall('listReportsRevenueAnalysis');">Revenue Analysis</a></li>
                   <li><a href="#" onclick="ajaxFormCall('listReportsOutstanding');">Outstanding Availability</a></li>
                   <li><a href="#" onclick="ajaxFormCall('listReportsTrends');">Availability/Needs Trends</a></li>
+                  <li><a href="#" onclick="ajaxFormCall('listReportsDeliveredStateByState');">Delivered State By State</a></li>
+                  <li><a href="#" onclick="ajaxFormCall('listReportsTrailersBooked');">Trailers Booked</a></li>
+              </ul>
+            </li>
+
+<?php
+    }
+
+    if ( ($_SESSION['entitytype'] == 1 || $_SESSION['entityid'] > 0 ) && in_array($_SESSION['usertypeid'], $reportsMenuAccessList) ) {
+ ?>
+
+            <li><a class="collapsed" href="#sidebar-sub-levels-customer" data-toggle="collapse" data-parent="#sidebar-levels">
+                    <span class="icon">
+                        <i class="fa fa-list"></i>
+                    </span>
+                      Reporting
+                      <i class="toggle fa fa-angle-down"></i>
+                </a>
+              <ul id="sidebar-sub-levels-customer" class="collapse">
+                  <li><a href="#" onclick="ajaxFormCall('listReportsDelivered');">Delivered Reports</a></li>
+                  <li><a href="#" onclick="ajaxFormCall('listReportsUndelivered');">Undelivered Reports</a></li>
+                  <li><a href="#" onclick="ajaxFormCall('listReportsARSummary');">A/R Summary</a></li>
+                  <li><a href="#" onclick="ajaxFormCall('listReportsARDetail');">A/R Detail</a></li>
+                  <li><a href="#" onclick="ajaxFormCall('listReportsRevenueAnalysis');">Revenue Analysis</a></li>
+                  <li><a href="#" onclick="ajaxFormCall('listReportsOutstanding');">Outstanding Availability</a></li>
+                  <li><a href="#" onclick="ajaxFormCall('listReportsTrends');">Availability/Needs Trends</a></li>
+                  <li><a href="#" onclick="ajaxFormCall('listReportsDeliveredStateByState');">Delivered State By State</a></li>
+                  <li><a href="#" onclick="ajaxFormCall('listReportsTrailersBooked');">Trailers Booked</a></li>
               </ul>
             </li>
 
 <?php
     }
 ?>
+
         </ul>
         <!-- every .sidebar-nav may have a title -->
         <!--h5 class="sidebar-nav-title">&nbsp; <a class="action-link" href="#"><i class="glyphicon glyphicon-refresh"></i></a></h5-->
         <ul class="sidebar-nav">
-<?php
-?>
             <li>
                 <!-- an example of nested submenu. basic bootstrap collapse component -->
                 <a class="collapsed" href="#sidebar-forms" data-toggle="collapse" data-parent="#sidebar">
@@ -2549,6 +2579,8 @@ if ($_SESSION['entitytype'] == 0) {
 <script src="js/tables-dynamic.js"></script>
 <script src="vendor/select2/select2.min.js"></script>map
 <script src="vendor/parsleyjs/dist/parsley.min.js"></script>
+<script src="vendor/messenger/build/js/messenger.min.js"></script>
+<script src="vendor/messenger/build/js/messenger-theme-future.js"></script>
 <script src="../vendor/jquery-ui/jquery-ui.js"></script>
 
 <!-- page specific js -->

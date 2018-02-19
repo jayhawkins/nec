@@ -148,11 +148,21 @@ $cdpvList = $cdpvresult["configuration_data_points"];
                         //$("#loadOutRateType").val('');
                         passValidation = true;
                       } else {
-                        alert("Updating Business Information Failed!");
+                        //alert("Updating Business Information Failed!");
+                        Messenger().post({
+                            message: "Updating Business Information Failed!",
+                            type: 'error',
+                            showCloseButton: true
+                        });
                       }
                    },
                    error: function() {
-                      alert("There Was An Error Adding Business!");
+                      //alert("There Was An Error Adding Business!");
+                      Messenger().post({
+                            message: "There Was An Error Adding Business!",
+                            type: 'error',
+                            showCloseButton: true
+                        });
                    }
                 });
 
@@ -273,11 +283,21 @@ $cdpvList = $cdpvresult["configuration_data_points"];
                         $("#addLoadOutRateMax").val('');
                         passValidation = true;
                       } else {
-                        alert("Updating Business Information Failed! \n\n" + data);
+                        //alert("Updating Business Information Failed! \n\n" + data);
+                        Messenger().post({
+                            message: "Updating Business Information Failed! \n\n" + data,
+                            type: 'error',
+                            showCloseButton: true
+                        });
                       }
                    },
                    error: function(error) {
-                      alert("There Was An Error Adding Business! \n\n" + error);
+                      //alert("There Was An Error Adding Business! \n\n" + error);
+                      Messenger().post({
+                            message: "There Was An Error Adding Business! \n\n" + error,
+                            type: 'error',
+                            showCloseButton: true
+                        });
                    }
                 });
 
@@ -390,11 +410,21 @@ $cdpvList = $cdpvresult["configuration_data_points"];
                   passValidation = true;
                 } else {
                   $(myDialog).modal('hide');
-                  alert("Changing Status of Entity Failed!");
+                  //alert("Changing Status of Entity Failed!");
+                  Messenger().post({
+                        message: "Changing Status of Entity Failed!",
+                        type: 'error',
+                        showCloseButton: true
+                    });
                 }
              },
              error: function() {
-                alert("There Was An Error Changing Entity Status!");
+                //alert("There Was An Error Changing Entity Status!");
+                Messenger().post({
+                    message: "There Was An Error Changing Entity Status!",
+                    type: 'error',
+                    showCloseButton: true
+                });
              }
           });
 
@@ -879,6 +909,10 @@ $cdpvList = $cdpvresult["configuration_data_points"];
 
     //var contacts = <?php echo $contacts; ?>;
 
+    Messenger.options = {
+        extraClasses: 'messenger-fixed messenger-on-top'
+    }
+
     loadTableAJAX();
 
     var table = $("#datatable-table").DataTable();
@@ -991,7 +1025,12 @@ $cdpvList = $cdpvresult["configuration_data_points"];
                  $("#dp-check-list-box").html(dpli);
                },
                error: function() {
-                  alert('Failed Getting Configuration Settings!');
+                  //alert('Failed Getting Configuration Settings!');
+                  Messenger().post({
+                        message: 'Failed Getting Configuration Settings!',
+                        type: 'error',
+                        showCloseButton: true
+                    });
                }
           });
 

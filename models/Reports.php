@@ -3,6 +3,101 @@
 class Reports
 {
 
+    public function getdeliveredaveragedays(&$db, $entitytype, $entityid) {
+
+          $returnArray = "";
+
+          $dbhandle = new $db('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS);
+          $querystring = "select *, order_statuses.status as statusesstatus, orders.customerID as custID
+                                     from order_details
+                                     join order_statuses on order_statuses.orderDetailID = order_details.id
+                                     left join orders on orders.id = order_details.orderID
+                                     left join entities on entities.id = order_details.carrierID
+                                     where order_details.status = 'Open'
+                                     and order_statuses.status = 'Trailer Delivered'";
+
+          if ($entityid > 0) {
+              if ($entitytype == 1) {
+                  $querystring .= " and orders.customerID = '" . $entityid . "'";
+              } else {
+                  $querystring .= " and order_details.carrierID = '" . $entityid . "'";
+              }
+          }
+
+          $querystring .= " order by order_details.createdAt desc";
+
+          $result = $dbhandle->query($querystring);
+
+          if (count($result) > 0) {
+              $data = $result->fetchAll();
+              for ($c = 0; $c < count($data); $c++) {
+                    /* Get carrier name for approved_pod record */
+                    $entitiesResult = $dbhandle->query("SELECT name FROM entities WHERE id = '" . $data[$c]['custID'] . "'");
+
+                    $entitiesData = $entitiesResult->fetchAll();
+                    for ($e = 0; $e < count($entitiesData); $e++) {
+                        $customerName = $entitiesData[$e]['name'];
+                    }
+
+                    $returnArray .= json_encode(array('customerName' => $customerName, 'carrierName' => $data[$c]['name'], 'orderID' => $data[$c]['orderID'], 'unitNumber' => $data[$c]['unitNumber'], 'vinNumber' => $data[$c]['vinNumber'], 'city' => $data[$c]['city'], 'state' => $data[$c]['state'], 'statusesstatus' => $data[$c]['statusesstatus']));
+
+                    if ($c < count($data) - 1) {
+                        $returnArray .= ",";
+                    }
+
+              }
+              echo "{ \"order_details\": [".$returnArray."]}";
+          } else {
+              echo '{}';
+          }
+    }
+
+    public function getdeliveredstatebystate(&$db, $entitytype, $entityid) {
+
+          $returnArray = "";
+
+          $dbhandle = new $db('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS);
+          $querystring = "select order_details.destinationState, SUM(order_details.qty) as deliveredcount
+                          from order_details
+                          join order_statuses on order_statuses.orderDetailID = order_details.id
+                          where order_statuses.status = 'Trailer Delivered'";
+
+          if ($entityid > 0) {
+              if ($entitytype == 2) {
+                  $querystring .= " and order_details.carrierID = '" . $entityid . "'";
+              }
+          }
+
+          $querystring .= " group by order_details.destinationState
+                            order by order_details.destinationState";
+
+          $result = $dbhandle->query($querystring);
+
+          if (count($result) > 0) {
+              $data = $result->fetchAll();
+              for ($c = 0; $c < count($data); $c++) {
+
+                     /* Get State name for order_details record */
+                    $statesResult = $dbhandle->query("SELECT name FROM states WHERE abbreviation = '" . $data[$c]['destinationState'] . "'");
+
+                    $statesData = $statesResult->fetchAll();
+                    for ($e = 0; $e < count($statesData); $e++) {
+                        $stateName = $statesData[$e]['name'];
+                    }
+
+                    $returnArray .= json_encode(array('state' => $stateName, 'delivered' => $data[$c]['deliveredcount']));
+
+                    if ($c < count($data) - 1) {
+                        $returnArray .= ",";
+                    }
+
+              }
+              echo "{ \"order_details\": [".$returnArray."]}";
+          } else {
+              echo '{}';
+          }
+    }
+
     public function getdeliveredtrailers(&$db, $entitytype, $entityid) {
 
           $returnArray = "";
@@ -253,7 +348,7 @@ class Reports
           if (count($result) > 0) {
               $previousData = $result->fetchAll();
               for ($c = 0; $c < count($previousData); $c++) {
-                    $previousRevenue += $previousData[$c]['rate'];
+                    $previousRevenue += $previousData[$c]['cost'];
                     $previousPayout += $previousData[$c]['carrierRate'];
               }
               $previousDifference += ($previousRevenue - $previousPayout);
@@ -964,6 +1059,58 @@ class Reports
         } catch(Exception $e) {
             echo $e->getMessage();
         }
+    }
+
+    public function gettrailersbooked(&$db,$startDate,$endDate,$entitytype,$entityid) {
+
+          $returnArray = "";
+
+          $dbhandle = new $db('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS);
+
+          /* Get customer_needs_commit records */
+          $querystring = "SELECT customer_needs.entityID, SUM(customer_needs_commit.qty) as qty
+                          FROM customer_needs
+                          LEFT JOIN customer_needs_commit on customer_needs_commit.customerNeedsID = customer_needs.id
+                          WHERE customer_needs_commit.createdAt BETWEEN '" . $startDate . "' AND '" . $endDate . "'";
+
+          if ($entityid > 0) {
+              if ($entitytype == 1) {
+                  $querystring .= " AND customer_needs.entityID = '" . $entityid . "'";
+              }
+          }
+
+          $querystring .= " GROUP BY customer_needs.entityID";
+
+          $result = $dbhandle->query($querystring);
+
+          if (count($result) > 0) {
+              $orderData = $result->fetchAll();
+              for ($c = 0; $c < count($orderData); $c++) {
+
+                    $customerName = "*UNAVAILABLE*";
+                    /* Get carrier name for approved_pod record */
+                    $entitiesResult = $dbhandle->query("SELECT name FROM entities WHERE id = '" . $orderData[$c]['entityID'] . "'");
+
+                    $entitiesData = $entitiesResult->fetchAll();
+                    for ($e = 0; $e < count($entitiesData); $e++) {
+                        $customerName = $entitiesData[$e]['name'];
+                    }
+
+                    $returnArray .= json_encode(array('customerName' => $customerName,'qty' => $orderData[$c]['qty']));
+
+                    if ($c < count($orderData) - 1) {
+                        $returnArray .= ",";
+                    }
+              }
+          }
+
+          $return = "{ \"customer_needs_commit\": [".$returnArray."]}";
+
+          if ($return) {
+              echo $return;
+          } else {
+              echo '{}';
+          }
     }
 
     public function gettrends(&$db, $entitytype, $entityid, $timeFrame, $trendEntityType = "Customers") {

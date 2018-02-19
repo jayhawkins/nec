@@ -138,13 +138,23 @@ $contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?col
                       } else {
                           $("#load").html("Save Changes");
                           $("#load").prop("disabled", false);
-                        alert("Adding Contact Failed!");
+                        //alert("Adding Contact Failed!");
+                        Messenger().post({
+                            message: "Adding Contact Failed!",
+                            type: 'error',
+                            showCloseButton: true
+                        });
                       }
                    },
                    error: function() {
                        $("#load").html("Save Changes");
                        $("#load").prop("disabled", false);
-                      alert("There Was An Error Adding Contact!");
+                       //alert("There Was An Error Adding Contact!");
+                       Messenger().post({
+                            message: "There Was An Error Adding Contact!",
+                            type: 'error',
+                            showCloseButton: true
+                        });
                    }
                 });
 
@@ -250,11 +260,21 @@ $contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?col
                   passValidation = true;
                 } else {
                   $(myDialog).modal('hide');
-                  alert("Changing Status of Contact Failed!");
+                  //alert("Changing Status of Contact Failed!");
+                  Messenger().post({
+                        message: "Changing Status of Contact Failed!",
+                        type: 'error',
+                        showCloseButton: true
+                    });
                 }
              },
              error: function() {
-                alert("There Was An Error Changing Contact Status!");
+                //alert("There Was An Error Changing Contact Status!");
+                Messenger().post({
+                    message: "There Was An Error Changing Contact Status!",
+                    type: 'error',
+                    showCloseButton: true
+                });
              }
           });
 
@@ -756,6 +776,10 @@ $contactTypes = json_decode(file_get_contents(API_HOST_URL . '/contact_types?col
  if($_SESSION['entitytype'] != 0){
  ?>
  <script>
+
+    Messenger.options = {
+        extraClasses: 'messenger-fixed messenger-on-top'
+    }
 
     loadTableAJAX();
 

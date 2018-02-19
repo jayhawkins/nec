@@ -86,11 +86,21 @@ require '../lib/common.php';
                         $("#link").val('');
                         passValidation = true;
                       } else {
-                        alert("Adding Link Failed!");
+                        //alert("Adding Link Failed!");
+                        Messenger().post({
+                            message: "Adding Link Failed!",
+                            type: 'error',
+                            showCloseButton: true
+                        });
                       }
                    },
                    error: function() {
-                      alert("There Was An Error Adding Link!");
+                      //alert("There Was An Error Adding Link!");
+                      Messenger().post({
+                            message: "There Was An Error Adding Link!",
+                            type: 'error',
+                            showCloseButton: true
+                      });
                    }
                 });
 
@@ -181,11 +191,21 @@ require '../lib/common.php';
                   passValidation = true;
                 } else {
                   $(myDialog).modal('hide');
-                  alert("Changing Status of Link Failed!");
+                  //alert("Changing Status of Link Failed!");
+                  Messenger().post({
+                        message: "Changing Status of Link Failed!",
+                        type: 'error',
+                        showCloseButton: true
+                  });
                 }
              },
              error: function() {
-                alert("There Was An Error Changing Link Status!");
+                //alert("There Was An Error Changing Link Status!");
+                Messenger().post({
+                        message: "There Was An Error Changing Link Status!",
+                        type: 'error',
+                        showCloseButton: true
+                  });
              }
           });
 
@@ -334,6 +354,10 @@ require '../lib/common.php';
     </div>
 
  <script>
+
+    Messenger.options = {
+        extraClasses: 'messenger-fixed messenger-on-top'
+    }
 
     loadTableAJAX();
 

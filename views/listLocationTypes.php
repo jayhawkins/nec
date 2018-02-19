@@ -85,11 +85,21 @@ require '../lib/common.php';
                         $("#name").val('');
                         passValidation = true;
                       } else {
-                        alert("Adding Location Type Failed!");
+                        //alert("Adding Location Type Failed!");
+                        Messenger().post({
+                            message: "Adding Location Type Failed!",
+                            type: 'error',
+                            showCloseButton: true
+                        });
                       }
                    },
                    error: function() {
-                      alert("There Was An Error Adding Location Type!");
+                      //alert("There Was An Error Adding Location Type!");
+                      Messenger().post({
+                            message: "There Was An Error Adding Location Type!",
+                            type: 'error',
+                            showCloseButton: true
+                        });
                    }
                 });
 
@@ -177,11 +187,21 @@ require '../lib/common.php';
                   passValidation = true;
                 } else {
                   $(myDialog).modal('hide');
-                  alert("Changing Status of Location Type Failed!");
+                  //alert("Changing Status of Location Type Failed!");
+                  Messenger().post({
+                        message: "Changing Status of Location Type Failed!",
+                        type: 'error',
+                        showCloseButton: true
+                    });
                 }
              },
              error: function() {
-                alert("There Was An Error Changing Location Type Status!");
+                //alert("There Was An Error Changing Location Type Status!");
+                Messenger().post({
+                    message: "There Was An Error Changing Location Type Status!",
+                    type: 'error',
+                    showCloseButton: true
+                });
              }
           });
 
@@ -328,6 +348,10 @@ require '../lib/common.php';
     </div>
 
  <script>
+
+    Messenger.options = {
+        extraClasses: 'messenger-fixed messenger-on-top'
+    }
 
     loadTableAJAX();
 

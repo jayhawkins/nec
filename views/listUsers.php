@@ -56,12 +56,22 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
                                     if (response == "success") {
                                         result = true;
                                     } else {
-                                        alert("Username Already Exists: " + response);
+                                        //alert("Username Already Exists: " + response);
+                                        Messenger().post({
+                                            message: "Username Already Exists: " + response,
+                                            type: 'error',
+                                            showCloseButton: true
+                                        });
                                         result = false;
                                     }
                                  },
                                  error: function(response) {
-                                    alert("Username Verification Failed: " + response);
+                                    //alert("Username Verification Failed: " + response);
+                                    Messenger().post({
+                                        message: "Username Verification Failed: " + response,
+                                        type: 'error',
+                                        showCloseButton: true
+                                    });
                                     result = false;
                                  }
                               });
@@ -80,7 +90,12 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
 
                 } else {
 
-                   alert('You Must Assign a Username.');
+                   //alert('You Must Assign a Username.');
+                   Messenger().post({
+                        message: 'You Must Assign a Username.',
+                        type: 'error',
+                        showCloseButton: true
+                    });
                    return false;
 
                 }
@@ -181,7 +196,12 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
                   }
                },
                error: function() {
-                  alert("There Was An Error Adding User!");
+                  //alert("There Was An Error Adding User!");
+                  Messenger().post({
+                        message: "There Was An Error Adding User!",
+                        type: 'error',
+                        showCloseButton: true
+                    });
                   $("#loadSave").html("Save");
                   $("#loadSave").prop("disabled", false);
                }
@@ -282,11 +302,21 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
                   passValidation = true;
                 } else {
                   $(myDialog).modal('hide');
-                  alert("Changing Status of User Failed!");
+                  //alert("Changing Status of User Failed!");
+                  Messenger().post({
+                        message: "Changing Status of User Failed!",
+                        type: 'error',
+                        showCloseButton: true
+                    });
                 }
              },
              error: function() {
-                alert("There Was An Error Changing User Status!");
+                //alert("There Was An Error Changing User Status!");
+                Messenger().post({
+                    message: "There Was An Error Changing User Status!",
+                    type: 'error',
+                    showCloseButton: true
+                });
              }
           });
 
@@ -787,6 +817,10 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
  ?>
  <script>
 
+    Messenger.options = {
+        extraClasses: 'messenger-fixed messenger-on-top'
+    }
+
     loadTableAJAX();
 
     var table1 = $("#datatable-table").DataTable();
@@ -870,6 +904,10 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
 
  ?>
 <script>
+
+    Messenger.options = {
+        extraClasses: 'messenger-fixed messenger-on-top'
+    }
 
     function openUsers(){
         $("#business-list").css("display", "none");
