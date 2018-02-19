@@ -106,7 +106,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                     contacts = data;
                },
                error: function() {
-                  alert("There Was An Error Retrieving Contacts!");
+                  //alert("There Was An Error Retrieving Contacts!");
+                  $("#errorAlertTitle").html("Error");
+                  $("#errorAlertBody").html("There Was An Error Retrieving Contacts!");
+                  $("#errorAlert").modal('show');
                }
             });
         }
@@ -190,22 +193,42 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                               if (response == "success") {
                               } else {
                                   result = false;
-                                  alert('Preparation Failed!');
+                                  //alert('Preparation Failed!');
+                                  Messenger().post({
+                                        message: 'Preparation Failed!',
+                                        type: 'error',
+                                        showCloseButton: true
+                                    });
                               }
                            },
                            error: function(response) {
                               result = false;
-                              alert('Failed Searching for Destination Location! - Notify NEC of this failure.');
+                              //alert('Failed Searching for Destination Location! - Notify NEC of this failure.');
+                              Messenger().post({
+                                    message: 'Failed Searching for Destination Location! - Notify NEC of this failure.',
+                                    type: 'error',
+                                    showCloseButton: true
+                                });
                            }
                         });
                     } else {
                         result = false;
-                        alert('Preparation Failed!');
+                        //alert('Preparation Failed!');
+                        Messenger().post({
+                                message: 'Preparation Failed!',
+                                type: 'error',
+                                showCloseButton: true
+                            });
                     }
                  },
                  error: function(response) {
                     result = false;
-                    alert('Failed Searching for Origination Location! - Notify NEC of this failure.');
+                    //alert('Failed Searching for Origination Location! - Notify NEC of this failure.');
+                    Messenger().post({
+                        message: 'Failed Searching for Origination Location! - Notify NEC of this failure.',
+                        type: 'error',
+                        showCloseButton: true
+                    });
                  }
               });
 
@@ -369,10 +392,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                             console.log(logResult);
                                         },
                                         error: function(error){
-
-                                            $("#errorAlertTitle").html("Error");
-                                            $("#errorAlertBody").html(error);
-                                            $("#errorAlert").modal('show');
+                                            Messenger().post({
+                                                message: error,
+                                                type: 'error',
+                                                showCloseButton: true
+                                            });
                                         }
                                    });
                                             //var updatedata = {rootCustomerNeedsID: data};
@@ -392,7 +416,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                                 error: function() {
                                                     $("#load").html("Save Changes");
                                                     $("#load").prop("disabled", false);
-	                                                	alert('Failed Updating Root Customer Needs ID! - Notify NEC of this failure.');
+                                                    alert('Failed Updating Root Customer Needs ID! - Notify NEC of this failure.');
+                                                    Messenger().post({
+                                                        message: error,
+                                                        type: 'error',
+                                                        showCloseButton: true
+                                                    });
                                                 }
                                             });
 
@@ -429,13 +458,23 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                 else {
                                     $("#load").html("Save Changes");
                                     $("#load").prop("disabled", false);
-	                                  alert("Adding Need Failed! Please Verify Your Data.");
+                                    //alert("Adding Need Failed! Please Verify Your Data.");
+                                    Messenger().post({
+                                        message: "Adding Need Failed! You Are Missing Required Data.",
+                                        type: 'error',
+                                        showCloseButton: true
+                                    });
                             }
                              },
                              error: function() {
                                  $("#load").html("Save Changes");
                                  $("#load").prop("disabled", false);
-	                            	 alert("There Was An Error Adding Availability!");
+                                 //alert("There Was An Error Adding Availability!");
+                                 Messenger().post({
+                                    message: "There Was An Error Adding Availability!",
+                                    type: 'error',
+                                    showCloseButton: true
+                                 });
                              }
                           });
 
@@ -687,13 +726,23 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                         $(myModal2).modal('hide');
                         loadTableAJAX();
                     } else {
-                        alert("Error During Success: " + data);
+                        //alert("Error During Success: " + data);
+                        Messenger().post({
+                            message: "Error During Success: " + data,
+                            type: 'error',
+                            showCloseButton: true
+                        });
                         $("#btnUpload").html("Upload");
                         $("#btnUpload").prop("disabled", false);
                     }
                 },
                 error: function(data) {
-                    alert("Error During Error: "+ data);
+                    //alert("Error During Error: "+ data);
+                    Messenger().post({
+                        message: "Error During Error: "+ data,
+                        type: 'error',
+                        showCloseButton: true
+                    });
                     $("#btnUpload").html("Upload");
                     $("#btnUpload").prop("disabled", false);
                 }
@@ -783,9 +832,11 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                 },
                 error: function(error){
 
-                    $("#errorAlertTitle").html("Error");
-                    $("#errorAlertBody").html(error);
-                    $("#errorAlert").modal('show');
+                    Messenger().post({
+                        message: error,
+                        type: 'error',
+                        showCloseButton: true
+                    });
                 }
            });
 
@@ -803,11 +854,21 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                   passValidation = true;
                 } else {
                   $(myDialog).modal('hide');
-                  alert("Changing Status of Need Failed!");
+                  //alert("Changing Status of Need Failed!");
+                  Messenger().post({
+                        message: "Changing Status of Need Failed!",
+                        type: 'error',
+                        showCloseButton: true
+                    });
                 }
              },
              error: function() {
-                alert("There Was An Error Changing Need Status!");
+                //alert("There Was An Error Changing Need Status!");
+                Messenger().post({
+                        message: "There Was An Error Changing Need Status!",
+                        type: 'error',
+                        showCloseButton: true
+                    });
              }
           });
 
@@ -968,15 +1029,30 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                          getLocationContacts();
                                     },
                                     error: function() {
-                                       alert("There Was An Error Adding Need Contacts!");
+                                       //alert("There Was An Error Adding Need Contacts!");
+                                       Messenger().post({
+                                            message: "There Was An Error Adding Need Contacts!",
+                                            type: 'error',
+                                            showCloseButton: true
+                                        });
                                     }
                                  });
                             } else {
-                                  alert("There Was An Issue Clearing Need Contacts!");
+                                  //alert("There Was An Issue Clearing Need Contacts!");
+                                  Messenger().post({
+                                        message: "There Was An Issue Clearing Need Contacts!",
+                                        type: 'error',
+                                        showCloseButton: true
+                                    });
                             }
                          },
                          error: function() {
                               alert("There Was An Error Deleting Need Records!");
+                              Messenger().post({
+                                    message: "There Was An Error Deleting Need Records!",
+                                    type: 'error',
+                                    showCloseButton: true
+                                });
                          }
                       });
                   }
@@ -1052,7 +1128,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                   locations_contacts = data;
              },
              error: function() {
-                alert("There Was An Error Retrieving Location Contacts!");
+                //alert("There Was An Error Retrieving Location Contacts!");
+                Messenger().post({
+                    message: "There Was An Error Retrieving Location Contacts!",
+                    type: 'error',
+                    showCloseButton: true
+                });
              }
           });
       }
@@ -1071,7 +1152,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                   alert(JSON.stringify(data));
              },
              error: function() {
-                alert("There Was An Error Retrieving Location Contacts!");
+                //alert("There Was An Error Retrieving Location Contacts!");
+                Messenger().post({
+                    message: "There Was An Error Retrieving Location Contacts!",
+                    type: 'error',
+                    showCloseButton: true
+                });
              }
           });
       }
@@ -1240,13 +1326,23 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                       } else {
                           $("#load2").html("Add Contact");
                           $("#load2").prop("disabled", false);
-                        alert("Adding Contact Failed!");
+                          //alert("Adding Contact Failed!");
+                          Messenger().post({
+                                message: "Adding Contact Failed!",
+                                type: 'error',
+                                showCloseButton: true
+                            });
                       }
                    },
                    error: function() {
                        $("#load2").html("Add Contact");
                        $("#load2").prop("disabled", false);
-                      alert("There Was An Error Adding Contact!");
+                       //alert("There Was An Error Adding Contact!");
+                       Messenger().post({
+                            message: "There Was An Error Adding Contact!",
+                            type: 'error',
+                            showCloseButton: true
+                        });
                    }
                 });
 
@@ -1851,6 +1947,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
     //$( "#originationState" ).select2();
     //$( "#destinationState" ).select2();
 
+    Messenger.options = {
+        extraClasses: 'messenger-fixed messenger-on-top'
+    }
+
     loadTableAJAX();
     getCustomerContactTitle(entityID);
 
@@ -1883,6 +1983,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
 	});
 
     $("#addNeed").click(function(){
+
       var li = '';
       var checked = '';
       var dpli = '';
@@ -2057,7 +2158,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
 
                },
                error: function() {
-                  alert('Failed Getting Configuration Settings! - Notify NEC of this failure.');
+                  //alert('Failed Getting Configuration Settings! - Notify NEC of this failure.');
+                  Messenger().post({
+                        message: 'Failed Getting Configuration Settings! - Notify NEC of this failure.',
+                        type: 'error',
+                        showCloseButton: true
+                    });
                }
             });
 
@@ -2090,7 +2196,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                  formatListBox();
                },
                error: function() {
-                  alert('Failed Getting Contacts! - Notify NEC of this failure.');
+                  //alert('Failed Getting Contacts! - Notify NEC of this failure.');
+                  Messenger().post({
+                        message: 'Failed Getting Contacts! - Notify NEC of this failure.',
+                        type: 'error',
+                        showCloseButton: true
+                    });
                }
             });
 
@@ -2187,7 +2298,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
              formatListBox();
            },
            error: function() {
-              alert('Failed Getting Contacts! - Notify NEC of this failure.');
+              //alert('Failed Getting Contacts! - Notify NEC of this failure.');
+              Messenger().post({
+                        message: 'Failed Getting Contacts! - Notify NEC of this failure.',
+                        type: 'error',
+                        showCloseButton: true
+                    });
            }
         });
 
@@ -2220,7 +2336,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
              }
            },
            error: function() {
-              alert('Failed Getting Configuration Settings! - Notify NEC of this failure.');
+              //alert('Failed Getting Configuration Settings! - Notify NEC of this failure.');
+              Messenger().post({
+                        message: 'Failed Getting Configuration Settings! - Notify NEC of this failure.',
+                        type: 'error',
+                        showCloseButton: true
+                    });
            }
         });
     });
@@ -2276,7 +2397,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
              $("#suggesstion-box").hide();
            },
            error: function() {
-                alert('Error Selecting Origination City!');
+                //alert('Error Selecting Origination City!');
+                Messenger().post({
+                        message: 'Error Selecting Origination City!',
+                        type: 'error',
+                        showCloseButton: true
+                    });
            }
         });
     }
@@ -2333,7 +2459,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
              $("#suggesstion-box").hide();
            },
            error: function() {
-                alert('Error Selecting Destination City!');
+                //alert('Error Selecting Destination City!');
+                Messenger().post({
+                        message: 'Error Selecting Destination City!',
+                        type: 'error',
+                        showCloseButton: true
+                    });
            }
         });
     }

@@ -836,6 +836,62 @@ $app->route('POST /indexgetavailability', function() {
 /*****************************************************************************/
 // Reporting Processes
 /*****************************************************************************/
+$app->route('POST /getdeliveredaveragedays', function() {
+    $entityType = Flight::request()->data->entitytype;
+    $entityID = Flight::request()->data->entityid;
+    $reports = Flight::reports();
+    $db = Flight::db();
+    $result = $reports->getdeliveredaveragedays($db,$entityType,$entityID);
+    if ($result) {
+        print_r($result);
+        //echo "success";
+    } else {
+        print_r($result);
+    }
+});
+
+$app->route('POST /getdeliveredaveragedayscsv', function() {
+    $entityType = Flight::request()->data->entitytype;
+    $entityID = Flight::request()->data->entityid;
+    $reports = Flight::reports();
+    $db = Flight::db();
+    $result = $reports->getdeliveredaveragedayscsv($db,$entityType,$entityID);
+    if ($result) {
+        print_r($result);
+        //echo "success";
+    } else {
+        print_r($result);
+    }
+});
+
+$app->route('POST /getdeliveredstatebystate', function() {
+    $entityType = Flight::request()->data->entitytype;
+    $entityID = Flight::request()->data->entityid;
+    $reports = Flight::reports();
+    $db = Flight::db();
+    $result = $reports->getdeliveredstatebystate($db,$entityType,$entityID);
+    if ($result) {
+        print_r($result);
+        //echo "success";
+    } else {
+        print_r($result);
+    }
+});
+
+$app->route('POST /getdeliveredstatebystatecsv', function() {
+    $entityType = Flight::request()->data->entitytype;
+    $entityID = Flight::request()->data->entityid;
+    $reports = Flight::reports();
+    $db = Flight::db();
+    $result = $reports->getdeliveredstatebystatecsv($db,$entityType,$entityID);
+    if ($result) {
+        print_r($result);
+        //echo "success";
+    } else {
+        print_r($result);
+    }
+});
+
 $app->route('POST /getdeliveredtrailers', function() {
     $entityType = Flight::request()->data->entitytype;
     $entityID = Flight::request()->data->entityid;
@@ -1006,6 +1062,38 @@ $app->route('POST /getavailabilitywithnocommitscsv', function() {
     $reports = Flight::reports();
     $db = Flight::db();
     $result = $reports->getavailabilitywithnocommitscsv($db,$entityType,$entityID);
+    if ($result) {
+        print_r($result);
+        //echo "success";
+    } else {
+        print_r($result);
+    }
+});
+
+$app->route('POST /gettrailersbooked', function() {
+    $entityType = Flight::request()->data->entitytype;
+    $entityID = Flight::request()->data->entityid;
+    $startDate = Flight::request()->data->startDate;
+    $endDate = Flight::request()->data->endDate;
+    $reports = Flight::reports();
+    $db = Flight::db();
+    $result = $reports->gettrailersbooked($db,$startDate,$endDate,$entityType,$entityID);
+    if ($result) {
+        print_r($result);
+        //echo "success";
+    } else {
+        print_r($result);
+    }
+});
+
+$app->route('POST /gettrailersbookedcsv', function() {
+    $entityType = Flight::request()->data->entitytype;
+    $entityID = Flight::request()->data->entityid;
+    $startDate = Flight::request()->data->startDate;
+    $endDate = Flight::request()->data->endDate;
+    $reports = Flight::reports();
+    $db = Flight::db();
+    $result = $reports->gettrailersbookedcsv($db,$startDate,$endDate,$entityType,$entityID);
     if ($result) {
         print_r($result);
         //echo "success";
