@@ -447,7 +447,7 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
                                       buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text\"></i> <span class=\"text\">Enable</span></button>";
                             }
 
-                            if (entityTypeID == 0) {
+                            if (entityTypeID == 0 && o.users[0].status == 'Active') {
                                       buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-user text\"></i> <span class=\"text\">Login As</span></button>";
                             }
 
