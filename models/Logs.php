@@ -227,11 +227,12 @@ class Logs
             $result->logs = array_merge($customerNeedsLog, $ordersLog);
 
             return json_encode($result);
-        } catch (Exception $e) { // The authorization query failed verification               
-              header('HTTP/1.1 404 Not Found');
-              header('Content-Type: text/plain; charset=utf8');
-              echo $e->getMessage();
-              exit();
+        } catch (Exception $e) { // The authorization query failed verification 
+            
+            
+            $result = (object) array("logs" => array());
+            return json_encode($result);
+
         }
     }
 
