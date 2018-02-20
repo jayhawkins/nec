@@ -224,8 +224,6 @@ class Logs
 
             $ordersLog = $ordersLogResult->logs;
 
-            return json_encode($ordersLog);
-            
             $result->logs = array_merge($customerNeedsLog, $ordersLog);
 
             return json_encode($result);
