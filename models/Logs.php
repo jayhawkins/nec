@@ -207,8 +207,8 @@ class Logs
             $customerNeedsLog = $customerNeedsLogResult->logs;
             
             $ordersLogArgs = array(
-                "filter[0]"=>"ref_id,eq,".$customerNeedsID,
-                "filter[1]"=>"log_type_id,eq,".$customer_needs_log_type_id,
+                "filter[0]"=>"ref_id,eq,".$orderID,
+                "filter[1]"=>"log_type_id,eq,".$order_log_type_id,
                 "transform"=>"1"
                     );
 
