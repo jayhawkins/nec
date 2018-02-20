@@ -814,10 +814,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                 customer_needs.destinationNotes + "<br>";
             }
 
-            var trailerData = "Quantity: " + customer_needs.qty + "<br>"
-                            + "Rate: " + customer_needs.rate + "<br>"
-                            + "Rate Type: " + customer_needs.rateType + "<br>"
-                            + "Transportation Mode: " + customer_needs.transportationMode + "<br>";
+            var trailerData = "Quantity: <strong>" + customer_needs.qty + "</strong><br>"
+                            + "Rate: <strong>" + customer_needs.rate + "</strong><br>"
+                            + "Rate Type: <strong>" + customer_needs.rateType + "</strong><br>"
+                            + "Transportation Mode: <strong>" + customer_needs.transportationMode + "</strong><br>";
 
             var unitData = "";
             var unitEdit = "";
@@ -917,7 +917,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     if (dataPoints.object_type_data_points[i].columnName == key) {
                         value = val; // Get the value from the JSON data in the record to use to set the selected option in the dropdown
 
-                        trailerData += dataPoints.object_type_data_points[i].title + ": " + val + "<br>";
+                        trailerData += dataPoints.object_type_data_points[i].title + ": <strong>" + val + "</strong><br>";
                     }
                   })
                 });

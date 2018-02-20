@@ -152,7 +152,7 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
 
           //if (confirm("You have selected to Commit to this Availability. A Nationwide Equipment Control team member will contact you within 4 buisness hours to start the order process. Do you wish to proceed with this commitment?") == true) {
           msg = Messenger().post({
-                message: "You have selected to Commit to this Availability. A Nationwide Equipment Control team member will contact you start the order process. Do you wish to proceed with this commitment?",
+                message: "You have selected to Commit to this Availability. A Nationwide Equipment Control team member will contact you shortly to start the order process. Do you wish to proceed with this commitment?",
                 actions: {
                     retry: {
                         label: 'Yes',
