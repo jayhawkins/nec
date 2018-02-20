@@ -239,7 +239,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                         "           </div>";
                         if(status.hasBeenApproved == 0){
                             statusesList += "       <div class=\"col-md-6\">" +
-                                            "           <button type=\"button\" id=\"approvePOD\" class=\"btn btn-primary w-100\" onclick=\"confirmApprovePOD(" + status.carrierID + ", '" + vinNumber + "'," + status.documentID + ", " + status.orderDetailID + ", " + orderID + ", " + status.id + ");\">Approve POD</button>" +
+                                            "           <button type=\"button\" id=\"approvePOD\" class=\"btn btn-primary w-100\" onclick=\"confirmApprovePOD(" + status.carrierID + ", '" + vinNumber + "'," + status.documentID + ", " + status.orderDetailID + ", " + orderID + ", " + status.id + ", " + status.unitNumber + ");\">Approve POD</button>" +
                                             "       </div>";
                         }
                         else{
@@ -271,7 +271,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         });
     }
 
-    function confirmApprovePOD(carrierID, vinNumber, documentID, orderDetailID, orderID, statusID){
+    function confirmApprovePOD(carrierID, vinNumber, documentID, orderDetailID, orderID, statusID, unitNumber){
 
         var orderURL = '<?php echo API_HOST_URL; ?>' + '/orders/' + orderID;
 
@@ -292,6 +292,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         $('#approveCarrierID').val(carrierID);
         $('#approveDocumentID').val(documentID);
         $('#approveVinNumber').val(vinNumber);
+        $('#approveUnitNumber').val(unitNumber);
         $('#approveStatusID').val(statusID);
 
         $('#approvePODModal').modal('show');
@@ -5546,6 +5547,7 @@ console.log(order);
             <input id="approveStatusID" name="approveStatusID" type="hidden">
             <input id="approveDocumentID" name="approveDocumentID" type="hidden">
             <input id="approveVinNumber" name="approveVinNumber" type="hidden">
+            <input id="approveUnitNumber" name="approveUnitNumber" type="hidden">
                   <div class="row">
                         <div class="col-sm-3">
                             <label for="approveCost">Customer will be invoiced:</label>
@@ -5675,10 +5677,11 @@ console.log(order);
             var carrierID = $('#approveCarrierID').val();
             var documentID = $('#approveDocumentID').val();
             var vinNumber = $('#approveVinNumber').val();
+            var unitNumber = $('#approveUnitNumber').val();
             var statusID = $('#approveStatusID').val();
 
             var approvedPOD = {orderID: orderID, orderDetailID: orderDetailID, carrierID: carrierID, customerID: customerID, userID: userid, documentID: documentID,
-                vinNumber: vinNumber, cost: cost, createdAt: today, updatedAt: today};
+                vinNumber: vinNumber, unitNumber: unitNumber, cost: cost, createdAt: today, updatedAt: today};
 
             $.ajax({
                 url: '<?php echo API_HOST_URL . "/approved_pod/"; ?>',
@@ -5730,6 +5733,7 @@ console.log(order);
                                     $('#approveCarrierID').val("");
                                     $('#approveDocumentID').val("");
                                     $('#approveVinNumber').val("");
+                                    $('#approveUnitNumber').val("");
                                     $('#approveStatusID').val("");
                                     $('#approvePODModal').modal('hide');
                                 }
@@ -5742,6 +5746,7 @@ console.log(order);
                                 $('#approveCarrierID').val("");
                                 $('#approveDocumentID').val("");
                                 $('#approveVinNumber').val("");
+                                $('#approveUnitNumber').val("");
                                 $('#approveStatusID').val("");
                                 $('#approvePODModal').modal('hide');
 
@@ -5762,6 +5767,7 @@ console.log(order);
                     $('#approveCarrierID').val("");
                     $('#approveDocumentID').val("");
                     $('#approveVinNumber').val("");
+                    $('#approveUnitNumber').val("");
                     $('#approveStatusID').val("");
                     $('#approvePODModal').modal('hide');
 
