@@ -229,8 +229,11 @@ class Logs
             return json_encode($result);
         } catch (Exception $e) { // The authorization query failed verification
               
-            $result = (object) array("logs" => array());            
-            return $e;
+            $result = (object) array("logs" => array());  
+              header('HTTP/1.1 404 Not Found');
+              header('Content-Type: text/plain; charset=utf8');
+              echo $e->getMessage();
+              exit();
         }
     }
 
