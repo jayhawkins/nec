@@ -205,8 +205,6 @@ class Logs
             $customerNeedsLogResult = json_decode(file_get_contents($customerNeedsLogURL,false,$customerNeedsLogContext));
 
             $customerNeedsLog = $customerNeedsLogResult->logs;
-
-            return json_encode($customerNeedsLog);
             
             $ordersLogArgs = array(
                 "filter[0]"=>"ref_id,eq,".$customerNeedsID,
@@ -226,6 +224,8 @@ class Logs
 
             $ordersLog = $ordersLogResult->logs;
 
+            return json_encode($ordersLog);
+            
             $result->logs = array_merge($customerNeedsLog, $ordersLog);
 
             return json_encode($result);
