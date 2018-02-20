@@ -4,7 +4,12 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 include('../config.php');
+<<<<<<< HEAD
 //require '../../../../nec_config.php';
+=======
+require '../../../../nec_config.php';
+
+>>>>>>> 32805f76b91f3ee6e6148b3bdd2cf23e34c2922f
 use QuickBooksOnline\API\Core\ServiceContext;
 use QuickBooksOnline\API\DataService\DataService;
 use QuickBooksOnline\API\PlatformService\PlatformService;
@@ -12,12 +17,15 @@ use QuickBooksOnline\API\Core\Http\Serialization\XmlObjectSerializer;
 use QuickBooksOnline\API\Facades\Customer;
 use QuickBooksOnline\API\Facades\Invoice;
 
+<<<<<<< HEAD
 
 define("DBHOST", "hometree.dubtel.com"); 
 define("DBNAME", "nec"); 
 define("DBUSER", "nec_qa"); 
 define("DBPASS", "Yellow10!");
 
+=======
+>>>>>>> 32805f76b91f3ee6e6148b3bdd2cf23e34c2922f
 //db call 
 
 $dbh = mysqli_connect(DBHOST, DBUSER, DBPASS, DBNAME)

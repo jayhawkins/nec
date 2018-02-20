@@ -817,17 +817,15 @@ ALTER TABLE `order_statuses`
 -- -------------------------------------------------------------
 -- ---------------------------------------------------------
 
--- CREATE TABLE "approved_pod" ------------------------------------
--- CREATE TABLE "approved_pod" ----------------------------------------
-CREATE TABLE `approved_pod` (
+-- CREATE TABLE "approved_damage_claims" ------------------------------------
+-- CREATE TABLE "approved_damage_claims" ----------------------------------------
+CREATE TABLE `approved_damage_claims` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `orderID` int(11) unsigned NOT NULL,
-  `orderDetailID` int(11) DEFAULT NULL,
-  `carrierID` int(11) unsigned NOT NULL,
-  `customerID` int(11) unsigned NOT NULL,
+  `damageClaimID` int(11) unsigned NOT NULL,
+  `atFaultEntityID` int(11) unsigned NOT NULL,
   `userID` int(11) unsigned NOT NULL,
-  `documentID` int(5) unsigned NOT NULL,
   `vinNumber` varchar(64) NOT NULL DEFAULT '',
+  `damage_description` varchar(255) NOT NULL DEFAULT '',
   `cost` decimal(13,2) NOT NULL DEFAULT '0.00',
   `hasBeenInvoiced` tinyint(1) NOT NULL DEFAULT '0',
   `qbInvoiceNumber` varchar(255) NOT NULL DEFAULT '',
@@ -835,7 +833,7 @@ CREATE TABLE `approved_pod` (
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL,
   UNIQUE KEY `unique_id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 -- -------------------------------------------------------------
 -- ---------------------------------------------------------
