@@ -206,6 +206,8 @@ class Logs
 
             $customerNeedsLog = $customerNeedsLogResult->logs;
 
+            return json_encode($customerNeedsLog);
+            
             $ordersLogArgs = array(
                 "filter[0]"=>"ref_id,eq,".$customerNeedsID,
                 "filter[1]"=>"log_type_id,eq,".$customer_needs_log_type_id,
@@ -227,9 +229,7 @@ class Logs
             $result->logs = array_merge($customerNeedsLog, $ordersLog);
 
             return json_encode($result);
-        } catch (Exception $e) { // The authorization query failed verification
-              
-            $result = (object) array("logs" => array());  
+        } catch (Exception $e) { // The authorization query failed verification               
               header('HTTP/1.1 404 Not Found');
               header('Content-Type: text/plain; charset=utf8');
               echo $e->getMessage();
