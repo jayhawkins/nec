@@ -137,8 +137,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
     function displayOrderStatuses(orderID, carrierID, vinNumber){
 
-        console.log(orderID, carrierID, vinNumber);
-
         var orderStatusURL = '';
         if(carrierID == "") orderStatusURL = '<?php echo API_HOST_URL; ?>' + '/order_statuses?filter[0]=orderID,eq,' + orderID + '&filter[1]=vinNumber,eq,' + vinNumber + '&order=updatedAt,desc&transform=1';
         else orderStatusURL = '<?php echo API_HOST_URL; ?>' + '/order_statuses?filter[0]=orderID,eq,' + orderID + '&filter[1]=vinNumber,eq,' + vinNumber + '&filter[2]=carrierID,eq,' + carrierID + '&order=updatedAt,desc&transform=1';
