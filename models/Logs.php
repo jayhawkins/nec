@@ -230,7 +230,7 @@ class Logs
         } catch (Exception $e) { // The authorization query failed verification
               
             $result = (object) array("logs" => array());            
-            return json_encode($result);
+            return $e;
         }
     }
 
