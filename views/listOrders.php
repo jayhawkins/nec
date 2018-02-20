@@ -7791,7 +7791,7 @@ console.log(order);
         $("#statusUnitNumber").val(unitNumber);
         $("#statusID").val('');
 
-        var activeCarrier = carrierID;
+        var activeCarrier = $("#activeCarrier").val();
         var orderID = $("#orderID").val();
 
         displayOrderStatuses(orderID, activeCarrier, vinNumber);
