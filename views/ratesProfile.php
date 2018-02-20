@@ -47,6 +47,10 @@ try {
 
 <script>
 
+Messenger.options = {
+    extraClasses: 'messenger-fixed messenger-on-top'
+}
+
 function verifyAndPost() {
 
   if ( $('#formBusiness').parsley().validate() ) {
@@ -108,11 +112,21 @@ function verifyAndPost() {
                   window.location.replace("<?php echo HTTP_HOST; ?>");
                   passValidation = true;
                 } else {
-                  alert("Updating Rate Information Failed!");
+                  //alert("Updating Rate Information Failed!");
+                  Messenger().post({
+                        message: "Updating Rate Information Failed!",
+                        type: 'error',
+                        showCloseButton: true
+                    });
                 }
              },
              error: function() {
-                alert("There Was An Error Adding Rates!");
+                //alert("There Was An Error Adding Rates!");
+                Messenger().post({
+                    message: "There Was An Error Adding Rates!",
+                    type: 'error',
+                    showCloseButton: true
+                });
              }
           });
 

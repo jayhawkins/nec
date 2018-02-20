@@ -98,7 +98,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                     contacts = data;
                },
                error: function() {
-                  alert("There Was An Error Retrieving Contacts!");
+                  //alert("There Was An Error Retrieving Contacts!");
+                  Messenger().post({
+                        message: "There Was An Error Retrieving Contacts!",
+                        type: 'error',
+                        showCloseButton: true
+                    });
                }
             });
         }
@@ -152,7 +157,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                     contactsarray.push(item);
                 }
                 if (contactsarray.length <= 0) {
-                    alert('You must select a point of contact for this need.')
+                    //alert('You must select a point of contact for this need.');
+                    Messenger().post({
+                        message: 'You must select a point of contact for this need.',
+                        type: 'error',
+                        showCloseButton: true
+                    });
                     return false;
                 }
 
@@ -195,25 +205,45 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                 } else {
                                     //alert("1: " + response);
                                     result = false;
-                                    alert('Preparation Failed!');
+                                    //alert('Preparation Failed!');
+                                    Messenger().post({
+                                        message: 'Preparation Failed!',
+                                        type: 'error',
+                                        showCloseButton: true
+                                    });
                                 }
                              },
                              error: function(response) {
                                 //alert("2: " + response);
                                 result = false;
-                                alert('Failed Searching for Destination Location! - Notify NEC of this failure.');
+                                //alert('Failed Searching for Destination Location! - Notify NEC of this failure.');
+                                Messenger().post({
+                                        message: 'Failed Searching for Destination Location! - Notify NEC of this failure.',
+                                        type: 'error',
+                                        showCloseButton: true
+                                    });
                              }
                           });
                       } else {
                           //alert("3: " + response);
                           result = false;
-                          alert('Preparation Failed!');
+                          //alert('Preparation Failed!');
+                          Messenger().post({
+                                message: '3 - Preparation Failed!',
+                                type: 'error',
+                                showCloseButton: true
+                            });
                       }
                    },
                    error: function(response) {
                       //alert("4: " + JSON.stringify(response));
                       result = false;
-                      alert('Failed Searching for Origination Location! - Notify NEC of this failure.');
+                      //alert('Failed Searching for Origination Location! - Notify NEC of this failure.');
+                      Messenger().post({
+                            message: 'Failed Searching for Origination Location! - Notify NEC of this failure.',
+                            type: 'error',
+                            showCloseButton: true
+                        });
                    }
                 });
 
@@ -392,26 +422,46 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                     } else {
                                         $("#load").html("Save Changes");
                                         $("#load").prop("disabled", false);
-	                                    	alert("Adding Need Failed! Invalid Data...");
+                                        //alert("Adding Need Failed! Invalid Data...");
+                                        Messenger().post({
+                                            message: "Adding Need Failed! Invalid Data...",
+                                            type: 'error',
+                                            showCloseButton: true
+                                        });
                                     }
                                  },
                                  error: function() {
                                      $("#load").html("Save Changes");
                                      $("#load").prop("disabled", false);
-	                                	 alert("There Was An Error Adding Location!");
+                                     //alert("There Was An Error Adding Location!");
+                                     Messenger().post({
+                                        message: "There Was An Error Adding Location!",
+                                        type: 'error',
+                                        showCloseButton: true
+                                    });
                                  }
                               });
 
                           } else {
                               $("#load").html("Save Changes");
                               $("#load").prop("disabled", false);
-	                        	  alert("ERROR Geo-Coding Destination Address!");
+	                          //alert("ERROR Geo-Coding Destination Address!");
+                              Messenger().post({
+                                    message: "ERROR Geo-Coding Destination Address!",
+                                    type: 'error',
+                                    showCloseButton: true
+                                });
                           }
                       });
                   } else {
                       $("#load").html("Save Changes");
                       $("#load").prop("disabled", false);
-	                	  alert("ERROR Geo-Coding Origination Address!");
+                      //alert("ERROR Geo-Coding Origination Address!");
+                      Messenger().post({
+                            message: "ERROR Geo-Coding Origination Address!",
+                            type: 'error',
+                            showCloseButton: true
+                        });
                   }
                 });
 
@@ -686,11 +736,21 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                         $(myModal2).modal('hide');
                         loadTableAJAX();
                     } else {
-                        console.log("Error During Success: " + data);
+                        //console.log("Error During Success: " + data);
+                        Messenger().post({
+                            message: "Error During Success: " + data,
+                            type: 'error',
+                            showCloseButton: true
+                        });
                     }
                 },
                 error: function(data) {
                     console.log("Error During Error: "+ data);
+                    Messenger().post({
+                        message: "Error During Error: "+ data,
+                        type: 'error',
+                        showCloseButton: true
+                    });
                 }
             });
 	  }
@@ -775,11 +835,21 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                   passValidation = true;
                 } else {
                   $(myDialog).modal('hide');
-                  alert("Changing Status of Need Failed!");
+                  //alert("Changing Status of Need Failed!");
+                  Messenger().post({
+                        message: "Changing Status of Need Failed!",
+                        type: 'error',
+                        showCloseButton: true
+                    });
                 }
              },
              error: function() {
-                alert("There Was An Error Changing Need Status!");
+                //alert("There Was An Error Changing Need Status!");
+                Messenger().post({
+                    message: "There Was An Error Changing Need Status!",
+                    type: 'error',
+                    showCloseButton: true
+                });
              }
           });
 
@@ -921,15 +991,30 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                          getLocationContacts();
                                     },
                                     error: function() {
-                                       alert("There Was An Error Adding Need Contacts!");
+                                       //alert("There Was An Error Adding Need Contacts!");
+                                       Messenger().post({
+                                            message: "There Was An Error Adding Need Contacts!",
+                                            type: 'error',
+                                            showCloseButton: true
+                                        });
                                     }
                                  });
                             } else {
-                                  alert("There Was An Issue Clearing Need Contacts!");
+                                  //alert("There Was An Issue Clearing Need Contacts!");
+                                  Messenger().post({
+                                        message: "There Was An Issue Clearing Need Contacts!",
+                                        type: 'error',
+                                        showCloseButton: true
+                                    });
                             }
                          },
                          error: function() {
-                              alert("There Was An Error Deleting Need Records!");
+                              //alert("There Was An Error Deleting Need Records!");
+                              Messenger().post({
+                                    message: "There Was An Error Deleting Need Records!",
+                                    type: 'error',
+                                    showCloseButton: true
+                                });
                          }
                       });
                   }
@@ -1005,7 +1090,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                   locations_contacts = data;
              },
              error: function() {
-                alert("There Was An Error Retrieving Location Contacts!");
+                //alert("There Was An Error Retrieving Location Contacts!");
+                Messenger().post({
+                    message: "There Was An Error Retrieving Location Contacts!",
+                    type: 'error',
+                    showCloseButton: true
+                });
              }
           });
       }
@@ -1021,10 +1111,18 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
              type: type,
              async: false,
              success: function(data){
-                  alert(JSON.stringify(data));
+                  //alert(JSON.stringify(data));
+                  //$("#errorAlertTitle").html("Error");
+                  //$("#errorAlertBody").html(data);
+                  //$("#errorAlert").modal('show');
              },
              error: function() {
-                alert("There Was An Error Retrieving Location Contacts!");
+                //alert("There Was An Error Retrieving Location Contacts!");
+                Messenger().post({
+                    message: "There Was An Error Retrieving Location Contacts!",
+                    type: 'error',
+                    showCloseButton: true
+                });
              }
           });
       }
@@ -1118,13 +1216,23 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                       } else {
                           $("#load2").html("Add Contact");
                           $("#load2").prop("disabled", false);
-                        alert("Adding Contact Failed!");
+                        //alert("Adding Contact Failed!");
+                          Messenger().post({
+                                message: "Adding Contact Failed!",
+                                type: 'error',
+                                showCloseButton: true
+                            });
                       }
                    },
                    error: function() {
                        $("#load2").html("Add Contact");
                        $("#load2").prop("disabled", false);
-                      alert("There Was An Error Adding Contact!");
+                      //alert("There Was An Error Adding Contact!");
+                       Messenger().post({
+                            message: "There Was An Error Adding Contact!",
+                            type: 'error',
+                            showCloseButton: true
+                        });
                    }
                 });
 
@@ -1732,6 +1840,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
     //$( "#originationState" ).select2();
     //$( "#destinationState" ).select2();
 
+    Messenger.options = {
+        extraClasses: 'messenger-fixed messenger-on-top'
+    }
+
     loadTableAJAX();
     getCarrierContactTitle(entityID);
     var table = $("#datatable-table").DataTable();
@@ -1743,7 +1855,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
 		ext = ext[ext.length-1].toLowerCase();
 		var arrayExtensions = ["csv"];
 		if (arrayExtensions.lastIndexOf(ext) == -1) {
-			alert("File must be one of the following valid types; csv.");
+			//alert("File must be one of the following valid types; csv.");
+			$("#errorAlertTitle").html("Error");
+            $("#errorAlertBody").html("File must be one of the following valid types; csv.");
+            $("#errorAlert").modal('show');
 			$(file).val("");
 			$(file).focus();
 			return false;
@@ -1895,7 +2010,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                  }
                },
                error: function() {
-                  alert('Failed Getting Configuration Settings! - Notify NEC of this failure.');
+                  //alert('Failed Getting Configuration Settings! - Notify NEC of this failure.');
+                  Messenger().post({
+                        message: 'Failed Getting Configuration Settings! - Notify NEC of this failure.',
+                        type: 'error',
+                        showCloseButton: true
+                    });
                }
             });
 
@@ -1927,7 +2047,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                  formatListBox();
                },
                error: function() {
-                  alert('Failed Getting Contacts! - Notify NEC of this failure.');
+                  //alert('Failed Getting Contacts! - Notify NEC of this failure.');
+                  Messenger().post({
+                        message: 'Failed Getting Contacts! - Notify NEC of this failure.',
+                        type: 'error',
+                        showCloseButton: true
+                    });
                }
             });
 
@@ -2016,7 +2141,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
              formatListBox();
            },
            error: function() {
-              alert('Failed Getting Contacts! - Notify NEC of this failure.');
+              //alert('Failed Getting Contacts! - Notify NEC of this failure.');
+              Messenger().post({
+                    message: 'Failed Getting Contacts! - Notify NEC of this failure.',
+                    type: 'error',
+                    showCloseButton: true
+                });
            }
         });
 
@@ -2043,7 +2173,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
              }
            },
            error: function() {
-              alert('Failed Getting Configuration Settings! - Notify NEC of this failure.');
+              //alert('Failed Getting Configuration Settings! - Notify NEC of this failure.');
+              Messenger().post({
+                    message: 'Failed Getting Configuration Settings! - Notify NEC of this failure.',
+                    type: 'error',
+                    showCloseButton: true
+                });
            }
         });
     });
@@ -2097,7 +2232,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
              $("#suggesstion-box-origin").hide();
            },
            error: function() {
-                alert('Error Selecting Origination City!');
+                //alert('Error Selecting Origination City!');
+                Messenger().post({
+                    message: 'Error Selecting Origination City!',
+                    type: 'error',
+                    showCloseButton: true
+                });
            }
         });
     }
@@ -2147,7 +2287,12 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
              $("#suggesstion-box-dest").hide();
            },
            error: function() {
-                alert('Error Selecting Destination City!');
+                //alert('Error Selecting Destination City!');
+                Messenger().post({
+                    message: 'Error Selecting Destination City!',
+                    type: 'error',
+                    showCloseButton: true
+                });
            }
         });
     }

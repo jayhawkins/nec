@@ -150,124 +150,142 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                 return false;
           }
 
-          if (confirm("You have selected to Commit to this Availability. A Nationwide Equipment Control team member will contact you within 4 buisness hours to start the order process. Do you wish to proceed with this commitment?") == true) {
+          //if (confirm("You have selected to Commit to this Availability. A Nationwide Equipment Control team member will contact you within 4 buisness hours to start the order process. Do you wish to proceed with this commitment?") == true) {
+          msg = Messenger().post({
+                message: "You have selected to Commit to this Availability. A Nationwide Equipment Control team member will contact you start the order process. Do you wish to proceed with this commitment?",
+                actions: {
+                    retry: {
+                        label: 'Yes',
+                        phrase: 'Committing to Availability',
+                        auto: false,
+                        //delay: 10,
+                        action: function() {
+                                var result = true;
 
-                var result = true;
+                                var params = {
+                                      address1: $("#originationAddress1").val(),
+                                      city: $("#originationCity").val(),
+                                      state: $("#originationState").val(),
+                                      zip: $("#originationZip").val(),
+                                      entityID: $("#entityID").val(),
+                                      locationType: "Origination"
+                                };
+                                //alert(JSON.stringify(params));
 
-                var params = {
-                      address1: $("#originationAddress1").val(),
-                      city: $("#originationCity").val(),
-                      state: $("#originationState").val(),
-                      zip: $("#originationZip").val(),
-                      entityID: $("#entityID").val(),
-                      locationType: "Origination"
-                };
-                //alert(JSON.stringify(params));
-
-                $.ajax({
-                   url: '<?php echo HTTP_HOST."/getlocationbycitystatezip" ?>',
-                   type: 'POST',
-                   data: JSON.stringify(params),
-                   contentType: "application/json",
-                   async: false,
-                   success: function(response){
-                      //alert("Origination " + response);
-                      if (response == "success") {
-                          var params = {
-                                address1: $("#destinationAddress1").val(),
-                                city: $("#destinationCity").val(),
-                                state: $("#destinationState").val(),
-                                zip: $("#destinationZip").val(),
-                                entityID: $("#entityID").val(),
-                                locationType: "Destination"
-                          };
-                          //alert(JSON.stringify(params));
-                          $.ajax({
-                             url: '<?php echo HTTP_HOST."/getlocationbycitystatezip" ?>',
-                             type: 'POST',
-                             data: JSON.stringify(params),
-                             contentType: "application/json",
-                             async: false,
-                             success: function(response){
-                                //alert("Destination " + response);
-                                if (response == "success") {
-                                } else {
-                                    if (response == "ZERO_RESULTS") {
-                                        // alert("Destination Address does not exist!");
-                                        $("#errorAlertTitle").html("Error");
-                                        $("#errorAlertBody").html("Destination Address does not exist!");
-                                        $("#errorAlert").modal('show');
-                                    } else {
-                                        // alert("Destination Address Error: " + JSON.stringify(response));
-                                        $("#errorAlertTitle").html("Destination Address Error");
+                                $.ajax({
+                                   url: '<?php echo HTTP_HOST."/getlocationbycitystatezip" ?>',
+                                   type: 'POST',
+                                   data: JSON.stringify(params),
+                                   contentType: "application/json",
+                                   async: false,
+                                   success: function(response){
+                                      //alert("Origination " + response);
+                                      if (response == "success") {
+                                          var params = {
+                                                address1: $("#destinationAddress1").val(),
+                                                city: $("#destinationCity").val(),
+                                                state: $("#destinationState").val(),
+                                                zip: $("#destinationZip").val(),
+                                                entityID: $("#entityID").val(),
+                                                locationType: "Destination"
+                                          };
+                                          //alert(JSON.stringify(params));
+                                          $.ajax({
+                                             url: '<?php echo HTTP_HOST."/getlocationbycitystatezip" ?>',
+                                             type: 'POST',
+                                             data: JSON.stringify(params),
+                                             contentType: "application/json",
+                                             async: false,
+                                             success: function(response){
+                                                //alert("Destination " + response);
+                                                if (response == "success") {
+                                                } else {
+                                                    if (response == "ZERO_RESULTS") {
+                                                        // alert("Destination Address does not exist!");
+                                                        $("#errorAlertTitle").html("Error");
+                                                        $("#errorAlertBody").html("Destination Address does not exist!");
+                                                        $("#errorAlert").modal('show');
+                                                    } else {
+                                                        // alert("Destination Address Error: " + JSON.stringify(response));
+                                                        $("#errorAlertTitle").html("Destination Address Error");
+                                                        $("#errorAlertBody").html(JSON.stringify(response));
+                                                        $("#errorAlert").modal('show');
+                                                    }
+                                                    result = false;
+                                                    //alert('Preparation Failed!');
+                                                }
+                                             },
+                                             error: function(response) {
+                                                if (response == "ZERO_RESULTS") {
+                                                    // alert("Destination Address does not exist!");
+                                                    $("#errorAlertTitle").html("Error");
+                                                    $("#errorAlertBody").html("Destination Address does not exist!");
+                                                    $("#errorAlert").modal('show');
+                                                } else {
+                                                    // alert("Destination Address Error: " + JSON.stringify(response));
+                                                    $("#errorAlertTitle").html("Destination Address Error");
+                                                    $("#errorAlertBody").html(JSON.stringify(response));
+                                                    $("#errorAlert").modal('show');
+                                                }
+                                                result = false;
+                                                //alert('Failed Searching for Destination Location! - Notify NEC of this failure.');
+                                             }
+                                          });
+                                      } else {
+                                          if (response == "ZERO_RESULTS") {
+                                                //alert("Origination Address does not exist!");
+                                                $("#errorAlertTitle").html("Error");
+                                                $("#errorAlertBody").html("Origination Address does not exist!");
+                                                $("#errorAlert").modal('show');
+                                          } else {
+                                                //alert("Origination Address Error: " + JSON.stringify(response));
+                                                $("#errorAlertTitle").html("Origination Address Error");
+                                                $("#errorAlertBody").html(JSON.stringify(response));
+                                                $("#errorAlert").modal('show');
+                                          }
+                                          result = false;
+                                          //alert('Preparation Failed!');
+                                      }
+                                   },
+                                   error: function(response) {
+                                        //alert("Issue With Origination Address: " + JSON.stringify(response));
+                                        $("#errorAlertTitle").html("Issue With Origination Address");
                                         $("#errorAlertBody").html(JSON.stringify(response));
                                         $("#errorAlert").modal('show');
-                                    }
-                                    result = false;
-                                    //alert('Preparation Failed!');
-                                }
-                             },
-                             error: function(response) {
-                                if (response == "ZERO_RESULTS") {
-                                    // alert("Destination Address does not exist!");
-                                    $("#errorAlertTitle").html("Error");
-                                    $("#errorAlertBody").html("Destination Address does not exist!");
-                                    $("#errorAlert").modal('show');
+                                      result = false;
+                                      //alert('Failed Searching for Origination Location! - Notify NEC of this failure.');
+                                   }
+                                });
+
+                                if (result) {
+                                    verifyAndPost(function(data) {
+                                        //alert(data);
+                                        $("#errorAlertTitle").html("Message");
+                                        $("#errorAlertBody").html(JSON.stringify(data));
+                                        $("#errorAlert").modal('show');
+                                      $("#load").html("Commit");
+                                      $("#load").prop("disabled", false);
+                                    });
+                                    return true;
                                 } else {
-                                    // alert("Destination Address Error: " + JSON.stringify(response));
-                                    $("#errorAlertTitle").html("Destination Address Error");
-                                    $("#errorAlertBody").html(JSON.stringify(response));
-                                    $("#errorAlert").modal('show');
+                                    return false;
                                 }
-                                result = false;
-                                //alert('Failed Searching for Destination Location! - Notify NEC of this failure.');
-                             }
-                          });
-                      } else {
-                          if (response == "ZERO_RESULTS") {
-                                //alert("Origination Address does not exist!");
-                                $("#errorAlertTitle").html("Error");
-                                $("#errorAlertBody").html("Origination Address does not exist!");
-                                $("#errorAlert").modal('show');
-                          } else {
-                                //alert("Origination Address Error: " + JSON.stringify(response));
-                                $("#errorAlertTitle").html("Origination Address Error");
-                                $("#errorAlertBody").html(JSON.stringify(response));
-                                $("#errorAlert").modal('show');
+                        }
+                    },
+                    cancel: {
+                        label: 'No',
+                        delay: 10,
+                        action: function() {
+                            return msg.cancel();
                           }
-                          result = false;
-                          //alert('Preparation Failed!');
-                      }
-                   },
-                   error: function(response) {
-                        //alert("Issue With Origination Address: " + JSON.stringify(response));
-                        $("#errorAlertTitle").html("Issue With Origination Address");
-                        $("#errorAlertBody").html(JSON.stringify(response));
-                        $("#errorAlert").modal('show');
-                      result = false;
-                      //alert('Failed Searching for Origination Location! - Notify NEC of this failure.');
-                   }
-                });
-
-                if (result) {
-                    verifyAndPost(function(data) {
-                        //alert(data);
-                        $("#errorAlertTitle").html("Message");
-                        $("#errorAlertBody").html(JSON.stringify(data));
-                        $("#errorAlert").modal('show');
-                      $("#load").html("Commit");
-                      $("#load").prop("disabled", false);
-                    });
-                    return true;
-                } else {
-                    return false;
+                    }
                 }
+          });
+          //} else {
 
-          } else {
+          //      $("#myModalCommit").modal('hide');
 
-                $("#myModalCommit").modal('hide');
-
-          }
+          //}
       }
 
       function verifyAndPost() {
@@ -1660,6 +1678,10 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
 
     //$( "#originationState" ).select2();
     //$( "#destinationState" ).select2();
+
+    Messenger.options = {
+        extraClasses: 'messenger-fixed messenger-on-top'
+    }
 
     loadTableAJAX();
 

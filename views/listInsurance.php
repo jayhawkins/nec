@@ -87,11 +87,21 @@
 							$("#fileupload").val('');
 							passValidation = true;
 						} else {
-							alert("Adding Insurance Failed!");
+							//alert("Adding Insurance Failed!");
+							Messenger().post({
+                                message: "Adding Insurance Failed!",
+                                type: 'error',
+                                showCloseButton: true
+                            });
 						}
 					},
 					error: function() {
-						alert("There Was An Error Adding Insurance!");
+						//alert("There Was An Error Adding Insurance!");
+						Messenger().post({
+                            message: "There Was An Error Adding Insurance!",
+                            type: 'error',
+                            showCloseButton: true
+                        });
 					}
 				});
 
@@ -137,11 +147,21 @@
 									$("#fileupload").val('');
 									passValidation = true;
 								} else {
-									alert("Adding Insurance Failed!");
+									//alert("Adding Insurance Failed!");
+									Messenger().post({
+                                        message: "Adding Insurance Failed!",
+                                        type: 'error',
+                                        showCloseButton: true
+                                    });
 								}
 							},
 							error: function() {
-								alert("There Was An Error Adding Insurance!");
+								//alert("There Was An Error Adding Insurance!");
+								Messenger().post({
+                                    message: "There Was An Error Adding Insurance!",
+                                    type: 'error',
+                                    showCloseButton: true
+                                });
 							}
 						});
 						console.log('listInsurance updated');
@@ -215,17 +235,32 @@
                             loadTableAJAX();
                             passValidation = true;
                         } else {
-                            alert("Updating Insurance Policy Document Failed!");
+                            //alert("Updating Insurance Policy Document Failed!");
+                            Messenger().post({
+                                message: "Updating Insurance Policy Document Failed!",
+                                type: 'error',
+                                showCloseButton: true
+                            });
                         }
                     },
                     error: function() {
-                        alert("There Was An Error Updating Insurance Document!");
+                        //alert("There Was An Error Updating Insurance Document!");
+                        Messenger().post({
+                            message: "There Was An Error Updating Insurance Document!",
+                            type: 'error',
+                            showCloseButton: true
+                        });
                     }
                 });
                 console.log('listInsurance updated');
             },
             error: function() {
-                alert("Failed");
+                //alert("Failed");
+                Messenger().post({
+                    message: "Failed",
+                    type: 'error',
+                    showCloseButton: true
+                });
             }
         });
 	}
@@ -314,11 +349,21 @@
 					passValidation = true;
 				} else {
 					$(myDialog).modal('hide');
-					alert("Changing Status of Insurance Failed!");
+					//alert("Changing Status of Insurance Failed!");
+					Messenger().post({
+                        message: "Changing Status of Insurance Failed!",
+                        type: 'error',
+                        showCloseButton: true
+                    });
 				}
 			},
 			error: function() {
-				alert("There Was An Error Changing Insurance Status!");
+				//alert("There Was An Error Changing Insurance Status!");
+				Messenger().post({
+                    message: "There Was An Error Changing Insurance Status!",
+                    type: 'error',
+                    showCloseButton: true
+                });
 			}
 		});
 		//return passValidation;
@@ -814,6 +859,10 @@ if($_SESSION['entitytype'] != 0){
 <script>
 
 	/*jslint unparam: true, regexp: true */
+
+	Messenger.options = {
+        extraClasses: 'messenger-fixed messenger-on-top'
+    }
 
 	loadTableAJAX();
 

@@ -133,15 +133,30 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
                               $("#zip").val('');
                               passValidation = true;
                             } else {
-                              alert("Adding Location Failed!");
+                              //alert("Adding Location Failed!");
+                              Messenger().post({
+                                    message: "Adding Location Failed!",
+                                    type: 'error',
+                                    showCloseButton: true
+                                });
                             }
                          },
                          error: function() {
-                            alert("There Was An Error Adding Location!");
+                            //alert("There Was An Error Adding Location!");
+                            Messenger().post({
+                                message: "There Was An Error Adding Location!",
+                                type: 'error',
+                                showCloseButton: true
+                            });
                          }
                       });
                   } else {
-                      alert("ERROR Geo-Coding Address!");
+                      //alert("ERROR Geo-Coding Address!");
+                      Messenger().post({
+                            message: "ERROR Geo-Coding Address!",
+                            type: 'error',
+                            showCloseButton: true
+                        });
                   }
                 });
 
@@ -240,11 +255,21 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
                   passValidation = true;
                 } else {
                   $(myDialog).modal('hide');
-                  alert("Changing Status of Location Failed!");
+                  //alert("Changing Status of Location Failed!");
+                  Messenger().post({
+                        message: "Changing Status of Location Failed!",
+                        type: 'error',
+                        showCloseButton: true
+                    });
                 }
              },
              error: function() {
-                alert("There Was An Error Changing Location Status!");
+                //alert("There Was An Error Changing Location Status!");
+                Messenger().post({
+                    message: "There Was An Error Changing Location Status!",
+                    type: 'error',
+                    showCloseButton: true
+                });
              }
           });
 
@@ -404,7 +429,12 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
                   locations_contacts = data;
              },
              error: function() {
-                alert("There Was An Error Retrieving Location Contacts!");
+                //alert("There Was An Error Retrieving Location Contacts!");
+                Messenger().post({
+                    message: "There Was An Error Retrieving Location Contacts!",
+                    type: 'error',
+                    showCloseButton: true
+                });
              }
           });
       }
@@ -446,15 +476,30 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
                                  getLocationContacts();
                             },
                             error: function() {
-                               alert("There Was An Error Adding Location Contacts!");
+                               //alert("There Was An Error Adding Location Contacts!");
+                               Messenger().post({
+                                    message: "There Was An Error Adding Location Contacts!",
+                                    type: 'error',
+                                    showCloseButton: true
+                                });
                             }
                          });
                     } else {
-                          alert("There Was An Issue Clearing Location Contacts!");
+                          //alert("There Was An Issue Clearing Location Contacts!");
+                          Messenger().post({
+                                message: "There Was An Issue Clearing Location Contacts!",
+                                type: 'error',
+                                showCloseButton: true
+                            });
                     }
                  },
                  error: function() {
-                      alert("There Was An Error Deleting Location Records!");
+                      //alert("There Was An Error Deleting Location Records!");
+                      Messenger().post({
+                            message: "There Was An Error Deleting Location Records!",
+                            type: 'error',
+                            showCloseButton: true
+                        });
                  }
               });
           }
@@ -696,6 +741,10 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
     //$( "#state" ).select2();
 
     //$( "#locationTypeID" ).select2();
+
+    Messenger.options = {
+        extraClasses: 'messenger-fixed messenger-on-top'
+    }
 
     loadTableAJAX();
 
