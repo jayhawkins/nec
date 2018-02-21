@@ -459,12 +459,22 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         for(var relayNumber = 1; relayNumber <=4 ; relayNumber ++){
             $('#relay_id' + relayNumber).val("");
             $('#commit_id' + relayNumber).val("");
-            $('#entity_id' + relayNumber).val("");
+            $('#entityID_relay' + relayNumber).val("");
             $('#address_relay' + relayNumber).val("");
             $('#city_relay' + relayNumber).val("");
             $('#state_relay' + relayNumber).val("");
             $('#zip_relay' + relayNumber).val("");
             $('#notes_relay' + relayNumber).val("");
+            
+            $('#pickupDate_relay' + relayNumber).val("");
+            $('#deliveryDate_relay' + relayNumber).val("");
+            $('#rate_relay' + relayNumber).val("");
+
+            $('#originationLng_relay' + relayNumber).val("");
+            $('#originationLat_relay' + relayNumber).val("");
+            $('#destinationLng_relay' + relayNumber).val("");
+            $('#destinationLat_relay' + relayNumber).val("");
+            $('#distance_relay' + relayNumber).val("");
 
             $('#deliveryLocation_relay' + relayNumber).val("");
             $('#contactPerson_relay' + relayNumber).val("");
@@ -473,31 +483,30 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             $('#hoursOfOperationOpen_relay' + relayNumber).val("");
             $('#hoursOfOperationClose_relay' + relayNumber).val("");
             $('#timeZone_relay' + relayNumber).val("");
+            
         }
-
-
+            
             var dpli = '<div class="form-group row">' +
-                            '<label for="qty" class="col-sm-3 col-form-label">Quantity</label>'+
-                            '<div class="col-sm-9">' +
-                            '<input id="qty" name="qty" class="form-control">'+
-                            '</div>'+
-                            '</div>';
+                        '   <div class="col-sm-2">' +
+                            '<label for="qty">Quantity</label>'+
+                            '<input id="qty" name="qty" class="form-control" value="">'+
+                        '   </div>';
+
+            var itemIndex = 1;
 
             for (var i = 0; i < dataPoints.object_type_data_points.length; i++) {
-
+                
                 if(dataPoints.object_type_data_points[i].title == "Decals"){
-                    dpli += '<div class="form-group row">' +
-                            '<label for="decals" class="col-sm-3 col-form-label">Decals</label>'+
-                            '<div class="col-sm-9">' +
-                            '<input id="decals" name="decals" class="form-control">'+
-                            '</div>'+
+                    dpli += '<div class="col-sm-2">' +
+                            '<label for="decals">Decals</label>'+
+                            '<input id="decals" name="decals" class="form-control" value="">'+
                             '</div>';
                   }
                   else{
 
-                    dpli += '<div class="form-group row">' +
-                            '<label for="' + dataPoints.object_type_data_points[i].columnName + '" class="col-sm-3 col-form-label">' + dataPoints.object_type_data_points[i].title + '</label>' +
-                            '<div class="col-sm-9"> <select class="form-control" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '">' +
+                    dpli += '<div class="col-sm-2">' +
+                            '<label for="' + dataPoints.object_type_data_points[i].columnName + '">' + dataPoints.object_type_data_points[i].title + '</label>' +
+                            '<select class="form-control" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '">' +
                             ' <option value="">-Select From List-</option>\n';
 
                     for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
@@ -507,29 +516,28 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     }
 
                     dpli += '</select>' +
-                            '</div></div>';
+                            '</div>';
                   }
+
+                  itemIndex += 1;
+
+                  if(itemIndex % 6 == 0) dpli += '</div><div class="form-group row">';
             }
 
 
-            dpli += '<div class="form-group row">' +
-                    '   <label for="rate" class="col-sm-3 col-form-label">Rate</label>' +
-                    '   <div class="col-sm-9">' +
+            dpli += '<div class="col-sm-2">' +
+                    '   <label for="rate">Rate</label>' +
                     '       <input id="rate" name="rate" class="form-control" value="">' +
-                    '   </div>' +
                     '</div>';
 
-            dpli += '<div class="form-group row">' +
-                    '   <label for="rateType" class="col-sm-3 col-form-label">Rate Type</label>' +
-                    '   <div class="col-sm-9">' +
-                    '       <input type="radio" id="rateType" name="rateType" value="Flat Rate" /> Flat Rate ' +
-                    '       <input type="radio" id="rateType" name="rateType" value="Mileage" /> Mileage</div>' +
-                    '   </div>'+
-                    '</div>';
+            dpli += '<div class="col-sm-2">' +
+                    '   <label for="rateType">Rate Type</label><br>' +
+                    '       <input type="radio" id="rateType" name="rateType" value="Flat Rate"/> Flat Rate ' +
+                    '       <input type="radio" id="rateType" name="rateType" value="Mileage"/> Mileage' +
+                    '   </div>';
 
-            dpli += '<div class="form-group row">' +
-                    '   <label for="transportationMode" class="col-sm-3 col-form-label">Transportation Mode</label>' +
-                    '   <div class="col-sm-9">' +
+            dpli += '<div class="col-sm-2">' +
+                    '   <label for="transportationMode">Transportation Mode</label>' +
                     '       <select class="form-control" id="transportationMode" name="transportationMode">' +
                     '           <option value="">*Select Mode...</option>' +
                     '           <option value="Empty">Empty</option>' +
@@ -541,8 +549,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
             $("#dp-check-list-box").append(dpli);
 
-    }
 
+    }
 
     function loadTableAJAX(committed) {
 
@@ -734,6 +742,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             if(customer_needs.destinationLat == null) customer_needs.destinationLat = "";
             if(customer_needs.distance == null) customer_needs.distance = "";
 
+            if(customer_needs.pickupInformation.pickupHoursOfOperationOpen == null) customer_needs.pickupInformation.pickupHoursOfOperationOpen = "";
+            if(customer_needs.pickupInformation.pickupHoursOfOperationClose == null) customer_needs.pickupInformation.pickupHoursOfOperationClose = "";
+            if(customer_needs.pickupInformation.pickupTimeZone == null) customer_needs.pickupInformation.pickupTimeZone = "";
+            
+            if(customer_needs.deliveryInformation.deliveryHoursOfOperationOpen == null) customer_needs.deliveryInformation.deliveryHoursOfOperationOpen = "";
+            if(customer_needs.deliveryInformation.deliveryHoursOfOperationClose == null) customer_needs.deliveryInformation.deliveryHoursOfOperationClose = "";
+            if(customer_needs.deliveryInformation.deliveryTimeZone == null) customer_needs.deliveryInformation.deliveryTimeZone = "";
+
             if(customer_needs.unitData == null) customer_needs.unitData = [];
 
             $('#customerID').val(customer_needs.entityID);
@@ -779,30 +795,64 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
             // Populate view
             //if(customer_needs.pickupInformation.pickupLocation != "" && customer_needs.pickupInformation.contactPerson != "" && customer_needs.pickupInformation.phoneNumber != "" && customer_needs.pickupInformation.hoursOfOperation != "" ){
-            if(customer_needs.pickupInformation.pickupLocation != "" && customer_needs.pickupInformation.contactPerson != "" && customer_needs.pickupInformation.phoneNumber != "" && customer_needs.pickupInformation.hoursOfOperationOpen != "" && customer_needs.pickupInformation.hoursOfOperationClose != ""){
+//            if(customer_needs.pickupInformation.pickupLocation != "" && customer_needs.pickupInformation.contactPerson != "" && customer_needs.pickupInformation.phoneNumber != "" && customer_needs.pickupInformation.hoursOfOperationOpen != "" && customer_needs.pickupInformation.hoursOfOperationClose != ""){
+//
+//                pickupInformation = customer_needs.pickupInformation.pickupLocation + "<br>"
+//                        + customer_needs.pickupInformation.contactPerson + "<br>"
+//                        + customer_needs.pickupInformation.phoneNumber + "<br>"
+//                        //+ customer_needs.pickupInformation.hoursOfOperation + "<br><br>";
+//                        + customer_needs.pickupInformation.pickupHoursOfOperationOpen + " to " + customer_needs.pickupInformation.pickupHoursOfOperationClose + " " + customer_needs.pickupInformation.pickupTimeZone + "<br><br>";
+//            }
 
-                pickupInformation = customer_needs.pickupInformation.pickupLocation + "<br>"
-                        + customer_needs.pickupInformation.contactPerson + "<br>"
-                        + customer_needs.pickupInformation.phoneNumber + "<br>"
-                        //+ customer_needs.pickupInformation.hoursOfOperation + "<br><br>";
-                        + customer_needs.pickupInformation.pickupHoursOfOperationOpen + " to " + customer_needs.pickupInformation.pickupHoursOfOperationClose + " " + customer_needs.pickupInformation.pickupTimeZone + "<br><br>";
-            }
+            var pickupAddress = ( customer_needs.pickupInformation.pickupLocation.trim() != "" ? customer_needs.pickupInformation.pickupLocation + "<br>" : "Unknown Location<br>")
+                              + ( customer_needs.originationAddress1.trim() != "" ? customer_needs.originationAddress1 + "<br>" : "Unknown Address<br>")
+                              + ( customer_needs.originationCity.trim() != "" ? customer_needs.originationCity : "Unknown City")
+                              + ", " 
+                              + ( customer_needs.originationState.trim() != "" ? customer_needs.originationState : "Unknown State") 
+                              + " " 
+                              + ( customer_needs.originationZip.trim() != "" ? customer_needs.originationZip : "Unknown Zip") + "<br>"
+                              + ( customer_needs.pickupInformation.contactPerson.trim() != "" ? customer_needs.pickupInformation.contactPerson + "<br>" : "Unknown Contact<br>")
+                              + ( customer_needs.pickupInformation.phoneNumber.trim() != "" ? customer_needs.pickupInformation.phoneNumber + "<br>" : "Unknown Phone Number<br>")
+                              + ( customer_needs.pickupInformation.pickupHoursOfOperationOpen.trim() != "" ? customer_needs.pickupInformation.pickupHoursOfOperationOpen  : "N/A")
+                              + " to "
+                              + ( customer_needs.pickupInformation.pickupHoursOfOperationClose.trim() != "" ? customer_needs.pickupInformation.pickupHoursOfOperationClose  : "N/A")
+                              + " "
+                              + ( customer_needs.pickupInformation.pickupTimeZone.trim() != "" ? customer_needs.pickupInformation.pickupTimeZone  + "<br><br>" : "Unknown Time Zone<br><br>");
 
-            if(customer_needs.deliveryInformation.deliveryLocation != "" && customer_needs.deliveryInformation.contactPerson != "" && customer_needs.deliveryInformation.phoneNumber != "" && customer_needs.deliveryInformation.hoursOfOperation != "" ){
 
-                deliveryInformation = customer_needs.deliveryInformation.deliveryLocation + "<br>"
-                        + customer_needs.deliveryInformation.contactPerson + "<br>"
-                        + customer_needs.deliveryInformation.phoneNumber + "<br>"
-                        //+ customer_needs.deliveryInformation.hoursOfOperation + "<br><br>";
-                        + customer_needs.deliveryInformation.deliveryHoursOfOperationOpen + " to " + customer_needs.deliveryInformation.deliveryHoursOfOperationClose + " " + customer_needs.deliveryInformation.deliveryTimeZone + "<br><br>";
 
-            }
 
-            var pickupAddress = pickupInformation + customer_needs.originationAddress1 + "<br>" +
-                    customer_needs.originationCity + ", " + customer_needs.originationState + " " + customer_needs.originationZip + "<br><br>";
+            var deliveryAddress = ( customer_needs.deliveryInformation.deliveryLocation.trim() != "" ? customer_needs.deliveryInformation.deliveryLocation + "<br>" : "Unknown Location<br>")
+                              + ( customer_needs.destinationAddress1.trim() != "" ? customer_needs.destinationAddress1 + "<br>" : "Unknown Address<br>")
+                              + ( customer_needs.destinationCity.trim() != "" ? customer_needs.destinationCity : "Unknown City")
+                              + ", " 
+                              + ( customer_needs.destinationState.trim() != "" ? customer_needs.destinationState : "Unknown State") 
+                              + " " 
+                              + ( customer_needs.destinationZip.trim() != "" ? customer_needs.destinationZip : "Unknown Zip") + "<br>"
+                              + ( customer_needs.deliveryInformation.contactPerson.trim() != "" ? customer_needs.deliveryInformation.contactPerson + "<br>" : "Unknown Contact<br>")
+                              + ( customer_needs.deliveryInformation.phoneNumber.trim() != "" ? customer_needs.deliveryInformation.phoneNumber + "<br>" : "Unknown Phone Number<br>")
+                              + ( customer_needs.deliveryInformation.deliveryHoursOfOperationOpen.trim() != "" ? customer_needs.deliveryInformation.deliveryHoursOfOperationOpen  : "N/A")
+                              + " to "
+                              + ( customer_needs.deliveryInformation.deliveryHoursOfOperationClose.trim() != "" ? customer_needs.deliveryInformation.deliveryHoursOfOperationClose  : "N/A")
+                              + " "
+                              + ( customer_needs.deliveryInformation.deliveryTimeZone.trim() != "" ? customer_needs.deliveryInformation.deliveryTimeZone  + "<br><br>" : "Unknown Time Zone<br><br>");
 
-            var deliveryAddress = deliveryInformation + customer_needs.destinationAddress1 + "<br>" +
-                    customer_needs.destinationCity + ", " + customer_needs.destinationState + " " + customer_needs.destinationZip + "<br><br>";
+
+//            if(customer_needs.deliveryInformation.deliveryLocation != "" && customer_needs.deliveryInformation.contactPerson != "" && customer_needs.deliveryInformation.phoneNumber != "" && customer_needs.deliveryInformation.hoursOfOperation != "" ){
+//
+//                deliveryInformation = customer_needs.deliveryInformation.deliveryLocation + "<br>"
+//                        + customer_needs.deliveryInformation.contactPerson + "<br>"
+//                        + customer_needs.deliveryInformation.phoneNumber + "<br>"
+//                        //+ customer_needs.deliveryInformation.hoursOfOperation + "<br><br>";
+//                        + customer_needs.deliveryInformation.deliveryHoursOfOperationOpen + " to " + customer_needs.deliveryInformation.deliveryHoursOfOperationClose + " " + customer_needs.deliveryInformation.deliveryTimeZone + "<br><br>";
+//
+//            }
+
+//            var pickupAddress = pickupInformation + customer_needs.originationAddress1 + "<br>" +
+//                    customer_needs.originationCity + ", " + customer_needs.originationState + " " + customer_needs.originationZip + "<br><br>";
+
+//            var deliveryAddress = deliveryInformation + customer_needs.destinationAddress1 + "<br>" +
+//                    customer_needs.destinationCity + ", " + customer_needs.destinationState + " " + customer_needs.destinationZip + "<br><br>";
 
             if(customer_needs.originationNotes != ""){
                     pickupAddress  += "Notes:<br>" +
@@ -979,15 +1029,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     '   </div>'+
                     '</div>';
 
-//            dpli += '<div class="form-group row">' +
-//                    '   <label for="rateType" class="col-sm-3 col-form-label">Rate Type</label>' +
-//                    '   <div class="col-sm-9">' +
-//                    '       <input type="radio" id="rateType" name="rateType" value="Flat Rate" ' + (customer_needs.rateType == "Flat Rate" ? "checked" : "") + '/> Flat Rate ' +
-//                    '       <input type="radio" id="rateType" name="rateType" value="Mileage" ' + (customer_needs.rateType == "Mileage" ? "checked" : "") + '/> Mileage</div>' +
-//                    '   </div>'+
-//                    '</div>';
-
-
             $("#dp-check-list-box").append(dpli);
 
 
@@ -1012,24 +1053,47 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     if(customer_needs.destinationAddress1 == null) customer_needs.destinationAddress1 = "";
                     if(customer_needs.destinationZip == null) customer_needs.destinationZip = "";
 
-                    var deliveryInformation = "";
+                    if(customer_needs.deliveryInformation.deliveryHoursOfOperationOpen == null) customer_needs.deliveryInformation.deliveryHoursOfOperationOpen = "";
+                    if(customer_needs.deliveryInformation.deliveryHoursOfOperationClose == null) customer_needs.deliveryInformation.deliveryHoursOfOperationClose = "";
+                    if(customer_needs.deliveryInformation.deliveryTimeZone == null) customer_needs.deliveryInformation.deliveryTimeZone = "";
+                    
+                    
+//                    var deliveryInformation = "";
+//
+//                    //if(customer_needs.deliveryInformation.deliveryLocation != "" && customer_needs.deliveryInformation.contactPerson != "" && customer_needs.deliveryInformation.phoneNumber != "" && customer_needs.deliveryInformation.hoursOfOperation != "" ){
+//                    if(customer_needs.deliveryInformation.deliveryLocation != "" && customer_needs.deliveryInformation.contactPerson != "" && customer_needs.deliveryInformation.phoneNumber != "" && customer_needs.deliveryInformation.deliveryHoursOfOperationOpen != "" && customer_needs.deliveryInformation.deliveryHoursOfOperationClose != ""){
+//
+//                        //deliveryInformation = customer_needs.deliveryInformation.deliveryLocation + "<br>"
+//                        //        + customer_needs.deliveryInformation.contactPerson + "<br>"
+//                        //        + customer_needs.deliveryInformation.phoneNumber + "<br>"
+//                        //        + customer_needs.deliveryInformation.hoursOfOperation + "<br><br>";
+//
+//                        deliveryInformation = customer_needs.deliveryInformation.deliveryLocation + "<br>"
+//                                + customer_needs.deliveryInformation.contactPerson + "<br>"
+//                                + customer_needs.deliveryInformation.phoneNumber + "<br>"
+//                                + customer_needs.deliveryInformation.deliveryHoursOfOperationOpen + " to " + customer_needs.deliveryInformation.deliveryHoursOfOperationClose + " " + customer_needs.deliveryInformation.deliveryTimeZone + "<br><br>";
+//                    }
+//
+//                    var deliveryAddress = deliveryInformation + customer_needs.destinationAddress1 + "<br>" +
+//                            customer_needs.destinationCity + ", " + customer_needs.destinationState + " " + customer_needs.destinationZip + "<br><br>";
 
-                    //if(customer_needs.deliveryInformation.deliveryLocation != "" && customer_needs.deliveryInformation.contactPerson != "" && customer_needs.deliveryInformation.phoneNumber != "" && customer_needs.deliveryInformation.hoursOfOperation != "" ){
-                    if(customer_needs.deliveryInformation.deliveryLocation != "" && customer_needs.deliveryInformation.contactPerson != "" && customer_needs.deliveryInformation.phoneNumber != "" && customer_needs.deliveryInformation.deliveryHoursOfOperationOpen != "" && customer_needs.deliveryInformation.deliveryHoursOfOperationClose != ""){
 
-                        //deliveryInformation = customer_needs.deliveryInformation.deliveryLocation + "<br>"
-                        //        + customer_needs.deliveryInformation.contactPerson + "<br>"
-                        //        + customer_needs.deliveryInformation.phoneNumber + "<br>"
-                        //        + customer_needs.deliveryInformation.hoursOfOperation + "<br><br>";
+            var deliveryAddress = ( customer_needs.deliveryInformation.deliveryLocation.trim() != "" ? customer_needs.deliveryInformation.deliveryLocation + "<br>" : "Unknown Location<br>")
+                              + ( customer_needs.destinationAddress1.trim() != "" ? customer_needs.destinationAddress1 + "<br>" : "Unknown Address<br>")
+                              + ( customer_needs.destinationCity.trim() != "" ? customer_needs.destinationCity : "Unknown City")
+                              + ", " 
+                              + ( customer_needs.destinationState.trim() != "" ? customer_needs.destinationState : "Unknown State") 
+                              + " " 
+                              + ( customer_needs.destinationZip.trim() != "" ? customer_needs.destinationZip : "Unknown Zip") + "<br>"
+                              + ( customer_needs.deliveryInformation.contactPerson.trim() != "" ? customer_needs.deliveryInformation.contactPerson + "<br>" : "Unknown Contact<br>")
+                              + ( customer_needs.deliveryInformation.phoneNumber.trim() != "" ? customer_needs.deliveryInformation.phoneNumber + "<br>" : "Unknown Phone Number<br>")
+                              + ( customer_needs.deliveryInformation.deliveryHoursOfOperationOpen.trim() != "" ? customer_needs.deliveryInformation.deliveryHoursOfOperationOpen  : "N/A")
+                              + " to "
+                              + ( customer_needs.deliveryInformation.deliveryHoursOfOperationClose.trim() != "" ? customer_needs.deliveryInformation.deliveryHoursOfOperationClose  : "N/A")
+                              + " "
+                              + ( customer_needs.deliveryInformation.deliveryTimeZone.trim() != "" ? customer_needs.deliveryInformation.deliveryTimeZone  + "<br><br>" : "Unknown Time Zone<br><br>");
 
-                        deliveryInformation = customer_needs.deliveryInformation.deliveryLocation + "<br>"
-                                + customer_needs.deliveryInformation.contactPerson + "<br>"
-                                + customer_needs.deliveryInformation.phoneNumber + "<br>"
-                                + customer_needs.deliveryInformation.deliveryHoursOfOperationOpen + " to " + customer_needs.deliveryInformation.deliveryHoursOfOperationClose + " " + customer_needs.deliveryInformation.deliveryTimeZone + "<br><br>";
-                    }
 
-                    var deliveryAddress = deliveryInformation + customer_needs.destinationAddress1 + "<br>" +
-                            customer_needs.destinationCity + ", " + customer_needs.destinationState + " " + customer_needs.destinationZip + "<br><br>";
 
                     if(customer_needs.destinationNotes != ""){
                             deliveryAddress  += "Notes:<br>" +
@@ -1050,7 +1114,19 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                     $('#relay_id' + relayNumber).val(customer_needs.id);
                     $('#commit_id' + relayNumber).val(customer_needs.customer_needs_commit[0].id);
-                    $('#entityID_relay' + relayNumber).val(parseInt(customer_needs.customer_needs_commit[0].entities[0].id));
+                    
+                    var currentCarrier = parseInt(customer_needs.customer_needs_commit[0].entities[0].id);
+                    
+                    $('#entityID_relay' + relayNumber).val(currentCarrier);
+                    
+                    if (currentCarrier > 0){
+                        $('#relayOptions_' + relayNumber).css("display", "block");
+                    }
+                    else{
+                        $('#relayOptions_' + relayNumber).css("display", "none");
+                    }
+
+                    
                     $('#address_relay' + relayNumber).val(customer_needs.destinationAddress1);
                     $('#city_relay' + relayNumber).val(customer_needs.destinationCity);
                     $('#state_relay' + relayNumber).val(customer_needs.destinationState);
@@ -1075,7 +1151,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     $('#hoursOfOperationClose_relay' + relayNumber).val(customer_needs.deliveryInformation.deliveryHoursOfOperationClose);
                     $('#timeZone_relay' + relayNumber).val(customer_needs.deliveryInformation.deliveryTimeZone);
 
-                    var currentCarrier = parseInt(customer_needs.customer_needs_commit[0].entities[0].id);
 
                     $.ajax({
                         url: '<?php echo API_HOST_URL . "/locations"; ?>' + '?filter=entityID,eq,' + currentCarrier + '&transform=1',
@@ -1711,6 +1786,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                                 <option>18:00</option>
                                                 <option>18:30</option>
                                                 <option>19:00</option>
+<<<<<<< HEAD
                                                 <option>19:30</option>
                                                 <option>20:00</option>
                                                 <option>20:30</option>
@@ -2723,18 +2799,51 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                     <label for="destinationCity" class="col-sm-3 col-form-label">City</label>
                                     <div class="col-sm-9">
                                             <input class="form-control" id="destinationCity" placeholder="" type="text">
+=======
+                                                <option>20:00</option>
+                                                <option>21:00</option>
+                                                <option>22:00</option>
+                                                <option>23:00</option>
+                                                <option>24:00</option>
+                                            </select>
+>>>>>>> 45f5ca71ee7b01f7e96bd26ab9849004a1eed117
                                     </div>
-                            </div>
-                            <div class="form-group row">
-                                    <label for="destinationState" class="col-sm-3 col-form-label">State</label>
-                                    <div class="col-sm-9">
-                                            <input class="form-control" id="destinationState" placeholder="" type="text">
+                                    <div class="col-sm-3">
+                                            <!--input class="form-control" id="deliveryHoursOfOperation" placeholder="" type="text"-->
+                                            <select class="form-control" id="deliveryHoursOfOperationClose">
+                                                <option>01:00</option>
+                                                <option>02:00</option>
+                                                <option>03:00</option>
+                                                <option>04:00</option>
+                                                <option>05:00</option>
+                                                <option>06:00</option>
+                                                <option>07:00</option>
+                                                <option>08:00</option>
+                                                <option>09:00</option>
+                                                <option>10:00</option>
+                                                <option>11:00</option>
+                                                <option>12:00</option>
+                                                <option>13:00</option>
+                                                <option>14:00</option>
+                                                <option>15:00</option>
+                                                <option>16:00</option>
+                                                <option>17:00</option>
+                                                <option>18:00</option>
+                                                <option>19:00</option>
+                                                <option>20:00</option>
+                                                <option>21:00</option>
+                                                <option>22:00</option>
+                                                <option>23:00</option>
+                                                <option>24:00</option>
+                                            </select>
                                     </div>
-                            </div>
-                            <div class="form-group row">
-                                    <label for="destinationZip" class="col-sm-3 col-form-label">Zip</label>
-                                    <div class="col-sm-9">
-                                            <input class="form-control" id="destinationZip" placeholder="" type="text">
+                                    <div class="col-sm-3">
+                                            <select class="form-control" id="deliveryTimeZone">
+                                                <option>EST (Eastern)</option>
+                                                <option>CST (Central)</option>
+                                                <option>MPT (Mountain)</option>
+                                                <option>PST (Pacific)</option>
+                                            </select>
                                     </div>
                             </div>
                             <div class="form-group row">
@@ -2748,6 +2857,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             </div>
 
             <hr>
+<!--
+            <div class="row">
+            </div>
+
+            <hr>-->
 
             <div class="row">
                     <div class="col-md-12">
@@ -2771,6 +2885,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         <h4>Relay Address 1</h4>
                             <input class="form-control" id="relay_id1" placeholder="" type="hidden">
                             <input class="form-control" id="commit_id1" placeholder="" type="hidden">
+                            <input class="form-control" id="originationLng_relay1" type="hidden">
+                            <input class="form-control" id="originationLat_relay1" type="hidden">
+                            <input class="form-control" id="destinationLng_relay1" type="hidden">
+                            <input class="form-control" id="destinationLat_relay1" type="hidden">
+                            <input class="form-control" id="distance_relay1" type="hidden">
+                            <!--<input class="form-control" id="entityID_relay1" placeholder="" type="hidden">-->
                             <div class="form-group">
                                 <label for="entityID_relay1">Carrier</label>
                                 <select id="entityID_relay1" name="entityID_relay1" data-placeholder="Carrier" class="form-control chzn-select" required="required" onchange="populateAutocomplete(this, 1);">
@@ -2783,56 +2903,126 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     ?>
                                 </select>
                             </div>
-                            <div class="form-group">
-                                    <label for="deliveryLocation_relay1">Location</label>
-                                    <input class="form-control" id="deliveryLocation_relay1" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="contactPerson_relay1">Contact Person</label>
-                                    <input class="form-control" id="contactPerson_relay1" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="phoneNumber_relay1">Phone Number</label>
-                                    <input class="form-control" id="phoneNumber_relay1" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="hoursOfOperation_relay1">Hours of Operation</label>
-                                    <input class="form-control" id="hoursOfOperation_relay1" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="pickupDate_relay1">Pickup Date</label>
-                                    <input class="form-control" id="pickupDate_relay1" placeholder="" type="date">
-                            </div>
-                            <div class="form-group">
-                                    <label for="deliveryDate_relay1">Delivery Date</label>
-                                    <input class="form-control" id="deliveryDate_relay1" placeholder="" type="date">
-                            </div>
-                            <div class="form-group">
-                                    <label for="address_relay1">Address</label>
-                                    <input class="form-control" id="address_relay1" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="city_relay1">City</label>
-                                    <input class="form-control" id="city_relay1" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="state_relay1">State</label>
-                                    <input class="form-control" id="state_relay1" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="zip_relay1">Zip</label>
-                                    <input class="form-control" id="zip_relay1" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                <button type="button" class="btn btn-secondary" onclick="saveRelayAddressToCarrier(1);">Save Address To Carrier</button>
-                            </div>
-                            <div class="form-group">
-                                    <label for="notes_relay1">Notes</label>
-                                    <textarea class="form-control" id="notes_relay1" rows="3"></textarea>
-                            </div>
-                            <div class="form-group">
-                                    <label for="rate_relay1">Negotiated Rate</label>
-                                    <input class="form-control" id="rate_relay1" placeholder="" type="text" disabled>
+                            
+                            
+                            <div id="relayOptions_1" style="display: none;">
+                                <div class="form-group">
+                                        <label for="deliveryLocation_relay1">Location</label>
+                                        <input class="form-control" id="deliveryLocation_relay1" placeholder="" type="text">
+                                </div>
+                                <div class="form-group">
+                                        <label for="address_relay1">Address</label>
+                                        <input class="form-control" id="address_relay1" placeholder="" type="text">
+                                </div>
+                                <div class="form-group">
+                                        <label for="city_relay1">City</label>
+                                        <input class="form-control" id="city_relay1" placeholder="" type="text">
+                                </div>
+                                <div class="form-group">
+                                        <label for="state_relay1">State</label>
+                                        <input class="form-control" id="state_relay1" placeholder="" type="text">
+                                </div>
+                                <div class="form-group">
+                                        <label for="zip_relay1">Zip</label>
+                                        <input class="form-control" id="zip_relay1" placeholder="" type="text">
+                                </div>
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-secondary w-100" onclick="saveRelayAddressToCarrier(1);">Save Address To Carrier</button>
+                                </div>
+                                <div class="form-group">
+                                        <label for="contactPerson_relay1">Contact Person</label>
+                                        <input class="form-control" id="contactPerson_relay1" placeholder="" type="text">
+                                </div>
+                                <div class="form-group">
+                                        <label for="phoneNumber_relay1">Phone Number</label>
+                                        <input class="form-control" id="phoneNumber_relay1" placeholder="" type="text">
+                                </div>
+                                <div class="form-group">
+                                        <label for="hoursOfOperationOpen_relay1">Opening Hour</label>
+                                        <!--input class="form-control" id="hoursOfOperation_relay1" placeholder="" type="text"-->
+                                        <select class="form-control" id="hoursOfOperationOpen_relay1">
+                                            <option></option>
+                                            <option>01:00</option>
+                                            <option>02:00</option>
+                                            <option>03:00</option>
+                                            <option>04:00</option>
+                                            <option>05:00</option>
+                                            <option>06:00</option>
+                                            <option>07:00</option>
+                                            <option>08:00</option>
+                                            <option>09:00</option>
+                                            <option>10:00</option>
+                                            <option>11:00</option>
+                                            <option>12:00</option>
+                                            <option>13:00</option>
+                                            <option>14:00</option>
+                                            <option>15:00</option>
+                                            <option>16:00</option>
+                                            <option>17:00</option>
+                                            <option>18:00</option>
+                                            <option>19:00</option>
+                                            <option>20:00</option>
+                                            <option>21:00</option>
+                                            <option>22:00</option>
+                                            <option>23:00</option>
+                                            <option>24:00</option>
+                                        </select>
+                                </div>
+                                <div class="form-group">
+                                        <label for="hoursOfOperationClose_relay1">Closing Hour</label>
+                                        <select class="form-control" id="hoursOfOperationClose_relay1">
+                                            <option></option>
+                                            <option>01:00</option>
+                                            <option>02:00</option>
+                                            <option>03:00</option>
+                                            <option>04:00</option>
+                                            <option>05:00</option>
+                                            <option>06:00</option>
+                                            <option>07:00</option>
+                                            <option>08:00</option>
+                                            <option>09:00</option>
+                                            <option>10:00</option>
+                                            <option>11:00</option>
+                                            <option>12:00</option>
+                                            <option>13:00</option>
+                                            <option>14:00</option>
+                                            <option>15:00</option>
+                                            <option>16:00</option>
+                                            <option>17:00</option>
+                                            <option>18:00</option>
+                                            <option>19:00</option>
+                                            <option>20:00</option>
+                                            <option>21:00</option>
+                                            <option>22:00</option>
+                                            <option>23:00</option>
+                                            <option>24:00</option>
+                                        </select>
+                                </div>
+                                <div class="form-group">
+                                        <label for="timeZone_relay1">Time Zone</label>
+                                        <select class="form-control" id="timeZone_relay1">
+                                            <option>EST (Eastern)</option>
+                                            <option>CST (Central)</option>
+                                            <option>MPT (Mountain)</option>
+                                            <option>PST (Pacific)</option>
+                                        </select>
+                                </div>
+                                <div class="form-group">
+                                        <label for="pickupDate_relay1">Pickup Date</label>
+                                        <input class="form-control" id="pickupDate_relay1" placeholder="" type="date">
+                                </div>
+                                <div class="form-group">
+                                        <label for="deliveryDate_relay1">Delivery Date</label>
+                                        <input class="form-control" id="deliveryDate_relay1" placeholder="" type="date">
+                                </div>
+                                <div class="form-group">
+                                        <label for="notes_relay1">Notes</label>
+                                        <textarea class="form-control" id="notes_relay1" rows="3"></textarea>
+                                </div>
+                                <div class="form-group">
+                                        <label for="rate_relay1">Negotiated Rate</label>
+                                        <input class="form-control" id="rate_relay1" placeholder="" type="text" disabled>
+                                </div>
                             </div>
                     </div>
 
@@ -2840,6 +3030,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         <h4>Relay Address 2</h4>
                             <input class="form-control" id="relay_id2" placeholder="" type="hidden">
                             <input class="form-control" id="commit_id2" placeholder="" type="hidden">
+                            <input class="form-control" id="originationLng_relay2" type="hidden">
+                            <input class="form-control" id="originationLat_relay2" type="hidden">
+                            <input class="form-control" id="destinationLng_relay2" type="hidden">
+                            <input class="form-control" id="destinationLat_relay2" type="hidden">
+                            <input class="form-control" id="distance_relay2" type="hidden">
+                            <!--<input class="form-control" id="entityID_relay2" placeholder="" type="hidden">-->
                             <div class="form-group">
                             <label for="entityID_relay2">Carrier</label>
                                 <select id="entityID_relay2" name="entityID_relay2" data-placeholder="Carrier" class="form-control chzn-select" required="required" onchange="populateAutocomplete(this, 2);">
@@ -2852,56 +3048,125 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     ?>
                                 </select>
                             </div>
-                            <div class="form-group">
-                                    <label for="deliveryLocation_relay2">Location</label>
-                                    <input class="form-control" id="deliveryLocation_relay2" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="contactPerson_relay2">Contact Person</label>
-                                    <input class="form-control" id="contactPerson_relay2" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="phoneNumber_relay2">Phone Number</label>
-                                    <input class="form-control" id="phoneNumber_relay2" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="hoursOfOperation_relay2">Hours of Operation</label>
-                                    <input class="form-control" id="hoursOfOperation_relay2" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="pickupDate_relay2">Pickup Date</label>
-                                    <input class="form-control" id="pickupDate_relay2" placeholder="" type="date">
-                            </div>
-                            <div class="form-group">
-                                    <label for="deliveryDate_relay2">Delivery Date</label>
-                                    <input class="form-control" id="deliveryDate_relay2" placeholder="" type="date">
-                            </div>
-                            <div class="form-group">
-                                    <label for="address_relay2">Address</label>
-                                    <input class="form-control" id="address_relay2" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="city_relay2">City</label>
-                                    <input class="form-control" id="city_relay2" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="state_relay2">State</label>
-                                    <input class="form-control" id="state_relay2" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="zip_relay2">Zip</label>
-                                    <input class="form-control" id="zip_relay2" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                <button type="button" class="btn btn-secondary" onclick="saveRelayAddressToCarrier(2);">Save Address To Carrier</button>
-                            </div>
-                            <div class="form-group">
-                                    <label for="notes_relay2">Notes</label>
-                                    <textarea class="form-control" id="notes_relay2" rows="3"></textarea>
-                            </div>
-                            <div class="form-group">
-                                    <label for="rate_relay2">Negotiated Rate</label>
-                                    <input class="form-control" id="rate_relay2" placeholder="" type="text" disabled>
+                            
+                            <div id="relayOptions_2" style="display: none;">
+                                <div class="form-group">
+                                        <label for="deliveryLocation_relay2">Location</label>
+                                        <input class="form-control" id="deliveryLocation_relay2" placeholder="" type="text">
+                                </div>
+                                <div class="form-group">
+                                        <label for="address_relay2">Address</label>
+                                        <input class="form-control" id="address_relay2" placeholder="" type="text">
+                                </div>
+                                <div class="form-group">
+                                        <label for="city_relay2">City</label>
+                                        <input class="form-control" id="city_relay2" placeholder="" type="text">
+                                </div>
+                                <div class="form-group">
+                                        <label for="state_relay2">State</label>
+                                        <input class="form-control" id="state_relay2" placeholder="" type="text">
+                                </div>
+                                <div class="form-group">
+                                        <label for="zip_relay2">Zip</label>
+                                        <input class="form-control" id="zip_relay2" placeholder="" type="text">
+                                </div>
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-secondary w-100" onclick="saveRelayAddressToCarrier(2);">Save Address To Carrier</button>
+                                </div>
+                                <div class="form-group">
+                                        <label for="contactPerson_relay2">Contact Person</label>
+                                        <input class="form-control" id="contactPerson_relay2" placeholder="" type="text">
+                                </div>
+                                <div class="form-group">
+                                        <label for="phoneNumber_relay2">Phone Number</label>
+                                        <input class="form-control" id="phoneNumber_relay2" placeholder="" type="text">
+                                </div>
+                                <div class="form-group">
+                                        <label for="hoursOfOperationOpen_relay2">Opening Hour</label>
+                                        <!--input class="form-control" id="hoursOfOperation_relay2" placeholder="" type="text"-->
+                                        <select class="form-control" id="hoursOfOperationOpen_relay2">
+                                            <option></option>
+                                            <option>01:00</option>
+                                            <option>02:00</option>
+                                            <option>03:00</option>
+                                            <option>04:00</option>
+                                            <option>05:00</option>
+                                            <option>06:00</option>
+                                            <option>07:00</option>
+                                            <option>08:00</option>
+                                            <option>09:00</option>
+                                            <option>10:00</option>
+                                            <option>11:00</option>
+                                            <option>12:00</option>
+                                            <option>13:00</option>
+                                            <option>14:00</option>
+                                            <option>15:00</option>
+                                            <option>16:00</option>
+                                            <option>17:00</option>
+                                            <option>18:00</option>
+                                            <option>19:00</option>
+                                            <option>20:00</option>
+                                            <option>21:00</option>
+                                            <option>22:00</option>
+                                            <option>23:00</option>
+                                            <option>24:00</option>
+                                        </select>
+                                </div>
+                                <div class="form-group">
+                                        <label for="hoursOfOperationClose_relay2">Closing Hour</label>
+                                        <select class="form-control" id="hoursOfOperationClose_relay2">
+                                            <option></option>
+                                            <option>01:00</option>
+                                            <option>02:00</option>
+                                            <option>03:00</option>
+                                            <option>04:00</option>
+                                            <option>05:00</option>
+                                            <option>06:00</option>
+                                            <option>07:00</option>
+                                            <option>08:00</option>
+                                            <option>09:00</option>
+                                            <option>10:00</option>
+                                            <option>11:00</option>
+                                            <option>12:00</option>
+                                            <option>13:00</option>
+                                            <option>14:00</option>
+                                            <option>15:00</option>
+                                            <option>16:00</option>
+                                            <option>17:00</option>
+                                            <option>18:00</option>
+                                            <option>19:00</option>
+                                            <option>20:00</option>
+                                            <option>21:00</option>
+                                            <option>22:00</option>
+                                            <option>23:00</option>
+                                            <option>24:00</option>
+                                        </select>
+                                </div>
+                                <div class="form-group">
+                                        <label for="timeZone_relay2">Time Zone</label>
+                                        <select class="form-control" id="timeZone_relay2">
+                                            <option>EST (Eastern)</option>
+                                            <option>CST (Central)</option>
+                                            <option>MPT (Mountain)</option>
+                                            <option>PST (Pacific)</option>
+                                        </select>
+                                </div>
+                                <div class="form-group">
+                                        <label for="pickupDate_relay2">Pickup Date</label>
+                                        <input class="form-control" id="pickupDate_relay2" placeholder="" type="date">
+                                </div>
+                                <div class="form-group">
+                                        <label for="deliveryDate_relay2">Delivery Date</label>
+                                        <input class="form-control" id="deliveryDate_relay2" placeholder="" type="date">
+                                </div>
+                                <div class="form-group">
+                                        <label for="notes_relay2">Notes</label>
+                                        <textarea class="form-control" id="notes_relay2" rows="3"></textarea>
+                                </div>
+                                <div class="form-group">
+                                        <label for="rate_relay2">Negotiated Rate</label>
+                                        <input class="form-control" id="rate_relay2" placeholder="" type="text" disabled>
+                                </div>
                             </div>
                     </div>
 
@@ -2909,6 +3174,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         <h4>Relay Address 3</h4>
                             <input class="form-control" id="relay_id3" placeholder="" type="hidden">
                             <input class="form-control" id="commit_id3" placeholder="" type="hidden">
+                            <input class="form-control" id="originationLng_relay3" type="hidden">
+                            <input class="form-control" id="originationLat_relay3" type="hidden">
+                            <input class="form-control" id="destinationLng_relay3" type="hidden">
+                            <input class="form-control" id="destinationLat_relay3" type="hidden">
+                            <input class="form-control" id="distance_relay3" type="hidden">
+                            <!--<input class="form-control" id="entityID_relay3" placeholder="" type="hidden">-->
                             <div class="form-group">
                             <label for="entityID_relay3">Carrier</label>
                                 <select id="entityID_relay3" name="entityID_relay3" data-placeholder="Carrier" class="form-control chzn-select" required="required" onchange="populateAutocomplete(this, 3);">
@@ -2921,56 +3192,125 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     ?>
                                 </select>
                             </div>
-                            <div class="form-group">
-                                    <label for="deliveryLocation_relay3">Location</label>
-                                    <input class="form-control" id="deliveryLocation_relay3" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="contactPerson_relay3">Contact Person</label>
-                                    <input class="form-control" id="contactPerson_relay3" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="phoneNumber_relay3">Phone Number</label>
-                                    <input class="form-control" id="phoneNumber_relay3" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="hoursOfOperation_relay3">Hours of Operation</label>
-                                    <input class="form-control" id="hoursOfOperation_relay3" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="pickupDate_relay3">Pickup Date</label>
-                                    <input class="form-control" id="pickupDate_relay3" placeholder="" type="date">
-                            </div>
-                            <div class="form-group">
-                                    <label for="deliveryDate_relay3">Delivery Date</label>
-                                    <input class="form-control" id="deliveryDate_relay3" placeholder="" type="date">
-                            </div>
-                            <div class="form-group">
-                                    <label for="address_relay3">Address</label>
-                                    <input class="form-control" id="address_relay3" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="city_relay3">City</label>
-                                    <input class="form-control" id="city_relay3" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="state_relay3">State</label>
-                                    <input class="form-control" id="state_relay3" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="zip_relay3">Zip</label>
-                                    <input class="form-control" id="zip_relay3" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                <button type="button" class="btn btn-secondary" onclick="saveRelayAddressToCarrier(3);">Save Address To Carrier</button>
-                            </div>
-                            <div class="form-group">
-                                    <label for="notes_relay3">Notes</label>
-                                    <textarea class="form-control" id="notes_relay3" rows="3"></textarea>
-                            </div>
-                            <div class="form-group">
-                                    <label for="rate_relay3">Negotiated Rate</label>
-                                    <input class="form-control" id="rate_relay3" placeholder="" type="text" disabled>
+                            
+                            <div id="relayOptions_3" style="display: none;">
+                                <div class="form-group">
+                                        <label for="deliveryLocation_relay3">Location</label>
+                                        <input class="form-control" id="deliveryLocation_relay3" placeholder="" type="text">
+                                </div>
+                                <div class="form-group">
+                                        <label for="address_relay3">Address</label>
+                                        <input class="form-control" id="address_relay3" placeholder="" type="text">
+                                </div>
+                                <div class="form-group">
+                                        <label for="city_relay3">City</label>
+                                        <input class="form-control" id="city_relay3" placeholder="" type="text">
+                                </div>
+                                <div class="form-group">
+                                        <label for="state_relay3">State</label>
+                                        <input class="form-control" id="state_relay3" placeholder="" type="text">
+                                </div>
+                                <div class="form-group">
+                                        <label for="zip_relay3">Zip</label>
+                                        <input class="form-control" id="zip_relay3" placeholder="" type="text">
+                                </div>
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-secondary w-100" onclick="saveRelayAddressToCarrier(3);">Save Address To Carrier</button>
+                                </div>
+                                <div class="form-group">
+                                        <label for="contactPerson_relay3">Contact Person</label>
+                                        <input class="form-control" id="contactPerson_relay3" placeholder="" type="text">
+                                </div>
+                                <div class="form-group">
+                                        <label for="phoneNumber_relay3">Phone Number</label>
+                                        <input class="form-control" id="phoneNumber_relay3" placeholder="" type="text">
+                                </div>
+                                <div class="form-group">
+                                        <label for="hoursOfOperationOpen_relay3">Opening Hour</label>
+                                        <!--input class="form-control" id="hoursOfOperation_relay3" placeholder="" type="text"-->
+                                        <select class="form-control" id="hoursOfOperationOpen_relay3">
+                                            <option></option>
+                                            <option>01:00</option>
+                                            <option>02:00</option>
+                                            <option>03:00</option>
+                                            <option>04:00</option>
+                                            <option>05:00</option>
+                                            <option>06:00</option>
+                                            <option>07:00</option>
+                                            <option>08:00</option>
+                                            <option>09:00</option>
+                                            <option>10:00</option>
+                                            <option>11:00</option>
+                                            <option>12:00</option>
+                                            <option>13:00</option>
+                                            <option>14:00</option>
+                                            <option>15:00</option>
+                                            <option>16:00</option>
+                                            <option>17:00</option>
+                                            <option>18:00</option>
+                                            <option>19:00</option>
+                                            <option>20:00</option>
+                                            <option>21:00</option>
+                                            <option>22:00</option>
+                                            <option>23:00</option>
+                                            <option>24:00</option>
+                                        </select>
+                                </div>
+                                <div class="form-group">
+                                        <label for="hoursOfOperationClose_relay3">Closing Hour</label>
+                                        <select class="form-control" id="hoursOfOperationClose_relay3">
+                                            <option></option>
+                                            <option>01:00</option>
+                                            <option>02:00</option>
+                                            <option>03:00</option>
+                                            <option>04:00</option>
+                                            <option>05:00</option>
+                                            <option>06:00</option>
+                                            <option>07:00</option>
+                                            <option>08:00</option>
+                                            <option>09:00</option>
+                                            <option>10:00</option>
+                                            <option>11:00</option>
+                                            <option>12:00</option>
+                                            <option>13:00</option>
+                                            <option>14:00</option>
+                                            <option>15:00</option>
+                                            <option>16:00</option>
+                                            <option>17:00</option>
+                                            <option>18:00</option>
+                                            <option>19:00</option>
+                                            <option>20:00</option>
+                                            <option>21:00</option>
+                                            <option>22:00</option>
+                                            <option>23:00</option>
+                                            <option>24:00</option>
+                                        </select>
+                                </div>
+                                <div class="form-group">
+                                        <label for="timeZone_relay3">Time Zone</label>
+                                        <select class="form-control" id="timeZone_relay3">
+                                            <option>EST (Eastern)</option>
+                                            <option>CST (Central)</option>
+                                            <option>MPT (Mountain)</option>
+                                            <option>PST (Pacific)</option>
+                                        </select>
+                                </div>
+                                <div class="form-group">
+                                        <label for="pickupDate_relay3">Pickup Date</label>
+                                        <input class="form-control" id="pickupDate_relay3" placeholder="" type="date">
+                                </div>
+                                <div class="form-group">
+                                        <label for="deliveryDate_relay3">Delivery Date</label>
+                                        <input class="form-control" id="deliveryDate_relay3" placeholder="" type="date">
+                                </div>
+                                <div class="form-group">
+                                        <label for="notes_relay3">Notes</label>
+                                        <textarea class="form-control" id="notes_relay3" rows="3"></textarea>
+                                </div>
+                                <div class="form-group">
+                                        <label for="rate_relay3">Negotiated Rate</label>
+                                        <input class="form-control" id="rate_relay3" placeholder="" type="text" disabled>
+                                </div>
                             </div>
                     </div>
 
@@ -2978,6 +3318,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         <h4>Relay Address 4</h4>
                             <input class="form-control" id="relay_id4" placeholder="" type="hidden">
                             <input class="form-control" id="commit_id4" placeholder="" type="hidden">
+                            <input class="form-control" id="originationLng_relay4" type="hidden">
+                            <input class="form-control" id="originationLat_relay4" type="hidden">
+                            <input class="form-control" id="destinationLng_relay4" type="hidden">
+                            <input class="form-control" id="destinationLat_relay4" type="hidden">
+                            <input class="form-control" id="distance_relay4" type="hidden">
+                            <!--<input class="form-control" id="entityID_relay4" placeholder="" type="hidden">-->
                             <div class="form-group">
                             <label for="entityID_relay4">Carrier</label>
                                 <select id="entityID_relay4" name="entityID_relay4" data-placeholder="Carrier" class="form-control chzn-select" required="required" onchange="populateAutocomplete(this, 4);">
@@ -2990,57 +3336,127 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     ?>
                                 </select>
                             </div>
-                            <div class="form-group">
-                                    <label for="deliveryLocation_relay4">Location</label>
-                                    <input class="form-control" id="deliveryLocation_relay4" placeholder="" type="text">
+                            
+                            <div id="relayOptions_4" style="display: none;">
+                                <div class="form-group">
+                                        <label for="deliveryLocation_relay4">Location</label>
+                                        <input class="form-control" id="deliveryLocation_relay4" placeholder="" type="text">
+                                </div>
+                                <div class="form-group">
+                                        <label for="address_relay4">Address</label>
+                                        <input class="form-control" id="address_relay4" placeholder="" type="text">
+                                </div>
+                                <div class="form-group">
+                                        <label for="city_relay4">City</label>
+                                        <input class="form-control" id="city_relay4" placeholder="" type="text">
+                                </div>
+                                <div class="form-group">
+                                        <label for="state_relay4">State</label>
+                                        <input class="form-control" id="state_relay4" placeholder="" type="text">
+                                </div>
+                                <div class="form-group">
+                                        <label for="zip_relay4">Zip</label>
+                                        <input class="form-control" id="zip_relay4" placeholder="" type="text">
+                                </div>
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-secondary w-100" onclick="saveRelayAddressToCarrier(4);">Save Address To Carrier</button>
+                                </div>
+                                <div class="form-group">
+                                        <label for="contactPerson_relay4">Contact Person</label>
+                                        <input class="form-control" id="contactPerson_relay4" placeholder="" type="text">
+                                </div>
+                                <div class="form-group">
+                                        <label for="phoneNumber_relay4">Phone Number</label>
+                                        <input class="form-control" id="phoneNumber_relay4" placeholder="" type="text">
+                                </div>
+                                <div class="form-group">
+                                        <label for="hoursOfOperationOpen_relay4">Opening Hour</label>
+                                        <!--input class="form-control" id="hoursOfOperation_relay4" placeholder="" type="text"-->
+                                        <select class="form-control" id="hoursOfOperationOpen_relay4">
+                                            <option></option>
+                                            <option>01:00</option>
+                                            <option>02:00</option>
+                                            <option>03:00</option>
+                                            <option>04:00</option>
+                                            <option>05:00</option>
+                                            <option>06:00</option>
+                                            <option>07:00</option>
+                                            <option>08:00</option>
+                                            <option>09:00</option>
+                                            <option>10:00</option>
+                                            <option>11:00</option>
+                                            <option>12:00</option>
+                                            <option>13:00</option>
+                                            <option>14:00</option>
+                                            <option>15:00</option>
+                                            <option>16:00</option>
+                                            <option>17:00</option>
+                                            <option>18:00</option>
+                                            <option>19:00</option>
+                                            <option>20:00</option>
+                                            <option>21:00</option>
+                                            <option>22:00</option>
+                                            <option>23:00</option>
+                                            <option>24:00</option>
+                                        </select>
+                                </div>
+                                <div class="form-group">
+                                        <label for="hoursOfOperationClose_relay4">Closing Hour</label>
+                                        <select class="form-control" id="hoursOfOperationClose_relay4">
+                                            <option></option>
+                                            <option>01:00</option>
+                                            <option>02:00</option>
+                                            <option>03:00</option>
+                                            <option>04:00</option>
+                                            <option>05:00</option>
+                                            <option>06:00</option>
+                                            <option>07:00</option>
+                                            <option>08:00</option>
+                                            <option>09:00</option>
+                                            <option>10:00</option>
+                                            <option>11:00</option>
+                                            <option>12:00</option>
+                                            <option>13:00</option>
+                                            <option>14:00</option>
+                                            <option>15:00</option>
+                                            <option>16:00</option>
+                                            <option>17:00</option>
+                                            <option>18:00</option>
+                                            <option>19:00</option>
+                                            <option>20:00</option>
+                                            <option>21:00</option>
+                                            <option>22:00</option>
+                                            <option>23:00</option>
+                                            <option>24:00</option>
+                                        </select>
+                                </div>
+                                <div class="form-group">
+                                        <label for="timeZone_relay4">Time Zone</label>
+                                        <select class="form-control" id="timeZone_relay4">
+                                            <option>EST (Eastern)</option>
+                                            <option>CST (Central)</option>
+                                            <option>MPT (Mountain)</option>
+                                            <option>PST (Pacific)</option>
+                                        </select>
+                                </div>
+                                <div class="form-group">
+                                        <label for="pickupDate_relay4">Pickup Date</label>
+                                        <input class="form-control" id="pickupDate_relay4" placeholder="" type="date">
+                                </div>
+                                <div class="form-group">
+                                        <label for="deliveryDate_relay4">Delivery Date</label>
+                                        <input class="form-control" id="deliveryDate_relay4" placeholder="" type="date">
+                                </div>
+                                <div class="form-group">
+                                        <label for="notes_relay4">Notes</label>
+                                        <textarea class="form-control" id="notes_relay4" rows="3"></textarea>
+                                </div>
+                                <div class="form-group">
+                                        <label for="rate_relay4">Negotiated Rate</label>
+                                        <input class="form-control" id="rate_relay4" placeholder="" type="text" disabled>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                    <label for="contactPerson_relay4">Contact Person</label>
-                                    <input class="form-control" id="contactPerson_relay4" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="phoneNumber_relay4">Phone Number</label>
-                                    <input class="form-control" id="phoneNumber_relay4" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="hoursOfOperation_relay4">Hours of Operation</label>
-                                    <input class="form-control" id="hoursOfOperation_relay4" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="pickupDate_relay4">Pickup Date</label>
-                                    <input class="form-control" id="pickupDate_relay4" placeholder="" type="date">
-                            </div>
-                            <div class="form-group">
-                                    <label for="deliveryDate_relay4">Delivery Date</label>
-                                    <input class="form-control" id="deliveryDate_relay4" placeholder="" type="date">
-                            </div>
-                            <div class="form-group">
-                                    <label for="address_relay4">Address</label>
-                                    <input class="form-control" id="address_relay4" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="city_relay4">City</label>
-                                    <input class="form-control" id="city_relay4" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="state_relay4">State</label>
-                                    <input class="form-control" id="state_relay4" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="zip_relay4">Zip</label>
-                                    <input class="form-control" id="zip_relay4" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                <button type="button" class="btn btn-secondary" onclick="saveRelayAddressToCarrier(4);">Save Address To Carrier</button>
-                            </div>
-                            <div class="form-group">
-                                    <label for="notes_relay4">Notes</label>
-                                    <textarea class="form-control" id="notes_relay4" rows="3"></textarea>
-                            </div>
-                            <div class="form-group">
-                                    <label for="rate_relay4">Negotiated Rate</label>
-                                    <input class="form-control" id="rate_relay4" placeholder="" type="text" disabled>
-                            </div>
+                            
                     </div>
             </div>
 
@@ -3060,16 +3476,17 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 </div>
             </div>
 
+        <div class="row row-grid">
+            <div class="col-lg-4 col-md-4 col-sm-12 pull-right">
+                <button type="button" class="btn btn-secondary btn-lg" onclick="closeEditCommit();">Close</button>
+                <button type="button" class="btn btn-primary btn-lg" onclick="addTrailer();" id="addTrailer">AddTrailer</button>
+                <button type="button" class="btn btn-primary btn-lg" onclick="saveCommit();" id="saveCommit">Save</button>
+            </div>
         </div>
-        <div class="modal-footer">
-           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-           <button type="button" class="btn btn-primary btn-md" onclick="addTrailer();" id="addTrailer">AddTrailer</button>
-           <button type="button" class="btn btn-primary btn-md" onclick="saveCommit();" id="saveCommit">Save</button>
-        </div>
-      </div>
-    </div>
-  </div>
--->
+
+
+ </section>
+
  <script>
 
     getCommitted();
@@ -3630,6 +4047,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             var relayID = $('#relay_id' + relayNumber).val().trim();
                             var commitID = $('#commit_id' + relayNumber).val().trim();
 
+                            var carrierID = $('#entityID_relay' + relayNumber).val().trim();
+
                             var destinationAddress1 = $('#address_relay' + relayNumber).val().trim();
                             var destinationCity = $('#city_relay' + relayNumber).val().trim();
                             var destinationState = $('#state_relay' + relayNumber).val().trim();
@@ -3644,7 +4063,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                                     phoneNumber: $('#phoneNumber_relay' + relayNumber).val().trim(), deliveryHoursOfOperationOpen: $('#hoursOfOperationOpen_relay' + relayNumber).val().trim(),
                                                     deliveryHoursOfOperationClose: $('#hoursOfOperationClose_relay' + relayNumber).val().trim(),deliveryTimeZone: $('#timeZone_relay' + relayNumber).val()};
 
-                            if(destinationCity != "" && destinationState != ""){
+                            if(carrierID != ""){
 
                                 if(relayID == ""){
                                     url = '<?php echo API_HOST_URL . "/customer_needs" ?>/';
@@ -3924,6 +4343,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                             var relayData = {};
 
+                            var carrierID = $('#entityID_relay' + relayNumber).val();
                             var destinationAddress1 = $('#address_relay' + relayNumber).val().trim();
                             var destinationCity = $('#city_relay' + relayNumber).val().trim();
                             var destinationState = $('#state_relay' + relayNumber).val().trim();
@@ -3938,7 +4358,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                                     phoneNumber: $('#phoneNumber_relay' + relayNumber).val().trim(), deliveryHoursOfOperationOpen: $('#hoursOfOperationOpen_relay' + relayNumber).val().trim(),
                                                     deliveryHoursOfOperationClose: $('#hoursOfOperationClose_relay' + relayNumber).val().trim(),deliveryTimeZone: $('#timeZone_relay' + relayNumber).val().trim()};
 
-                            if(destinationCity != "" && destinationState != ""){
+                            if(carrierID != ""){
 
                                 relayData = {rootCustomerNeedsID: id, pickupInformation: pickupInformation, originationAddress1: originationAddress1, originationAddress2: originationAddress2, originationCity: originationCity, originationState: originationState, originationZip: originationZip, originationNotes: originationNotes,
                                     deliveryInformation: deliveryInformation, destinationAddress1: destinationAddress1, destinationAddress2: destinationAddress2, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, destinationNotes: destinationNotes,
@@ -4171,6 +4591,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                             var relayID = $('#relay_id' + relayNumber).val().trim();
                             var commitID = $('#commit_id' + relayNumber).val().trim();
+                            var carrierID = $('#entityID_relay' + relayNumber).val();
                             var destinationAddress1 = $('#address_relay' + relayNumber).val().trim();
                             var destinationCity = $('#city_relay' + relayNumber).val().trim();
                             var destinationState = $('#state_relay' + relayNumber).val().trim();
@@ -4186,7 +4607,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                                     phoneNumber: $('#phoneNumber_relay' + relayNumber).val().trim(), deliveryHoursOfOperationOpen: $('#hoursOfOperationOpen_relay' + relayNumber).val(),
                                                     deliveryHoursOfOperationClose: $('#hoursOfOperationClose_relay' + relayNumber).val(),timeZone: $('#timeZone_relay' + relayNumber).val()};
 
-                            if(destinationCity != "" && destinationState != ""){
+                            if(carrierID != ""){
 
                                     url = '<?php echo API_HOST_URL . "/order_details" ?>/';
                                     type = "POST";
@@ -4319,6 +4740,13 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
     function populateAutocomplete(select, relayNumber){
         var currentCarrier = $(select).val();
+
+        if (currentCarrier != ""){
+            $('#relayOptions_' + relayNumber).css("display", "block");
+        }
+        else{
+            $('#relayOptions_' + relayNumber).css("display", "none");
+        }
 
         $.ajax({
             url: '<?php echo API_HOST_URL . "/locations"; ?>' + '?filter=entityID,eq,' + currentCarrier + '&transform=1',
