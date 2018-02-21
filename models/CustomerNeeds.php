@@ -387,6 +387,20 @@ class CustomerNeeds
                         $context  = stream_context_create($options);
                         try {
                             $destresult = json_decode(file_get_contents($url,false,$context),true);
+
+                            // Now update the original with the new lower qty that was committed to
+                            $updatedata = array("qty"=>$qty, "updatedAt"=>date("Y-m-d H:i:s"));
+
+                            $updateurl = $api_host . "/" . API_ROOT . "/customer_needs/".$id;
+                            $updateoptions = array(
+                                'http' => array(
+                                    'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                                    'method'  => 'PUT',
+                                    'content' => http_build_query($updatedata)
+                                )
+                            );
+                            $updatecontext  = stream_context_create($updateoptions);
+                            $result = json_decode(file_get_contents($updateurl,false,$updatecontext),true);
                         } catch (Exception $e) {
                             return $e;
                         }

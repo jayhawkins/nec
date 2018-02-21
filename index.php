@@ -1107,9 +1107,10 @@ $app->route('POST /gettrends', function() {
     $entityID = Flight::request()->data->entityid;
     $trendEntityType = Flight::request()->data->trendEntityType;
     $timeFrame = Flight::request()->data->timeFrame;
+    $source = Flight::request()->data->source;
     $reports = Flight::reports();
     $db = Flight::db();
-    $result = $reports->gettrends($db,$entityType,$entityID,$timeFrame,$trendEntityType);
+    $result = $reports->gettrends($db,$entityType,$entityID,$timeFrame,$trendEntityType,$source);
     if ($result) {
         print_r($result);
         //echo "success";
@@ -1123,9 +1124,10 @@ $app->route('POST /gettrendscsv', function() {
     $entityID = Flight::request()->data->entityid;
     $trendEntityType = Flight::request()->data->trendEntityType;
     $timeFrame = Flight::request()->data->timeFrame;
+    $source = Flight::request()->data->source;
     $reports = Flight::reports();
     $db = Flight::db();
-    $result = $reports->gettrendscsv($db,$entityType,$entityID,$timeFrame,$trendEntityType);
+    $result = $reports->gettrendscsv($db,$entityType,$entityID,$timeFrame,$trendEntityType,$source);
     if ($result) {
         print_r($result);
         //echo "success";
