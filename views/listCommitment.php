@@ -459,12 +459,22 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         for(var relayNumber = 1; relayNumber <=4 ; relayNumber ++){
             $('#relay_id' + relayNumber).val("");
             $('#commit_id' + relayNumber).val("");
-            $('#entity_id' + relayNumber).val("");
+            $('#entityID_relay' + relayNumber).val("");
             $('#address_relay' + relayNumber).val("");
             $('#city_relay' + relayNumber).val("");
             $('#state_relay' + relayNumber).val("");
             $('#zip_relay' + relayNumber).val("");
             $('#notes_relay' + relayNumber).val("");
+            
+            $('#pickupDate_relay' + relayNumber).val("");
+            $('#deliveryDate_relay' + relayNumber).val("");
+            $('#rate_relay' + relayNumber).val("");
+
+            $('#originationLng_relay' + relayNumber).val("");
+            $('#originationLat_relay' + relayNumber).val("");
+            $('#destinationLng_relay' + relayNumber).val("");
+            $('#destinationLat_relay' + relayNumber).val("");
+            $('#distance_relay' + relayNumber).val("");
 
             $('#deliveryLocation_relay' + relayNumber).val("");
             $('#contactPerson_relay' + relayNumber).val("");
@@ -473,31 +483,30 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             $('#hoursOfOperationOpen_relay' + relayNumber).val("");
             $('#hoursOfOperationClose_relay' + relayNumber).val("");
             $('#timeZone_relay' + relayNumber).val("");
+            
         }
-
-
+            
             var dpli = '<div class="form-group row">' +
-                            '<label for="qty" class="col-sm-3 col-form-label">Quantity</label>'+
-                            '<div class="col-sm-9">' +
-                            '<input id="qty" name="qty" class="form-control">'+
-                            '</div>'+
-                            '</div>';
+                        '   <div class="col-sm-2">' +
+                            '<label for="qty">Quantity</label>'+
+                            '<input id="qty" name="qty" class="form-control" value="">'+
+                        '   </div>';
+
+            var itemIndex = 1;
 
             for (var i = 0; i < dataPoints.object_type_data_points.length; i++) {
-
+                
                 if(dataPoints.object_type_data_points[i].title == "Decals"){
-                    dpli += '<div class="form-group row">' +
-                            '<label for="decals" class="col-sm-3 col-form-label">Decals</label>'+
-                            '<div class="col-sm-9">' +
-                            '<input id="decals" name="decals" class="form-control">'+
-                            '</div>'+
+                    dpli += '<div class="col-sm-2">' +
+                            '<label for="decals">Decals</label>'+
+                            '<input id="decals" name="decals" class="form-control" value="">'+
                             '</div>';
                   }
                   else{
 
-                    dpli += '<div class="form-group row">' +
-                            '<label for="' + dataPoints.object_type_data_points[i].columnName + '" class="col-sm-3 col-form-label">' + dataPoints.object_type_data_points[i].title + '</label>' +
-                            '<div class="col-sm-9"> <select class="form-control" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '">' +
+                    dpli += '<div class="col-sm-2">' +
+                            '<label for="' + dataPoints.object_type_data_points[i].columnName + '">' + dataPoints.object_type_data_points[i].title + '</label>' +
+                            '<select class="form-control" id="' + dataPoints.object_type_data_points[i].columnName + '" name="' + dataPoints.object_type_data_points[i].columnName + '">' +
                             ' <option value="">-Select From List-</option>\n';
 
                     for (var v = 0; v < dataPoints.object_type_data_points[i].object_type_data_point_values.length; v++) {
@@ -507,29 +516,28 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     }
 
                     dpli += '</select>' +
-                            '</div></div>';
+                            '</div>';
                   }
+
+                  itemIndex += 1;
+
+                  if(itemIndex % 6 == 0) dpli += '</div><div class="form-group row">';
             }
 
 
-            dpli += '<div class="form-group row">' +
-                    '   <label for="rate" class="col-sm-3 col-form-label">Rate</label>' +
-                    '   <div class="col-sm-9">' +
+            dpli += '<div class="col-sm-2">' +
+                    '   <label for="rate">Rate</label>' +
                     '       <input id="rate" name="rate" class="form-control" value="">' +
-                    '   </div>' +
                     '</div>';
 
-            dpli += '<div class="form-group row">' +
-                    '   <label for="rateType" class="col-sm-3 col-form-label">Rate Type</label>' +
-                    '   <div class="col-sm-9">' +
-                    '       <input type="radio" id="rateType" name="rateType" value="Flat Rate" /> Flat Rate ' +
-                    '       <input type="radio" id="rateType" name="rateType" value="Mileage" /> Mileage</div>' +
-                    '   </div>'+
-                    '</div>';
+            dpli += '<div class="col-sm-2">' +
+                    '   <label for="rateType">Rate Type</label><br>' +
+                    '       <input type="radio" id="rateType" name="rateType" value="Flat Rate"/> Flat Rate ' +
+                    '       <input type="radio" id="rateType" name="rateType" value="Mileage"/> Mileage' +
+                    '   </div>';
 
-            dpli += '<div class="form-group row">' +
-                    '   <label for="transportationMode" class="col-sm-3 col-form-label">Transportation Mode</label>' +
-                    '   <div class="col-sm-9">' +
+            dpli += '<div class="col-sm-2">' +
+                    '   <label for="transportationMode">Transportation Mode</label>' +
                     '       <select class="form-control" id="transportationMode" name="transportationMode">' +
                     '           <option value="">*Select Mode...</option>' +
                     '           <option value="Empty">Empty</option>' +
@@ -540,6 +548,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     '</div>';
 
             $("#dp-check-list-box").append(dpli);
+
 
     }
 
@@ -978,15 +987,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     '       </select>' +
                     '   </div>'+
                     '</div>';
-
-//            dpli += '<div class="form-group row">' +
-//                    '   <label for="rateType" class="col-sm-3 col-form-label">Rate Type</label>' +
-//                    '   <div class="col-sm-9">' +
-//                    '       <input type="radio" id="rateType" name="rateType" value="Flat Rate" ' + (customer_needs.rateType == "Flat Rate" ? "checked" : "") + '/> Flat Rate ' +
-//                    '       <input type="radio" id="rateType" name="rateType" value="Mileage" ' + (customer_needs.rateType == "Mileage" ? "checked" : "") + '/> Mileage</div>' +
-//                    '   </div>'+
-//                    '</div>';
-
 
             $("#dp-check-list-box").append(dpli);
 
