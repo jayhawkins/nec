@@ -2682,7 +2682,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             if(order.originationZip == null) order.originationZip = "";
             if(order.destinationZip == null) order.destinationZip = "";
             if(order.podList == null) order.podList = [];
-console.log(order);
+//console.log(order);
             // Populate Edit form
             $('#pickupLocation').val(order.pickupInformation.pickupLocation);
             $('#pickupContactPerson').val(order.pickupInformation.contactPerson);
@@ -2813,13 +2813,95 @@ console.log(order);
                 $('#contactPerson_relay' + relayNumber).val(detail.deliveryInformation.contactPerson);
                 $('#phoneNumber_relay' + relayNumber).val(detail.deliveryInformation.phoneNumber);
                 //$('#hoursOfOperation_relay' + relayNumber).val(detail.deliveryInformation.hoursOfOperation);
-                $('#deliveryHoursOfOperationOpen_relay' + relayNumber).val(detail.deliveryInformation.deliveryHoursOfOperationOpen);
-                $('#deliveryHoursOfOperationClose_relay' + relayNumber).val(detail.deliveryInformation.deliveryHoursOfOperationClose);
-                $('#deliveryTimeZone_relay' + relayNumber).val(detail.deliveryInformation.deliveryTimeZone);
+                $('#hoursOfOperationOpen_relay' + relayNumber).val(detail.deliveryInformation.deliveryHoursOfOperationOpen);
+                $('#hoursOfOperationClose_relay' + relayNumber).val(detail.deliveryInformation.deliveryHoursOfOperationClose);
+                $('#timeZone_relay' + relayNumber).val(detail.deliveryInformation.deliveryTimeZone);
 
                 if(relayNumber == 4) return false;
 
             });
+
+
+
+            var unitData = "";
+            var unitEdit = "";
+            $('#addTrailer').html('');
+            $('#unitDataBody').html('');
+
+            $.each(order.podList, function(key, unit){
+
+                if(unit.year == null) unit.year = "";
+                if(unit.make == null) unit.make = "";
+                if(unit.licenseNumber == null) unit.licenseNumber = "";
+                if(unit.value == null) unit.value = "0.00";
+
+                unitData += "<tr>" +
+                        "<td>"+ unit.year +"</td>" +
+                        "<td>"+ unit.make +"</td>" +
+                        "<td>"+ unit.licenseNumber +"</td>" +
+                        "<td>"+ unit.unitNumber +"</td>" +
+                        "<td>"+ unit.vinNumber +"</td>" +
+                        "<td>"+ unit.truckProNumber +"</td>" +
+                        "<td>"+ unit.poNumber +"</td>" +
+                        "<td>$"+ parseFloat(unit.value).toFixed(2) +"</td>" +
+                        "</tr>";
+
+                unitEdit += '<div class="row">\n\
+                                <div class="col-md-1">\n\
+                                    <div class="form-group">\n\
+                                            <label for="year' + (key + 1) + '">Year</label>\n\
+                                            <input class="form-control" id="year' + (key + 1) + '" placeholder="" type="text" value="'+unit.year+'">\n\
+                                    </div>\n\
+                                </div>\n\
+                                <div class="col-md-2">\n\
+                                    <div class="form-group">\n\
+                                            <label for="make' + (key + 1) + '">Make</label>\n\
+                                            <input class="form-control" id="make' + (key + 1) + '" placeholder="" type="text" value="'+unit.make+'">\n\
+                                    </div>\n\
+                                </div>\n\
+                                <div class="col-md-1">\n\
+                                    <div class="form-group">\n\
+                                            <label for="make' + (key + 1) + '">License #</label>\n\
+                                            <input class="form-control" id="licenseNumber' + (key + 1) + '" placeholder="" type="text" value="'+unit.licenseNumber+'">\n\
+                                    </div>\n\
+                                </div>\n\
+                                <div class="col-md-1">\n\
+                                    <div class="form-group">\n\
+                                            <label for="unitNumber' + (key + 1) + '">Unit #</label>\n\
+                                            <input class="form-control" id="unitNumber' + (key + 1) + '" placeholder="" type="text" value="'+unit.unitNumber+'">\n\
+                                    </div>\n\
+                                </div>\n\
+                                <div class="col-md-2">\n\
+                                    <div class="form-group">\n\
+                                            <label for="vinNumber' + (key + 1) + '">VIN #</label>\n\
+                                            <input class="form-control" id="vinNumber' + (key + 1) + '" placeholder="" type="text" value="'+unit.vinNumber+'">\n\
+                                    </div>\n\
+                                </div>\n\
+                                <div class="col-md-2">\n\
+                                    <div class="form-group">\n\
+                                            <label for="truckProNumber' + (key + 1) + '">Truck/Pro #</label>\n\
+                                            <input class="form-control" id="truckProNumber' + (key + 1) + '" placeholder="" type="text" value="'+unit.truckProNumber+'">\n\
+                                    </div>\n\
+                                </div>\n\
+                                <div class="col-md-2">\n\
+                                    <div class="form-group">\n\
+                                            <label for="poNumber' + (key + 1) + '">P.O. #</label>\n\
+                                            <input class="form-control" id="poNumber' + (key + 1) + '" placeholder="" type="text" value="'+unit.poNumber+'">\n\
+                                    </div>\n\
+                                </div>\n\
+                                <div class="col-md-1">\n\
+                                    <div class="form-group">\n\
+                                            <label for="value' + (key + 1) + '">Value</label>\n\
+                                            <input class="form-control" id="value' + (key + 1) + '" placeholder="" type="text" value="'+parseFloat(unit.value).toFixed(2)+'">\n\
+                                    </div>\n\
+                                </div>\n\
+                            </div>';
+            });
+
+            $('#addTrailer').append(unitEdit);
+            $('#unitDataBody').append(unitData);
+
+
 
         });
     }
@@ -3185,57 +3267,105 @@ console.log(order);
                                 <div class="row">
                                     <div class="col-sm-3">
                                             <select class="form-control" id="pickupHoursOfOperationOpen">
+                                                <option>00:30</option>
                                                 <option>01:00</option>
+                                                <option>01:30</option>
                                                 <option>02:00</option>
+                                                <option>02:30</option>
                                                 <option>03:00</option>
+                                                <option>03:30</option>
                                                 <option>04:00</option>
+                                                <option>04:30</option>
                                                 <option>05:00</option>
+                                                <option>05:30</option>
                                                 <option>06:00</option>
+                                                <option>06:30</option>
                                                 <option>07:00</option>
+                                                <option>07:30</option>
                                                 <option selected>08:00</option>
+                                                <option>08:30</option>
                                                 <option>09:00</option>
+                                                <option>09:30</option>
                                                 <option>10:00</option>
+                                                <option>10:30</option>
                                                 <option>11:00</option>
+                                                <option>11:30</option>
                                                 <option>12:00</option>
+                                                <option>12:30</option>
                                                 <option>13:00</option>
+                                                <option>13:30</option>
                                                 <option>14:00</option>
+                                                <option>14:30</option>
                                                 <option>15:00</option>
+                                                <option>15:30</option>
                                                 <option>16:00</option>
+                                                <option>16:30</option>
                                                 <option>17:00</option>
+                                                <option>17:30</option>
                                                 <option>18:00</option>
+                                                <option>18:30</option>
                                                 <option>19:00</option>
+                                                <option>19:30</option>
                                                 <option>20:00</option>
+                                                <option>20:30</option>
                                                 <option>21:00</option>
+                                                <option>21:30</option>
                                                 <option>22:00</option>
+                                                <option>22:30</option>
                                                 <option>23:00</option>
+                                                <option>23:30</option>
                                                 <option>24:00</option>
                                             </select>
                                     </div>
                                     <div class="col-sm-3">
                                             <select class="form-control" id="pickupHoursOfOperationClose">
+                                                <option>00:30</option>
                                                 <option>01:00</option>
+                                                <option>01:30</option>
                                                 <option>02:00</option>
+                                                <option>02:30</option>
                                                 <option>03:00</option>
+                                                <option>03:30</option>
                                                 <option>04:00</option>
+                                                <option>04:30</option>
                                                 <option>05:00</option>
+                                                <option>05:30</option>
                                                 <option>06:00</option>
+                                                <option>06:30</option>
                                                 <option>07:00</option>
+                                                <option>07:30</option>
                                                 <option>08:00</option>
+                                                <option>08:30</option>
                                                 <option>09:00</option>
+                                                <option>09:30</option>
                                                 <option>10:00</option>
+                                                <option>10:30</option>
                                                 <option>11:00</option>
+                                                <option>11:30</option>
                                                 <option>12:00</option>
+                                                <option>12:30</option>
                                                 <option>13:00</option>
+                                                <option>13:30</option>
                                                 <option>14:00</option>
+                                                <option>14:30</option>
                                                 <option>15:00</option>
+                                                <option>15:30</option>
                                                 <option>16:00</option>
+                                                <option>16:30</option>
                                                 <option selected>17:00</option>
+                                                <option>17:30</option>
                                                 <option>18:00</option>
+                                                <option>18:30</option>
                                                 <option>19:00</option>
+                                                <option>19:30</option>
                                                 <option>20:00</option>
+                                                <option>20:30</option>
                                                 <option>21:00</option>
+                                                <option>21:30</option>
                                                 <option>22:00</option>
+                                                <option>22:30</option>
                                                 <option>23:00</option>
+                                                <option>23:30</option>
                                                 <option>24:00</option>
                                             </select>
                                     </div>
@@ -3284,57 +3414,105 @@ console.log(order);
                                 <div class="row">
                                     <div class="col-sm-3">
                                             <select class="form-control" id="deliveryHoursOfOperationOpen">
+                                                <option>00:30</option>
                                                 <option>01:00</option>
+                                                <option>01:30</option>
                                                 <option>02:00</option>
+                                                <option>02:30</option>
                                                 <option>03:00</option>
+                                                <option>03:30</option>
                                                 <option>04:00</option>
+                                                <option>04:30</option>
                                                 <option>05:00</option>
+                                                <option>05:30</option>
                                                 <option>06:00</option>
+                                                <option>06:30</option>
                                                 <option>07:00</option>
+                                                <option>07:30</option>
                                                 <option selected>08:00</option>
+                                                <option>08:30</option>
                                                 <option>09:00</option>
+                                                <option>09:30</option>
                                                 <option>10:00</option>
+                                                <option>10:30</option>
                                                 <option>11:00</option>
+                                                <option>11:30</option>
                                                 <option>12:00</option>
+                                                <option>12:30</option>
                                                 <option>13:00</option>
+                                                <option>13:30</option>
                                                 <option>14:00</option>
+                                                <option>14:30</option>
                                                 <option>15:00</option>
+                                                <option>15:30</option>
                                                 <option>16:00</option>
+                                                <option>16:30</option>
                                                 <option>17:00</option>
+                                                <option>17:30</option>
                                                 <option>18:00</option>
+                                                <option>18:30</option>
                                                 <option>19:00</option>
+                                                <option>19:30</option>
                                                 <option>20:00</option>
+                                                <option>20:30</option>
                                                 <option>21:00</option>
+                                                <option>21:30</option>
                                                 <option>22:00</option>
+                                                <option>22:30</option>
                                                 <option>23:00</option>
+                                                <option>23:30</option>
                                                 <option>24:00</option>
                                             </select>
                                     </div>
                                     <div class="col-sm-3">
                                             <select class="form-control" id="deliveryHoursOfOperationClose">
+                                                <option>00:30</option>
                                                 <option>01:00</option>
+                                                <option>01:30</option>
                                                 <option>02:00</option>
+                                                <option>02:30</option>
                                                 <option>03:00</option>
+                                                <option>03:30</option>
                                                 <option>04:00</option>
+                                                <option>04:30</option>
                                                 <option>05:00</option>
+                                                <option>05:30</option>
                                                 <option>06:00</option>
+                                                <option>06:30</option>
                                                 <option>07:00</option>
+                                                <option>07:30</option>
                                                 <option>08:00</option>
+                                                <option>08:30</option>
                                                 <option>09:00</option>
+                                                <option>09:30</option>
                                                 <option>10:00</option>
+                                                <option>10:30</option>
                                                 <option>11:00</option>
+                                                <option>11:30</option>
                                                 <option>12:00</option>
+                                                <option>12:30</option>
                                                 <option>13:00</option>
+                                                <option>13:30</option>
                                                 <option>14:00</option>
+                                                <option>14:30</option>
                                                 <option>15:00</option>
+                                                <option>15:30</option>
                                                 <option>16:00</option>
+                                                <option>16:30</option>
                                                 <option selected>17:00</option>
+                                                <option>17:30</option>
                                                 <option>18:00</option>
+                                                <option>18:30</option>
                                                 <option>19:00</option>
+                                                <option>19:30</option>
                                                 <option>20:00</option>
+                                                <option>20:30</option>
                                                 <option>21:00</option>
+                                                <option>21:30</option>
                                                 <option>22:00</option>
+                                                <option>22:30</option>
                                                 <option>23:00</option>
+                                                <option>23:30</option>
                                                 <option>24:00</option>
                                             </select>
                                     </div>
@@ -3965,57 +4143,105 @@ console.log(order);
 
                                             <div class="col-sm-3">
                                                     <select class="form-control" id="pickupHoursOfOperationOpen">
+                                                        <option>00:30</option>
                                                         <option>01:00</option>
+                                                        <option>01:30</option>
                                                         <option>02:00</option>
+                                                        <option>02:30</option>
                                                         <option>03:00</option>
+                                                        <option>03:30</option>
                                                         <option>04:00</option>
+                                                        <option>04:30</option>
                                                         <option>05:00</option>
+                                                        <option>05:30</option>
                                                         <option>06:00</option>
+                                                        <option>06:30</option>
                                                         <option>07:00</option>
+                                                        <option>07:30</option>
                                                         <option selected>08:00</option>
+                                                        <option>08:30</option>
                                                         <option>09:00</option>
+                                                        <option>09:30</option>
                                                         <option>10:00</option>
+                                                        <option>10:30</option>
                                                         <option>11:00</option>
+                                                        <option>11:30</option>
                                                         <option>12:00</option>
+                                                        <option>12:30</option>
                                                         <option>13:00</option>
+                                                        <option>13:30</option>
                                                         <option>14:00</option>
+                                                        <option>14:30</option>
                                                         <option>15:00</option>
+                                                        <option>15:30</option>
                                                         <option>16:00</option>
+                                                        <option>16:30</option>
                                                         <option>17:00</option>
+                                                        <option>17:30</option>
                                                         <option>18:00</option>
+                                                        <option>18:30</option>
                                                         <option>19:00</option>
+                                                        <option>19:30</option>
                                                         <option>20:00</option>
+                                                        <option>20:30</option>
                                                         <option>21:00</option>
+                                                        <option>21:30</option>
                                                         <option>22:00</option>
+                                                        <option>22:30</option>
                                                         <option>23:00</option>
+                                                        <option>23:30</option>
                                                         <option>24:00</option>
                                                     </select>
                                             </div>
                                             <div class="col-sm-3">
                                                     <select class="form-control" id="pickupHoursOfOperationClose">
+                                                        <option>00:30</option>
                                                         <option>01:00</option>
+                                                        <option>01:30</option>
                                                         <option>02:00</option>
+                                                        <option>02:30</option>
                                                         <option>03:00</option>
+                                                        <option>03:30</option>
                                                         <option>04:00</option>
+                                                        <option>04:30</option>
                                                         <option>05:00</option>
+                                                        <option>05:30</option>
                                                         <option>06:00</option>
+                                                        <option>06:30</option>
                                                         <option>07:00</option>
+                                                        <option>07:30</option>
                                                         <option>08:00</option>
+                                                        <option>08:30</option>
                                                         <option>09:00</option>
+                                                        <option>09:30</option>
                                                         <option>10:00</option>
+                                                        <option>10:30</option>
                                                         <option>11:00</option>
+                                                        <option>11:30</option>
                                                         <option>12:00</option>
+                                                        <option>12:30</option>
                                                         <option>13:00</option>
+                                                        <option>13:30</option>
                                                         <option>14:00</option>
+                                                        <option>14:30</option>
                                                         <option>15:00</option>
+                                                        <option>15:30</option>
                                                         <option>16:00</option>
+                                                        <option>16:30</option>
                                                         <option selected>17:00</option>
+                                                        <option>17:30</option>
                                                         <option>18:00</option>
+                                                        <option>18:30</option>
                                                         <option>19:00</option>
+                                                        <option>19:30</option>
                                                         <option>20:00</option>
+                                                        <option>20:30</option>
                                                         <option>21:00</option>
+                                                        <option>21:30</option>
                                                         <option>22:00</option>
+                                                        <option>22:30</option>
                                                         <option>23:00</option>
+                                                        <option>23:30</option>
                                                         <option>24:00</option>
                                                     </select>
                                             </div>
@@ -4096,57 +4322,105 @@ console.log(order);
 
                                             <div class="col-sm-3">
                                                     <select class="form-control" id="deliveryHoursOfOperationOpen">
+                                                        <option>00:30</option>
                                                         <option>01:00</option>
+                                                        <option>01:30</option>
                                                         <option>02:00</option>
+                                                        <option>02:30</option>
                                                         <option>03:00</option>
+                                                        <option>03:30</option>
                                                         <option>04:00</option>
+                                                        <option>04:30</option>
                                                         <option>05:00</option>
+                                                        <option>05:30</option>
                                                         <option>06:00</option>
+                                                        <option>06:30</option>
                                                         <option>07:00</option>
+                                                        <option>07:30</option>
                                                         <option selected>08:00</option>
+                                                        <option>08:30</option>
                                                         <option>09:00</option>
+                                                        <option>09:30</option>
                                                         <option>10:00</option>
+                                                        <option>10:30</option>
                                                         <option>11:00</option>
+                                                        <option>11:30</option>
                                                         <option>12:00</option>
+                                                        <option>12:30</option>
                                                         <option>13:00</option>
+                                                        <option>13:30</option>
                                                         <option>14:00</option>
+                                                        <option>14:30</option>
                                                         <option>15:00</option>
+                                                        <option>15:30</option>
                                                         <option>16:00</option>
+                                                        <option>16:30</option>
                                                         <option>17:00</option>
+                                                        <option>17:30</option>
                                                         <option>18:00</option>
+                                                        <option>18:30</option>
                                                         <option>19:00</option>
+                                                        <option>19:30</option>
                                                         <option>20:00</option>
+                                                        <option>20:30</option>
                                                         <option>21:00</option>
+                                                        <option>21:30</option>
                                                         <option>22:00</option>
+                                                        <option>22:30</option>
                                                         <option>23:00</option>
+                                                        <option>23:30</option>
                                                         <option>24:00</option>
                                                     </select>
                                             </div>
                                             <div class="col-sm-3">
                                                     <select class="form-control" id="deliveryHoursOfOperationClose">
+                                                        <option>00:30</option>
                                                         <option>01:00</option>
+                                                        <option>01:30</option>
                                                         <option>02:00</option>
+                                                        <option>02:30</option>
                                                         <option>03:00</option>
+                                                        <option>03:30</option>
                                                         <option>04:00</option>
+                                                        <option>04:30</option>
                                                         <option>05:00</option>
+                                                        <option>05:30</option>
                                                         <option>06:00</option>
+                                                        <option>06:30</option>
                                                         <option>07:00</option>
+                                                        <option>07:30</option>
                                                         <option>08:00</option>
+                                                        <option>08:30</option>
                                                         <option>09:00</option>
+                                                        <option>09:30</option>
                                                         <option>10:00</option>
+                                                        <option>10:30</option>
                                                         <option>11:00</option>
+                                                        <option>11:30</option>
                                                         <option>12:00</option>
+                                                        <option>12:30</option>
                                                         <option>13:00</option>
+                                                        <option>13:30</option>
                                                         <option>14:00</option>
+                                                        <option>14:30</option>
                                                         <option>15:00</option>
+                                                        <option>15:30</option>
                                                         <option>16:00</option>
+                                                        <option>16:30</option>
                                                         <option selected>17:00</option>
+                                                        <option>17:30</option>
                                                         <option>18:00</option>
+                                                        <option>18:30</option>
                                                         <option>19:00</option>
+                                                        <option>19:30</option>
                                                         <option>20:00</option>
+                                                        <option>20:30</option>
                                                         <option>21:00</option>
+                                                        <option>21:30</option>
                                                         <option>22:00</option>
+                                                        <option>22:30</option>
                                                         <option>23:00</option>
+                                                        <option>23:30</option>
                                                         <option>24:00</option>
                                                     </select>
                                             </div>
@@ -4232,74 +4506,122 @@ console.log(order);
                                     <input class="form-control" id="phoneNumber_relay1" placeholder="" type="text">
                             </div>
                             <div class="form-group">
-                                    <label for="hoursOfOperationOpen_relay1">Hours of Operation</label>
+                                    <label for="hoursOfOperationOpen_relay1">Opening Hour</label>
                                     <!--input class="form-control" id="hoursOfOperation_relay1" placeholder="" type="text"-->
-                                    <br />
-                                    <div class="col-md-4">
-                                                    <select class="form-control" id="hoursOfOperationOpen_relay1">
-                                                        <option>01:00</option>
-                                                        <option>02:00</option>
-                                                        <option>03:00</option>
-                                                        <option>04:00</option>
-                                                        <option>05:00</option>
-                                                        <option>06:00</option>
-                                                        <option>07:00</option>
-                                                        <option>08:00</option>
-                                                        <option>09:00</option>
-                                                        <option>10:00</option>
-                                                        <option>11:00</option>
-                                                        <option>12:00</option>
-                                                        <option>13:00</option>
-                                                        <option>14:00</option>
-                                                        <option>15:00</option>
-                                                        <option>16:00</option>
-                                                        <option>17:00</option>
-                                                        <option>18:00</option>
-                                                        <option>19:00</option>
-                                                        <option>20:00</option>
-                                                        <option>21:00</option>
-                                                        <option>22:00</option>
-                                                        <option>23:00</option>
-                                                        <option>24:00</option>
-                                                    </select>
-                                            </div>
-                                            <div class="col-md-4">
-                                                    <select class="form-control" id="hoursOfOperationClose_relay1">
-                                                        <option>01:00</option>
-                                                        <option>02:00</option>
-                                                        <option>03:00</option>
-                                                        <option>04:00</option>
-                                                        <option>05:00</option>
-                                                        <option>06:00</option>
-                                                        <option>07:00</option>
-                                                        <option>08:00</option>
-                                                        <option>09:00</option>
-                                                        <option>10:00</option>
-                                                        <option>11:00</option>
-                                                        <option>12:00</option>
-                                                        <option>13:00</option>
-                                                        <option>14:00</option>
-                                                        <option>15:00</option>
-                                                        <option>16:00</option>
-                                                        <option>17:00</option>
-                                                        <option>18:00</option>
-                                                        <option>19:00</option>
-                                                        <option>20:00</option>
-                                                        <option>21:00</option>
-                                                        <option>22:00</option>
-                                                        <option>23:00</option>
-                                                        <option>24:00</option>
-                                                    </select>
-                                            </div>
-                                            <div class="col-md-4">
-                                                    <select class="form-control" id="timeZone_relay1">
-                                                        <option>EST (Eastern)</option>
-                                                        <option>CST (Central)</option>
-                                                        <option>MPT (Mountain)</option>
-                                                        <option>PST (Pacific)</option>
-                                                    </select>
-                                            </div>
-
+                                    <select class="form-control" id="hoursOfOperationOpen_relay1">
+                                        <option>00:30</option>
+                                        <option>01:00</option>
+                                        <option>01:30</option>
+                                        <option>02:00</option>
+                                        <option>02:30</option>
+                                        <option>03:00</option>
+                                        <option>03:30</option>
+                                        <option>04:00</option>
+                                        <option>04:30</option>
+                                        <option>05:00</option>
+                                        <option>05:30</option>
+                                        <option>06:00</option>
+                                        <option>06:30</option>
+                                        <option>07:00</option>
+                                        <option>07:30</option>
+                                        <option selected>08:00</option>
+                                        <option>08:30</option>
+                                        <option>09:00</option>
+                                        <option>09:30</option>
+                                        <option>10:00</option>
+                                        <option>10:30</option>
+                                        <option>11:00</option>
+                                        <option>11:30</option>
+                                        <option>12:00</option>
+                                        <option>12:30</option>
+                                        <option>13:00</option>
+                                        <option>13:30</option>
+                                        <option>14:00</option>
+                                        <option>14:30</option>
+                                        <option>15:00</option>
+                                        <option>15:30</option>
+                                        <option>16:00</option>
+                                        <option>16:30</option>
+                                        <option>17:00</option>
+                                        <option>17:30</option>
+                                        <option>18:00</option>
+                                        <option>18:30</option>
+                                        <option>19:00</option>
+                                        <option>19:30</option>
+                                        <option>20:00</option>
+                                        <option>20:30</option>
+                                        <option>21:00</option>
+                                        <option>21:30</option>
+                                        <option>22:00</option>
+                                        <option>22:30</option>
+                                        <option>23:00</option>
+                                        <option>23:30</option>
+                                        <option>24:00</option>
+                                    </select>
+                            </div>
+                            <div class="form-group">
+                                    <label for="hoursOfOperationClose_relay1">Closing Hour</label>
+                                    <!--input class="form-control" id="hoursOfOperation_relay1" placeholder="" type="text"-->
+                                    <select class="form-control" id="hoursOfOperationClose_relay1">
+                                        <option>00:30</option>
+                                        <option>01:00</option>
+                                        <option>01:30</option>
+                                        <option>02:00</option>
+                                        <option>02:30</option>
+                                        <option>03:00</option>
+                                        <option>03:30</option>
+                                        <option>04:00</option>
+                                        <option>04:30</option>
+                                        <option>05:00</option>
+                                        <option>05:30</option>
+                                        <option>06:00</option>
+                                        <option>06:30</option>
+                                        <option>07:00</option>
+                                        <option>07:30</option>
+                                        <option>08:00</option>
+                                        <option>08:30</option>
+                                        <option>09:00</option>
+                                        <option>09:30</option>
+                                        <option>10:00</option>
+                                        <option>10:30</option>
+                                        <option>11:00</option>
+                                        <option>11:30</option>
+                                        <option>12:00</option>
+                                        <option>12:30</option>
+                                        <option>13:00</option>
+                                        <option>13:30</option>
+                                        <option>14:00</option>
+                                        <option>14:30</option>
+                                        <option>15:00</option>
+                                        <option>15:30</option>
+                                        <option>16:00</option>
+                                        <option>16:30</option>
+                                        <option selected>17:00</option>
+                                        <option>17:30</option>
+                                        <option>18:00</option>
+                                        <option>18:30</option>
+                                        <option>19:00</option>
+                                        <option>19:30</option>
+                                        <option>20:00</option>
+                                        <option>20:30</option>
+                                        <option>21:00</option>
+                                        <option>21:30</option>
+                                        <option>22:00</option>
+                                        <option>22:30</option>
+                                        <option>23:00</option>
+                                        <option>23:30</option>
+                                        <option>24:00</option>
+                                    </select>
+                            </div>
+                            <div class="form-group">
+                                    <label for="timeZone_relay1">Time Zone</label>
+                                    <!--input class="form-control" id="hoursOfOperation_relay1" placeholder="" type="text"-->
+                                    <select class="form-control" id="timeZone_relay1">
+                                        <option>EST (Eastern)</option>
+                                        <option>CST (Central)</option>
+                                        <option>MPT (Mountain)</option>
+                                        <option>PST (Pacific)</option>
+                                    </select>
                             </div>
                             <div class="form-group">
                                     <label for="pickupDate_relay1">Pickup Date</label>
@@ -4344,74 +4666,122 @@ console.log(order);
                                     <input class="form-control" id="phoneNumber_relay2" placeholder="" type="text">
                             </div>
                             <div class="form-group">
-                                    <label for="hoursOfOperation_relay2">Hours of Operation</label>
-                                    <!--input class="form-control" id="hoursOfOperation_relay2" placeholder="" type="text"-->
-                                    <br />
-                                    <div class="col-sm-4">
-                                                    <select class="form-control" id="hoursOfOperationOpen_relay2">
-                                                        <option>01:00</option>
-                                                        <option>02:00</option>
-                                                        <option>03:00</option>
-                                                        <option>04:00</option>
-                                                        <option>05:00</option>
-                                                        <option>06:00</option>
-                                                        <option>07:00</option>
-                                                        <option>08:00</option>
-                                                        <option>09:00</option>
-                                                        <option>10:00</option>
-                                                        <option>11:00</option>
-                                                        <option>12:00</option>
-                                                        <option>13:00</option>
-                                                        <option>14:00</option>
-                                                        <option>15:00</option>
-                                                        <option>16:00</option>
-                                                        <option>17:00</option>
-                                                        <option>18:00</option>
-                                                        <option>19:00</option>
-                                                        <option>20:00</option>
-                                                        <option>21:00</option>
-                                                        <option>22:00</option>
-                                                        <option>23:00</option>
-                                                        <option>24:00</option>
-                                                    </select>
-                                            </div>
-                                            <div class="col-sm-4">
-                                                    <select class="form-control" id="hoursOfOperationClose_relay2">
-                                                        <option>01:00</option>
-                                                        <option>02:00</option>
-                                                        <option>03:00</option>
-                                                        <option>04:00</option>
-                                                        <option>05:00</option>
-                                                        <option>06:00</option>
-                                                        <option>07:00</option>
-                                                        <option>08:00</option>
-                                                        <option>09:00</option>
-                                                        <option>10:00</option>
-                                                        <option>11:00</option>
-                                                        <option>12:00</option>
-                                                        <option>13:00</option>
-                                                        <option>14:00</option>
-                                                        <option>15:00</option>
-                                                        <option>16:00</option>
-                                                        <option>17:00</option>
-                                                        <option>18:00</option>
-                                                        <option>19:00</option>
-                                                        <option>20:00</option>
-                                                        <option>21:00</option>
-                                                        <option>22:00</option>
-                                                        <option>23:00</option>
-                                                        <option>24:00</option>
-                                                    </select>
-                                            </div>
-                                            <div class="col-sm-4">
-                                                    <select class="form-control" id="timeZone_relay2">
-                                                        <option>EST (Eastern)</option>
-                                                        <option>CST (Central)</option>
-                                                        <option>MPT (Mountain)</option>
-                                                        <option>PST (Pacific)</option>
-                                                    </select>
-                                            </div>
-
+                                    <label for="hoursOfOperationOpen_relay2">Opening Hour</label>
+                                    <!--input class="form-control" id="hoursOfOperation_relay1" placeholder="" type="text"-->
+                                    <select class="form-control" id="hoursOfOperationOpen_relay2">
+                                        <option>00:30</option>
+                                        <option>01:00</option>
+                                        <option>01:30</option>
+                                        <option>02:00</option>
+                                        <option>02:30</option>
+                                        <option>03:00</option>
+                                        <option>03:30</option>
+                                        <option>04:00</option>
+                                        <option>04:30</option>
+                                        <option>05:00</option>
+                                        <option>05:30</option>
+                                        <option>06:00</option>
+                                        <option>06:30</option>
+                                        <option>07:00</option>
+                                        <option>07:30</option>
+                                        <option selected>08:00</option>
+                                        <option>08:30</option>
+                                        <option>09:00</option>
+                                        <option>09:30</option>
+                                        <option>10:00</option>
+                                        <option>10:30</option>
+                                        <option>11:00</option>
+                                        <option>11:30</option>
+                                        <option>12:00</option>
+                                        <option>12:30</option>
+                                        <option>13:00</option>
+                                        <option>13:30</option>
+                                        <option>14:00</option>
+                                        <option>14:30</option>
+                                        <option>15:00</option>
+                                        <option>15:30</option>
+                                        <option>16:00</option>
+                                        <option>16:30</option>
+                                        <option>17:00</option>
+                                        <option>17:30</option>
+                                        <option>18:00</option>
+                                        <option>18:30</option>
+                                        <option>19:00</option>
+                                        <option>19:30</option>
+                                        <option>20:00</option>
+                                        <option>20:30</option>
+                                        <option>21:00</option>
+                                        <option>21:30</option>
+                                        <option>22:00</option>
+                                        <option>22:30</option>
+                                        <option>23:00</option>
+                                        <option>23:30</option>
+                                        <option>24:00</option>
+                                    </select>
+                            </div>
+                            <div class="form-group">
+                                    <label for="hoursOfOperationClose_relay2">Closing Hour</label>
+                                    <!--input class="form-control" id="hoursOfOperation_relay1" placeholder="" type="text"-->
+                                    <select class="form-control" id="hoursOfOperationClose_relay2">
+                                        <option>00:30</option>
+                                        <option>01:00</option>
+                                        <option>01:30</option>
+                                        <option>02:00</option>
+                                        <option>02:30</option>
+                                        <option>03:00</option>
+                                        <option>03:30</option>
+                                        <option>04:00</option>
+                                        <option>04:30</option>
+                                        <option>05:00</option>
+                                        <option>05:30</option>
+                                        <option>06:00</option>
+                                        <option>06:30</option>
+                                        <option>07:00</option>
+                                        <option>07:30</option>
+                                        <option>08:00</option>
+                                        <option>08:30</option>
+                                        <option>09:00</option>
+                                        <option>09:30</option>
+                                        <option>10:00</option>
+                                        <option>10:30</option>
+                                        <option>11:00</option>
+                                        <option>11:30</option>
+                                        <option>12:00</option>
+                                        <option>12:30</option>
+                                        <option>13:00</option>
+                                        <option>13:30</option>
+                                        <option>14:00</option>
+                                        <option>14:30</option>
+                                        <option>15:00</option>
+                                        <option>15:30</option>
+                                        <option>16:00</option>
+                                        <option>16:30</option>
+                                        <option selected>17:00</option>
+                                        <option>17:30</option>
+                                        <option>18:00</option>
+                                        <option>18:30</option>
+                                        <option>19:00</option>
+                                        <option>19:30</option>
+                                        <option>20:00</option>
+                                        <option>20:30</option>
+                                        <option>21:00</option>
+                                        <option>21:30</option>
+                                        <option>22:00</option>
+                                        <option>22:30</option>
+                                        <option>23:00</option>
+                                        <option>23:30</option>
+                                        <option>24:00</option>
+                                    </select>
+                            </div>
+                            <div class="form-group">
+                                    <label for="timeZone_relay2">Time Zone</label>
+                                    <!--input class="form-control" id="hoursOfOperation_relay1" placeholder="" type="text"-->
+                                    <select class="form-control" id="timeZone_relay2">
+                                        <option>EST (Eastern)</option>
+                                        <option>CST (Central)</option>
+                                        <option>MPT (Mountain)</option>
+                                        <option>PST (Pacific)</option>
+                                    </select>
                             </div>
                             <div class="form-group">
                                     <label for="pickupDate_relay2">Pickup Date</label>
@@ -4456,74 +4826,122 @@ console.log(order);
                                     <input class="form-control" id="phoneNumber_relay3" placeholder="" type="text">
                             </div>
                             <div class="form-group">
-                                    <label for="hoursOfOperation_relay3">Hours of Operation</label>
-                                    <!--input class="form-control" id="hoursOfOperation_relay3" placeholder="" type="text"-->
-                                    <br />
-                                    <div class="col-sm-4">
-                                                    <select class="form-control" id="hoursOfOperationOpen_relay3">
-                                                        <option>01:00</option>
-                                                        <option>02:00</option>
-                                                        <option>03:00</option>
-                                                        <option>04:00</option>
-                                                        <option>05:00</option>
-                                                        <option>06:00</option>
-                                                        <option>07:00</option>
-                                                        <option>08:00</option>
-                                                        <option>09:00</option>
-                                                        <option>10:00</option>
-                                                        <option>11:00</option>
-                                                        <option>12:00</option>
-                                                        <option>13:00</option>
-                                                        <option>14:00</option>
-                                                        <option>15:00</option>
-                                                        <option>16:00</option>
-                                                        <option>17:00</option>
-                                                        <option>18:00</option>
-                                                        <option>19:00</option>
-                                                        <option>20:00</option>
-                                                        <option>21:00</option>
-                                                        <option>22:00</option>
-                                                        <option>23:00</option>
-                                                        <option>24:00</option>
-                                                    </select>
-                                            </div>
-                                            <div class="col-sm-4">
-                                                    <select class="form-control" id="hoursOfOperationClose_relay3">
-                                                        <option>01:00</option>
-                                                        <option>02:00</option>
-                                                        <option>03:00</option>
-                                                        <option>04:00</option>
-                                                        <option>05:00</option>
-                                                        <option>06:00</option>
-                                                        <option>07:00</option>
-                                                        <option>08:00</option>
-                                                        <option>09:00</option>
-                                                        <option>10:00</option>
-                                                        <option>11:00</option>
-                                                        <option>12:00</option>
-                                                        <option>13:00</option>
-                                                        <option>14:00</option>
-                                                        <option>15:00</option>
-                                                        <option>16:00</option>
-                                                        <option>17:00</option>
-                                                        <option>18:00</option>
-                                                        <option>19:00</option>
-                                                        <option>20:00</option>
-                                                        <option>21:00</option>
-                                                        <option>22:00</option>
-                                                        <option>23:00</option>
-                                                        <option>24:00</option>
-                                                    </select>
-                                            </div>
-                                            <div class="col-sm-4">
-                                                    <select class="form-control" id="timeZone_relay3">
-                                                        <option>EST (Eastern)</option>
-                                                        <option>CST (Central)</option>
-                                                        <option>MPT (Mountain)</option>
-                                                        <option>PST (Pacific)</option>
-                                                    </select>
-                                            </div>
-
+                                    <label for="hoursOfOperationOpen_relay3">Opening Hour</label>
+                                    <!--input class="form-control" id="hoursOfOperation_relay1" placeholder="" type="text"-->
+                                    <select class="form-control" id="hoursOfOperationOpen_relay3">
+                                        <option>00:30</option>
+                                        <option>01:00</option>
+                                        <option>01:30</option>
+                                        <option>02:00</option>
+                                        <option>02:30</option>
+                                        <option>03:00</option>
+                                        <option>03:30</option>
+                                        <option>04:00</option>
+                                        <option>04:30</option>
+                                        <option>05:00</option>
+                                        <option>05:30</option>
+                                        <option>06:00</option>
+                                        <option>06:30</option>
+                                        <option>07:00</option>
+                                        <option>07:30</option>
+                                        <option selected>08:00</option>
+                                        <option>08:30</option>
+                                        <option>09:00</option>
+                                        <option>09:30</option>
+                                        <option>10:00</option>
+                                        <option>10:30</option>
+                                        <option>11:00</option>
+                                        <option>11:30</option>
+                                        <option>12:00</option>
+                                        <option>12:30</option>
+                                        <option>13:00</option>
+                                        <option>13:30</option>
+                                        <option>14:00</option>
+                                        <option>14:30</option>
+                                        <option>15:00</option>
+                                        <option>15:30</option>
+                                        <option>16:00</option>
+                                        <option>16:30</option>
+                                        <option>17:00</option>
+                                        <option>17:30</option>
+                                        <option>18:00</option>
+                                        <option>18:30</option>
+                                        <option>19:00</option>
+                                        <option>19:30</option>
+                                        <option>20:00</option>
+                                        <option>20:30</option>
+                                        <option>21:00</option>
+                                        <option>21:30</option>
+                                        <option>22:00</option>
+                                        <option>22:30</option>
+                                        <option>23:00</option>
+                                        <option>23:30</option>
+                                        <option>24:00</option>
+                                    </select>
+                            </div>
+                            <div class="form-group">
+                                    <label for="hoursOfOperationClose_relay3">Closing Hour</label>
+                                    <!--input class="form-control" id="hoursOfOperation_relay1" placeholder="" type="text"-->
+                                    <select class="form-control" id="hoursOfOperationClose_relay3">
+                                        <option>00:30</option>
+                                        <option>01:00</option>
+                                        <option>01:30</option>
+                                        <option>02:00</option>
+                                        <option>02:30</option>
+                                        <option>03:00</option>
+                                        <option>03:30</option>
+                                        <option>04:00</option>
+                                        <option>04:30</option>
+                                        <option>05:00</option>
+                                        <option>05:30</option>
+                                        <option>06:00</option>
+                                        <option>06:30</option>
+                                        <option>07:00</option>
+                                        <option>07:30</option>
+                                        <option>08:00</option>
+                                        <option>08:30</option>
+                                        <option>09:00</option>
+                                        <option>09:30</option>
+                                        <option>10:00</option>
+                                        <option>10:30</option>
+                                        <option>11:00</option>
+                                        <option>11:30</option>
+                                        <option>12:00</option>
+                                        <option>12:30</option>
+                                        <option>13:00</option>
+                                        <option>13:30</option>
+                                        <option>14:00</option>
+                                        <option>14:30</option>
+                                        <option>15:00</option>
+                                        <option>15:30</option>
+                                        <option>16:00</option>
+                                        <option>16:30</option>
+                                        <option selected>17:00</option>
+                                        <option>17:30</option>
+                                        <option>18:00</option>
+                                        <option>18:30</option>
+                                        <option>19:00</option>
+                                        <option>19:30</option>
+                                        <option>20:00</option>
+                                        <option>20:30</option>
+                                        <option>21:00</option>
+                                        <option>21:30</option>
+                                        <option>22:00</option>
+                                        <option>22:30</option>
+                                        <option>23:00</option>
+                                        <option>23:30</option>
+                                        <option>24:00</option>
+                                    </select>
+                            </div>
+                            <div class="form-group">
+                                    <label for="timeZone_relay3">Time Zone</label>
+                                    <!--input class="form-control" id="hoursOfOperation_relay1" placeholder="" type="text"-->
+                                    <select class="form-control" id="timeZone_relay3">
+                                        <option>EST (Eastern)</option>
+                                        <option>CST (Central)</option>
+                                        <option>MPT (Mountain)</option>
+                                        <option>PST (Pacific)</option>
+                                    </select>
                             </div>
                             <div class="form-group">
                                     <label for="pickupDate_relay3">Pickup Date</label>
@@ -4568,74 +4986,122 @@ console.log(order);
                                     <input class="form-control" id="phoneNumber_relay4" placeholder="" type="text">
                             </div>
                             <div class="form-group">
-                                    <label for="hoursOfOperation_relay4">Hours of Operation</label>
-                                    <!--input class="form-control" id="hoursOfOperation_relay4" placeholder="" type="text"-->
-                                    <br />
-                                    <div class="col-sm-4">
-                                                    <select class="form-control" id="hoursOfOperationOpen_relay4">
-                                                        <option>01:00</option>
-                                                        <option>02:00</option>
-                                                        <option>03:00</option>
-                                                        <option>04:00</option>
-                                                        <option>05:00</option>
-                                                        <option>06:00</option>
-                                                        <option>07:00</option>
-                                                        <option>08:00</option>
-                                                        <option>09:00</option>
-                                                        <option>10:00</option>
-                                                        <option>11:00</option>
-                                                        <option>12:00</option>
-                                                        <option>13:00</option>
-                                                        <option>14:00</option>
-                                                        <option>15:00</option>
-                                                        <option>16:00</option>
-                                                        <option>17:00</option>
-                                                        <option>18:00</option>
-                                                        <option>19:00</option>
-                                                        <option>20:00</option>
-                                                        <option>21:00</option>
-                                                        <option>22:00</option>
-                                                        <option>23:00</option>
-                                                        <option>24:00</option>
-                                                    </select>
-                                            </div>
-                                            <div class="col-sm-4">
-                                                    <select class="form-control" id="hoursOfOperationClose_relay4">
-                                                        <option>01:00</option>
-                                                        <option>02:00</option>
-                                                        <option>03:00</option>
-                                                        <option>04:00</option>
-                                                        <option>05:00</option>
-                                                        <option>06:00</option>
-                                                        <option>07:00</option>
-                                                        <option>08:00</option>
-                                                        <option>09:00</option>
-                                                        <option>10:00</option>
-                                                        <option>11:00</option>
-                                                        <option>12:00</option>
-                                                        <option>13:00</option>
-                                                        <option>14:00</option>
-                                                        <option>15:00</option>
-                                                        <option>16:00</option>
-                                                        <option>17:00</option>
-                                                        <option>18:00</option>
-                                                        <option>19:00</option>
-                                                        <option>20:00</option>
-                                                        <option>21:00</option>
-                                                        <option>22:00</option>
-                                                        <option>23:00</option>
-                                                        <option>24:00</option>
-                                                    </select>
-                                            </div>
-                                            <div class="col-sm-4">
-                                                    <select class="form-control" id="timeZone_relay4">
-                                                        <option>EST (Eastern)</option>
-                                                        <option>CST (Central)</option>
-                                                        <option>MPT (Mountain)</option>
-                                                        <option>PST (Pacific)</option>
-                                                    </select>
-                                            </div>
-
+                                    <label for="hoursOfOperationOpen_relay4">Opening Hour</label>
+                                    <!--input class="form-control" id="hoursOfOperation_relay1" placeholder="" type="text"-->
+                                    <select class="form-control" id="hoursOfOperationOpen_relay4">
+                                        <option>00:30</option>
+                                        <option>01:00</option>
+                                        <option>01:30</option>
+                                        <option>02:00</option>
+                                        <option>02:30</option>
+                                        <option>03:00</option>
+                                        <option>03:30</option>
+                                        <option>04:00</option>
+                                        <option>04:30</option>
+                                        <option>05:00</option>
+                                        <option>05:30</option>
+                                        <option>06:00</option>
+                                        <option>06:30</option>
+                                        <option>07:00</option>
+                                        <option>07:30</option>
+                                        <option selected>08:00</option>
+                                        <option>08:30</option>
+                                        <option>09:00</option>
+                                        <option>09:30</option>
+                                        <option>10:00</option>
+                                        <option>10:30</option>
+                                        <option>11:00</option>
+                                        <option>11:30</option>
+                                        <option>12:00</option>
+                                        <option>12:30</option>
+                                        <option>13:00</option>
+                                        <option>13:30</option>
+                                        <option>14:00</option>
+                                        <option>14:30</option>
+                                        <option>15:00</option>
+                                        <option>15:30</option>
+                                        <option>16:00</option>
+                                        <option>16:30</option>
+                                        <option>17:00</option>
+                                        <option>17:30</option>
+                                        <option>18:00</option>
+                                        <option>18:30</option>
+                                        <option>19:00</option>
+                                        <option>19:30</option>
+                                        <option>20:00</option>
+                                        <option>20:30</option>
+                                        <option>21:00</option>
+                                        <option>21:30</option>
+                                        <option>22:00</option>
+                                        <option>22:30</option>
+                                        <option>23:00</option>
+                                        <option>23:30</option>
+                                        <option>24:00</option>
+                                    </select>
+                            </div>
+                            <div class="form-group">
+                                    <label for="hoursOfOperationClose_relay4">Closing Hour</label>
+                                    <!--input class="form-control" id="hoursOfOperation_relay1" placeholder="" type="text"-->
+                                    <select class="form-control" id="hoursOfOperationClose_relay4">
+                                        <option>00:30</option>
+                                        <option>01:00</option>
+                                        <option>01:30</option>
+                                        <option>02:00</option>
+                                        <option>02:30</option>
+                                        <option>03:00</option>
+                                        <option>03:30</option>
+                                        <option>04:00</option>
+                                        <option>04:30</option>
+                                        <option>05:00</option>
+                                        <option>05:30</option>
+                                        <option>06:00</option>
+                                        <option>06:30</option>
+                                        <option>07:00</option>
+                                        <option>07:30</option>
+                                        <option>08:00</option>
+                                        <option>08:30</option>
+                                        <option>09:00</option>
+                                        <option>09:30</option>
+                                        <option>10:00</option>
+                                        <option>10:30</option>
+                                        <option>11:00</option>
+                                        <option>11:30</option>
+                                        <option>12:00</option>
+                                        <option>12:30</option>
+                                        <option>13:00</option>
+                                        <option>13:30</option>
+                                        <option>14:00</option>
+                                        <option>14:30</option>
+                                        <option>15:00</option>
+                                        <option>15:30</option>
+                                        <option>16:00</option>
+                                        <option>16:30</option>
+                                        <option selected>17:00</option>
+                                        <option>17:30</option>
+                                        <option>18:00</option>
+                                        <option>18:30</option>
+                                        <option>19:00</option>
+                                        <option>19:30</option>
+                                        <option>20:00</option>
+                                        <option>20:30</option>
+                                        <option>21:00</option>
+                                        <option>21:30</option>
+                                        <option>22:00</option>
+                                        <option>22:30</option>
+                                        <option>23:00</option>
+                                        <option>23:30</option>
+                                        <option>24:00</option>
+                                    </select>
+                            </div>
+                            <div class="form-group">
+                                    <label for="timeZone_relay4">Time Zone</label>
+                                    <!--input class="form-control" id="hoursOfOperation_relay1" placeholder="" type="text"-->
+                                    <select class="form-control" id="timeZone_relay4">
+                                        <option>EST (Eastern)</option>
+                                        <option>CST (Central)</option>
+                                        <option>MPT (Mountain)</option>
+                                        <option>PST (Pacific)</option>
+                                    </select>
                             </div>
                             <div class="form-group">
                                     <label for="pickupDate_relay4">Pickup Date</label>
@@ -4663,12 +5129,15 @@ console.log(order);
                             </div>
                     </div>
             </div>
-<!--
+
             <hr>
 
             <div class="row">
                     <div class="col-md-12">
                             <h2>Unit Data</h2>
+                            <tbody id="unitDataBody">
+
+                            </tbody>
                     </div>
             </div>
 
@@ -4679,7 +5148,7 @@ console.log(order);
 
                 </div>
             </div>
--->
+
             <br>
 
         <div class="row row-grid">
@@ -7376,24 +7845,28 @@ console.log(order);
 
         $('#saveOrder').off('click').on('click', function(){
 
-/*
-            var unitDataList = [];
+
+            var unitDataList = []; // This information is stored in podList in the orders table vs. unitData in the customer_needs table
 
             $('#addTrailer > div').each(function(index, value){
                 var unitID = index + 1;
+                var year = $('#year' + unitID).val().trim();
+                var make = $('#make' + unitID).val().trim();
+                var licenseNumber = $('#licenseNumber' + unitID).val().trim();
+                var cashValue = $('#value' + unitID).val().trim();
                 var unitNumber = $('#unitNumber' + unitID).val().trim();
                 var vinNumber = $('#vinNumber' + unitID).val().trim();
                 var truckProNumber = $('#truckProNumber' + unitID).val().trim();
                 var poNumber = $('#poNumber' + unitID).val().trim();
 
                 if(vinNumber != "" || unitNumber != "" || truckProNumber != "" || poNumber != ""){
-                    var unitData = {unitNumber: unitNumber, vinNumber: vinNumber, truckProNumber: truckProNumber, poNumber: poNumber};
+                    var unitData = {unitNumber: unitNumber, vinNumber: vinNumber, truckProNumber: truckProNumber, poNumber: poNumber, year: year, make: make, licenseNumber: licenseNumber, value: cashValue};
 
                     unitDataList.push(unitData);
                 }
             });
-*/
-//            if(unitDataList.length > 0){
+
+            if(unitDataList.length > 0){
               $("#saveCommit").html("<i class='fa fa-spinner fa-spin'></i> Updating Order");
               $("#saveCommit").prop("disabled", true);
 
@@ -7490,7 +7963,7 @@ console.log(order);
                     var data = {pickupInformation: pickupInformation, originationAddress: originationAddress1, originationCity: originationCity, originationState: originationState, originationZip: originationZip,
                                 deliveryInformation: deliveryInformation, destinationAddress: destinationAddress1, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip,
                                 originationLng: originationlng, originationLat: originationlat, destinationLng: destinationlng, destinationLat: destinationlat, distance: distance,
-                                qty: qty, updatedAt: today, needsDataPoints: needsdatapoints, customerRate: rate, rateType: rateType, transportationMode: transportationMode};
+                                qty: qty, updatedAt: today, needsDataPoints: needsdatapoints, podList: unitDataList, customerRate: rate, rateType: rateType, transportationMode: transportationMode};
 
                     var url = '<?php echo API_HOST_URL . "/orders" ?>/' + id;
 
@@ -7629,7 +8102,12 @@ console.log(order);
                     });
 
                 });
-
+            }
+            else{
+                $("#errorAlertTitle").html("Error");
+                $("#errorAlertBody").html("You must enter at least ONE Trailer.");
+                $("#errorAlert").modal('show');
+            }
         });
 
     });
