@@ -3261,6 +3261,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                             var relayData = {};
 
+                            var carrierID = $('#entityID_relay' + relayNumber).val();
                             var destinationAddress1 = $('#address_relay' + relayNumber).val().trim();
                             var destinationCity = $('#city_relay' + relayNumber).val().trim();
                             var destinationState = $('#state_relay' + relayNumber).val().trim();
@@ -3275,7 +3276,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                                     phoneNumber: $('#phoneNumber_relay' + relayNumber).val().trim(), deliveryHoursOfOperationOpen: $('#hoursOfOperationOpen_relay' + relayNumber).val().trim(),
                                                     deliveryHoursOfOperationClose: $('#hoursOfOperationClose_relay' + relayNumber).val().trim(),deliveryTimeZone: $('#timeZone_relay' + relayNumber).val().trim()};
 
-                            if(destinationCity != "" && destinationState != ""){
+                            if(carrierID != ""){
 
                                 relayData = {rootCustomerNeedsID: id, pickupInformation: pickupInformation, originationAddress1: originationAddress1, originationAddress2: originationAddress2, originationCity: originationCity, originationState: originationState, originationZip: originationZip, originationNotes: originationNotes,
                                     deliveryInformation: deliveryInformation, destinationAddress1: destinationAddress1, destinationAddress2: destinationAddress2, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, destinationNotes: destinationNotes,
