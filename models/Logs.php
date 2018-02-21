@@ -205,10 +205,10 @@ class Logs
             $customerNeedsLogResult = json_decode(file_get_contents($customerNeedsLogURL,false,$customerNeedsLogContext));
 
             $customerNeedsLog = $customerNeedsLogResult->logs;
-
+            
             $ordersLogArgs = array(
-                "filter[0]"=>"ref_id,eq,".$customerNeedsID,
-                "filter[1]"=>"log_type_id,eq,".$customer_needs_log_type_id,
+                "filter[0]"=>"ref_id,eq,".$orderID,
+                "filter[1]"=>"log_type_id,eq,".$order_log_type_id,
                 "transform"=>"1"
                     );
 
@@ -227,10 +227,12 @@ class Logs
             $result->logs = array_merge($customerNeedsLog, $ordersLog);
 
             return json_encode($result);
-        } catch (Exception $e) { // The authorization query failed verification
-              
-            $result = (object) array("logs" => array());            
+        } catch (Exception $e) { // The authorization query failed verification 
+            
+            
+            $result = (object) array("logs" => array());
             return json_encode($result);
+
         }
     }
 

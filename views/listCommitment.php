@@ -1162,10 +1162,28 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
     }
 
     function closeEditCommit(){
-        $('#customer-needs-commit').css('display', 'block');
-        $('#editCommitDetails').css('display', 'none');
+        
+        
+        if($('#commitModalTitle').text() == "Edit Commitment"){
+            $('#customer-needs-commit').css('display', 'block');
+            $('#editCommitDetails').css('display', 'none');
+        }
+        else{
+            $('#customer-needs').css('display', 'block');
+            $('#editCommitDetails').css('display', 'none');
+        }
+
     }
 
+    function showAddCommit(){
+        $('#customer-needs').css('display', 'none');
+        $('#editCommitDetails').css('display', 'block');
+    }
+    
+    function closeAddCommit(){
+        $('#customer-needs-commit').css('display', 'none');
+        $('#editCommitDetails').css('display', 'block');
+    }
 
 //Part I removed
 
@@ -1255,7 +1273,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
      <header>
          <h4><span class="fw-semi-bold">Available Transport</span></h4>
          <div class="widget-controls">
-           <!--<button type="button" class="btn btn-primary btn-md" onclick="addNewCommitment();" id="addNewCommitment">Add New Commitment</button>-->
+           <button type="button" class="btn btn-primary btn-md" onclick="addNewCommitment();" id="addNewCommitment">Add New Commitment</button>
          </div>
      </header>
      <div class="widget-body">
@@ -1410,7 +1428,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 <!-- New Edit Commit View -->
 <section class="widget"  id="editCommitDetails" style="display: none;">
      <header>
-         <h4><span class="fw-semi-bold">Edit Commitment</span></h4>
+         <h4><span class="fw-semi-bold"  id="commitModalTitle">Edit Commitment</span></h4>
      </header>
      <br />
 
@@ -2291,7 +2309,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             <div class="col-lg-4 col-md-4 col-sm-12 pull-right">
                 <button type="button" class="btn btn-secondary btn-lg" onclick="closeEditCommit();">Close</button>
                 <button type="button" class="btn btn-primary btn-lg" onclick="addTrailer();" id="addTrailer">AddTrailer</button>
-                <button type="button" class="btn btn-primary btn-lg" onclick="editCommitment();" id="saveCommit">Save</button>
+                <button type="button" class="btn btn-primary btn-lg" onclick="saveCommit();" id="saveCommit">Save</button>
             </div>
         </div>
 
@@ -4016,7 +4034,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         clearCommitForm();
 
         $('#commitModalTitle').append("Add Commitment");
-        $("#editCommitModal").modal('show');
+        showAddCommit();
     }
 
     function populateAutocomplete(select, relayNumber){
