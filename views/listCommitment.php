@@ -3508,6 +3508,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                             var relayID = $('#relay_id' + relayNumber).val().trim();
                             var commitID = $('#commit_id' + relayNumber).val().trim();
+                            var carrierID = $('#entityID_relay' + relayNumber).val();
                             var destinationAddress1 = $('#address_relay' + relayNumber).val().trim();
                             var destinationCity = $('#city_relay' + relayNumber).val().trim();
                             var destinationState = $('#state_relay' + relayNumber).val().trim();
@@ -3523,7 +3524,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                                     phoneNumber: $('#phoneNumber_relay' + relayNumber).val().trim(), deliveryHoursOfOperationOpen: $('#hoursOfOperationOpen_relay' + relayNumber).val(),
                                                     deliveryHoursOfOperationClose: $('#hoursOfOperationClose_relay' + relayNumber).val(),timeZone: $('#timeZone_relay' + relayNumber).val()};
 
-                            if(destinationCity != "" && destinationState != ""){
+                            if(carrierID != ""){
 
                                     url = '<?php echo API_HOST_URL . "/order_details" ?>/';
                                     type = "POST";
