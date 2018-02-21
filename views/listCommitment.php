@@ -3151,7 +3151,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             var poNumber = $('#poNumber' + unitID).val().trim();
 
             if(vinNumber != "" || unitNumber != "" || truckProNumber != "" || poNumber != ""){
-                var unitData = {unitNumber: unitNumber, vinNumber: vinNumber, truckProNumber: truckProNumber, poNumber: poNumber, year: year, make: make, value: cashValue};
+                var unitData = {unitNumber: unitNumber, vinNumber: vinNumber, truckProNumber: truckProNumber, poNumber: poNumber, year: year, make: make, value: cashValue, licenseNumber: licenseNumber};
 
                 unitDataList.push(unitData);
             }
@@ -3236,7 +3236,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
             var qty = $("#qty").val().trim();
             var rate = $("#rate").val().trim();
-            var rateType = $("#rateType").val().trim();
+            var rateType = $('input[name=rateType]:checked').val().trim();
             var transportationMode = $("#transportationMode").val().trim();
 
             var data = {pickupInformation: pickupInformation, originationAddress1: originationAddress1, originationAddress2: originationAddress2, originationCity: originationCity, originationState: originationState, originationZip: originationZip, originationNotes: originationNotes,
@@ -3337,6 +3337,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     else{
                         console.log(data);
                     }
+                    
                     $("#saveCommit").html("Save");
                     $("#saveCommit").prop("disabled", false);
                     closeEditCommit();
