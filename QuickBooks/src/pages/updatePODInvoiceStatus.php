@@ -57,7 +57,8 @@ $dataService = DataService::Configure(array(
     }
     else{
         
-        print_r( $invoicedata);
+        print_r($invoicedata);
+        echo '<hr>';
     }
     
 }
