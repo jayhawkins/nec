@@ -552,7 +552,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
     }
 
-
     function loadTableAJAX(committed) {
 
         var baseUrl = '<?php echo API_HOST_URL; ?>' + '/customer_needs?include=customer_needs_commit,entities&columns=entities.name,id,rootCustomerNeedsID,entityID,qty,rate,availableDate,expirationDate,transportationMode,originationAddress1,originationCity,originationState,originationZip,originationLat,originationLng,destinationAddress1,destinationCity,destinationState,destinationZip,destinationLat,destinationLng,distance,needsDataPoints,status,createdAt,customer_needs_commit.id,customer_needs_commit.status,customer_needs_commit.rate,customer_needs_commit.transporation_mode,entities.rateType,entities.negotiatedRate&filter[0]=id,in,(0,' + committed + ')&filter[1]=status,eq,Available';
@@ -743,6 +742,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             if(customer_needs.destinationLat == null) customer_needs.destinationLat = "";
             if(customer_needs.distance == null) customer_needs.distance = "";
 
+            if(customer_needs.pickupInformation.pickupHoursOfOperationOpen == null) customer_needs.pickupInformation.pickupHoursOfOperationOpen = "";
+            if(customer_needs.pickupInformation.pickupHoursOfOperationClose == null) customer_needs.pickupInformation.pickupHoursOfOperationClose = "";
+            if(customer_needs.pickupInformation.pickupTimeZone == null) customer_needs.pickupInformation.pickupTimeZone = "";
+            
+            if(customer_needs.deliveryInformation.deliveryHoursOfOperationOpen == null) customer_needs.deliveryInformation.deliveryHoursOfOperationOpen = "";
+            if(customer_needs.deliveryInformation.deliveryHoursOfOperationClose == null) customer_needs.deliveryInformation.deliveryHoursOfOperationClose = "";
+            if(customer_needs.deliveryInformation.deliveryTimeZone == null) customer_needs.deliveryInformation.deliveryTimeZone = "";
+
             if(customer_needs.unitData == null) customer_needs.unitData = [];
 
             $('#customerID').val(customer_needs.entityID);
@@ -788,30 +795,64 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
             // Populate view
             //if(customer_needs.pickupInformation.pickupLocation != "" && customer_needs.pickupInformation.contactPerson != "" && customer_needs.pickupInformation.phoneNumber != "" && customer_needs.pickupInformation.hoursOfOperation != "" ){
-            if(customer_needs.pickupInformation.pickupLocation != "" && customer_needs.pickupInformation.contactPerson != "" && customer_needs.pickupInformation.phoneNumber != "" && customer_needs.pickupInformation.hoursOfOperationOpen != "" && customer_needs.pickupInformation.hoursOfOperationClose != ""){
+//            if(customer_needs.pickupInformation.pickupLocation != "" && customer_needs.pickupInformation.contactPerson != "" && customer_needs.pickupInformation.phoneNumber != "" && customer_needs.pickupInformation.hoursOfOperationOpen != "" && customer_needs.pickupInformation.hoursOfOperationClose != ""){
+//
+//                pickupInformation = customer_needs.pickupInformation.pickupLocation + "<br>"
+//                        + customer_needs.pickupInformation.contactPerson + "<br>"
+//                        + customer_needs.pickupInformation.phoneNumber + "<br>"
+//                        //+ customer_needs.pickupInformation.hoursOfOperation + "<br><br>";
+//                        + customer_needs.pickupInformation.pickupHoursOfOperationOpen + " to " + customer_needs.pickupInformation.pickupHoursOfOperationClose + " " + customer_needs.pickupInformation.pickupTimeZone + "<br><br>";
+//            }
 
-                pickupInformation = customer_needs.pickupInformation.pickupLocation + "<br>"
-                        + customer_needs.pickupInformation.contactPerson + "<br>"
-                        + customer_needs.pickupInformation.phoneNumber + "<br>"
-                        //+ customer_needs.pickupInformation.hoursOfOperation + "<br><br>";
-                        + customer_needs.pickupInformation.pickupHoursOfOperationOpen + " to " + customer_needs.pickupInformation.pickupHoursOfOperationClose + " " + customer_needs.pickupInformation.pickupTimeZone + "<br><br>";
-            }
+            var pickupAddress = ( customer_needs.pickupInformation.pickupLocation.trim() != "" ? customer_needs.pickupInformation.pickupLocation + "<br>" : "Unknown Location<br>")
+                              + ( customer_needs.originationAddress1.trim() != "" ? customer_needs.originationAddress1 + "<br>" : "Unknown Address<br>")
+                              + ( customer_needs.originationCity.trim() != "" ? customer_needs.originationCity : "Unknown City")
+                              + ", " 
+                              + ( customer_needs.originationState.trim() != "" ? customer_needs.originationState : "Unknown State") 
+                              + " " 
+                              + ( customer_needs.originationZip.trim() != "" ? customer_needs.originationZip : "Unknown Zip") + "<br>"
+                              + ( customer_needs.pickupInformation.contactPerson.trim() != "" ? customer_needs.pickupInformation.contactPerson + "<br>" : "Unknown Contact<br>")
+                              + ( customer_needs.pickupInformation.phoneNumber.trim() != "" ? customer_needs.pickupInformation.phoneNumber + "<br>" : "Unknown Phone Number<br>")
+                              + ( customer_needs.pickupInformation.pickupHoursOfOperationOpen.trim() != "" ? customer_needs.pickupInformation.pickupHoursOfOperationOpen  : "N/A")
+                              + " to "
+                              + ( customer_needs.pickupInformation.pickupHoursOfOperationClose.trim() != "" ? customer_needs.pickupInformation.pickupHoursOfOperationClose  : "N/A")
+                              + " "
+                              + ( customer_needs.pickupInformation.pickupTimeZone.trim() != "" ? customer_needs.pickupInformation.pickupTimeZone  + "<br><br>" : "Unknown Time Zone<br><br>");
 
-            if(customer_needs.deliveryInformation.deliveryLocation != "" && customer_needs.deliveryInformation.contactPerson != "" && customer_needs.deliveryInformation.phoneNumber != "" && customer_needs.deliveryInformation.hoursOfOperation != "" ){
 
-                deliveryInformation = customer_needs.deliveryInformation.deliveryLocation + "<br>"
-                        + customer_needs.deliveryInformation.contactPerson + "<br>"
-                        + customer_needs.deliveryInformation.phoneNumber + "<br>"
-                        //+ customer_needs.deliveryInformation.hoursOfOperation + "<br><br>";
-                        + customer_needs.deliveryInformation.deliveryHoursOfOperationOpen + " to " + customer_needs.deliveryInformation.deliveryHoursOfOperationClose + " " + customer_needs.deliveryInformation.deliveryTimeZone + "<br><br>";
 
-            }
 
-            var pickupAddress = pickupInformation + customer_needs.originationAddress1 + "<br>" +
-                    customer_needs.originationCity + ", " + customer_needs.originationState + " " + customer_needs.originationZip + "<br><br>";
+            var deliveryAddress = ( customer_needs.deliveryInformation.deliveryLocation.trim() != "" ? customer_needs.deliveryInformation.deliveryLocation + "<br>" : "Unknown Location<br>")
+                              + ( customer_needs.destinationAddress1.trim() != "" ? customer_needs.destinationAddress1 + "<br>" : "Unknown Address<br>")
+                              + ( customer_needs.destinationCity.trim() != "" ? customer_needs.destinationCity : "Unknown City")
+                              + ", " 
+                              + ( customer_needs.destinationState.trim() != "" ? customer_needs.destinationState : "Unknown State") 
+                              + " " 
+                              + ( customer_needs.destinationZip.trim() != "" ? customer_needs.destinationZip : "Unknown Zip") + "<br>"
+                              + ( customer_needs.deliveryInformation.contactPerson.trim() != "" ? customer_needs.deliveryInformation.contactPerson + "<br>" : "Unknown Contact<br>")
+                              + ( customer_needs.deliveryInformation.phoneNumber.trim() != "" ? customer_needs.deliveryInformation.phoneNumber + "<br>" : "Unknown Phone Number<br>")
+                              + ( customer_needs.deliveryInformation.deliveryHoursOfOperationOpen.trim() != "" ? customer_needs.deliveryInformation.deliveryHoursOfOperationOpen  : "N/A")
+                              + " to "
+                              + ( customer_needs.deliveryInformation.deliveryHoursOfOperationClose.trim() != "" ? customer_needs.deliveryInformation.deliveryHoursOfOperationClose  : "N/A")
+                              + " "
+                              + ( customer_needs.deliveryInformation.deliveryTimeZone.trim() != "" ? customer_needs.deliveryInformation.deliveryTimeZone  + "<br><br>" : "Unknown Time Zone<br><br>");
 
-            var deliveryAddress = deliveryInformation + customer_needs.destinationAddress1 + "<br>" +
-                    customer_needs.destinationCity + ", " + customer_needs.destinationState + " " + customer_needs.destinationZip + "<br><br>";
+
+//            if(customer_needs.deliveryInformation.deliveryLocation != "" && customer_needs.deliveryInformation.contactPerson != "" && customer_needs.deliveryInformation.phoneNumber != "" && customer_needs.deliveryInformation.hoursOfOperation != "" ){
+//
+//                deliveryInformation = customer_needs.deliveryInformation.deliveryLocation + "<br>"
+//                        + customer_needs.deliveryInformation.contactPerson + "<br>"
+//                        + customer_needs.deliveryInformation.phoneNumber + "<br>"
+//                        //+ customer_needs.deliveryInformation.hoursOfOperation + "<br><br>";
+//                        + customer_needs.deliveryInformation.deliveryHoursOfOperationOpen + " to " + customer_needs.deliveryInformation.deliveryHoursOfOperationClose + " " + customer_needs.deliveryInformation.deliveryTimeZone + "<br><br>";
+//
+//            }
+
+//            var pickupAddress = pickupInformation + customer_needs.originationAddress1 + "<br>" +
+//                    customer_needs.originationCity + ", " + customer_needs.originationState + " " + customer_needs.originationZip + "<br><br>";
+
+//            var deliveryAddress = deliveryInformation + customer_needs.destinationAddress1 + "<br>" +
+//                    customer_needs.destinationCity + ", " + customer_needs.destinationState + " " + customer_needs.destinationZip + "<br><br>";
 
             if(customer_needs.originationNotes != ""){
                     pickupAddress  += "Notes:<br>" +
