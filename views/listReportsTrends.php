@@ -27,13 +27,14 @@ require '../lib/common.php';
                     d.entityid = <?php echo $_SESSION['entityid'] ?>;
                     d.trendEntityType = $('input[name="trendEntityType"]:checked').val();
                     d.timeFrame = $('input[name="timeFrame"]:checked').val();
+                    d.source = $('input[name="source"]:checked').val();
                     return;
                 },
                 dataSrc: "customer_needs",
             },
             columns: [
-                { data: "originationCity" },
-                { data: "originationState" },
+                { data: "city" },
+                { data: "state" },
                 /*
                 {
                     data: null,
@@ -91,13 +92,17 @@ require '../lib/common.php';
              &nbsp;&nbsp;
              <input type="radio" id="trendEntityType" name="trendEntityType" value="Carriers"> Carriers
              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+             <span class="fw-semi-bold">Source: &nbsp;</span>
+             <input type="radio" id="source" name="source" value="Origination" checked> Origination
+             &nbsp;&nbsp;
+             <input type="radio" id="source" name="source" value="Destination"> Destination
+             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
              <span class="fw-semi-bold">Timeframe: &nbsp;</span>
              <input type="radio" id="timeFrame" name="timeFrame" value="Yearly"> Yearly
              &nbsp;&nbsp;
              <input type="radio" id="timeFrame" name="timeFrame" value="Quarterly"> Quarterly
              &nbsp;&nbsp;
              <input type="radio" id="timeFrame" name="timeFrame" value="Monthly" checked> Monthly
-             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
          </div>
          <a id="downloadCSV"></a>
@@ -106,8 +111,8 @@ require '../lib/common.php';
              <table id="datatable-table" class="table table-striped table-hover" width="100%">
                  <thead>
                  <tr>
-                     <th class="hidden-sm-down text-nowrap">Origin City</th>
-                     <th class="hidden-sm-down text-nowrap">Origin State</th>
+                     <th class="hidden-sm-down text-nowrap">City</th>
+                     <th class="hidden-sm-down text-nowrap">State</th>
                      <th class="hidden-sm-down">Quantity</th>
                  </tr>
                  </thead>
@@ -136,6 +141,10 @@ require '../lib/common.php';
         loadTableAJAX();
     });
 
+    $("input[type=radio][name=source]").unbind('change').bind('change',function(){ // Doing it like this because it was double posting document giving me duplicates
+        loadTableAJAX();
+    });
+
     function downloadTemplateClick() {
 
             url = '<?php echo HTTP_HOST."/gettrendscsv" ?>';
@@ -143,7 +152,8 @@ require '../lib/common.php';
             var params = {entitytype: <?php echo $_SESSION['entitytype'] ?>,
                           entityid: <?php echo $_SESSION['entityid'] ?>,
                           timeFrame: $('input[name="timeFrame"]:checked').val(),
-                          trendEntityType: $('input[name="trendEntityType"]:checked').val()
+                          trendEntityType: $('input[name="trendEntityType"]:checked').val(),
+                          source: $('input[name="source"]:checked').val()
                          };
             console.log(params);
 

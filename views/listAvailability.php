@@ -263,8 +263,8 @@ $dataPoints = json_decode(file_get_contents(API_HOST_URL . "/object_type_data_po
                                         $("#errorAlertTitle").html("Message");
                                         $("#errorAlertBody").html(JSON.stringify(data));
                                         $("#errorAlert").modal('show');
-                                      $("#load").html("Commit");
-                                      $("#load").prop("disabled", false);
+                                        $("#load").html("Commit");
+                                        $("#load").prop("disabled", false);
                                     });
                                     return true;
                                 } else {

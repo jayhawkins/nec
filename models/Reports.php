@@ -1113,7 +1113,7 @@ class Reports
           }
     }
 
-    public function gettrends(&$db, $entitytype, $entityid, $timeFrame, $trendEntityType = "Customers") {
+    public function gettrends(&$db, $entitytype, $entityid, $timeFrame, $trendEntityType = "Customers", $source = 'Origination') {
 
         try {
               $returnArray = "";
@@ -1121,13 +1121,27 @@ class Reports
               $dbhandle = new $db('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS);
 
               if ($trendEntityType == "Customers") {
-                  $querystring = "SELECT customer_needs.originationCity, customer_needs.originationState, SUM(customer_needs.qty) AS qty
-                                  FROM customer_needs
-                                  WHERE customer_needs.rootCustomerNeedsID > 0";
+                  if ($source == "Origination") {
+                      $querystring = "SELECT customer_needs.originationCity AS city, customer_needs.originationState AS state, SUM(customer_needs.qty) AS qty
+                                      FROM customer_needs
+                                      WHERE customer_needs.rootCustomerNeedsID > 0";
+                  } else {
+                      $querystring = "SELECT customer_needs.destinationCity AS city, customer_needs.destinationState AS state, SUM(customer_needs.qty) AS qty
+                                      FROM customer_needs
+                                      WHERE customer_needs.rootCustomerNeedsID > 0";
+                  }
+
               } else {
-                  $querystring = "SELECT carrier_needs.originationCity, carrier_needs.originationState, SUM(carrier_needs.qty) AS qty
-                                  FROM carrier_needs
-                                  WHERE carrier_needs.entityID > 0";
+                   if ($source == "Origination") {
+                       $querystring = "SELECT carrier_needs.originationCity AS city, carrier_needs.originationState AS state, SUM(carrier_needs.qty) AS qty
+                                       FROM carrier_needs
+                                       WHERE carrier_needs.entityID > 0";
+                   } else {
+                       $querystring = "SELECT carrier_needs.destinationCity AS city, carrier_needs.destinationState AS state, SUM(carrier_needs.qty) AS qty
+                                       FROM carrier_needs
+                                       WHERE carrier_needs.entityID > 0";
+                   }
+
               }
 
               if ($entityid > 0) {
@@ -1172,12 +1186,12 @@ class Reports
 
               if ($trendEntityType == "Customers") {
                   $querystring .= " AND customer_needs.availableDate BETWEEN '" . $startDate . "' AND '" . $endDate . "'
-                                    GROUP BY customer_needs.originationCity, customer_needs.originationState
-                                    ORDER BY customer_needs.originationCity, customer_needs.originationState";
+                                    GROUP BY city, state
+                                    ORDER BY city, state";
               } else {
                   $querystring .= " AND carrier_needs.availableDate BETWEEN '" . $startDate . "' AND '" . $endDate . "'
-                                    GROUP BY carrier_needs.originationCity, carrier_needs.originationState
-                                    ORDER BY carrier_needs.originationCity, carrier_needs.originationState";
+                                    GROUP BY city, state
+                                    ORDER BY city, state";
               }
 
               $result = $dbhandle->query($querystring);
@@ -1195,7 +1209,7 @@ class Reports
                         //    $customerName = $entitiesData[$e]['name'];
                         //}
 
-                        $returnArray .= json_encode(array('originationCity' => $data[$c]['originationCity'], 'originationState' => $data[$c]['originationState'], 'qty' => $data[$c]['qty']));
+                        $returnArray .= json_encode(array('city' => $data[$c]['city'], 'state' => $data[$c]['state'], 'qty' => $data[$c]['qty']));
 
                         if ($c < count($data) - 1) {
                             $returnArray .= ",";
@@ -1211,7 +1225,7 @@ class Reports
         }
     }
 
-    public function gettrendscsv(&$db, $entitytype, $entityid, $timeFrame, $trendEntityType = "Customers") {
+    public function gettrendscsv(&$db, $entitytype, $entityid, $timeFrame, $trendEntityType = "Customers", $source = 'Origination') {
 
         try {
               $data = "Origination City,Origination State,Quantity\n";
@@ -1219,13 +1233,27 @@ class Reports
               $dbhandle = new $db('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS);
 
               if ($trendEntityType == "Customers") {
-                  $querystring = "SELECT customer_needs.originationCity, customer_needs.originationState, SUM(customer_needs.qty) AS qty
-                                  FROM customer_needs
-                                  WHERE customer_needs.rootCustomerNeedsID > 0";
+                  if ($source == "Origination") {
+                      $querystring = "SELECT customer_needs.originationCity AS city, customer_needs.originationState AS state, SUM(customer_needs.qty) AS qty
+                                      FROM customer_needs
+                                      WHERE customer_needs.rootCustomerNeedsID > 0";
+                  } else {
+                      $querystring = "SELECT customer_needs.destinationCity AS city, customer_needs.destinationState AS state, SUM(customer_needs.qty) AS qty
+                                      FROM customer_needs
+                                      WHERE customer_needs.rootCustomerNeedsID > 0";
+                  }
+
               } else {
-                  $querystring = "SELECT carrier_needs.originationCity, carrier_needs.originationState, SUM(carrier_needs.qty) AS qty
-                                  FROM carrier_needs
-                                  WHERE carrier_needs.entityID > 0";
+                   if ($source == "Origination") {
+                       $querystring = "SELECT carrier_needs.originationCity AS city, carrier_needs.originationState AS state, SUM(carrier_needs.qty) AS qty
+                                       FROM carrier_needs
+                                       WHERE carrier_needs.entityID > 0";
+                   } else {
+                       $querystring = "SELECT carrier_needs.destinationCity AS city, carrier_needs.destinationState AS state, SUM(carrier_needs.qty) AS qty
+                                       FROM carrier_needs
+                                       WHERE carrier_needs.entityID > 0";
+                   }
+
               }
 
               if ($entityid > 0) {
@@ -1270,12 +1298,12 @@ class Reports
 
               if ($trendEntityType == "Customers") {
                   $querystring .= " AND customer_needs.availableDate BETWEEN '" . $startDate . "' AND '" . $endDate . "'
-                                    GROUP BY customer_needs.originationCity, customer_needs.originationState
-                                    ORDER BY customer_needs.originationCity, customer_needs.originationState";
+                                    GROUP BY city, state
+                                    ORDER BY city, state";
               } else {
                   $querystring .= " AND carrier_needs.availableDate BETWEEN '" . $startDate . "' AND '" . $endDate . "'
-                                    GROUP BY carrier_needs.originationCity, carrier_needs.originationState
-                                    ORDER BY carrier_needs.originationCity, carrier_needs.originationState";
+                                    GROUP BY city, state
+                                    ORDER BY city, state";
               }
 
               $result = $dbhandle->query($querystring);
@@ -1293,7 +1321,7 @@ class Reports
                         //    $customerName = $entitiesData[$e]['name'];
                         //}
 
-                        $data .= $resultData[$c]['originationCity'].",".$resultData[$c]['originationState'].",".$resultData[$c]['qty']."\n";
+                        $data .= $resultData[$c]['city'].",".$resultData[$c]['state'].",".$resultData[$c]['qty']."\n";
 
                   }
                   echo $data;
