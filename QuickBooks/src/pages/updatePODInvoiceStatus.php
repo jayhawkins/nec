@@ -58,9 +58,7 @@ $dataService = DataService::Configure(array(
     else{
         
         print_r($found_invoice_id . "<br><br>");
-        $invoicePHPData = json_decode(json_encode($invoicedata[0]));
-        
-        print_r($invoicePHPData['Balance']);
+        print_r($invoicedata[0]->Balance);
         echo '<hr>';
     }
     
