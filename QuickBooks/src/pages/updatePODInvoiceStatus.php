@@ -57,7 +57,9 @@ $dataService = DataService::Configure(array(
     }
     else{
         
-        print_r($invoicedata);
+        print_r($found_invoice_id);
+        print_r($invoicedata[0]['TotalAmt']);
+        print_r($invoicedata[0]['Balance']);
         echo '<hr>';
     }
     
