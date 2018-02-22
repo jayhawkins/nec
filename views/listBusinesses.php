@@ -283,9 +283,9 @@ $cdpvList = $cdpvresult["configuration_data_points"];
                         $("#addLoadOutRateMax").val('');
                         passValidation = true;
                       } else {
-                        //alert("Updating Business Information Failed! \n\n" + data);
+                        //alert("Posting Business Information Failed! \n\n" + data);
                         Messenger().post({
-                            message: "Updating Business Information Failed! \n\n" + data,
+                            message: "Posting Business Information Failed! \n\n" + data,
                             type: 'error',
                             showCloseButton: true
                         });
@@ -460,9 +460,9 @@ $cdpvList = $cdpvresult["configuration_data_points"];
              <a href="http://www.datatables.net/" target="_blank">jQuery DataTables</a>
          </p -->
          <!--button type="button" id="addBusiness" class="btn btn-primary pull-xs-right" data-target="#myModal">Add Business</button-->
-         <!--div class="pull-right text-nowrap">
+         <div class="pull-right text-nowrap">
             <button type="button" id="addBusiness" class="btn btn-primary" data-target="#myModal">Add New Business</button>
-         </div-->
+         </div>
          <br /><br />
          <div id="dataTable" class="mt">
              <table id="datatable-table" class="table table-striped table-hover" width="100%">

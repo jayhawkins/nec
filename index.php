@@ -348,7 +348,7 @@ $app->route('POST /entities', function() {
     }
 });
 
-$app->route('PUT|POST /addentity', function() { // This is the add via the admin, not the front-end registration
+$app->route('PUT|POST /addentity', function() {
 
     // url encode the address
     $address = urlencode(Flight::request()->data['address1'].", ".Flight::request()->data['city'].", ".Flight::request()->data['state'].", ".Flight::request()->data['zip']);
