@@ -86,8 +86,6 @@ $dataService = DataService::Configure(array(
         }
 
         $conn->close();
-
-        
     }
     
 }
