@@ -77,9 +77,6 @@ $dataService = DataService::Configure(array(
             die("Connection failed: " . $conn->connect_error);
         } 
 
-        $id = $cust['cid'];
-        $orderDetailID = $cust['orderDetailId'];
-
         $sql = "UPDATE approved_pod SET hasBeenInvoiced=1, qbInvoiceStatus ='".$quickBooksStatus."', updatedAt = NOW() WHERE qbInvoiceNumber=".$found_invoice_id;
         echo $sql;
         if ($conn->query($sql) === TRUE) {
