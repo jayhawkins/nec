@@ -57,10 +57,37 @@ $dataService = DataService::Configure(array(
     }
     else{
         
-        print_r($found_invoice_id . "<br><br>");
-        print_r($invoicedata[0]->Balance);
-        print_r($invoicedata[0]->TotalAmt);
-        echo '<hr>';
+     
+        print_r($found_invoice_id . "<br><br>");        
+        
+        $TotalAmount = $invoicedata[0]->TotalAmt;
+        $RemainingBalance = $invoicedata[0]->Balance;
+        
+        print_r(gettype($TotalAmount). "<br><br>");
+        print_r(gettype($RemainingBalance). "<br><br>");
+        
+//        
+//        // Create connection
+//        $conn = new mysqli(DBHOST, DBUSER, DBPASS, DBNAME);
+//        // Check connection
+//        if ($conn->connect_error) {
+//            die("Connection failed: " . $conn->connect_error);
+//        } 
+//
+//        $id = $cust['cid'];
+//        $orderDetailID = $cust['orderDetailId'];
+//
+//        $sql = "UPDATE approved_pod SET hasBeenInvoiced=1, qbInvoiceStatus ='".$invoice_id."', updatedAt = NOW() WHERE qbInvoiceNumber=".$found_invoice_id;
+//        echo $sql;
+//        if ($conn->query($sql) === TRUE) {
+//            echo "Record updated successfully";
+//        } else {
+//            echo "Error updating record: " . $conn->error;
+//        }
+//
+//        $conn->close();
+
+        
     }
     
 }
