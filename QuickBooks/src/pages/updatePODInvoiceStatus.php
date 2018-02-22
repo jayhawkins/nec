@@ -60,11 +60,11 @@ $dataService = DataService::Configure(array(
      
         print_r($found_invoice_id . "<br><br>");        
         
-        $TotalAmount = $invoicedata[0]->TotalAmt;
-        $RemainingBalance = $invoicedata[0]->Balance;
+        $TotalAmount = floatval($invoicedata[0]->TotalAmt);
+        $RemainingBalance = floatval($invoicedata[0]->Balance);
         
-        print_r(gettype($TotalAmount). "<br><br>");
-        print_r(gettype($RemainingBalance). "<br><br>");
+        print_r($TotalAmount . " " . gettype($TotalAmount). "<br><br>");
+        print_r($RemainingBalance . " " . gettype($RemainingBalance). "<br><br>");
         
 //        
 //        // Create connection
