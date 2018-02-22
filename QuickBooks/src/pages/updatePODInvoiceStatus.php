@@ -57,35 +57,38 @@ $dataService = DataService::Configure(array(
     }
     else{
         
-     
-        print_r($found_invoice_id . "<br><br>");        
-        
         $TotalAmount = floatval($invoicedata[0]->TotalAmt);
         $RemainingBalance = floatval($invoicedata[0]->Balance);
         
-        print_r($TotalAmount . " " . gettype($TotalAmount). "<br><br>");
-        print_r($RemainingBalance . " " . gettype($RemainingBalance). "<br><br>");
+        $quickBooksStatus = "Open";
         
-//        
-//        // Create connection
-//        $conn = new mysqli(DBHOST, DBUSER, DBPASS, DBNAME);
-//        // Check connection
-//        if ($conn->connect_error) {
-//            die("Connection failed: " . $conn->connect_error);
-//        } 
-//
-//        $id = $cust['cid'];
-//        $orderDetailID = $cust['orderDetailId'];
-//
-//        $sql = "UPDATE approved_pod SET hasBeenInvoiced=1, qbInvoiceStatus ='".$invoice_id."', updatedAt = NOW() WHERE qbInvoiceNumber=".$found_invoice_id;
-//        echo $sql;
-//        if ($conn->query($sql) === TRUE) {
-//            echo "Record updated successfully";
-//        } else {
-//            echo "Error updating record: " . $conn->error;
-//        }
-//
-//        $conn->close();
+        if($RemainingBalance == 0){
+            $quickBooksStatus = "Paid";
+        }
+        elseif($RemainingBalance < $TotalAmount){
+            $quickBooksStatus = "Partial";
+        }
+        
+        
+        // Create connection
+        $conn = new mysqli(DBHOST, DBUSER, DBPASS, DBNAME);
+        // Check connection
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        } 
+
+        $id = $cust['cid'];
+        $orderDetailID = $cust['orderDetailId'];
+
+        $sql = "UPDATE approved_pod SET hasBeenInvoiced=1, qbInvoiceStatus ='".$quickBooksStatus."', updatedAt = NOW() WHERE qbInvoiceNumber=".$found_invoice_id;
+        echo $sql;
+        if ($conn->query($sql) === TRUE) {
+            echo "Record updated successfully";
+        } else {
+            echo "Error updating record: " . $conn->error;
+        }
+
+        $conn->close();
 
         
     }
