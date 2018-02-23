@@ -85,8 +85,7 @@ $dbh = mysqli_connect(DBHOST, DBUSER, DBPASS, DBNAME)
             "Description" => $customer['description'],
             "SalesItemLineDetail" => [
                 "ItemRef" => [
-                    "value" => 1,
-                    "name" => "Hours"
+                    "name" => "Damage Claims"
                 ]
             ]
         );
