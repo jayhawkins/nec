@@ -348,7 +348,7 @@ $app->route('POST /entities', function() {
     }
 });
 
-$app->route('PUT|POST /addentity', function() {
+$app->route('POST /addentity', function() {
 
     // url encode the address
     $address = urlencode(Flight::request()->data['address1'].", ".Flight::request()->data['city'].", ".Flight::request()->data['state'].", ".Flight::request()->data['zip']);
@@ -405,10 +405,12 @@ $app->route('PUT|POST /addentity', function() {
     $entity = Flight::entities();
     $returnentity = $entity->post($email,$password,$entityTypeID,$entityName,$contactID,$rateType,$negotiatedRate,$towAwayRateMin,$towAwayRateMax,$towAwayRateType,$loadOutRateMin,$loadOutRateMax,$loadOutRateType,$configurationSettings,$firstName,$lastName,$address1,$address2,$city,$state,$zip,$latitude,$longitude,$title,$phone,$phoneExt,$fax);
     if ($returnentity) {
-      return true;
+        echo $returnentity;
+      //return true;
     } else {
-      return $returnentity;
+      echo $returnentity;
     }
+
 });
 
 $app->route('PUT|POST /usermaintenance', function() {

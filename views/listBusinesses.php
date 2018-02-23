@@ -221,7 +221,7 @@ $cdpvList = $cdpvresult["configuration_data_points"];
                 }
 
                 var date = today;
-                var data = {businessTypeID: $('input[name="addBusinessTypeID"]:checked').val(),
+                var data = {entityTypeID: $('input[name="addBusinessTypeID"]:checked').val(),
                             firstName: $("#addFirstName").val(),
                             lastName: $("#addLastName").val(),
                             city: $("#addCity").val(),
@@ -256,7 +256,7 @@ $cdpvList = $cdpvresult["configuration_data_points"];
                    async: false,
                    success: function(data){
                       if (data > 0) {
-                        $("#myModal").modal('hide');
+                        $("#myAddModal").modal('hide');
                         loadTableAJAX();
                         $("#id").val('');
                         $("#entityTypeID").val('');
@@ -285,7 +285,7 @@ $cdpvList = $cdpvresult["configuration_data_points"];
                       } else {
                         //alert("Posting Business Information Failed! \n\n" + data);
                         Messenger().post({
-                            message: "Posting Business Information Failed! \n\n" + data,
+                            message: "Posting Business Information Failed! \n\n" + JSON.parse(data),
                             type: 'error',
                             showCloseButton: true
                         });
