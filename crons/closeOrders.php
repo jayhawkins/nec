@@ -3,7 +3,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-require '../../../../nec_config.php';
+require '../../nec_config.php';
 
 $dbh = mysqli_connect(DBHOST, DBUSER, DBPASS, DBNAME)
      or die ('cannot connect to database because ' . mysqli_connect_error());
