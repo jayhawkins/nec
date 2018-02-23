@@ -221,7 +221,7 @@ $cdpvList = $cdpvresult["configuration_data_points"];
                 }
 
                 var date = today;
-                var data = {businessTypeID: $('input[name="addBusinessTypeID"]:checked').val(),
+                var data = {entityTypeID: $('input[name="addBusinessTypeID"]:checked').val(),
                             firstName: $("#addFirstName").val(),
                             lastName: $("#addLastName").val(),
                             city: $("#addCity").val(),
@@ -256,7 +256,7 @@ $cdpvList = $cdpvresult["configuration_data_points"];
                    async: false,
                    success: function(data){
                       if (data > 0) {
-                        $("#myModal").modal('hide');
+                        $("#myAddModal").modal('hide');
                         loadTableAJAX();
                         $("#id").val('');
                         $("#entityTypeID").val('');
@@ -283,9 +283,9 @@ $cdpvList = $cdpvresult["configuration_data_points"];
                         $("#addLoadOutRateMax").val('');
                         passValidation = true;
                       } else {
-                        //alert("Updating Business Information Failed! \n\n" + data);
+                        //alert("Posting Business Information Failed! \n\n" + data);
                         Messenger().post({
-                            message: "Updating Business Information Failed! \n\n" + data,
+                            message: "Posting Business Information Failed! \n\n" + JSON.parse(data),
                             type: 'error',
                             showCloseButton: true
                         });
@@ -460,9 +460,9 @@ $cdpvList = $cdpvresult["configuration_data_points"];
              <a href="http://www.datatables.net/" target="_blank">jQuery DataTables</a>
          </p -->
          <!--button type="button" id="addBusiness" class="btn btn-primary pull-xs-right" data-target="#myModal">Add Business</button-->
-         <!--div class="pull-right text-nowrap">
+         <div class="pull-right text-nowrap">
             <button type="button" id="addBusiness" class="btn btn-primary" data-target="#myModal">Add New Business</button>
-         </div-->
+         </div>
          <br /><br />
          <div id="dataTable" class="mt">
              <table id="datatable-table" class="table table-striped table-hover" width="100%">

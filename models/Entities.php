@@ -170,7 +170,8 @@ class Entities
               // Update entity with member id
               $entityurl = API_HOST_URL . '/entities/' . $entityresult;
               $entitydata = array(
-                          "contactID" => $memberresult,
+                          "contactID" => $contactID,
+                          "assignedMemberID" => $memberresult,
                           "updatedAt" => date('Y-m-d H:i:s')
               );
               // use key 'http' even if you send the request to https://...
