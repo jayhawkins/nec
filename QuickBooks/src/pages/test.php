@@ -26,7 +26,7 @@ use QuickBooksOnline\API\Facades\Invoice;
              'baseUrl' => "https://sandbox-quickbooks.api.intuit.com"
     ));
 
-    $item = $dataService->Query("SELECT * FROM Item where name = 'Hours'");
+    $item = $dataService->Query("SELECT * FROM Item where name = 'Damage Claim'");
     $error = $dataService->getLastError();
     
     if ($error != null) {
@@ -37,9 +37,7 @@ use QuickBooksOnline\API\Facades\Invoice;
     }
     else{
         
-        print_r($item);
-        echo "<br>";
-        print_r($item == array());
+        print_r(count($item));
         exit();
         
         foreach($item as $key => $value){
