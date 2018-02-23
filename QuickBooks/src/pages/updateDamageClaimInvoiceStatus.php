@@ -13,6 +13,13 @@ use QuickBooksOnline\API\Core\Http\Serialization\XmlObjectSerializer;
 use QuickBooksOnline\API\Facades\Customer;
 use QuickBooksOnline\API\Facades\Invoice;
 
+
+
+$ClientID = ""; 
+$ClientSecret = "";
+$accessTokenKey = "";
+$refreshTokenKey = "";
+$QBORealmID = "";
 $dbh = mysqli_connect(DBHOST, DBUSER, DBPASS, DBNAME)
      or die ('cannot connect to database because ' . mysqli_connect_error());
 
