@@ -36,7 +36,7 @@ use QuickBooksOnline\API\Facades\Invoice;
         exit();
     }
     else{
-        print_r($entities);
+        print_r(json_encode($entities));
     }
     
    
