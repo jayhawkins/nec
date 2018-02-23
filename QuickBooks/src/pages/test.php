@@ -26,7 +26,7 @@ use QuickBooksOnline\API\Facades\Invoice;
              'baseUrl' => "https://sandbox-quickbooks.api.intuit.com"
     ));
 
-    $entities = $dataService->Query("SELECT * FROM Item where id = '2'");
+    $item = $dataService->Query("SELECT * FROM Item where name = 'Damage Claims'");
     $error = $dataService->getLastError();
     
     if ($error != null) {
