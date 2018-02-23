@@ -18,7 +18,7 @@ $carrierEntities = '';
 $carrierEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=id,name&order=name&filter[]=id,gt,0&filter[]=entityTypeID,eq,2&transform=1'));
 
 $allEntities = '';
-$allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=id,name&order=name&filter[]=id,gt,0&transform=1'));
+$allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=id,name&order=name&transform=1'));
 
 
 $locationTypeID = '';
@@ -86,6 +86,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
     var entityid = <?php echo $_SESSION['entityid']; ?>;
 
     var allEntities = <?php echo json_encode($allEntities); ?>;
+
+    console.log(allEntities);
 
     var customerNeedsRootIDs = <?php echo json_encode($customer_needs_root)?>;
 
@@ -753,7 +755,25 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 },
                 { data: "id", visible: false },
                 { data: "orderID", className: 'order-details-link' },
-                { data: "entities[0].name", visible: blnShow  },
+                {
+                    data: null,
+                    "bSortable": true,
+                    "mRender": function (o) {
+                        var entityName = '';
+                        var customerID = o.customerID;
+
+                        allEntities.entities.forEach(function(entity){
+
+                            if(customerID == entity.id){
+
+                                entityName += entity.name;
+                            }
+                        });
+
+                        return entityName;
+                    },
+                    visible: blnShow
+                },
                 {
                     data: null,
                     "bSortable": true,
@@ -761,18 +781,35 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         var entityName = '';
                         var carrierIDs = o.carrierIDs;
 
-                        for(var i = 0; i < carrierIDs.length; i++){
+                        if(carrierIDs[0].carrierID != undefined){
+                            for(var i = 0; i < carrierIDs.length; i++){
 
-                            if(i > 0) entityName += ", ";
+                                if(i > 0) entityName += ", ";
 
-                            allEntities.entities.forEach(function(entity){
+                                    allEntities.entities.forEach(function(entity){
 
-                                if(carrierIDs[i].carrierID == entity.id){
+                                        if(carrierIDs[i].carrierID == entity.id){
 
-                                    entityName += entity.name;
-                                }
+                                            entityName += entity.name;
+                                        }
+
+                                    });
+                            }
+                        }
+                        else{
+                            carrierIDs.forEach(function(value){
+                                
+                                    allEntities.entities.forEach(function(entity){
+
+                                            if(value[entity.id] != undefined){
+                                                entityName += value[entity.id];
+                                                entityName += ", ";
+                                            }
+
+                                    });
                             });
-
+                            entityName = entityName.trimRight();
+                            entityName = entityName.replace(/(^,)|(,$)/g, "");
                         }
 
                         return entityName;
