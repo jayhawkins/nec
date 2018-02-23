@@ -3,16 +3,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-include('../config.php');
 require '../../../../nec_config.php';
-
-use QuickBooksOnline\API\Core\ServiceContext;
-use QuickBooksOnline\API\DataService\DataService;
-use QuickBooksOnline\API\PlatformService\PlatformService;
-use QuickBooksOnline\API\Core\Http\Serialization\XmlObjectSerializer;
-use QuickBooksOnline\API\Facades\Customer;
-use QuickBooksOnline\API\Facades\Invoice;
-
 
 $dbh = mysqli_connect(DBHOST, DBUSER, DBPASS, DBNAME)
      or die ('cannot connect to database because ' . mysqli_connect_error());
