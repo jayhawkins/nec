@@ -39,7 +39,9 @@ use QuickBooksOnline\API\Facades\Invoice;
         
         foreach($entities as $key => $value){
             
-            print_r(json_encode($value));
+            print_r("ID: ". $value->Id);
+            echo "<br>";
+            print_r("Name: ". $value->Name);
             echo "<hr>";
         }
     }
