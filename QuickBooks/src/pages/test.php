@@ -37,6 +37,9 @@ use QuickBooksOnline\API\Facades\Invoice;
     }
     else{
         
+        print_r($entities);
+        exit();
+        
         foreach($entities as $key => $value){
             
             print_r("ID: ". $value->Id);
