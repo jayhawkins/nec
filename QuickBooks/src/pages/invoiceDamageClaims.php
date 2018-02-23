@@ -45,6 +45,37 @@ $QBORealmID =  $qbRow['realmID'];
     
 }
 
+    //query for cutomer// Prep Data Services
+    $dataService = DataService::Configure(array(
+           'auth_mode' => 'oauth2',
+             'ClientID' => $ClientID,
+             'ClientSecret' => $ClientSecret,
+    'accessTokenKey' =>  $accessTokenKey,
+    'refreshTokenKey' => $refreshTokenKey,
+              'QBORealmID' => $QBORealmID,
+             'baseUrl' => "https://sandbox-quickbooks.api.intuit.com"
+    ));
+
+    $item = $dataService->Query("SELECT * FROM Item where name = 'Damage Claims'");
+    $error = $dataService->getLastError();
+    
+    if ($error != null) {
+        echo "The Status code is: " . $error->getHttpStatusCode() . "<br><br>";
+        echo "The Helper message is: " . $error->getOAuthHelperError() . "<br><br>";
+        echo "The Response message is: " . $error->getResponseBody() . "<br><br>";
+        exit();
+    }
+    else{
+        
+        if(count($item) > 0){
+            $itemID = $item[0]->Id;
+            $itemName = $item[0]->Name;
+        }
+        else{
+            $itemID = 0;
+            $itemName = "Damage Claims";
+        }
+    }
 
 
 //db call 
@@ -85,7 +116,8 @@ $dbh = mysqli_connect(DBHOST, DBUSER, DBPASS, DBNAME)
             "Description" => $customer['description'],
             "SalesItemLineDetail" => [
                 "ItemRef" => [
-                    "name" => "Damage Claims"
+                    "value" => $itemID,
+                    "name" => $itemName
                 ]
             ]
         );
