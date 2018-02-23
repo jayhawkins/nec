@@ -14,10 +14,43 @@ use QuickBooksOnline\API\Facades\Customer;
 use QuickBooksOnline\API\Facades\Invoice;
 
 
+$ClientID = ""; 
+$ClientSecret = "";
+$accessTokenKey = "";
+$refreshTokenKey = "";
+$QBORealmID = "";
+
 //db call 
 
 $dbh = mysqli_connect(DBHOST, DBUSER, DBPASS, DBNAME)
      or die ('cannot connect to database because ' . mysqli_connect_error());
+
+
+//get quickbooks credentials from db
+   //run the query
+$qbLoop = mysqli_query($dbh, "select * from quickbooks_authentication where id = 1")
+   or die (mysqli_error($dbh));
+
+
+while($qbRow = mysqli_fetch_array($qbLoop)){
+    
+    $ClientID = $qbRow['clientID']; 
+$ClientSecret = $qbRow['ClientSecret']; 
+$accessTokenKey = $qbRow['accessTokenKey']; 
+$refreshTokenKey = $qbRow['refreshToken']; 
+$QBORealmID =  $qbRow['realmID']; 
+    
+}
+
+
+echo $ClientID;
+exit();
+
+
+
+//end
+
+
 
 
 
