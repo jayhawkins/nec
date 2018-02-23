@@ -43,8 +43,8 @@ $dataService = DataService::Configure(array(
 
     //$found_invoice_id = 0;
 
-    echo "Making Connection Before Checking for Invoice";
-    echo '<hr>';
+//    echo "Making Connection Before Checking for Invoice";
+//    echo '<hr>';
 
     $invoicedata = $dataService->Query("SELECT * FROM Invoice WHERE id in ('{$found_invoice_id}')");
     $error = $dataService->getLastError();
@@ -79,8 +79,10 @@ $dataService = DataService::Configure(array(
 
         $sql = "UPDATE approved_damage_claims SET qbInvoiceStatus ='".$quickBooksStatus."', updatedAt = NOW() WHERE qbInvoiceNumber=".$found_invoice_id;
         echo $sql;
+        echo '<br>';
         if ($conn->query($sql) === TRUE) {
             echo "Record updated successfully";
+            echo '<hr>';
         } else {
             echo "Error updating record: " . $conn->error;
         }
