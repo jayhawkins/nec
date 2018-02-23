@@ -37,6 +37,8 @@ use QuickBooksOnline\API\Facades\Invoice;
     }
     else{
         
+        print_r($item);
+        echo "<br>";
         print_r($item == array());
         exit();
         
