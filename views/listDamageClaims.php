@@ -33,7 +33,7 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
 
             var url = '<?php echo API_HOST_URL; ?>';
 
-            url += '/damage_claim_notes?include=members&columns=id,userID,note,createdAt,updatedAt,members.firstName,members.lastName&filter=damageClaimID,eq,' + damageClaimID + '&order=createdAt,desc&transform=1';
+            url += '/damage_claim_notes?include=members,entities&columns=id,userID,note,createdAt,updatedAt,members.firstName,members.lastName,entities.name&filter=damageClaimID,eq,' + damageClaimID + '&order=createdAt,desc&transform=1';
 
             var blnShow = false;
 
@@ -57,8 +57,10 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
                             "mRender": function (o) {
                                 var userFullName = o.members[0].firstName + ' ' + o.members[0].lastName;
 
-                                return userFullName;
-                            }, visible: blnShow
+                                var nameWithCompany = userFullName + ' {' + o.members[0].entities[0].name + '}';
+
+                                return nameWithCompany;
+                            }
                         },
                         { data: "note" },
                         { data: "createdAt" }
@@ -232,45 +234,64 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
 		}
 	}
 
-	function loadTableAJAX() {
-            var url = '<?php echo API_HOST_URL; ?>' + '/damage_claims?filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&transform=1';
-            var example_table = $('#datatable-table').DataTable({
-                retrieve: true,
-                processing: true,
-                "pageLength": 50,
-                ajax: {
-                        url: url,
-                        dataSrc: 'damage_claims'
-                },
-                columns: [
-                    { data: "id", visible: false },
-                    { data: "entityID", visible: false },
-                    { data: "entityAtFaultID", visible: false },
-                    { data: "vinNumber" },
-                    { data: "damage" },
-                    { data: "estimatedRepairCost", render: $.fn.dataTable.render.number(',', '.', 2, '$') },
-                    { data: "negotiatedRepairCost", render: $.fn.dataTable.render.number(',', '.', 2, '$') },
-                    { data: "documentIDs", visible: false },
-                    { data: "status", visible: false },
-                    { data: null,
-                        "bSortable": false,
-                        "mRender": function (o) {
-                            var buttons = '<div class="pull-right text-nowrap">';
+	function loadTableAJAX(blnShowAtFault = false) {
+        
+            var url = '';
+            
+            if(blnShowAtFault){
+                url = '<?php echo API_HOST_URL; ?>' + '/damage_claims?filter=entityAtFaultID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&transform=1';
+            }
+            else{
+                url = '<?php echo API_HOST_URL; ?>' + '/damage_claims?filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&transform=1';
+            }
+            
+            if ( ! $.fn.DataTable.isDataTable( '#datatable-table' ) ) {
+                var example_table = $('#datatable-table').DataTable({
+                    retrieve: true,
+                    processing: true,
+                    "pageLength": 50,
+                    ajax: {
+                            url: url,
+                            dataSrc: 'damage_claims'
+                    },
+                    columns: [
+                        { data: "id", visible: false },
+                        { data: "entityID", visible: false },
+                        { data: "entityAtFaultID", visible: false },
+                        { data: "vinNumber" },
+                        { data: "damage" },
+                        { data: "estimatedRepairCost", render: $.fn.dataTable.render.number(',', '.', 2, '$') },
+                        { data: "negotiatedRepairCost", render: $.fn.dataTable.render.number(',', '.', 2, '$') },
+                        { data: "documentIDs", visible: false },
+                        { data: "status", visible: false },
+                        { data: null,
+                            "bSortable": false,
+                            "mRender": function (o) {
+                                var buttons = '<div class="pull-right text-nowrap">';
 
-                            buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-eye-open text\"></i> <span class=\"text\">Upload/View Claim Files</span></button> &nbsp;';
-                            buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-eye-open text\"></i> <span class=\"text\">View Notes</span></button> &nbsp;';
+                                buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-eye-open text\"></i> <span class=\"text\">Upload/View Claim Files</span></button> &nbsp;';
+                                buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-eye-open text\"></i> <span class=\"text\">View Claim Details</span></button> &nbsp;';
+                                buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-eye-open text\"></i> <span class=\"text\">View Notes</span></button> &nbsp;';
 
-                            buttons += '</div>';
-                            return buttons;
+                                buttons += '</div>';
+                                return buttons;
+                            }
                         }
-                    }
-                ],
-                order: [[1, "desc"]]
-            });
-            example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
-            //To Reload The Ajax
-            //See DataTables.net for more information about the reload method
-            example_table.ajax.reload();
+                    ],
+                    order: [[1, "desc"]]
+                });
+                example_table.buttons().container().appendTo( $('.col-sm-6:eq(0)', example_table.table().container() ) );
+                //To Reload The Ajax
+                //See DataTables.net for more information about the reload method
+                example_table.ajax.reload();
+            }
+            else{
+
+                //The URL will change with each "View Commit" button click
+                // Must load new Url each time.
+                var reload_table = $('#datatable-table').DataTable();
+                reload_table.ajax.url(url).load();
+            }
 	}
 
 	function recordEnableDisable(status) {
@@ -402,9 +423,17 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
 
     }
 
-        function loadBusinessClaims(entityID) {
+        function loadBusinessClaims(entityID, blnShowAtFault = false) {
 
-            var url = '<?php echo API_HOST_URL; ?>' + '/damage_claims?filter=entityID,eq,' + entityID + '&transform=1';
+            var url = '';
+            
+            if(blnShowAtFault){
+                url = '<?php echo API_HOST_URL; ?>' + '/damage_claims?filter=entityAtFaultID,eq,' + entityID + '&transform=1';
+            }
+            else{
+                 url = '<?php echo API_HOST_URL; ?>' + '/damage_claims?filter=entityID,eq,' + entityID + '&transform=1';
+            }
+            
             if ( ! $.fn.DataTable.isDataTable( '#datatable-table' ) ) {
                 var example_table = $('#datatable-table').DataTable({
                     retrieve: true,
@@ -431,18 +460,19 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
 
                                 buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-eye-open text\"></i> <span class=\"text\">Upload/View Claim</span></button> &nbsp;';
                                 buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-eye-open text\"></i> <span class=\"text\">View Notes</span></button> &nbsp;';
+                                
                                 buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text\"></i> <span class=\"text\">Edit</span></button> &nbsp;';
 
                                 if (o.status == "Active") {
-                                    buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-ok text\"></i> <span class=\"text\">Approve</span></button> &nbsp;';
+                                    buttons += '<button class=\"btn btn-success btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-ok text\"></i> <span class=\"text\">Approve</span></button> &nbsp;';
                                     buttons += "<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text\"></i> <span class=\"text\">Disable</span></button>";
                                 }
                                 else if (o.status == "Inactive") {
-                                    buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\" disabled><i class=\"glyphicon glyphicon-ok text\"></i> <span class=\"text\">Approve</span></button> &nbsp;';
+                                    buttons += '<button class=\"btn btn-success btn-xs\" role=\"button\" disabled><i class=\"glyphicon glyphicon-ok text\"></i> <span class=\"text\">Approve</span></button> &nbsp;';
                                     buttons += "<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text\"></i> <span class=\"text\">Enable</span></button>";
                                 }
                                 else if (o.status == "Invoiced") {
-                                    buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\" disabled><i class=\"glyphicon glyphicon-ok text\"></i> <span class=\"text\">Approve</span></button> &nbsp;';
+                                    buttons += '<button class=\"btn btn-success btn-xs\" role=\"button\" disabled><i class=\"glyphicon glyphicon-ok text\"></i> <span class=\"text\">Approve</span></button> &nbsp;';
                                     buttons += "<button class=\"btn btn-primary btn-xs\" role=\"button\" disabled><i class=\"glyphicon glyphicon-remove text\"></i> <span class=\"text\">Disable</span></button>";
                                 }
 
@@ -499,6 +529,7 @@ if($_SESSION['entitytype'] != 0){
 		</p -->
 
                 <button type="button" id="addClaim" class="btn btn-primary pull-xs-right" data-target="#myModal">Add Claim</button>
+                <button type="button" id="btnViewClaims" class="btn btn-primary pull-xs-right" style="margin-right: 10px;">View Claims Against You</button>
 		<br /><br />
 		<div id="dataTable" class="mt">
 			<table id="datatable-table" class="table table-striped table-hover">
@@ -597,7 +628,8 @@ else {
              Column sorting, live search, pagination. Built with
              <a href="http://www.datatables.net/" target="_blank">jQuery DataTables</a>
          </p -->
-         <button type="button" id="addClaim" class="btn btn-primary pull-xs-right" data-target="#myModal">Add Claim</button>
+            <button type="button" id="addClaim" class="btn btn-primary pull-xs-right" data-target="#myModal">Add Claim</button>
+            <button type="button" id="btnViewClaims" class="btn btn-primary pull-xs-right" style="margin-right: 10px;">View Claims Against You</button>
          <br /><br />
          <div id="dataTable" class="mt">
              <table id="datatable-table" class="table table-striped table-hover" width="100%">
@@ -699,7 +731,7 @@ else {
 					</div>-->
 				</form>
 			</div>
-			<div class="modal-footer">
+			<div class="modal-footer" id="btnClaimModalFooter">
 				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
 				<button type="button" class="btn btn-primary" onclick="return verifyAndPost();">Save Changes</button>
 			</div>
@@ -922,6 +954,23 @@ if($_SESSION['entitytype'] != 0){
 
 	loadTableAJAX();
 
+        $('#btnViewClaims').off('click').on('click', function(){
+            
+            var btnViewClaims = $('#btnViewClaims').text();
+            
+            if(btnViewClaims == "View Claims Against You")
+            {                
+                loadTableAJAX(true);
+                $('#btnViewClaims').text('View Your Claims');
+            }
+            else
+            {
+                loadTableAJAX(false);
+                $('#btnViewClaims').text('View Claims Against You');
+            }
+                        
+        });
+
 	var table = $("#datatable-table").DataTable();
 	$('.datepicker').datepicker({
 		autoclose: true,
@@ -1024,7 +1073,19 @@ if($_SESSION['entitytype'] != 0){
                 loadDamageClaimNotes(data['id']);
 
                 $("#viewNotesModal").modal('show');
-            } else {
+            }  else if (this.textContent.indexOf("View Claim Details") > -1){
+                $("#id").val(data["id"]);
+                $("#entityID").val(entityid);
+                $("#entityAtFaultID").val(data["entityAtFaultID"]);
+                $("#vinNumber").val(data["vinNumber"]);
+                $("#damage").val(data["damage"]);
+                $("#estimatedRepairCost").val(data["estimatedRepairCost"]);
+                $("#negotiatedRepairCost").val(data["negotiatedRepairCost"]);
+                $("#btnClaimModalFooter").css("display", "none");
+                $("#formDamageClaim :input").prop("disabled", true);
+                
+                $("#claimsModal").modal('show');
+            }else {
                 $("#id").val(data["id"]);
                 if (this.textContent.indexOf("Disable") > -1) {
                   $("#disableDialogLabel").html('Disable <strong>' + data['firstName'] + ' ' + data['lastName'] + '</strong>');
@@ -1142,6 +1203,23 @@ else {
 ?>
 
 <script>
+
+        $('#btnViewClaims').off('click').on('click', function(){
+            
+            var btnViewClaims = $('#btnViewClaims').text();
+            
+            if(btnViewClaims == "View Claims Against You")
+            {                
+                loadBusinessClaims($("#entityID").val(), true);
+                $('#btnViewClaims').text('View Your Claims');
+            }
+            else
+            {
+                loadBusinessClaims($("#entityID").val(), false);
+                $('#btnViewClaims').text('View Claims Against You');
+            }
+               
+        });
 
 
         function openClaims(){
