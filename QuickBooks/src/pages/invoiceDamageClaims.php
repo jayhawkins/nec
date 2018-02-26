@@ -87,14 +87,14 @@ $dbh = mysqli_connect(DBHOST, DBUSER, DBPASS, DBNAME)
 //see joins
    
    //run the query
-    $loop = mysqli_query($dbh, "SELECT p.id as line_id, p.atFaultEntityID, p.cost, p.damageClaimID, p.vinNumber, p.damage_description, c.*, e.name,l.address1,l.city,l.state,l.zip FROM nec.approved_damage_claims p join entities e on p.atFaultEntityID = e.id join locations l on e.id = l.entityID  join contacts c on e.contactID = c.id  where l.locationTypeID = 1 and p.hasBeenInvoiced = 0")
+    $loop = mysqli_query($dbh, "SELECT p.id as line_id, p.atFaultEntityID, p.cost, p.damageClaimID, p.vinNumber, p.unitNumber, p.damage_description, c.*, e.name,l.address1,l.city,l.state,l.zip FROM nec.approved_damage_claims p join entities e on p.atFaultEntityID = e.id join locations l on e.id = l.entityID  join contacts c on e.contactID = c.id  where l.locationTypeID = 1 and p.hasBeenInvoiced = 0")
        or die (mysqli_error($dbh));
 
     while ($row = mysqli_fetch_array($loop))
     {
         $lineItemList = array();
     
-        $customer['description'] = "Damage Claim on Trailer VIN #: " . $row['vinNumber'] .  " | Damage: " . $row['damage_description']; 
+        $customer['description'] = "Damage Claim on Trailer VIN #: " . $row['vinNumber'] .  " | Unit #: " . $row['unitNumber'] .  " | Damage: " . $row['damage_description']; 
 
 
         $customer['customer_fname'] = $row['firstName'];

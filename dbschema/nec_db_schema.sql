@@ -858,6 +858,9 @@ CREATE TABLE `damage_claims` (
 -- -------------------------------------------------------------
 -- ---------------------------------------------------------
 
+ALTER TABLE damage_claims ADD COLUMN unitNumber VarChar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' AFTER vinNumber;
+ALTER TABLE approved_damage_claims ADD COLUMN unitNumber VarChar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' AFTER vinNumber; 
+
 -- CREATE TABLE "customer_needs_notes" ------------------------------------
 -- CREATE TABLE "customer_needs_notes" ----------------------------------------
 CREATE TABLE IF NOT EXISTS `customer_needs_notes` (

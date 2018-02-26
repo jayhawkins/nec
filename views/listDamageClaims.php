@@ -158,7 +158,7 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
 				url = '<?php echo API_HOST_URL . "/damage_claims" ?>/' + $("#id").val();
 				type = "PUT";
 				date = today;
-				data = {id: $("#id").val(), entityID: $("#entityID").val(), entityAtFaultID: $("#entityAtFaultID").val(), vinNumber: $("#vinNumber").val(), estimatedRepairCost: $("#estimatedRepairCost").val(), negotiatedRepairCost: $("#negotiatedRepairCost").val(), damage: $("#damage").val(), updatedAt: date};
+				data = {id: $("#id").val(), entityID: $("#entityID").val(), entityAtFaultID: $("#entityAtFaultID").val(), unitNumber: $("#unitNumber").val(),vinNumber: $("#vinNumber").val(), estimatedRepairCost: $("#estimatedRepairCost").val(), negotiatedRepairCost: $("#negotiatedRepairCost").val(), damage: $("#damage").val(), updatedAt: date};
 				$.ajax({
 					url: url,
 					type: type,
@@ -174,6 +174,7 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
 
 							$("#id").val('');
                                                         $("#entityAtFaultID").val('');
+							$("#unitNumber").val('');
 							$("#vinNumber").val('');
 							$("#estimatedRepairCost").val('');
 							$("#nogotiatedRepairCost").val('');
@@ -196,7 +197,7 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
                                 type = "POST";
 
                                 date = today;
-                                data = {entityID: $("#entityID").val(), entityAtFaultID: $("#entityAtFaultID").val(), vinNumber: $("#vinNumber").val(), estimatedRepairCost: $("#estimatedRepairCost").val(), negotiatedRepairCost: $("#negotiatedRepairCost").val(), damage: $("#damage").val(), status: "Active", createdAt: date, updatedAt: date};
+                                data = {entityID: $("#entityID").val(), entityAtFaultID: $("#entityAtFaultID").val(), unitNumber: $("#unitNumber").val(), vinNumber: $("#vinNumber").val(), estimatedRepairCost: $("#estimatedRepairCost").val(), negotiatedRepairCost: $("#negotiatedRepairCost").val(), damage: $("#damage").val(), status: "Active", createdAt: date, updatedAt: date};
                                 $.ajax({
                                         url: url,
                                         type: type,
@@ -212,6 +213,7 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
 
                                                         $("#id").val('');
                                                         $("#entityAtFaultID").val('');
+							$("#unitNumber").val('');
                                                         $("#vinNumber").val('');
                                                         $("#estimatedRepairCost").val('');
                                                         $("#negotiatedRepairCost").val('');
@@ -258,6 +260,7 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
                         { data: "id", visible: false },
                         { data: "entityID", visible: false },
                         { data: "entityAtFaultID", visible: false },
+                        { data: "unitNumber" },
                         { data: "vinNumber" },
                         { data: "damage" },
                         { data: "estimatedRepairCost", render: $.fn.dataTable.render.number(',', '.', 2, '$') },
@@ -447,6 +450,7 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
                         { data: "id", visible: false },
                         { data: "entityID", visible: false },
                         { data: "entityAtFaultID", visible: false },
+                        { data: "unitNumber" },
                         { data: "vinNumber" },
                         { data: "damage" },
                         { data: "estimatedRepairCost", render: $.fn.dataTable.render.number(',', '.', 2, '$') },
@@ -538,6 +542,7 @@ if($_SESSION['entitytype'] != 0){
 					<th>ID</th>
 					<th class="hidden-sm-down">EntityID</th>
 					<th class="hidden-sm-down">Entity At Fault</th>
+					<th class="hidden-sm-down">Unit Number</th>
 					<th class="hidden-sm-down">VIN Number</th>
 					<th class="hidden-sm-down">Damage</th>
 					<th class="hidden-sm-down">Estimated Cost</th>
@@ -638,6 +643,7 @@ else {
                             <th>ID</th>
                             <th class="hidden-sm-down">EntityID</th>
                             <th class="hidden-sm-down">Entity At Fault</th>
+                            <th class="hidden-sm-down">Unit Number</th>
                             <th class="hidden-sm-down">VIN Number</th>
                             <th class="hidden-sm-down">Damage</th>
                             <th class="hidden-sm-down">Estimated Cost</th>
@@ -674,25 +680,19 @@ else {
 					<input type="hidden" id="entityID" name="entityID" />
 					<input type="hidden" id="id" name="id" value="" />
 					<div class="row">
-						<div class="col-sm-3">
+						<div class="col-sm-4">
 							<label for="vinNumber">VIN Number</label>
 							<div class="form-group">
 								<input type="text" id="vinNumber" name="vinNumber" class="form-control mb-sm" placeholder="* VIN Number" required />
 							</div>
 						</div>
-						<div class="col-sm-3">
-							<label for="estimatedRepairCost">Estimated Repair Cost</label>
+						<div class="col-sm-4">
+							<label for="unitNumber">Unit Number</label>
 							<div class="form-group">
-								<input type="text" id="estimatedRepairCost" name="estimatedRepairCost" class="form-control mb-sm" placeholder="* ex: 2000.00" />
+								<input type="text" id="unitNumber" name="unitNumber" class="form-control mb-sm" placeholder="* Unit Number" required />
 							</div>
 						</div>
-						<div class="col-sm-3">
-							<label for="negotiatedRepairCost">Negotiated Repair Cost</label>
-							<div class="form-group">
-								<input type="text" id="negotiatedRepairCost" name="negotiatedRepairCost" class="form-control mb-sm" placeholder="* ex: 2000.00" />
-							</div>
-						</div>
-						<div class="col-sm-3">
+						<div class="col-sm-4">
                                                     <div class="form-group">
                                         <?php if ($_SESSION['entityid'] > 0) { ?>
                                                        <input type="hidden" id="entityAtFaultID" name="entityAtFaultID" value="" />
@@ -709,6 +709,20 @@ else {
                                                         </select>
                                          <?php } ?>
                                                     </div>
+						</div>
+                                        </div>
+                                            <div class="row">
+						<div class="col-sm-6">
+							<label for="estimatedRepairCost">Estimated Repair Cost</label>
+							<div class="form-group">
+								<input type="text" id="estimatedRepairCost" name="estimatedRepairCost" class="form-control mb-sm" placeholder="* ex: 2000.00" />
+							</div>
+						</div>
+						<div class="col-sm-6">
+							<label for="negotiatedRepairCost">Negotiated Repair Cost</label>
+							<div class="form-group">
+								<input type="text" id="negotiatedRepairCost" name="negotiatedRepairCost" class="form-control mb-sm" placeholder="* ex: 2000.00" />
+							</div>
 						</div>
 					</div>
 					<div class="row">
@@ -1056,6 +1070,7 @@ if($_SESSION['entitytype'] != 0){
                 $("#entityID").val(entityid);
                 $("#entityAtFaultID").val(data["entityAtFaultID"]);
                 $("#vinNumber").val(data["vinNumber"]);
+                $("#unitNumber").val(data["unitNumber"]);
                 $("#damage").val(data["damage"]);
                 $("#estimatedRepairCost").val(data["estimatedRepairCost"]);
                 $("#negotiatedRepairCost").val(data["negotiatedRepairCost"]);
@@ -1078,6 +1093,7 @@ if($_SESSION['entitytype'] != 0){
                 $("#entityID").val(entityid);
                 $("#entityAtFaultID").val(data["entityAtFaultID"]);
                 $("#vinNumber").val(data["vinNumber"]);
+                $("#unitNumber").val(data["unitNumber"]);
                 $("#damage").val(data["damage"]);
                 $("#estimatedRepairCost").val(data["estimatedRepairCost"]);
                 $("#negotiatedRepairCost").val(data["negotiatedRepairCost"]);
@@ -1410,6 +1426,7 @@ else {
                 $("#id").val(data["id"]);
                 $("#entityAtFaultID").val(data["entityAtFaultID"]);
                 $("#vinNumber").val(data["vinNumber"]);
+                $("#unitNumber").val(data["unitNumber"]);
                 $("#damage").val(data["damage"]);
                 $("#estimatedRepairCost").val(data["estimatedRepairCost"]);
                 $("#negotiatedRepairCost").val(data["negotiatedRepairCost"]);
