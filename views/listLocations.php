@@ -596,6 +596,7 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
                            <label for="locationTypeID">Location Type</label>
                            <select id="locationTypeID" name="locationTypeID" data-placeholder="Location Type" class="form-control chzn-select" data-ui-jq="select2" required="required">
                              <option value="">*Select Type...</option>
+                             <option value="2">Presence</option>
             <?php
                              foreach($locationTypes->location_types->records as $value) {
                                  if ($value[2] == "Active") {
