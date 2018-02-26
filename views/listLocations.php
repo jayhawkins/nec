@@ -9,7 +9,7 @@ $state = '';
 $states = json_decode(file_get_contents(API_HOST_URL . '/states?columns=abbreviation,name&order=name'));
 
 $locationTypeID = '';
-$locationTypes = json_decode(file_get_contents(API_HOST_URL . "/location_types?columns=id,name,status&filter[]=entityID,eq," . $_SESSION['entityid'] . "&filter[]=id,gt,0&satisfy=all&order=name"));
+$locationTypes = json_decode(file_get_contents(API_HOST_URL . "/location_types?columns=id,name,status&filter[]=entityID,eq," . $_SESSION['entityid'] . "&filter[]=id,gt,1&satisfy=all&order=name"));
 
 $contacts = '';
 $contacts = json_decode(file_get_contents(API_HOST_URL . "/contacts?columns=id,firstName,lastName&order=lastName&filter=entityID,eq," . $_SESSION['entityid'] ));
@@ -109,7 +109,7 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
                           var data = {entityID: $("#entityID").val(), locationTypeID: $("#locationTypeID").val(), name: $("#name").val(), address1: $("#address1").val(), address2: $("#address2").val(), city: $("#city").val(), state: $("#state").val(), zip: $("#zip").val(), latitude: lat, longitude: lng, updatedAt: date};
                       } else {
                           var date = today;
-                          var data = {entityID: $("#entityID").val(), locationTypeID: $("#locationTypeID").val(), name: $("#name").val(), address1: $("#address1").val(), address2: $("#address2").val(), city: $("#city").val(), state: $("#state").val(), zip: $("#zip").val(), latitude: lat, longitude: lng, createdAt: date};
+                          var data = {entityID: $("#entityID").val(), locationTypeID: $("#locationTypeID").val(), name: $("#name").val(), address1: $("#address1").val(), address2: $("#address2").val(), city: $("#city").val(), state: $("#state").val(), zip: $("#zip").val(), latitude: lat, longitude: lng, createdAt: date, updatedAt: date};
                       }
 
                       $.ajax({
@@ -612,7 +612,7 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
                      <div class="col-sm-6">
                        <label for="address1">Address</label>
                        <div class="form-group">
-                         <input type="text" id="address1" name="address1" class="form-control mb-sm" placeholder="Company Address" required="required" />
+                         <input type="text" id="address1" name="address1" class="form-control mb-sm" placeholder="Company Address" />
                        </div>
                      </div>
                      <div class="col-sm-6">
@@ -646,7 +646,7 @@ for ($lc=0;$lc<count($locations_contacts->locations_contacts->records);$lc++) {
                      <div class="col-sm-4">
                          <label for="zip">Zip</label>
                          <div class="form-group">
-                           <input type="text" id="zip" name="zip" class="form-control mb-sm" placeholder="Zip" required="required" />
+                           <input type="text" id="zip" name="zip" class="form-control mb-sm" placeholder="Zip" />
                          </div>
                      </div>
                  </div>
