@@ -9,7 +9,7 @@ $state = '';
 $states = json_decode(file_get_contents(API_HOST_URL . '/states?columns=abbreviation,name&order=name'));
 
 $locationTypeID = '';
-$locationTypes = json_decode(file_get_contents(API_HOST_URL . "/location_types?columns=id,name,status&filter[]=entityID,eq," . $_SESSION['entityid'] . "&filter[]=id,gt,0&satisfy=all&order=name"));
+$locationTypes = json_decode(file_get_contents(API_HOST_URL . "/location_types?columns=id,name,status&filter[]=entityID,eq," . $_SESSION['entityid'] . "&filter[]=id,gt,1&satisfy=all&order=name"));
 
 $contacts = '';
 $contacts = json_decode(file_get_contents(API_HOST_URL . "/contacts?columns=id,firstName,lastName&order=lastName&filter=entityID,eq," . $_SESSION['entityid'] ));
