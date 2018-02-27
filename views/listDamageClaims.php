@@ -940,6 +940,7 @@ else {
 					<input type="hidden" id="approvedClaimID" name="approvedClaimID" />
 					<input type="hidden" id="approvedEntityID" name="approvedEntityID" />
 					<input type="hidden" id="approvedVinNumber" name="approvedVinNumber" />
+					<input type="hidden" id="approvedUnitNumber" name="approvedUnitNumber" />
 					<input type="hidden" id="approvedDamage" name="approvedDamage" />
 					<input type="hidden" id="approvedRepairCost" name="approvedRepairCost" />
 					<div class="row">
@@ -1295,10 +1296,11 @@ else {
             var damageClaimID = $('#approvedClaimID').val();
             var atFaultEntityID = $("#approvedEntityID").val();
             var vinNumber = $("#approvedVinNumber").val();
+            var unitNumber = $("#approvedUnitNumber").val();
             var damage_description = $("#approvedDamage").val();
             var cost = $("#approvedRepairCost").val();
 
-            var approved_damage_claim = {damageClaimID: damageClaimID, atFaultEntityID: atFaultEntityID, vinNumber: vinNumber, damage_description: damage_description, cost: cost, userID: userid, note: $("#txtAdminNote").val(), createdAt: today, updatedAt: today};
+            var approved_damage_claim = {damageClaimID: damageClaimID, atFaultEntityID: atFaultEntityID, unitNumber: unitNumber, vinNumber: vinNumber, damage_description: damage_description, cost: cost, userID: userid, note: $("#txtAdminNote").val(), createdAt: today, updatedAt: today};
 
             $.ajax({
                 url: '<?php echo API_HOST_URL . "/approved_damage_claims/"; ?>',
@@ -1448,6 +1450,7 @@ else {
                 $("#approvedClaimID").val(data['id']);
                 $("#approvedEntityID").val(data['entityAtFaultID']);
                 $("#approvedVinNumber").val(data["vinNumber"]);
+                $("#approvedUnitNumber").val(data["unitNumber"]);
                 $("#approvedDamage").val(data["damage"]);
                 $("#approvedRepairCost").val(data["negotiatedRepairCost"]);
 
