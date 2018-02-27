@@ -3,6 +3,19 @@
 	require '../../nec_config.php';
 	require '../lib/common.php';
 
+if ($_SESSION['userid'] <= 0 || $_SESSION['userid'] == "") {
+    header("Location: " . HTTP_HOST . "/logout");
+}
+
+/*
+if(auto_logout("login_time")) {
+    session_unset();
+    session_destroy();
+    header("Location: ".HTTP_HOST."/logout");
+    exit();
+}
+*/
+
 
 $allEntities = '';
 $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=id,name&order=name&filter[]=id,gt,0'));
@@ -237,16 +250,16 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
 	}
 
 	function loadTableAJAX(blnShowAtFault = false) {
-        
+
             var url = '';
-            
+
             if(blnShowAtFault){
                 url = '<?php echo API_HOST_URL; ?>' + '/damage_claims?filter=entityAtFaultID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&transform=1';
             }
             else{
                 url = '<?php echo API_HOST_URL; ?>' + '/damage_claims?filter=entityID,eq,' + <?php echo $_SESSION['entityid']; ?> + '&transform=1';
             }
-            
+
             if ( ! $.fn.DataTable.isDataTable( '#datatable-table' ) ) {
                 var example_table = $('#datatable-table').DataTable({
                     retrieve: true,
@@ -429,14 +442,14 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
         function loadBusinessClaims(entityID, blnShowAtFault = false) {
 
             var url = '';
-            
+
             if(blnShowAtFault){
                 url = '<?php echo API_HOST_URL; ?>' + '/damage_claims?filter=entityAtFaultID,eq,' + entityID + '&transform=1';
             }
             else{
                  url = '<?php echo API_HOST_URL; ?>' + '/damage_claims?filter=entityID,eq,' + entityID + '&transform=1';
             }
-            
+
             if ( ! $.fn.DataTable.isDataTable( '#datatable-table' ) ) {
                 var example_table = $('#datatable-table').DataTable({
                     retrieve: true,
@@ -464,7 +477,7 @@ $allEntities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=i
 
                                 buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-eye-open text\"></i> <span class=\"text\">Upload/View Claim</span></button> &nbsp;';
                                 buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-eye-open text\"></i> <span class=\"text\">View Notes</span></button> &nbsp;';
-                                
+
                                 buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text\"></i> <span class=\"text\">Edit</span></button> &nbsp;';
 
                                 if (o.status == "Active") {
@@ -969,11 +982,11 @@ if($_SESSION['entitytype'] != 0){
 	loadTableAJAX();
 
         $('#btnViewClaims').off('click').on('click', function(){
-            
+
             var btnViewClaims = $('#btnViewClaims').text();
-            
+
             if(btnViewClaims == "View Claims Against You")
-            {                
+            {
                 loadTableAJAX(true);
                 $('#btnViewClaims').text('View Your Claims');
             }
@@ -982,7 +995,7 @@ if($_SESSION['entitytype'] != 0){
                 loadTableAJAX(false);
                 $('#btnViewClaims').text('View Claims Against You');
             }
-                        
+
         });
 
 	var table = $("#datatable-table").DataTable();
@@ -1099,7 +1112,7 @@ if($_SESSION['entitytype'] != 0){
                 $("#negotiatedRepairCost").val(data["negotiatedRepairCost"]);
                 $("#btnClaimModalFooter").css("display", "none");
                 $("#formDamageClaim :input").prop("disabled", true);
-                
+
                 $("#claimsModal").modal('show');
             }else {
                 $("#id").val(data["id"]);
@@ -1221,11 +1234,11 @@ else {
 <script>
 
         $('#btnViewClaims').off('click').on('click', function(){
-            
+
             var btnViewClaims = $('#btnViewClaims').text();
-            
+
             if(btnViewClaims == "View Claims Against You")
-            {                
+            {
                 loadBusinessClaims($("#entityID").val(), true);
                 $('#btnViewClaims').text('View Your Claims');
             }
@@ -1234,7 +1247,7 @@ else {
                 loadBusinessClaims($("#entityID").val(), false);
                 $('#btnViewClaims').text('View Claims Against You');
             }
-               
+
         });
 
 

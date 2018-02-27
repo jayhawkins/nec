@@ -46,7 +46,7 @@ function sendmail($to, $subject, $body, $from, $document='', $bcc='') {
         "numSent" => 0,
         "failedRecipients" => array()
     );
-    
+
     $failedRecipients = array();
     $numSent = 0;
     foreach ($to as $address => $name) {
@@ -63,7 +63,7 @@ function sendmail($to, $subject, $body, $from, $document='', $bcc='') {
             if (!$mailer->send($message, $failedRecipients)) {
                 array_push($returnObject["failedRecipients"], $failedRecipients[0]);
             }
-            else{                
+            else{
               $numSent++;
             }
         } catch (Exception $e) {
@@ -73,7 +73,7 @@ function sendmail($to, $subject, $body, $from, $document='', $bcc='') {
     }
 
       $returnObject["numSent"] = $numSent;
-      
+
     return $returnObject;
 
 }
@@ -98,6 +98,21 @@ function is_authorized() {
   } else {
     return false;
   }
+}
+
+function auto_logout($field)
+{
+    $t = time();
+    $t0 = $_SESSION[$field];
+    $diff = $t - $t0;
+    if ($diff > 1500 || !isset($t0)) // Set expiration to 15 minutes
+    {
+        return true;
+    }
+    else
+    {
+        $_SESSION[$field] = time();
+    }
 }
 
 function php_crud_api_transform(&$tables) {

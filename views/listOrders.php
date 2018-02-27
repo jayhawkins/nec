@@ -5,6 +5,19 @@ session_start();
 require '../../nec_config.php';
 require '../lib/common.php';
 
+if ($_SESSION['userid'] <= 0 || $_SESSION['userid'] == "") {
+    header("Location: " . HTTP_HOST . "/logout");
+}
+
+/*
+if(auto_logout("login_time")) {
+    session_unset();
+    session_destroy();
+    header("Location: ".HTTP_HOST."/logout");
+    exit();
+}
+*/
+
 $state = '';
 $states = json_decode(file_get_contents(API_HOST_URL . '/states?columns=abbreviation,name&order=name'));
 
@@ -798,7 +811,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         }
                         else{
                             carrierIDs.forEach(function(value){
-                                
+
                                     allEntities.entities.forEach(function(entity){
 
                                             if(value[entity.id] != undefined){

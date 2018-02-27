@@ -5,6 +5,19 @@ session_start();
 require '../../nec_config.php';
 require '../lib/common.php';
 
+if ($_SESSION['userid'] <= 0 || $_SESSION['userid'] == "") {
+    header("Location: " . HTTP_HOST . "/logout");
+}
+
+/*
+if(auto_logout("login_time")) {
+    session_unset();
+    session_destroy();
+    header("Location: ".HTTP_HOST."/logout");
+    exit();
+}
+*/
+
 $state = '';
 $states = json_decode(file_get_contents(API_HOST_URL . '/states?columns=abbreviation,name&order=name'));
 
@@ -486,6 +499,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             $('#hoursOfOperationOpen_relay' + relayNumber).val("");
             $('#hoursOfOperationClose_relay' + relayNumber).val("");
             $('#timeZone_relay' + relayNumber).val("");
+
+            $('#pointOptions_' + relayNumber).css("display", "block");
+            $('#relayOptions_' + relayNumber).css("display", "none");
 
         }
 
@@ -1123,9 +1139,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     $('#entityID_relay' + relayNumber).val(currentCarrier);
 
                     if (currentCarrier > 0){
-                        $('#relayOptions_' + relayNumber).css("display", "block");
+                        $('#pointOptions_' + relayNumber).css("display", "block");
+                        $('#relayOptions_' + relayNumber).css("display", "none");
                     }
                     else{
+                        $('#pointOptions_' + relayNumber).css("display", "none");
                         $('#relayOptions_' + relayNumber).css("display", "none");
                     }
 
@@ -1914,6 +1932,16 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
             <div class="row">
                     <div class="col-md-12">
+                        <label for="relayView">Relay View</label><br>
+                        <input type="radio" id="relayView" name="relayView" value="Point to Point" checked /> Point to Point
+                        <input type="radio" id="relayView" name="relayView" value="Routes" /> Routes
+                    </div>
+            </div>
+            <br>
+
+            <div id="divRelays">
+            <div class="row">
+                    <div class="col-md-12">
                             <h2>Relay Addresses</h2>
                     </div>
             </div>
@@ -2090,6 +2118,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                         <option>PST (Pacific)</option>
                                     </select>
                             </div>
+
+
+                            </div>
+                            <div id="pointOptions_1" style="display: none;">
+
+
                             <div class="form-group">
                                     <label for="pickupDate_relay1">Pickup Date</label>
                                     <input class="form-control" id="pickupDate_relay1" placeholder="" type="date">
@@ -2281,6 +2315,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                         <option>PST (Pacific)</option>
                                     </select>
                             </div>
+
+
+                            </div>
+                            <div id="pointOptions_2" style="display: none;">
+
+
                             <div class="form-group">
                                     <label for="pickupDate_relay2">Pickup Date</label>
                                     <input class="form-control" id="pickupDate_relay2" placeholder="" type="date">
@@ -2473,6 +2513,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                         <option>PST (Pacific)</option>
                                     </select>
                             </div>
+
+
+                            </div>
+                            <div id="pointOptions_3" style="display: none;">
+
+
                             <div class="form-group">
                                     <label for="pickupDate_relay3">Pickup Date</label>
                                     <input class="form-control" id="pickupDate_relay3" placeholder="" type="date">
@@ -2663,6 +2709,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                         <option>PST (Pacific)</option>
                                     </select>
                             </div>
+
+
+                            </div>
+                            <div id="pointOptions_4" style="display: none;">
+
+
                             <div class="form-group">
                                     <label for="pickupDate_relay4">Pickup Date</label>
                                     <input class="form-control" id="pickupDate_relay4" placeholder="" type="date">
@@ -2682,6 +2734,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             </div>
 
                     </div>
+            </div>
             </div>
 
             <hr>
@@ -4093,5 +4146,45 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
 
     }
+
+    $('input[type=radio][name=relayView]').change(function() { // Doing it like this because it was double posting document giving me duplicates
+	    if ($('input[name="relayView"]:checked').val() == "Point to Point") {
+	        if ($('#entityID_relay1').val() > "") {
+                $('#pointOptions_1').css("display", "block");
+                $('#relayOptions_1').css("display", "none");
+            }
+            if ($('#entityID_relay2').val() > "") {
+                $('#pointOptions_2').css("display", "block");
+                $('#relayOptions_2').css("display", "none");
+            }
+            if ($('#entityID_relay3').val() > "") {
+                $('#pointOptions_3').css("display", "block");
+                $('#relayOptions_3').css("display", "none");
+            }
+            if ($('#entityID_relay4').val() > "") {
+                $('#pointOptions_4').css("display", "block");
+                $('#relayOptions_4').css("display", "none");
+            }
+	    } else {
+	        if ($('#entityID_relay1').val() > "") {
+                $('#pointOptions_1').css("display", "none");
+                $('#relayOptions_1').css("display", "block");
+            }
+            if ($('#entityID_relay2').val() > "") {
+                $('#pointOptions_2').css("display", "none");
+                $('#relayOptions_2').css("display", "block");
+            }
+            if ($('#entityID_relay3').val() > "") {
+                $('#pointOptions_3').css("display", "none");
+                $('#relayOptions_3').css("display", "block");
+            }
+            if ($('#entityID_relay4').val() > "") {
+                $('#pointOptions_4').css("display", "none");
+                $('#relayOptions_4').css("display", "block");
+            }
+	    }
+	    return true;
+
+	});
 
  </script>
