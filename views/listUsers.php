@@ -11,13 +11,13 @@ $entities = json_decode(file_get_contents(API_HOST_URL . '/entities?columns=id,n
 $userTypeID = '';
 //$userTypes = json_decode(file_get_contents(API_HOST_URL . '/user_types?columns=id,name&order=id'));
 
-if ($_SESSION['entityid'] == 0) {
-    $args = array();
-} else {
+//if ($_SESSION['entityid'] == 0) {
+//    $args = array();
+//} else {
     $args = array(
-        "filter"=>"id,gt,0"
+        "filter"=>"id,ge,".$_SESSION['usertypeid']
     );
-}
+//}
 $url = API_HOST_URL . "/user_types?".http_build_query($args);
 $options = array(
     'http' => array(
@@ -411,7 +411,7 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
 
 
       function loadBusinessUsers(entityID) {
-        var url = '<?php echo API_HOST_URL; ?>' + '/members?include=users,user_types,entities&columns=members.id,members.entityID,members.userID,members.firstName,members.lastName,user_types.id,user_types.name,users.username,users.uniqueID,users.textNumber,users.status,entities.name&filter[]=members.entityID,eq,' + entityID + '&order[0]=entityID&order[1]=lastName&order[2]=firstName&transform=1';
+        var url = '<?php echo API_HOST_URL; ?>' + '/members?include=users,user_types,entities&columns=members.id,members.entityID,members.userID,members.firstName,members.lastName,user_types.id,user_types.name,users.username,users.uniqueID,users.textNumber,users.status,entities.name&filter[]=members.entityID,eq,' + entityID + '&filter[]=users.userTypeID,ge,'+ <?php echo $_SESSION['usertypeid'] ?> + '&order[0]=entityID&order[1]=lastName&order[2]=firstName&transform=1';
         if ( ! $.fn.DataTable.isDataTable( '#datatable-table' ) ) {
 
             var example_table = $('#datatable-table').DataTable({
@@ -439,16 +439,18 @@ $userTypes = json_decode(file_get_contents($url,false,$context),false);
                         "bSortable": false,
                         "mRender": function (o) {
                             var buttons = '<div class="pull-right text-nowrap">';
-                            buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text\"></i> <span class=\"text\">Edit</span></button>';
+                            if (o.users.length > 0) {
+                                buttons += '<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-edit text\"></i> <span class=\"text\">Edit</span></button>';
 
-                            if (o.users[0].status == "Active") {
-                                      buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text\"></i> <span class=\"text\">Disable</span></button>";
-                            } else {
-                                      buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text\"></i> <span class=\"text\">Enable</span></button>";
-                            }
+                                if (o.users[0].status == "Active") {
+                                          buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-remove text\"></i> <span class=\"text\">Disable</span></button>";
+                                } else {
+                                          buttons += " &nbsp;<button class=\"btn btn-danger btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-exclamation-sign text\"></i> <span class=\"text\">Enable</span></button>";
+                                }
 
-                            if (entityTypeID == 0 && o.users[0].status == 'Active') {
-                                      buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-user text\"></i> <span class=\"text\">Login As</span></button>";
+                                if (entityTypeID == 0 && o.users[0].status == 'Active') {
+                                          buttons += " &nbsp;<button class=\"btn btn-primary btn-xs\" role=\"button\"><i class=\"glyphicon glyphicon-user text\"></i> <span class=\"text\">Login As</span></button>";
+                                }
                             }
 
                             buttons += "</div>";

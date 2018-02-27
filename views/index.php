@@ -66,7 +66,8 @@ $dbhandle = new $db('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS
 $result = $dbhandle->query("select distinct state
                          from locations
                          where entityID = '" . $_SESSION['entityid'] . "'
-                         and status = 'Active'");
+                         and status = 'Active'
+                         and locationTypeID in (1,2)");
 
 $defaultStates = "";
 if (count($result) > 0) {
@@ -1552,9 +1553,13 @@ if ($_SESSION['entityid'] > 0) {
               <ul id="sidebar-sub-levels" class="collapse">
                   <li><a href="#" onclick="ajaxFormCall('listReportsDelivered');">Delivered Reports</a></li>
                   <li><a href="#" onclick="ajaxFormCall('listReportsUndelivered');">Undelivered Reports</a></li>
-                  <li><a href="#" onclick="ajaxFormCall('listReportsARSummary');">A/R Summary</a></li>
-                  <li><a href="#" onclick="ajaxFormCall('listReportsARDetail');">A/R Detail</a></li>
-                  <li><a href="#" onclick="ajaxFormCall('listReportsRevenueAnalysis');">Revenue Analysis</a></li>
+            <?php if ($_SESSION['usertypeid'] == 0) { ?>
+                      <li><a href="#" onclick="ajaxFormCall('listReportsARSummary');">A/R Summary</a></li>
+                      <li><a href="#" onclick="ajaxFormCall('listReportsARDetail');">A/R Detail</a></li>
+                      <li><a href="#" onclick="ajaxFormCall('listReportsRevenueAnalysis');">Revenue Analysis</a></li>
+            <?php
+                  }
+            ?>
                   <li><a href="#" onclick="ajaxFormCall('listReportsOutstanding');">Outstanding Availability</a></li>
                   <li><a href="#" onclick="ajaxFormCall('listReportsTrends');">Availability/Needs Trends</a></li>
                   <li><a href="#" onclick="ajaxFormCall('listReportsDeliveredStateByState');">Delivered State By State</a></li>
