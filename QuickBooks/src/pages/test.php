@@ -56,9 +56,7 @@ $dataService = DataService::Configure(array(
 $OAuth2LoginHelper = $dataService->getOAuth2LoginHelper();
 
 
-    echo "Called Auth2LoginHelper.<hr>";
-/* 
-
+echo "Called Auth2LoginHelper.<hr>";
 $error = $dataService->getLastError();
 if ($error != null) {
     echo "The Status code is: " . $error->getHttpStatusCode() . "\n";
@@ -68,9 +66,7 @@ if ($error != null) {
     
     $authorizationUrl = $OAuth2LoginHelper->getAuthorizationCodeURL();
 
-    print_r($authorizationUrl);
-    exit();
+    echo $authorizationUrl . "<hr>";
 }
-*/
 
 ?>
