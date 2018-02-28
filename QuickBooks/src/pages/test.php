@@ -1,7 +1,7 @@
 <?php
 //Replace the line with require "vendor/autoload.php" if you are using the Samples from outside of _Samples folder
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+
+
 include('../config.php');
 
 require '../../../../nec_config.php';
@@ -27,6 +27,7 @@ $dbh = mysqli_connect(DBHOST, DBUSER, DBPASS, DBNAME)
 $qbLoop = mysqli_query($dbh, "select * from quickbooks_authentication where id = 1")
    or die (mysqli_error($dbh));
 
+echo "We are connecting";
 
 while($qbRow = mysqli_fetch_array($qbLoop)){
     
@@ -58,7 +59,7 @@ if ($error != null) {
     $authorizationUrl = $OAuth2LoginHelper->getAuthorizationCodeURL();
 
     print_r($authorizationUrl);
-exit();
+    exit();
 }
 
 ?>
