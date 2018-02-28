@@ -40,10 +40,10 @@ $QBORealmID =  $qbRow['realmID'];
 $dataService = DataService::Configure(array(
     'auth_mode' => 'oauth2',
     'ClientID' => $ClientID,
-             'ClientSecret' => $ClientSecret,
+    'ClientSecret' => $ClientSecret,
     'accessTokenKey' =>  $accessTokenKey,
     'refreshTokenKey' => $refreshTokenKey,
-              'QBORealmID' => $QBORealmID,
+    'QBORealmID' => $QBORealmID,
     'baseUrl' => "https://sandbox-quickbooks.api.intuit.com"
 ));
 
@@ -61,6 +61,30 @@ if ($error != null) {
     echo "The Response message is: " . $error->getResponseBody() . "\n";
     return;
 }
+else{
+    
+    // Create connection
+    $conn = new mysqli(DBHOST, DBUSER, DBPASS, DBNAME);
+    // Check connection
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    } 
+
+    $newAccessTokenKey = $accessToken->getAccessToken();
+    $newRefreshTokenKey = $accessToken->getRefreshToken();
+    
+
+    $sql = "UPDATE quickbooks_authentication SET accessTokenKey='{$newAccessTokenKey}', refreshToken ='".$newRefreshTokenKey."' WHERE id=1";
+    echo $sql;
+    if ($conn->query($sql) === TRUE) {
+        echo "Record updated successfully";
+    } else {
+        echo "Error updating record: " . $conn->error;
+    }
+
+    $conn->close();
+}
+/*
 $dataService->updateOAuth2Token($accessToken);
 
 print_r($accessToken->getRefreshToken());
@@ -81,7 +105,8 @@ if ($error != null) {
     echo $xmlBody . "\n";
 }
 
-/*
+
+
 
 Example output:
 
