@@ -52,5 +52,6 @@ $OAuth2LoginHelper = $dataService->getOAuth2LoginHelper();
 $authorizationUrl = $OAuth2LoginHelper->getAuthorizationCodeURL();
 
 print_r($authorizationUrl);
+exit();
 
 ?>
