@@ -52,8 +52,13 @@ $dataService = DataService::Configure(array(
 
     echo "Created DataService Object.<hr>";
 
-/*
+
 $OAuth2LoginHelper = $dataService->getOAuth2LoginHelper();
+
+
+    echo "Called Auth2LoginHelper.<hr>";
+/* 
+
 $error = $dataService->getLastError();
 if ($error != null) {
     echo "The Status code is: " . $error->getHttpStatusCode() . "\n";
