@@ -63,7 +63,7 @@ if ($error != null) {
 }
 $dataService->updateOAuth2Token($accessToken);
 
-print_r(json_encode($accessToken));
+print_r($accessToken);
 print_r("<hr>");
 
 $CompanyInfo = $dataService->getCompanyInfo();
