@@ -63,6 +63,8 @@ if ($error != null) {
 }
 $dataService->updateOAuth2Token($accessToken);
 
+print_r($accessToken->getRefreshToken());
+print_r("<hr>");
 print_r($accessToken->getAccessToken());
 print_r("<hr>");
 
