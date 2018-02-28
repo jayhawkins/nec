@@ -28,7 +28,8 @@ $qbLoop = mysqli_query($dbh, "select * from quickbooks_authentication where id =
    or die (mysqli_error($dbh));
 
 echo "We are connecting";
-/*
+
+
 while($qbRow = mysqli_fetch_array($qbLoop)){
     
 $ClientID = $qbRow['clientID']; 
@@ -36,9 +37,9 @@ $ClientSecret = $qbRow['ClientSecret'];
 $accessTokenKey = $qbRow['accessTokenKey']; 
 $refreshTokenKey = $qbRow['refreshToken']; 
 $QBORealmID =  $qbRow['realmID']; 
-    
+    echo "We are in the database";
 }
-
+/*
 $dataService = DataService::Configure(array(
     'auth_mode' => 'oauth2',
     'ClientID' => $ClientID,
@@ -61,5 +62,6 @@ if ($error != null) {
     print_r($authorizationUrl);
     exit();
 }
+*/
 
 ?>
