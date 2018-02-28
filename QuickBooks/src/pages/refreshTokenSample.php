@@ -1,8 +1,8 @@
 <?php
 //header('Content-type: application/xml');
 //Replace the line with require "vendor/autoload.php" if you are using the Samples from outside of _Samples folder
-require __DIR__ . '../config.php';
-require '../../../../nec_config.php';
+require __DIR__ . '/../config.php';
+require __DIR__ . '/../../../../nec_config.php';
 
 
 
