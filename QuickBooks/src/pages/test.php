@@ -46,6 +46,7 @@ $dataService = DataService::Configure(array(
     'ClientID' => $ClientID,
     'ClientSecret' => $ClientSecret,
     'scope' => "com.intuit.quickbooks.accounting",
+    'RedirectURI' => "https://developer.intuit.com/v2/OAuth2Playground/RedirectUrl",
     'QBORealmID' => $QBORealmID,
     'baseUrl' => "https://sandbox-quickbooks.api.intuit.com"
 ));
