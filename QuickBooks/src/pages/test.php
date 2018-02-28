@@ -28,7 +28,7 @@ $qbLoop = mysqli_query($dbh, "select * from quickbooks_authentication where id =
    or die (mysqli_error($dbh));
 
 echo "We are connecting";
-
+/*
 while($qbRow = mysqli_fetch_array($qbLoop)){
     
 $ClientID = $qbRow['clientID']; 
