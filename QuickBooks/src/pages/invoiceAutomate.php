@@ -3,8 +3,8 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-include('../config.php');
-require '../../../../nec_config.php';
+require __DIR__ . '/../config.php';
+require __DIR__ . '/../../../../nec_config.php';
 
 use QuickBooksOnline\API\Core\ServiceContext;
 use QuickBooksOnline\API\DataService\DataService;
