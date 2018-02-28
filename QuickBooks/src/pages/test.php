@@ -27,7 +27,7 @@ $dbh = mysqli_connect(DBHOST, DBUSER, DBPASS, DBNAME)
 $qbLoop = mysqli_query($dbh, "select * from quickbooks_authentication where id = 1")
    or die (mysqli_error($dbh));
 
-echo "We are connecting";
+echo "We are connecting.<hr>";
 
 
 while($qbRow = mysqli_fetch_array($qbLoop)){
@@ -37,9 +37,10 @@ $ClientSecret = $qbRow['ClientSecret'];
 $accessTokenKey = $qbRow['accessTokenKey']; 
 $refreshTokenKey = $qbRow['refreshToken']; 
 $QBORealmID =  $qbRow['realmID']; 
-    echo "We are in the database";
+    echo "We are in the database.<hr>";
 }
-/*
+
+
 $dataService = DataService::Configure(array(
     'auth_mode' => 'oauth2',
     'ClientID' => $ClientID,
@@ -49,6 +50,9 @@ $dataService = DataService::Configure(array(
     'baseUrl' => "https://sandbox-quickbooks.api.intuit.com"
 ));
 
+    echo "Created DataService Object.<hr>";
+
+/*
 $OAuth2LoginHelper = $dataService->getOAuth2LoginHelper();
 $error = $dataService->getLastError();
 if ($error != null) {
