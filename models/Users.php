@@ -38,6 +38,7 @@ class Users
                         $_SESSION['entityid'] = $result->entities->records[0][0];
                         $_SESSION['entitytype'] = $result->entities->records[0][1];
                         $_SESSION['usertypename'] = $result->user_types->records[0][1];
+                        $_SESSION['login_time'] = time();
                         unset($_SESSION['invalidPassword']);
                         return true;
                       } else {
@@ -47,6 +48,7 @@ class Users
                         unset($_SESSION['entityid']);
                         unset($_SESSION['entitytype']);
                         unset($_SESSION['usertypename']);
+                        unset($_SESSION['login_time']);
                         $_SESSION['invalidPassword'] = 'Password is invalid!';
                         return false;
                       }
@@ -93,6 +95,7 @@ class Users
                         $_SESSION['entityid'] = $row[0]['entityID'];
                         $_SESSION['entitytype'] = $row[0]['entityTypeID'];
                         $_SESSION['usertypename'] = $row[0]['name'];
+                        $_SESSION['login_time'] = time();
                         unset($_SESSION['invalidPassword']);
                         return true;
                       } else {
@@ -103,6 +106,7 @@ class Users
                         unset($_SESSION['entityid']);
                         unset($_SESSION['entitytype']);
                         unset($_SESSION['usertypename']);
+                        unset($_SESSION['login_time']);
                         $_SESSION['invalidPassword'] = 'Password is invalid!';
                         return false;
                       }
@@ -151,6 +155,7 @@ class Users
                         $_SESSION['entityid'] = $row[0]['entityID'];
                         $_SESSION['entitytype'] = $row[0]['entityTypeID'];
                         $_SESSION['usertypename'] = $row[0]['name'];
+                        $_SESSION['login_time'] = time();
                         unset($_SESSION['invalidPassword']);
                         return true;
                       } else {
@@ -161,6 +166,7 @@ class Users
                         unset($_SESSION['entityid']);
                         unset($_SESSION['entitytype']);
                         unset($_SESSION['usertypename']);
+                        unset($_SESSION['login_time']);
                         $_SESSION['invalidPassword'] = 'Password is invalid!';
                         return false;
                       }

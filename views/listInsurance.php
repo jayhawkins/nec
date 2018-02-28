@@ -2,6 +2,19 @@
 	session_start();
 	require '../../nec_config.php';
 	require '../lib/common.php';
+
+	if ($_SESSION['userid'] <= 0 || $_SESSION['userid'] == "") {
+        header("Location: " . HTTP_HOST . "/logout");
+    }
+
+    /*
+    if(auto_logout("login_time")) {
+        session_unset();
+        session_destroy();
+        header("Location: ".HTTP_HOST."/logout");
+        exit();
+    }
+    */
 ?>
 
 <script src="vendor/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
