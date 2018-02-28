@@ -1564,6 +1564,7 @@ if ($_SESSION['entityid'] > 0) {
                   <li><a href="#" onclick="ajaxFormCall('listReportsTrends');">Availability/Needs Trends</a></li>
                   <li><a href="#" onclick="ajaxFormCall('listReportsDeliveredStateByState');">Delivered State By State</a></li>
                   <li><a href="#" onclick="ajaxFormCall('listReportsTrailersBooked');">Trailers Booked</a></li>
+                  <li><a href="#" onclick="ajaxFormCall('listReportsDeliveredAverageDays');">Average Days Delivery</a></li>
               </ul>
             </li>
 
@@ -1583,13 +1584,14 @@ if ($_SESSION['entityid'] > 0) {
               <ul id="sidebar-sub-levels-customer" class="collapse">
                   <li><a href="#" onclick="ajaxFormCall('listReportsDelivered');">Delivered Reports</a></li>
                   <li><a href="#" onclick="ajaxFormCall('listReportsUndelivered');">Undelivered Reports</a></li>
-                  <li><a href="#" onclick="ajaxFormCall('listReportsARSummary');">A/R Summary</a></li>
+                  <!--li><a href="#" onclick="ajaxFormCall('listReportsARSummary');">A/R Summary</a></li>
                   <li><a href="#" onclick="ajaxFormCall('listReportsARDetail');">A/R Detail</a></li>
-                  <li><a href="#" onclick="ajaxFormCall('listReportsRevenueAnalysis');">Revenue Analysis</a></li>
+                  <li><a href="#" onclick="ajaxFormCall('listReportsRevenueAnalysis');">Revenue Analysis</a></li-->
                   <li><a href="#" onclick="ajaxFormCall('listReportsOutstanding');">Outstanding Availability</a></li>
                   <li><a href="#" onclick="ajaxFormCall('listReportsTrends');">Availability/Needs Trends</a></li>
                   <li><a href="#" onclick="ajaxFormCall('listReportsDeliveredStateByState');">Delivered State By State</a></li>
                   <li><a href="#" onclick="ajaxFormCall('listReportsTrailersBooked');">Trailers Booked</a></li>
+                  <li><a href="#" onclick="ajaxFormCall('listReportsDeliveredAverageDays');">Average Days Delivery</a></li>
               </ul>
             </li>
 
