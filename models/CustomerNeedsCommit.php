@@ -2,14 +2,14 @@
 
 class CustomerNeedsCommit
 {
-    
+
     /**
      * The table name
      *
      * @var string
      */
     public $table = "customer_needs_commit";
-    
+
     private $customerNeedsID;
     private $entityID;
     private $originationAddress1;
@@ -107,7 +107,8 @@ class CustomerNeedsCommit
 
             $numSent = 0;
 
-            $body = "Hello " . $contactresult['contacts'][0]['firstName'] . ",<br /><br />";
+            $body = "<img src=\"" . HTTP_HOST . "img/nec_logo.png\"><br /><br />";
+            $body .= "Hello " . $contactresult['contacts'][0]['firstName'] . ",<br /><br />";
             $body .= $templateresult['email_templates'][0]['body'];
             if (count($templateresult) > 0) {
               try {
@@ -178,11 +179,12 @@ class CustomerNeedsCommit
               try {
                     $to = array($contactresult['emailAddress'] => $contactresult['firstName'] . " " . $contactresult['lastName']);
 
-                    $body = "Hello " . $contactresult['firstName'] . ",<br /><br />";
+                    $body = "<img src=\"" . HTTP_HOST . "img/nec_logo.png\"><br /><br />";
+                    $body .= "Hello " . $contactresult['firstName'] . ",<br /><br />";
                     $body .= $templateresult['email_templates'][0]['body'];
-                    
-                    $returnObject = sendmail($to, $subject, $body, $from);                            
-                            
+
+                    $returnObject = sendmail($to, $subject, $body, $from);
+
                     // Are there any failed emails?
                     if(sizeof($returnObject["failedRecipients"]) > 0){
                        // Send the list to the admin
@@ -217,7 +219,7 @@ class CustomerNeedsCommit
                           }
 
                     }
-                            
+
               } catch (Exception $mailex) {
                 return $mailex;
               }
@@ -249,14 +251,14 @@ class CustomerNeedsCommit
             $contactargs = array(
                 "transform"=>1
             );
-            
+
             if($entityresult['contactID'] == 0 ){
-                $contacturl = API_HOST_URL . "/contacts/".$entityresult['assignedMemberID']."?".http_build_query($contactargs);            
+                $contacturl = API_HOST_URL . "/contacts/".$entityresult['assignedMemberID']."?".http_build_query($contactargs);
             }
             else{
                 $contacturl = API_HOST_URL . "/contacts/".$entityresult['contactID']."?".http_build_query($contactargs);
             }
-            
+
             $contactoptions = array(
                 'http' => array(
                     'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -293,10 +295,12 @@ class CustomerNeedsCommit
               try {
                     $to = array($contactresult['emailAddress'] => $contactresult['firstName'] . " " . $contactresult['lastName']);
                     //$to = array("dsmith@dubtel.com" => "Dennis Smith");
-                    $body = "Hello " . $contactresult['firstName'] . ",<br /><br />";
+
+                    $body = "<img src=\"" . HTTP_HOST . "img/nec_logo.png\"><br /><br />";
+                    $body .= "Hello " . $contactresult['firstName'] . ",<br /><br />";
                     $body .= $templateresult['email_templates'][0]['body'];
-                    
-                    $returnObject = sendmail($to, $subject, $body, $from);                            
+
+                    $returnObject = sendmail($to, $subject, $body, $from);
 
                     // Are there any failed emails?
                     if(sizeof($returnObject["failedRecipients"]) > 0){

@@ -3,6 +3,94 @@
 class Reports
 {
 
+    public function getdelayeddelivery(&$db, $entitytype, $entityid) {
+
+          $returnArray = "";
+          $carrierPODArray = array();
+          $carrierArray = array();
+
+          $holdCarrierID = "";
+          $holdName = "";
+          $holdOrderDetailID = "";
+          $holdCreatedAt = "";
+          $holdVinNumber = "";
+
+          $dbhandle = new $db('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS);
+
+          $querystring = "select carrierID, orderID, orderDetailID, unitNumber, vinNumber, order_statuses.createdAt, order_statuses.status, entities.name
+                            from order_statuses
+                            left join entities on entities.id = order_statuses.carrierID";
+
+          if ($entityid > 0) {
+                  $querystring .= " and carrierID = '" . $entityid . "'";
+          }
+
+          $querystring .= " group by carrierID, orderID, orderDetailID, unitNumber, vinNumber, order_statuses.createdAt, order_statuses.status, name";
+
+          $result = $dbhandle->query($querystring);
+
+          if (count($result) > 0) {
+              $data = $result->fetchAll();
+              for ($c = 0; $c < count($data); $c++) {
+
+                    $podQuerystring = "select *
+                                    from approved_pod
+                                    where vinNumber = '" . $data[$c]['vinNumber'] . "'";
+
+                    $podResult = $dbhandle->query($podQuerystring);
+
+                    if (count($podResult) > 0) {
+                        $podData = $podResult->fetchAll();
+
+                        $date1 = new DateTime($holdCreatedAt);
+                        $date2 = new DateTime($podData[0]['createdAt']);
+                        $interval = $date1->diff($date2);
+
+                        $carrierPODArray[$data[$c]['name']] = array($data[$c]['orderDetailID'] => $interval->days);
+
+                        $holdName = $data[$c]['name'];
+                        $holdOrderDetailID = $data[$c]['orderDetailID'];
+                        $holdCreatedAt = $data[$c]['createdAt'];
+                        $holdVinNumber = $data[$c]['vinNumber'];
+                    }
+
+              }
+
+              // Calculate & Setup JSON to be passed back
+              foreach ($carrierPODArray as $key => $value) {
+
+                    $count = 0;
+                    $sumDays = 0;
+                    foreach($carrierPODArray[$key] as $k => $v) {
+                        $sumDays += $v;
+                        $count++;
+                    }
+
+                    if ($count > 0) {
+                        $averageDays = $sumDays/$count;
+                    } else {
+                        $averageDays = 0;
+                    }
+                    $carrierArray[$key] = $averageDays;
+
+              }
+
+              foreach ($carrierArray as $key => $value) {
+
+                    $returnArray .= '{"carrierName":"' . $key . '","average":"' . $value . '"}';
+
+                    if ($c < count($carrierArray) - 1) {
+                        $returnArray .= ",";
+                    }
+
+              }
+
+              echo "{ \"order_details\": [".$returnArray."] }";
+          } else {
+              echo '{}';
+          }
+    }
+
     public function getdeliveredaveragedays(&$db, $entitytype, $entityid) {
 
           $returnArray = "";

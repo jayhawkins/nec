@@ -774,7 +774,8 @@ class CustomerNeeds
 
                         $returnObject = array();
 
-                        $body = "Hello " . $contactresult['contacts'][0]['firstName'] . ",<br /><br />";
+                        $body = "<img src=\"" . HTTP_HOST . "img/nec_logo.png\"><br /><br />";
+                        $body .= "Hello " . $contactresult['contacts'][0]['firstName'] . ",<br /><br />";
                         $body .= $templateresult['email_templates'][0]['body'];
                         if (count($templateresult) > 0) {
                           try {
@@ -1018,7 +1019,8 @@ class CustomerNeeds
 
             $returnObject = array();
 
-            $body = "Hello " . $contactresult['contacts'][0]['firstName'] . ",<br /><br />";
+            $body = "<img src=\"" . HTTP_HOST . "img/nec_logo.png\"><br /><br />";
+            $body .= "Hello " . $contactresult['contacts'][0]['firstName'] . ",<br /><br />";
             $body .= $templateresult['email_templates'][0]['body'];
             if (count($templateresult) > 0) {
 
