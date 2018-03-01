@@ -43,24 +43,8 @@ if(auto_logout("login_time")) {
                 dataSrc: 'order_details'
             },
             columns: [
-                { data: "orderID" },
-                { data: "customerName"},
                 { data: "carrierName"},
-                { data: "unitNumber" },
-                { data: "vinNumber" },
-                { data: null,
-                        "bSortable": true,
-                        "mRender" : function(o) {
-                            if (o.city) {
-                                var location = o.city + ', ' + o.state;
-                            } else {
-                                var location = '';
-                            }
-
-                            return location;
-                        }
-                },
-                { data: "statusesstatus"}
+                { data: "average"}
             ]
           });
 
@@ -100,13 +84,8 @@ if(auto_logout("login_time")) {
              <table id="datatable-table" class="table table-striped table-hover" width="100%">
                  <thead>
                  <tr>
-                     <th class="hidden-sm-down">Order ID</th>
-                     <th class="hidden-sm-down text-nowrap" width="20%">Customer</th>
-                     <th class="hidden-sm-down text-nowrap" width="20%">Carrier</th>
-                     <th class="hidden-sm-down text-nowrap">Unit Number</th>
-                     <th class="hidden-sm-down text-nowrap">VIN</th>
-                     <th class="hidden-sm-down text-nowrap">Last Location</th>
-                     <th class="hidden-sm-down">Trailer Status</th>
+                     <th class="hidden-sm-down">Carrier</th>
+                     <th class="hidden-sm-down text-nowrap">Average Days to Deliver</th>
                  </tr>
                  </thead>
                  <tbody>
@@ -175,7 +154,7 @@ if(auto_logout("login_time")) {
                 success: function(data){
                     var element = document.createElement('a');
                     element.setAttribute('href', "data:application/octet-stream;charset=utf-8;base64,"+btoa(data.replace(/\n/g, '\r\n')));
-                    element.setAttribute('download', "carrier_needs_bulk_import_template.csv");
+                    element.setAttribute('download', "carrier_average_days_delivered.csv");
                     //$("#downloadTemplate").attr("href","data:application/octet-stream;charset=utf-8;base64,"+btoa(data.replace(/\n/g, '\r\n')));
                     //$("#downloadTemplate").attr("download","carrier_needs_bulk_import_template.csv");
                     document.body.appendChild(element);

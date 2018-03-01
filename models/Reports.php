@@ -6,47 +6,172 @@ class Reports
     public function getdeliveredaveragedays(&$db, $entitytype, $entityid) {
 
           $returnArray = "";
+          $carrierPODArray = array();
+          $carrierArray = array();
+
+          $holdCarrierID = "";
+          $holdName = "";
+          $holdOrderDetailID = "";
+          $holdCreatedAt = "";
+          $holdVinNumber = "";
 
           $dbhandle = new $db('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS);
-          $querystring = "select *, order_statuses.status as statusesstatus, orders.customerID as custID
-                                     from order_details
-                                     join order_statuses on order_statuses.orderDetailID = order_details.id
-                                     left join orders on orders.id = order_details.orderID
-                                     left join entities on entities.id = order_details.carrierID
-                                     where order_details.status = 'Open'
-                                     and order_statuses.status = 'Trailer Delivered'";
+
+          $querystring = "select carrierID, orderID, orderDetailID, unitNumber, vinNumber, order_statuses.createdAt, order_statuses.status, entities.name
+                            from order_statuses
+                            left join entities on entities.id = order_statuses.carrierID";
 
           if ($entityid > 0) {
-              if ($entitytype == 1) {
-                  $querystring .= " and orders.customerID = '" . $entityid . "'";
-              } else {
-                  $querystring .= " and order_details.carrierID = '" . $entityid . "'";
-              }
+                  $querystring .= " and carrierID = '" . $entityid . "'";
           }
 
-          $querystring .= " order by order_details.createdAt desc";
+          $querystring .= " group by carrierID, orderID, orderDetailID, unitNumber, vinNumber, order_statuses.createdAt, order_statuses.status, name";
 
           $result = $dbhandle->query($querystring);
 
           if (count($result) > 0) {
               $data = $result->fetchAll();
               for ($c = 0; $c < count($data); $c++) {
-                    /* Get carrier name for approved_pod record */
-                    $entitiesResult = $dbhandle->query("SELECT name FROM entities WHERE id = '" . $data[$c]['custID'] . "'");
 
-                    $entitiesData = $entitiesResult->fetchAll();
-                    for ($e = 0; $e < count($entitiesData); $e++) {
-                        $customerName = $entitiesData[$e]['name'];
+                    $podQuerystring = "select *
+                                    from approved_pod
+                                    where vinNumber = '" . $data[$c]['vinNumber'] . "'";
+
+                    $podResult = $dbhandle->query($podQuerystring);
+
+                    if (count($podResult) > 0) {
+                        $podData = $podResult->fetchAll();
+
+                        $date1 = new DateTime($holdCreatedAt);
+                        $date2 = new DateTime($podData[0]['createdAt']);
+                        $interval = $date1->diff($date2);
+
+                        $carrierPODArray[$data[$c]['name']] = array($data[$c]['orderDetailID'] => $interval->days);
+
+                        $holdName = $data[$c]['name'];
+                        $holdOrderDetailID = $data[$c]['orderDetailID'];
+                        $holdCreatedAt = $data[$c]['createdAt'];
+                        $holdVinNumber = $data[$c]['vinNumber'];
                     }
 
-                    $returnArray .= json_encode(array('customerName' => $customerName, 'carrierName' => $data[$c]['name'], 'orderID' => $data[$c]['orderID'], 'unitNumber' => $data[$c]['unitNumber'], 'vinNumber' => $data[$c]['vinNumber'], 'city' => $data[$c]['city'], 'state' => $data[$c]['state'], 'statusesstatus' => $data[$c]['statusesstatus']));
+              }
 
-                    if ($c < count($data) - 1) {
+              // Calculate & Setup JSON to be passed back
+              foreach ($carrierPODArray as $key => $value) {
+
+                    $count = 0;
+                    $sumDays = 0;
+                    foreach($carrierPODArray[$key] as $k => $v) {
+                        $sumDays += $v;
+                        $count++;
+                    }
+
+                    if ($count > 0) {
+                        $averageDays = $sumDays/$count;
+                    } else {
+                        $averageDays = 0;
+                    }
+                    $carrierArray[$key] = $averageDays;
+
+              }
+
+              foreach ($carrierArray as $key => $value) {
+
+                    $returnArray .= '{"carrierName":"' . $key . '","average":"' . $value . '"}';
+
+                    if ($c < count($carrierArray) - 1) {
                         $returnArray .= ",";
                     }
 
               }
-              echo "{ \"order_details\": [".$returnArray."]}";
+
+              echo "{ \"order_details\": [".$returnArray."] }";
+          } else {
+              echo '{}';
+          }
+    }
+
+    public function getdeliveredaveragedayscsv(&$db, $entitytype, $entityid) {
+
+          $returnArray = "";
+          $carrierPODArray = array();
+          $carrierArray = array();
+
+          $holdCarrierID = "";
+          $holdName = "";
+          $holdOrderDetailID = "";
+          $holdCreatedAt = "";
+          $holdVinNumber = "";
+
+          $returnData = "Carrier,Average Days\n";
+
+          $dbhandle = new $db('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS);
+
+          $querystring = "select carrierID, orderID, orderDetailID, unitNumber, vinNumber, order_statuses.createdAt, order_statuses.status, entities.name
+                            from order_statuses
+                            left join entities on entities.id = order_statuses.carrierID";
+
+          if ($entityid > 0) {
+                  $querystring .= " and carrierID = '" . $entityid . "'";
+          }
+
+          $querystring .= " group by carrierID, orderID, orderDetailID, unitNumber, vinNumber, order_statuses.createdAt, order_statuses.status, name";
+
+          $result = $dbhandle->query($querystring);
+
+          if (count($result) > 0) {
+              $data = $result->fetchAll();
+              for ($c = 0; $c < count($data); $c++) {
+
+                    $podQuerystring = "select *
+                                    from approved_pod
+                                    where vinNumber = '" . $data[$c]['vinNumber'] . "'";
+
+                    $podResult = $dbhandle->query($podQuerystring);
+
+                    if (count($podResult) > 0) {
+                        $podData = $podResult->fetchAll();
+
+                        $date1 = new DateTime($holdCreatedAt);
+                        $date2 = new DateTime($podData[0]['createdAt']);
+                        $interval = $date1->diff($date2);
+
+                        $carrierPODArray[$data[$c]['name']] = array($data[$c]['orderDetailID'] => $interval->days);
+
+                        $holdName = $data[$c]['name'];
+                        $holdOrderDetailID = $data[$c]['orderDetailID'];
+                        $holdCreatedAt = $data[$c]['createdAt'];
+                        $holdVinNumber = $data[$c]['vinNumber'];
+                    }
+
+              }
+
+              // Calculate & Setup JSON to be passed back
+              foreach ($carrierPODArray as $key => $value) {
+
+                    $count = 0;
+                    $sumDays = 0;
+                    foreach($carrierPODArray[$key] as $k => $v) {
+                        $sumDays += $v;
+                        $count++;
+                    }
+
+                    if ($count > 0) {
+                        $averageDays = $sumDays/$count;
+                    } else {
+                        $averageDays = 0;
+                    }
+                    $carrierArray[$key] = $averageDays;
+
+              }
+
+              foreach ($carrierArray as $key => $value) {
+
+                    $returnData .= $key.",".$value."\n";
+
+              }
+
+              echo $returnData;
           } else {
               echo '{}';
           }
