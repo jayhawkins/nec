@@ -74,7 +74,7 @@ else{
     $newRefreshTokenKey = $accessToken->getRefreshToken();
     
 
-    $sql = "UPDATE quickbooks_authentication SET accessTokenKey='{$newAccessTokenKey}', refreshToken ='".$newRefreshTokenKey."' WHERE id=1";
+    $sql = "UPDATE quickbooks_authentication SET accessTokenKey='{$newAccessTokenKey}', refreshToken ='".$newRefreshTokenKey."', createdAt=NOW() WHERE id=1";
     echo $sql;
     if ($conn->query($sql) === TRUE) {
         echo "Record updated successfully";
