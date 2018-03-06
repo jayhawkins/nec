@@ -1064,6 +1064,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             var relays = data.customer_needs;
             var relayTabs = "";
             var selectedRelayTabs = "";
+            var relayCount = relays.length;
 
             $.each(relays, function(key, customer_needs){
                 if (customer_needs.status == 'Available') {
@@ -1138,13 +1139,16 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                     $('#entityID_relay' + relayNumber).val(currentCarrier);
 
-                    if (currentCarrier > 0){
-                        $('#pointOptions_' + relayNumber).css("display", "block");
-                        $('#relayOptions_' + relayNumber).css("display", "none");
+                    //if (currentCarrier > 0){
+                    if (relayCount > 1){
+                        //$('#pointOptions_' + relayNumber).css("display", "block");
+                        $('#relayOptions_' + relayNumber).css("display", "block");
+                        $("#divRelays").css("display", "block");
                     }
                     else{
-                        $('#pointOptions_' + relayNumber).css("display", "none");
+                        //$('#pointOptions_' + relayNumber).css("display", "none");
                         $('#relayOptions_' + relayNumber).css("display", "none");
+                        $("#divRelays").css("display", "none");
                     }
 
 
@@ -1948,789 +1952,800 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             <br>
             <div class="row">
                     <div class="col-sm-12 col-md-6 col-lg-3">
-                        <h4>Relay Address 1</h4>
-                            <input class="form-control" id="relay_id1" placeholder="" type="hidden">
-                            <input class="form-control" id="commit_id1" placeholder="" type="hidden">
-                            <input class="form-control" id="originationLng_relay1" type="hidden">
-                            <input class="form-control" id="originationLat_relay1" type="hidden">
-                            <input class="form-control" id="destinationLng_relay1" type="hidden">
-                            <input class="form-control" id="destinationLat_relay1" type="hidden">
-                            <input class="form-control" id="distance_relay1" type="hidden">
-                            <!--<input class="form-control" id="entityID_relay1" placeholder="" type="hidden">-->
-                            <div class="form-group">
-                                <label for="entityID_relay1">Carrier</label>
-                                <select id="entityID_relay1" name="entityID_relay1" data-placeholder="Carrier" class="form-control chzn-select" required="required" onchange="populateAutocomplete(this, 1);">
-                                    <option selected=selected value=""> -Select Carrier- </option>
-                    <?php
-                                     foreach($entities->entities->records as $value) {
-                                         $selected = ($value[0] == $entity) ? 'selected=selected':'';
-                                         echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
-                                     }
-                    ?>
-                                </select>
-                            </div>
-
                             <div id="relayOptions_1" style="display: none;">
-                            <div class="form-group">
-                                    <label for="deliveryLocation_relay1">Location</label>
-                                    <input class="form-control" id="deliveryLocation_relay1" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="address_relay1">Address</label>
-                                    <input class="form-control" id="address_relay1" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="city_relay1">City</label>
-                                    <input class="form-control" id="city_relay1" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="state_relay1">State</label>
-                                    <input class="form-control" id="state_relay1" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="zip_relay1">Zip</label>
-                                    <input class="form-control" id="zip_relay1" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                <button type="button" class="btn btn-secondary w-100" onclick="saveRelayAddressToCarrier(1);">Save Address To Carrier</button>
-                            </div>
-                            <div class="form-group">
-                                    <label for="contactPerson_relay1">Contact Person</label>
-                                    <input class="form-control" id="contactPerson_relay1" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="phoneNumber_relay1">Phone Number</label>
-                                    <input class="form-control" id="phoneNumber_relay1" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="hoursOfOperationOpen_relay1">Opening Hour</label>
-                                    <!--input class="form-control" id="hoursOfOperation_relay1" placeholder="" type="text"-->
-                                    <select class="form-control" id="hoursOfOperationOpen_relay1">
-                                        <option>00:30</option>
-                                        <option>01:00</option>
-                                        <option>01:30</option>
-                                        <option>02:00</option>
-                                        <option>02:30</option>
-                                        <option>03:00</option>
-                                        <option>03:30</option>
-                                        <option>04:00</option>
-                                        <option>04:30</option>
-                                        <option>05:00</option>
-                                        <option>05:30</option>
-                                        <option>06:00</option>
-                                        <option>06:30</option>
-                                        <option>07:00</option>
-                                        <option>07:30</option>
-                                        <option selected>08:00</option>
-                                        <option>08:30</option>
-                                        <option>09:00</option>
-                                        <option>09:30</option>
-                                        <option>10:00</option>
-                                        <option>10:30</option>
-                                        <option>11:00</option>
-                                        <option>11:30</option>
-                                        <option>12:00</option>
-                                        <option>12:30</option>
-                                        <option>13:00</option>
-                                        <option>13:30</option>
-                                        <option>14:00</option>
-                                        <option>14:30</option>
-                                        <option>15:00</option>
-                                        <option>15:30</option>
-                                        <option>16:00</option>
-                                        <option>16:30</option>
-                                        <option>17:00</option>
-                                        <option>17:30</option>
-                                        <option>18:00</option>
-                                        <option>18:30</option>
-                                        <option>19:00</option>
-                                        <option>19:30</option>
-                                        <option>20:00</option>
-                                        <option>20:30</option>
-                                        <option>21:00</option>
-                                        <option>21:30</option>
-                                        <option>22:00</option>
-                                        <option>22:30</option>
-                                        <option>23:00</option>
-                                        <option>23:30</option>
-                                        <option>24:00</option>
-                                    </select>
-                            </div>
-                            <div class="form-group">
-                                    <label for="hoursOfOperationClose_relay1">Closing Hour</label>
-                                    <select class="form-control" id="hoursOfOperationClose_relay1">
-                                        <option>00:30</option>
-                                        <option>01:00</option>
-                                        <option>01:30</option>
-                                        <option>02:00</option>
-                                        <option>02:30</option>
-                                        <option>03:00</option>
-                                        <option>03:30</option>
-                                        <option>04:00</option>
-                                        <option>04:30</option>
-                                        <option>05:00</option>
-                                        <option>05:30</option>
-                                        <option>06:00</option>
-                                        <option>06:30</option>
-                                        <option>07:00</option>
-                                        <option>07:30</option>
-                                        <option>08:00</option>
-                                        <option>08:30</option>
-                                        <option>09:00</option>
-                                        <option>09:30</option>
-                                        <option>10:00</option>
-                                        <option>10:30</option>
-                                        <option>11:00</option>
-                                        <option>11:30</option>
-                                        <option>12:00</option>
-                                        <option>12:30</option>
-                                        <option>13:00</option>
-                                        <option>13:30</option>
-                                        <option>14:00</option>
-                                        <option>14:30</option>
-                                        <option>15:00</option>
-                                        <option>15:30</option>
-                                        <option>16:00</option>
-                                        <option>16:30</option>
-                                        <option selected>17:00</option>
-                                        <option>17:30</option>
-                                        <option>18:00</option>
-                                        <option>18:30</option>
-                                        <option>19:00</option>
-                                        <option>19:30</option>
-                                        <option>20:00</option>
-                                        <option>20:30</option>
-                                        <option>21:00</option>
-                                        <option>21:30</option>
-                                        <option>22:00</option>
-                                        <option>22:30</option>
-                                        <option>23:00</option>
-                                        <option>23:30</option>
-                                        <option>24:00</option>
-                                    </select>
-                            </div>
-                            <div class="form-group">
-                                    <label for="timeZone_relay1">Time Zone</label>
-                                    <select class="form-control" id="timeZone_relay1">
-                                        <option>EST (Eastern)</option>
-                                        <option>CST (Central)</option>
-                                        <option>MPT (Mountain)</option>
-                                        <option>PST (Pacific)</option>
-                                    </select>
-                            </div>
+                                        <h4>Relay Address 1</h4>
+                                        <input class="form-control" id="relay_id1" placeholder="" type="hidden">
+                                        <input class="form-control" id="commit_id1" placeholder="" type="hidden">
+                                        <input class="form-control" id="originationLng_relay1" type="hidden">
+                                        <input class="form-control" id="originationLat_relay1" type="hidden">
+                                        <input class="form-control" id="destinationLng_relay1" type="hidden">
+                                        <input class="form-control" id="destinationLat_relay1" type="hidden">
+                                        <input class="form-control" id="distance_relay1" type="hidden">
+                                        <!--<input class="form-control" id="entityID_relay1" placeholder="" type="hidden">-->
+                                        <div class="form-group">
+                                            <label for="entityID_relay1">Carrier</label>
+                                            <select id="entityID_relay1" name="entityID_relay1" data-placeholder="Carrier" class="form-control chzn-select" required="required" onchange="populateAutocomplete(this, 1);">
+                                                <option selected=selected value=""> -Select Carrier- </option>
+                                <?php
+                                                 foreach($entities->entities->records as $value) {
+                                                     $selected = ($value[0] == $entity) ? 'selected=selected':'';
+                                                     echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
+                                                 }
+                                ?>
+                                            </select>
+                                        </div>
 
+                            <!--div id="relayOptions_1" style="display: none;"-->
 
+                                        <div class="form-group">
+                                                <label for="deliveryLocation_relay1">Location</label>
+                                                <input class="form-control" id="deliveryLocation_relay1" placeholder="" type="text">
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="address_relay1">Address</label>
+                                                <input class="form-control" id="address_relay1" placeholder="" type="text">
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="city_relay1">City</label>
+                                                <input class="form-control" id="city_relay1" placeholder="" type="text">
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="state_relay1">State</label>
+                                                <input class="form-control" id="state_relay1" placeholder="" type="text">
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="zip_relay1">Zip</label>
+                                                <input class="form-control" id="zip_relay1" placeholder="" type="text">
+                                        </div>
+                                        <div class="form-group">
+                                            <button type="button" class="btn btn-secondary w-100" onclick="saveRelayAddressToCarrier(1);">Save Address To Carrier</button>
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="contactPerson_relay1">Contact Person</label>
+                                                <input class="form-control" id="contactPerson_relay1" placeholder="" type="text">
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="phoneNumber_relay1">Phone Number</label>
+                                                <input class="form-control" id="phoneNumber_relay1" placeholder="" type="text">
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="hoursOfOperationOpen_relay1">Opening Hour</label>
+                                                <!--input class="form-control" id="hoursOfOperation_relay1" placeholder="" type="text"-->
+                                                <select class="form-control" id="hoursOfOperationOpen_relay1">
+                                                    <option>00:30</option>
+                                                    <option>01:00</option>
+                                                    <option>01:30</option>
+                                                    <option>02:00</option>
+                                                    <option>02:30</option>
+                                                    <option>03:00</option>
+                                                    <option>03:30</option>
+                                                    <option>04:00</option>
+                                                    <option>04:30</option>
+                                                    <option>05:00</option>
+                                                    <option>05:30</option>
+                                                    <option>06:00</option>
+                                                    <option>06:30</option>
+                                                    <option>07:00</option>
+                                                    <option>07:30</option>
+                                                    <option selected>08:00</option>
+                                                    <option>08:30</option>
+                                                    <option>09:00</option>
+                                                    <option>09:30</option>
+                                                    <option>10:00</option>
+                                                    <option>10:30</option>
+                                                    <option>11:00</option>
+                                                    <option>11:30</option>
+                                                    <option>12:00</option>
+                                                    <option>12:30</option>
+                                                    <option>13:00</option>
+                                                    <option>13:30</option>
+                                                    <option>14:00</option>
+                                                    <option>14:30</option>
+                                                    <option>15:00</option>
+                                                    <option>15:30</option>
+                                                    <option>16:00</option>
+                                                    <option>16:30</option>
+                                                    <option>17:00</option>
+                                                    <option>17:30</option>
+                                                    <option>18:00</option>
+                                                    <option>18:30</option>
+                                                    <option>19:00</option>
+                                                    <option>19:30</option>
+                                                    <option>20:00</option>
+                                                    <option>20:30</option>
+                                                    <option>21:00</option>
+                                                    <option>21:30</option>
+                                                    <option>22:00</option>
+                                                    <option>22:30</option>
+                                                    <option>23:00</option>
+                                                    <option>23:30</option>
+                                                    <option>24:00</option>
+                                                </select>
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="hoursOfOperationClose_relay1">Closing Hour</label>
+                                                <select class="form-control" id="hoursOfOperationClose_relay1">
+                                                    <option>00:30</option>
+                                                    <option>01:00</option>
+                                                    <option>01:30</option>
+                                                    <option>02:00</option>
+                                                    <option>02:30</option>
+                                                    <option>03:00</option>
+                                                    <option>03:30</option>
+                                                    <option>04:00</option>
+                                                    <option>04:30</option>
+                                                    <option>05:00</option>
+                                                    <option>05:30</option>
+                                                    <option>06:00</option>
+                                                    <option>06:30</option>
+                                                    <option>07:00</option>
+                                                    <option>07:30</option>
+                                                    <option>08:00</option>
+                                                    <option>08:30</option>
+                                                    <option>09:00</option>
+                                                    <option>09:30</option>
+                                                    <option>10:00</option>
+                                                    <option>10:30</option>
+                                                    <option>11:00</option>
+                                                    <option>11:30</option>
+                                                    <option>12:00</option>
+                                                    <option>12:30</option>
+                                                    <option>13:00</option>
+                                                    <option>13:30</option>
+                                                    <option>14:00</option>
+                                                    <option>14:30</option>
+                                                    <option>15:00</option>
+                                                    <option>15:30</option>
+                                                    <option>16:00</option>
+                                                    <option>16:30</option>
+                                                    <option selected>17:00</option>
+                                                    <option>17:30</option>
+                                                    <option>18:00</option>
+                                                    <option>18:30</option>
+                                                    <option>19:00</option>
+                                                    <option>19:30</option>
+                                                    <option>20:00</option>
+                                                    <option>20:30</option>
+                                                    <option>21:00</option>
+                                                    <option>21:30</option>
+                                                    <option>22:00</option>
+                                                    <option>22:30</option>
+                                                    <option>23:00</option>
+                                                    <option>23:30</option>
+                                                    <option>24:00</option>
+                                                </select>
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="timeZone_relay1">Time Zone</label>
+                                                <select class="form-control" id="timeZone_relay1">
+                                                    <option>EST (Eastern)</option>
+                                                    <option>CST (Central)</option>
+                                                    <option>MPT (Mountain)</option>
+                                                    <option>PST (Pacific)</option>
+                                                </select>
+                                        </div>
+
+                            <!--
                             </div>
                             <div id="pointOptions_1" style="display: none;">
+                            -->
+                                        <div class="form-group">
+                                                <label for="pickupDate_relay1">Pickup Date</label>
+                                                <input class="form-control" id="pickupDate_relay1" placeholder="" type="date">
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="deliveryDate_relay1">Delivery Date</label>
+                                                <input class="form-control" id="deliveryDate_relay1" placeholder="" type="date">
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="notes_relay1">Notes</label>
+                                                <textarea class="form-control" id="notes_relay1" rows="3"></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="rate_relay1">Negotiated Rate</label>
+                                                <input class="form-control" id="rate_relay1" placeholder="" type="text" disabled>
+                                        </div>
 
+                            </div>
 
-                            <div class="form-group">
-                                    <label for="pickupDate_relay1">Pickup Date</label>
-                                    <input class="form-control" id="pickupDate_relay1" placeholder="" type="date">
-                            </div>
-                            <div class="form-group">
-                                    <label for="deliveryDate_relay1">Delivery Date</label>
-                                    <input class="form-control" id="deliveryDate_relay1" placeholder="" type="date">
-                            </div>
-                            <div class="form-group">
-                                    <label for="notes_relay1">Notes</label>
-                                    <textarea class="form-control" id="notes_relay1" rows="3"></textarea>
-                            </div>
-                            <div class="form-group">
-                                    <label for="rate_relay1">Negotiated Rate</label>
-                                    <input class="form-control" id="rate_relay1" placeholder="" type="text" disabled>
-                            </div>
-                            </div>
                     </div>
 
                     <div class="col-sm-12 col-md-6 col-lg-3">
-                        <h4>Relay Address 2</h4>
-                            <input class="form-control" id="relay_id2" placeholder="" type="hidden">
-                            <input class="form-control" id="commit_id2" placeholder="" type="hidden">
-                            <input class="form-control" id="originationLng_relay2" type="hidden">
-                            <input class="form-control" id="originationLat_relay2" type="hidden">
-                            <input class="form-control" id="destinationLng_relay2" type="hidden">
-                            <input class="form-control" id="destinationLat_relay2" type="hidden">
-                            <input class="form-control" id="distance_relay2" type="hidden">
-                            <!--<input class="form-control" id="entityID_relay2" placeholder="" type="hidden">-->
-                            <div class="form-group">
-                            <label for="entityID_relay2">Carrier</label>
-                                <select id="entityID_relay2" name="entityID_relay2" data-placeholder="Carrier" class="form-control chzn-select" required="required" onchange="populateAutocomplete(this, 2);">
-                                    <option selected=selected value=""> -Select Carrier- </option>
-                    <?php
-                                     foreach($entities->entities->records as $value) {
-                                         $selected = ($value[0] == $entity) ? 'selected=selected':'';
-                                         echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
-                                     }
-                    ?>
-                                </select>
-                            </div>
-
                             <div id="relayOptions_2" style="display: none;">
+                                        <h4>Relay Address 2</h4>
+                                        <input class="form-control" id="relay_id2" placeholder="" type="hidden">
+                                        <input class="form-control" id="commit_id2" placeholder="" type="hidden">
+                                        <input class="form-control" id="originationLng_relay2" type="hidden">
+                                        <input class="form-control" id="originationLat_relay2" type="hidden">
+                                        <input class="form-control" id="destinationLng_relay2" type="hidden">
+                                        <input class="form-control" id="destinationLat_relay2" type="hidden">
+                                        <input class="form-control" id="distance_relay2" type="hidden">
+                                        <!--<input class="form-control" id="entityID_relay2" placeholder="" type="hidden">-->
+                                        <div class="form-group">
+                                        <label for="entityID_relay2">Carrier</label>
+                                            <select id="entityID_relay2" name="entityID_relay2" data-placeholder="Carrier" class="form-control chzn-select" required="required" onchange="populateAutocomplete(this, 2);">
+                                                <option selected=selected value=""> -Select Carrier- </option>
+                                <?php
+                                                 foreach($entities->entities->records as $value) {
+                                                     $selected = ($value[0] == $entity) ? 'selected=selected':'';
+                                                     echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
+                                                 }
+                                ?>
+                                            </select>
+                                        </div>
 
-                            <div class="form-group">
-                                    <label for="deliveryLocation_relay2">Location</label>
-                                    <input class="form-control" id="deliveryLocation_relay2" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="address_relay2">Address</label>
-                                    <input class="form-control" id="address_relay2" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="city_relay2">City</label>
-                                    <input class="form-control" id="city_relay2" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="state_relay2">State</label>
-                                    <input class="form-control" id="state_relay2" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="zip_relay2">Zip</label>
-                                    <input class="form-control" id="zip_relay2" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                <button type="button" class="btn btn-secondary w-100" onclick="saveRelayAddressToCarrier(2);">Save Address To Carrier</button>
-                            </div>
-                            <div class="form-group">
-                                    <label for="contactPerson_relay2">Contact Person</label>
-                                    <input class="form-control" id="contactPerson_relay2" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="phoneNumber_relay2">Phone Number</label>
-                                    <input class="form-control" id="phoneNumber_relay2" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="hoursOfOperationOpen_relay2">Opening Hour</label>
-                                    <!--input class="form-control" id="hoursOfOperation_relay2" placeholder="" type="text"-->
-                                    <select class="form-control" id="hoursOfOperationOpen_relay2">
-                                        <option>00:30</option>
-                                        <option>01:00</option>
-                                        <option>01:30</option>
-                                        <option>02:00</option>
-                                        <option>02:30</option>
-                                        <option>03:00</option>
-                                        <option>03:30</option>
-                                        <option>04:00</option>
-                                        <option>04:30</option>
-                                        <option>05:00</option>
-                                        <option>05:30</option>
-                                        <option>06:00</option>
-                                        <option>06:30</option>
-                                        <option>07:00</option>
-                                        <option>07:30</option>
-                                        <option selected>08:00</option>
-                                        <option>08:30</option>
-                                        <option>09:00</option>
-                                        <option>09:30</option>
-                                        <option>10:00</option>
-                                        <option>10:30</option>
-                                        <option>11:00</option>
-                                        <option>11:30</option>
-                                        <option>12:00</option>
-                                        <option>12:30</option>
-                                        <option>13:00</option>
-                                        <option>13:30</option>
-                                        <option>14:00</option>
-                                        <option>14:30</option>
-                                        <option>15:00</option>
-                                        <option>15:30</option>
-                                        <option>16:00</option>
-                                        <option>16:30</option>
-                                        <option>17:00</option>
-                                        <option>17:30</option>
-                                        <option>18:00</option>
-                                        <option>18:30</option>
-                                        <option>19:00</option>
-                                        <option>19:30</option>
-                                        <option>20:00</option>
-                                        <option>20:30</option>
-                                        <option>21:00</option>
-                                        <option>21:30</option>
-                                        <option>22:00</option>
-                                        <option>22:30</option>
-                                        <option>23:00</option>
-                                        <option>23:30</option>
-                                        <option>24:00</option>
-                                    </select>
-                            </div>
-                            <div class="form-group">
-                                    <label for="hoursOfOperationClose_relay2">Closing Hour</label>
-                                    <select class="form-control" id="hoursOfOperationClose_relay2">
-                                        <option>00:30</option>
-                                        <option>01:00</option>
-                                        <option>01:30</option>
-                                        <option>02:00</option>
-                                        <option>02:30</option>
-                                        <option>03:00</option>
-                                        <option>03:30</option>
-                                        <option>04:00</option>
-                                        <option>04:30</option>
-                                        <option>05:00</option>
-                                        <option>05:30</option>
-                                        <option>06:00</option>
-                                        <option>06:30</option>
-                                        <option>07:00</option>
-                                        <option>07:30</option>
-                                        <option>08:00</option>
-                                        <option>08:30</option>
-                                        <option>09:00</option>
-                                        <option>09:30</option>
-                                        <option>10:00</option>
-                                        <option>10:30</option>
-                                        <option>11:00</option>
-                                        <option>11:30</option>
-                                        <option>12:00</option>
-                                        <option>12:30</option>
-                                        <option>13:00</option>
-                                        <option>13:30</option>
-                                        <option>14:00</option>
-                                        <option>14:30</option>
-                                        <option>15:00</option>
-                                        <option>15:30</option>
-                                        <option>16:00</option>
-                                        <option>16:30</option>
-                                        <option selected>17:00</option>
-                                        <option>17:30</option>
-                                        <option>18:00</option>
-                                        <option>18:30</option>
-                                        <option>19:00</option>
-                                        <option>19:30</option>
-                                        <option>20:00</option>
-                                        <option>20:30</option>
-                                        <option>21:00</option>
-                                        <option>21:30</option>
-                                        <option>22:00</option>
-                                        <option>22:30</option>
-                                        <option>23:00</option>
-                                        <option>23:30</option>
-                                        <option>24:00</option>
-                                    </select>
-                            </div>
-                            <div class="form-group">
-                                    <label for="timeZone_relay2">Time Zone</label>
-                                    <select class="form-control" id="timeZone_relay2">
-                                        <option>EST (Eastern)</option>
-                                        <option>CST (Central)</option>
-                                        <option>MPT (Mountain)</option>
-                                        <option>PST (Pacific)</option>
-                                    </select>
-                            </div>
+                            <!--div id="relayOptions_2" style="display: none;"-->
 
+                                        <div class="form-group">
+                                                <label for="deliveryLocation_relay2">Location</label>
+                                                <input class="form-control" id="deliveryLocation_relay2" placeholder="" type="text">
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="address_relay2">Address</label>
+                                                <input class="form-control" id="address_relay2" placeholder="" type="text">
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="city_relay2">City</label>
+                                                <input class="form-control" id="city_relay2" placeholder="" type="text">
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="state_relay2">State</label>
+                                                <input class="form-control" id="state_relay2" placeholder="" type="text">
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="zip_relay2">Zip</label>
+                                                <input class="form-control" id="zip_relay2" placeholder="" type="text">
+                                        </div>
+                                        <div class="form-group">
+                                            <button type="button" class="btn btn-secondary w-100" onclick="saveRelayAddressToCarrier(2);">Save Address To Carrier</button>
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="contactPerson_relay2">Contact Person</label>
+                                                <input class="form-control" id="contactPerson_relay2" placeholder="" type="text">
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="phoneNumber_relay2">Phone Number</label>
+                                                <input class="form-control" id="phoneNumber_relay2" placeholder="" type="text">
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="hoursOfOperationOpen_relay2">Opening Hour</label>
+                                                <!--input class="form-control" id="hoursOfOperation_relay2" placeholder="" type="text"-->
+                                                <select class="form-control" id="hoursOfOperationOpen_relay2">
+                                                    <option>00:30</option>
+                                                    <option>01:00</option>
+                                                    <option>01:30</option>
+                                                    <option>02:00</option>
+                                                    <option>02:30</option>
+                                                    <option>03:00</option>
+                                                    <option>03:30</option>
+                                                    <option>04:00</option>
+                                                    <option>04:30</option>
+                                                    <option>05:00</option>
+                                                    <option>05:30</option>
+                                                    <option>06:00</option>
+                                                    <option>06:30</option>
+                                                    <option>07:00</option>
+                                                    <option>07:30</option>
+                                                    <option selected>08:00</option>
+                                                    <option>08:30</option>
+                                                    <option>09:00</option>
+                                                    <option>09:30</option>
+                                                    <option>10:00</option>
+                                                    <option>10:30</option>
+                                                    <option>11:00</option>
+                                                    <option>11:30</option>
+                                                    <option>12:00</option>
+                                                    <option>12:30</option>
+                                                    <option>13:00</option>
+                                                    <option>13:30</option>
+                                                    <option>14:00</option>
+                                                    <option>14:30</option>
+                                                    <option>15:00</option>
+                                                    <option>15:30</option>
+                                                    <option>16:00</option>
+                                                    <option>16:30</option>
+                                                    <option>17:00</option>
+                                                    <option>17:30</option>
+                                                    <option>18:00</option>
+                                                    <option>18:30</option>
+                                                    <option>19:00</option>
+                                                    <option>19:30</option>
+                                                    <option>20:00</option>
+                                                    <option>20:30</option>
+                                                    <option>21:00</option>
+                                                    <option>21:30</option>
+                                                    <option>22:00</option>
+                                                    <option>22:30</option>
+                                                    <option>23:00</option>
+                                                    <option>23:30</option>
+                                                    <option>24:00</option>
+                                                </select>
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="hoursOfOperationClose_relay2">Closing Hour</label>
+                                                <select class="form-control" id="hoursOfOperationClose_relay2">
+                                                    <option>00:30</option>
+                                                    <option>01:00</option>
+                                                    <option>01:30</option>
+                                                    <option>02:00</option>
+                                                    <option>02:30</option>
+                                                    <option>03:00</option>
+                                                    <option>03:30</option>
+                                                    <option>04:00</option>
+                                                    <option>04:30</option>
+                                                    <option>05:00</option>
+                                                    <option>05:30</option>
+                                                    <option>06:00</option>
+                                                    <option>06:30</option>
+                                                    <option>07:00</option>
+                                                    <option>07:30</option>
+                                                    <option>08:00</option>
+                                                    <option>08:30</option>
+                                                    <option>09:00</option>
+                                                    <option>09:30</option>
+                                                    <option>10:00</option>
+                                                    <option>10:30</option>
+                                                    <option>11:00</option>
+                                                    <option>11:30</option>
+                                                    <option>12:00</option>
+                                                    <option>12:30</option>
+                                                    <option>13:00</option>
+                                                    <option>13:30</option>
+                                                    <option>14:00</option>
+                                                    <option>14:30</option>
+                                                    <option>15:00</option>
+                                                    <option>15:30</option>
+                                                    <option>16:00</option>
+                                                    <option>16:30</option>
+                                                    <option selected>17:00</option>
+                                                    <option>17:30</option>
+                                                    <option>18:00</option>
+                                                    <option>18:30</option>
+                                                    <option>19:00</option>
+                                                    <option>19:30</option>
+                                                    <option>20:00</option>
+                                                    <option>20:30</option>
+                                                    <option>21:00</option>
+                                                    <option>21:30</option>
+                                                    <option>22:00</option>
+                                                    <option>22:30</option>
+                                                    <option>23:00</option>
+                                                    <option>23:30</option>
+                                                    <option>24:00</option>
+                                                </select>
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="timeZone_relay2">Time Zone</label>
+                                                <select class="form-control" id="timeZone_relay2">
+                                                    <option>EST (Eastern)</option>
+                                                    <option>CST (Central)</option>
+                                                    <option>MPT (Mountain)</option>
+                                                    <option>PST (Pacific)</option>
+                                                </select>
+                                        </div>
 
+                            <!--
                             </div>
                             <div id="pointOptions_2" style="display: none;">
+                            -->
 
+                                        <div class="form-group">
+                                                <label for="pickupDate_relay2">Pickup Date</label>
+                                                <input class="form-control" id="pickupDate_relay2" placeholder="" type="date">
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="deliveryDate_relay2">Delivery Date</label>
+                                                <input class="form-control" id="deliveryDate_relay2" placeholder="" type="date">
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="notes_relay2">Notes</label>
+                                                <textarea class="form-control" id="notes_relay2" rows="3"></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="rate_relay2">Negotiated Rate</label>
+                                                <input class="form-control" id="rate_relay2" placeholder="" type="text" disabled>
+                                        </div>
 
-                            <div class="form-group">
-                                    <label for="pickupDate_relay2">Pickup Date</label>
-                                    <input class="form-control" id="pickupDate_relay2" placeholder="" type="date">
                             </div>
-                            <div class="form-group">
-                                    <label for="deliveryDate_relay2">Delivery Date</label>
-                                    <input class="form-control" id="deliveryDate_relay2" placeholder="" type="date">
-                            </div>
-                            <div class="form-group">
-                                    <label for="notes_relay2">Notes</label>
-                                    <textarea class="form-control" id="notes_relay2" rows="3"></textarea>
-                            </div>
-                            <div class="form-group">
-                                    <label for="rate_relay2">Negotiated Rate</label>
-                                    <input class="form-control" id="rate_relay2" placeholder="" type="text" disabled>
-                            </div>
-                            </div>
+
                     </div>
 
                     <div class="col-sm-12 col-md-6 col-lg-3">
-                        <h4>Relay Address 3</h4>
-                            <input class="form-control" id="relay_id3" placeholder="" type="hidden">
-                            <input class="form-control" id="commit_id3" placeholder="" type="hidden">
-                            <input class="form-control" id="originationLng_relay3" type="hidden">
-                            <input class="form-control" id="originationLat_relay3" type="hidden">
-                            <input class="form-control" id="destinationLng_relay3" type="hidden">
-                            <input class="form-control" id="destinationLat_relay3" type="hidden">
-                            <input class="form-control" id="distance_relay3" type="hidden">
-                            <!--<input class="form-control" id="entityID_relay3" placeholder="" type="hidden">-->
-                            <div class="form-group">
-                            <label for="entityID_relay3">Carrier</label>
-                                <select id="entityID_relay3" name="entityID_relay3" data-placeholder="Carrier" class="form-control chzn-select" required="required" onchange="populateAutocomplete(this, 3);">
-                                    <option selected=selected value=""> -Select Carrier- </option>
-                    <?php
-                                     foreach($entities->entities->records as $value) {
-                                         $selected = ($value[0] == $entity) ? 'selected=selected':'';
-                                         echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
-                                     }
-                    ?>
-                                </select>
-                            </div>
-
                             <div id="relayOptions_3" style="display: none;">
+                                        <h4>Relay Address 3</h4>
+                                        <input class="form-control" id="relay_id3" placeholder="" type="hidden">
+                                        <input class="form-control" id="commit_id3" placeholder="" type="hidden">
+                                        <input class="form-control" id="originationLng_relay3" type="hidden">
+                                        <input class="form-control" id="originationLat_relay3" type="hidden">
+                                        <input class="form-control" id="destinationLng_relay3" type="hidden">
+                                        <input class="form-control" id="destinationLat_relay3" type="hidden">
+                                        <input class="form-control" id="distance_relay3" type="hidden">
+                                        <!--<input class="form-control" id="entityID_relay3" placeholder="" type="hidden">-->
+                                        <div class="form-group">
+                                        <label for="entityID_relay3">Carrier</label>
+                                            <select id="entityID_relay3" name="entityID_relay3" data-placeholder="Carrier" class="form-control chzn-select" required="required" onchange="populateAutocomplete(this, 3);">
+                                                <option selected=selected value=""> -Select Carrier- </option>
+                                <?php
+                                                 foreach($entities->entities->records as $value) {
+                                                     $selected = ($value[0] == $entity) ? 'selected=selected':'';
+                                                     echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
+                                                 }
+                                ?>
+                                            </select>
+                                        </div>
 
+                            <!--div id="relayOptions_3" style="display: none;"-->
 
-                            <div class="form-group">
-                                    <label for="deliveryLocation_relay3">Location</label>
-                                    <input class="form-control" id="deliveryLocation_relay3" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="address_relay3">Address</label>
-                                    <input class="form-control" id="address_relay3" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="city_relay3">City</label>
-                                    <input class="form-control" id="city_relay3" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="state_relay3">State</label>
-                                    <input class="form-control" id="state_relay3" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="zip_relay3">Zip</label>
-                                    <input class="form-control" id="zip_relay3" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                <button type="button" class="btn btn-secondary w-100" onclick="saveRelayAddressToCarrier(3);">Save Address To Carrier</button>
-                            </div>
-                            <div class="form-group">
-                                    <label for="contactPerson_relay3">Contact Person</label>
-                                    <input class="form-control" id="contactPerson_relay3" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="phoneNumber_relay3">Phone Number</label>
-                                    <input class="form-control" id="phoneNumber_relay3" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="hoursOfOperationOpen_relay3">Opening Hour</label>
-                                    <!--input class="form-control" id="hoursOfOperation_relay3" placeholder="" type="text"-->
-                                    <select class="form-control" id="hoursOfOperationOpen_relay3">
-                                        <option>00:30</option>
-                                        <option>01:00</option>
-                                        <option>01:30</option>
-                                        <option>02:00</option>
-                                        <option>02:30</option>
-                                        <option>03:00</option>
-                                        <option>03:30</option>
-                                        <option>04:00</option>
-                                        <option>04:30</option>
-                                        <option>05:00</option>
-                                        <option>05:30</option>
-                                        <option>06:00</option>
-                                        <option>06:30</option>
-                                        <option>07:00</option>
-                                        <option>07:30</option>
-                                        <option selected>08:00</option>
-                                        <option>08:30</option>
-                                        <option>09:00</option>
-                                        <option>09:30</option>
-                                        <option>10:00</option>
-                                        <option>10:30</option>
-                                        <option>11:00</option>
-                                        <option>11:30</option>
-                                        <option>12:00</option>
-                                        <option>12:30</option>
-                                        <option>13:00</option>
-                                        <option>13:30</option>
-                                        <option>14:00</option>
-                                        <option>14:30</option>
-                                        <option>15:00</option>
-                                        <option>15:30</option>
-                                        <option>16:00</option>
-                                        <option>16:30</option>
-                                        <option>17:00</option>
-                                        <option>17:30</option>
-                                        <option>18:00</option>
-                                        <option>18:30</option>
-                                        <option>19:00</option>
-                                        <option>19:30</option>
-                                        <option>20:00</option>
-                                        <option>20:30</option>
-                                        <option>21:00</option>
-                                        <option>21:30</option>
-                                        <option>22:00</option>
-                                        <option>22:30</option>
-                                        <option>23:00</option>
-                                        <option>23:30</option>
-                                        <option>24:00</option>
-                                    </select>
-                            </div>
-                            <div class="form-group">
-                                    <label for="hoursOfOperationClose_relay3">Closing Hour</label>
-                                    <select class="form-control" id="hoursOfOperationClose_relay3">
-                                        <option>00:30</option>
-                                        <option>01:00</option>
-                                        <option>01:30</option>
-                                        <option>02:00</option>
-                                        <option>02:30</option>
-                                        <option>03:00</option>
-                                        <option>03:30</option>
-                                        <option>04:00</option>
-                                        <option>04:30</option>
-                                        <option>05:00</option>
-                                        <option>05:30</option>
-                                        <option>06:00</option>
-                                        <option>06:30</option>
-                                        <option>07:00</option>
-                                        <option>07:30</option>
-                                        <option>08:00</option>
-                                        <option>08:30</option>
-                                        <option>09:00</option>
-                                        <option>09:30</option>
-                                        <option>10:00</option>
-                                        <option>10:30</option>
-                                        <option>11:00</option>
-                                        <option>11:30</option>
-                                        <option>12:00</option>
-                                        <option>12:30</option>
-                                        <option>13:00</option>
-                                        <option>13:30</option>
-                                        <option>14:00</option>
-                                        <option>14:30</option>
-                                        <option>15:00</option>
-                                        <option>15:30</option>
-                                        <option>16:00</option>
-                                        <option>16:30</option>
-                                        <option selected>17:00</option>
-                                        <option>17:30</option>
-                                        <option>18:00</option>
-                                        <option>18:30</option>
-                                        <option>19:00</option>
-                                        <option>19:30</option>
-                                        <option>20:00</option>
-                                        <option>20:30</option>
-                                        <option>21:00</option>
-                                        <option>21:30</option>
-                                        <option>22:00</option>
-                                        <option>22:30</option>
-                                        <option>23:00</option>
-                                        <option>23:30</option>
-                                        <option>24:00</option>
-                                    </select>
-                            </div>
-                            <div class="form-group">
-                                    <label for="timeZone_relay3">Time Zone</label>
-                                    <select class="form-control" id="timeZone_relay3">
-                                        <option>EST (Eastern)</option>
-                                        <option>CST (Central)</option>
-                                        <option>MPT (Mountain)</option>
-                                        <option>PST (Pacific)</option>
-                                    </select>
-                            </div>
+                                        <div class="form-group">
+                                                <label for="deliveryLocation_relay3">Location</label>
+                                                <input class="form-control" id="deliveryLocation_relay3" placeholder="" type="text">
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="address_relay3">Address</label>
+                                                <input class="form-control" id="address_relay3" placeholder="" type="text">
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="city_relay3">City</label>
+                                                <input class="form-control" id="city_relay3" placeholder="" type="text">
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="state_relay3">State</label>
+                                                <input class="form-control" id="state_relay3" placeholder="" type="text">
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="zip_relay3">Zip</label>
+                                                <input class="form-control" id="zip_relay3" placeholder="" type="text">
+                                        </div>
+                                        <div class="form-group">
+                                            <button type="button" class="btn btn-secondary w-100" onclick="saveRelayAddressToCarrier(3);">Save Address To Carrier</button>
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="contactPerson_relay3">Contact Person</label>
+                                                <input class="form-control" id="contactPerson_relay3" placeholder="" type="text">
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="phoneNumber_relay3">Phone Number</label>
+                                                <input class="form-control" id="phoneNumber_relay3" placeholder="" type="text">
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="hoursOfOperationOpen_relay3">Opening Hour</label>
+                                                <!--input class="form-control" id="hoursOfOperation_relay3" placeholder="" type="text"-->
+                                                <select class="form-control" id="hoursOfOperationOpen_relay3">
+                                                    <option>00:30</option>
+                                                    <option>01:00</option>
+                                                    <option>01:30</option>
+                                                    <option>02:00</option>
+                                                    <option>02:30</option>
+                                                    <option>03:00</option>
+                                                    <option>03:30</option>
+                                                    <option>04:00</option>
+                                                    <option>04:30</option>
+                                                    <option>05:00</option>
+                                                    <option>05:30</option>
+                                                    <option>06:00</option>
+                                                    <option>06:30</option>
+                                                    <option>07:00</option>
+                                                    <option>07:30</option>
+                                                    <option selected>08:00</option>
+                                                    <option>08:30</option>
+                                                    <option>09:00</option>
+                                                    <option>09:30</option>
+                                                    <option>10:00</option>
+                                                    <option>10:30</option>
+                                                    <option>11:00</option>
+                                                    <option>11:30</option>
+                                                    <option>12:00</option>
+                                                    <option>12:30</option>
+                                                    <option>13:00</option>
+                                                    <option>13:30</option>
+                                                    <option>14:00</option>
+                                                    <option>14:30</option>
+                                                    <option>15:00</option>
+                                                    <option>15:30</option>
+                                                    <option>16:00</option>
+                                                    <option>16:30</option>
+                                                    <option>17:00</option>
+                                                    <option>17:30</option>
+                                                    <option>18:00</option>
+                                                    <option>18:30</option>
+                                                    <option>19:00</option>
+                                                    <option>19:30</option>
+                                                    <option>20:00</option>
+                                                    <option>20:30</option>
+                                                    <option>21:00</option>
+                                                    <option>21:30</option>
+                                                    <option>22:00</option>
+                                                    <option>22:30</option>
+                                                    <option>23:00</option>
+                                                    <option>23:30</option>
+                                                    <option>24:00</option>
+                                                </select>
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="hoursOfOperationClose_relay3">Closing Hour</label>
+                                                <select class="form-control" id="hoursOfOperationClose_relay3">
+                                                    <option>00:30</option>
+                                                    <option>01:00</option>
+                                                    <option>01:30</option>
+                                                    <option>02:00</option>
+                                                    <option>02:30</option>
+                                                    <option>03:00</option>
+                                                    <option>03:30</option>
+                                                    <option>04:00</option>
+                                                    <option>04:30</option>
+                                                    <option>05:00</option>
+                                                    <option>05:30</option>
+                                                    <option>06:00</option>
+                                                    <option>06:30</option>
+                                                    <option>07:00</option>
+                                                    <option>07:30</option>
+                                                    <option>08:00</option>
+                                                    <option>08:30</option>
+                                                    <option>09:00</option>
+                                                    <option>09:30</option>
+                                                    <option>10:00</option>
+                                                    <option>10:30</option>
+                                                    <option>11:00</option>
+                                                    <option>11:30</option>
+                                                    <option>12:00</option>
+                                                    <option>12:30</option>
+                                                    <option>13:00</option>
+                                                    <option>13:30</option>
+                                                    <option>14:00</option>
+                                                    <option>14:30</option>
+                                                    <option>15:00</option>
+                                                    <option>15:30</option>
+                                                    <option>16:00</option>
+                                                    <option>16:30</option>
+                                                    <option selected>17:00</option>
+                                                    <option>17:30</option>
+                                                    <option>18:00</option>
+                                                    <option>18:30</option>
+                                                    <option>19:00</option>
+                                                    <option>19:30</option>
+                                                    <option>20:00</option>
+                                                    <option>20:30</option>
+                                                    <option>21:00</option>
+                                                    <option>21:30</option>
+                                                    <option>22:00</option>
+                                                    <option>22:30</option>
+                                                    <option>23:00</option>
+                                                    <option>23:30</option>
+                                                    <option>24:00</option>
+                                                </select>
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="timeZone_relay3">Time Zone</label>
+                                                <select class="form-control" id="timeZone_relay3">
+                                                    <option>EST (Eastern)</option>
+                                                    <option>CST (Central)</option>
+                                                    <option>MPT (Mountain)</option>
+                                                    <option>PST (Pacific)</option>
+                                                </select>
+                                        </div>
 
-
+                            <!--
                             </div>
                             <div id="pointOptions_3" style="display: none;">
+                            -->
 
+                                        <div class="form-group">
+                                                <label for="pickupDate_relay3">Pickup Date</label>
+                                                <input class="form-control" id="pickupDate_relay3" placeholder="" type="date">
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="deliveryDate_relay3">Delivery Date</label>
+                                                <input class="form-control" id="deliveryDate_relay3" placeholder="" type="date">
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="notes_relay3">Notes</label>
+                                                <textarea class="form-control" id="notes_relay3" rows="3"></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="rate_relay3">Negotiated Rate</label>
+                                                <input class="form-control" id="rate_relay3" placeholder="" type="text" disabled>
+                                        </div>
 
-                            <div class="form-group">
-                                    <label for="pickupDate_relay3">Pickup Date</label>
-                                    <input class="form-control" id="pickupDate_relay3" placeholder="" type="date">
                             </div>
-                            <div class="form-group">
-                                    <label for="deliveryDate_relay3">Delivery Date</label>
-                                    <input class="form-control" id="deliveryDate_relay3" placeholder="" type="date">
-                            </div>
-                            <div class="form-group">
-                                    <label for="notes_relay3">Notes</label>
-                                    <textarea class="form-control" id="notes_relay3" rows="3"></textarea>
-                            </div>
-                            <div class="form-group">
-                                    <label for="rate_relay3">Negotiated Rate</label>
-                                    <input class="form-control" id="rate_relay3" placeholder="" type="text" disabled>
-                            </div>
-                            </div>
+
                     </div>
 
                     <div class="col-sm-12 col-md-6 col-lg-3">
-                        <h4>Relay Address 4</h4>
-                            <input class="form-control" id="relay_id4" placeholder="" type="hidden">
-                            <input class="form-control" id="commit_id4" placeholder="" type="hidden">
-                            <input class="form-control" id="originationLng_relay4" type="hidden">
-                            <input class="form-control" id="originationLat_relay4" type="hidden">
-                            <input class="form-control" id="destinationLng_relay4" type="hidden">
-                            <input class="form-control" id="destinationLat_relay4" type="hidden">
-                            <input class="form-control" id="distance_relay4" type="hidden">
-                            <!--<input class="form-control" id="entityID_relay4" placeholder="" type="hidden">-->
-                            <div class="form-group">
-                            <label for="entityID_relay4">Carrier</label>
-                                <select id="entityID_relay4" name="entityID_relay4" data-placeholder="Carrier" class="form-control chzn-select" required="required" onchange="populateAutocomplete(this, 4);">
-                                    <option selected=selected value=""> -Select Carrier- </option>
-                    <?php
-                                     foreach($entities->entities->records as $value) {
-                                         $selected = ($value[0] == $entity) ? 'selected=selected':'';
-                                         echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
-                                     }
-                    ?>
-                                </select>
-                            </div>
-
                             <div id="relayOptions_4" style="display: none;">
-                            <div class="form-group">
-                                    <label for="deliveryLocation_relay4">Location</label>
-                                    <input class="form-control" id="deliveryLocation_relay4" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="address_relay4">Address</label>
-                                    <input class="form-control" id="address_relay4" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="city_relay4">City</label>
-                                    <input class="form-control" id="city_relay4" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="state_relay4">State</label>
-                                    <input class="form-control" id="state_relay4" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="zip_relay4">Zip</label>
-                                    <input class="form-control" id="zip_relay4" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                <button type="button" class="btn btn-secondary w-100" onclick="saveRelayAddressToCarrier(4);">Save Address To Carrier</button>
-                            </div>
-                            <div class="form-group">
-                                    <label for="contactPerson_relay4">Contact Person</label>
-                                    <input class="form-control" id="contactPerson_relay4" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="phoneNumber_relay4">Phone Number</label>
-                                    <input class="form-control" id="phoneNumber_relay4" placeholder="" type="text">
-                            </div>
-                            <div class="form-group">
-                                    <label for="hoursOfOperationOpen_relay4">Opening Hour</label>
-                                    <!--input class="form-control" id="hoursOfOperation_relay4" placeholder="" type="text"-->
-                                    <select class="form-control" id="hoursOfOperationOpen_relay4">
-                                        <option>00:30</option>
-                                        <option>01:00</option>
-                                        <option>01:30</option>
-                                        <option>02:00</option>
-                                        <option>02:30</option>
-                                        <option>03:00</option>
-                                        <option>03:30</option>
-                                        <option>04:00</option>
-                                        <option>04:30</option>
-                                        <option>05:00</option>
-                                        <option>05:30</option>
-                                        <option>06:00</option>
-                                        <option>06:30</option>
-                                        <option>07:00</option>
-                                        <option>07:30</option>
-                                        <option selected>08:00</option>
-                                        <option>08:30</option>
-                                        <option>09:00</option>
-                                        <option>09:30</option>
-                                        <option>10:00</option>
-                                        <option>10:30</option>
-                                        <option>11:00</option>
-                                        <option>11:30</option>
-                                        <option>12:00</option>
-                                        <option>12:30</option>
-                                        <option>13:00</option>
-                                        <option>13:30</option>
-                                        <option>14:00</option>
-                                        <option>14:30</option>
-                                        <option>15:00</option>
-                                        <option>15:30</option>
-                                        <option>16:00</option>
-                                        <option>16:30</option>
-                                        <option>17:00</option>
-                                        <option>17:30</option>
-                                        <option>18:00</option>
-                                        <option>18:30</option>
-                                        <option>19:00</option>
-                                        <option>19:30</option>
-                                        <option>20:00</option>
-                                        <option>20:30</option>
-                                        <option>21:00</option>
-                                        <option>21:30</option>
-                                        <option>22:00</option>
-                                        <option>22:30</option>
-                                        <option>23:00</option>
-                                        <option>23:30</option>
-                                        <option>24:00</option>
-                                    </select>
-                            </div>
-                            <div class="form-group">
-                                    <label for="hoursOfOperationClose_relay4">Closing Hour</label>
-                                    <select class="form-control" id="hoursOfOperationClose_relay4">
-                                        <option>00:30</option>
-                                        <option>01:00</option>
-                                        <option>01:30</option>
-                                        <option>02:00</option>
-                                        <option>02:30</option>
-                                        <option>03:00</option>
-                                        <option>03:30</option>
-                                        <option>04:00</option>
-                                        <option>04:30</option>
-                                        <option>05:00</option>
-                                        <option>05:30</option>
-                                        <option>06:00</option>
-                                        <option>06:30</option>
-                                        <option>07:00</option>
-                                        <option>07:30</option>
-                                        <option>08:00</option>
-                                        <option>08:30</option>
-                                        <option>09:00</option>
-                                        <option>09:30</option>
-                                        <option>10:00</option>
-                                        <option>10:30</option>
-                                        <option>11:00</option>
-                                        <option>11:30</option>
-                                        <option>12:00</option>
-                                        <option>12:30</option>
-                                        <option>13:00</option>
-                                        <option>13:30</option>
-                                        <option>14:00</option>
-                                        <option>14:30</option>
-                                        <option>15:00</option>
-                                        <option>15:30</option>
-                                        <option>16:00</option>
-                                        <option>16:30</option>
-                                        <option selected>17:00</option>
-                                        <option>17:30</option>
-                                        <option>18:00</option>
-                                        <option>18:30</option>
-                                        <option>19:00</option>
-                                        <option>19:30</option>
-                                        <option>20:00</option>
-                                        <option>20:30</option>
-                                        <option>21:00</option>
-                                        <option>21:30</option>
-                                        <option>22:00</option>
-                                        <option>22:30</option>
-                                        <option>23:00</option>
-                                        <option>23:30</option>
-                                        <option>24:00</option>
-                                    </select>
-                            </div>
-                            <div class="form-group">
-                                    <label for="timeZone_relay4">Time Zone</label>
-                                    <select class="form-control" id="timeZone_relay4">
-                                        <option>EST (Eastern)</option>
-                                        <option>CST (Central)</option>
-                                        <option>MPT (Mountain)</option>
-                                        <option>PST (Pacific)</option>
-                                    </select>
-                            </div>
+                                        <h4>Relay Address 4</h4>
+                                        <input class="form-control" id="relay_id4" placeholder="" type="hidden">
+                                        <input class="form-control" id="commit_id4" placeholder="" type="hidden">
+                                        <input class="form-control" id="originationLng_relay4" type="hidden">
+                                        <input class="form-control" id="originationLat_relay4" type="hidden">
+                                        <input class="form-control" id="destinationLng_relay4" type="hidden">
+                                        <input class="form-control" id="destinationLat_relay4" type="hidden">
+                                        <input class="form-control" id="distance_relay4" type="hidden">
+                                        <!--<input class="form-control" id="entityID_relay4" placeholder="" type="hidden">-->
+                                        <div class="form-group">
+                                        <label for="entityID_relay4">Carrier</label>
+                                            <select id="entityID_relay4" name="entityID_relay4" data-placeholder="Carrier" class="form-control chzn-select" required="required" onchange="populateAutocomplete(this, 4);">
+                                                <option selected=selected value=""> -Select Carrier- </option>
+                                <?php
+                                                 foreach($entities->entities->records as $value) {
+                                                     $selected = ($value[0] == $entity) ? 'selected=selected':'';
+                                                     echo "<option value=" .$value[0] . " " . $selected . ">" . $value[1] . "</option>\n";
+                                                 }
+                                ?>
+                                            </select>
+                                        </div>
 
+                            <!--div id="relayOptions_4" style="display: none;"-->
 
+                                        <div class="form-group">
+                                                <label for="deliveryLocation_relay4">Location</label>
+                                                <input class="form-control" id="deliveryLocation_relay4" placeholder="" type="text">
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="address_relay4">Address</label>
+                                                <input class="form-control" id="address_relay4" placeholder="" type="text">
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="city_relay4">City</label>
+                                                <input class="form-control" id="city_relay4" placeholder="" type="text">
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="state_relay4">State</label>
+                                                <input class="form-control" id="state_relay4" placeholder="" type="text">
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="zip_relay4">Zip</label>
+                                                <input class="form-control" id="zip_relay4" placeholder="" type="text">
+                                        </div>
+                                        <div class="form-group">
+                                            <button type="button" class="btn btn-secondary w-100" onclick="saveRelayAddressToCarrier(4);">Save Address To Carrier</button>
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="contactPerson_relay4">Contact Person</label>
+                                                <input class="form-control" id="contactPerson_relay4" placeholder="" type="text">
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="phoneNumber_relay4">Phone Number</label>
+                                                <input class="form-control" id="phoneNumber_relay4" placeholder="" type="text">
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="hoursOfOperationOpen_relay4">Opening Hour</label>
+                                                <!--input class="form-control" id="hoursOfOperation_relay4" placeholder="" type="text"-->
+                                                <select class="form-control" id="hoursOfOperationOpen_relay4">
+                                                    <option>00:30</option>
+                                                    <option>01:00</option>
+                                                    <option>01:30</option>
+                                                    <option>02:00</option>
+                                                    <option>02:30</option>
+                                                    <option>03:00</option>
+                                                    <option>03:30</option>
+                                                    <option>04:00</option>
+                                                    <option>04:30</option>
+                                                    <option>05:00</option>
+                                                    <option>05:30</option>
+                                                    <option>06:00</option>
+                                                    <option>06:30</option>
+                                                    <option>07:00</option>
+                                                    <option>07:30</option>
+                                                    <option selected>08:00</option>
+                                                    <option>08:30</option>
+                                                    <option>09:00</option>
+                                                    <option>09:30</option>
+                                                    <option>10:00</option>
+                                                    <option>10:30</option>
+                                                    <option>11:00</option>
+                                                    <option>11:30</option>
+                                                    <option>12:00</option>
+                                                    <option>12:30</option>
+                                                    <option>13:00</option>
+                                                    <option>13:30</option>
+                                                    <option>14:00</option>
+                                                    <option>14:30</option>
+                                                    <option>15:00</option>
+                                                    <option>15:30</option>
+                                                    <option>16:00</option>
+                                                    <option>16:30</option>
+                                                    <option>17:00</option>
+                                                    <option>17:30</option>
+                                                    <option>18:00</option>
+                                                    <option>18:30</option>
+                                                    <option>19:00</option>
+                                                    <option>19:30</option>
+                                                    <option>20:00</option>
+                                                    <option>20:30</option>
+                                                    <option>21:00</option>
+                                                    <option>21:30</option>
+                                                    <option>22:00</option>
+                                                    <option>22:30</option>
+                                                    <option>23:00</option>
+                                                    <option>23:30</option>
+                                                    <option>24:00</option>
+                                                </select>
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="hoursOfOperationClose_relay4">Closing Hour</label>
+                                                <select class="form-control" id="hoursOfOperationClose_relay4">
+                                                    <option>00:30</option>
+                                                    <option>01:00</option>
+                                                    <option>01:30</option>
+                                                    <option>02:00</option>
+                                                    <option>02:30</option>
+                                                    <option>03:00</option>
+                                                    <option>03:30</option>
+                                                    <option>04:00</option>
+                                                    <option>04:30</option>
+                                                    <option>05:00</option>
+                                                    <option>05:30</option>
+                                                    <option>06:00</option>
+                                                    <option>06:30</option>
+                                                    <option>07:00</option>
+                                                    <option>07:30</option>
+                                                    <option>08:00</option>
+                                                    <option>08:30</option>
+                                                    <option>09:00</option>
+                                                    <option>09:30</option>
+                                                    <option>10:00</option>
+                                                    <option>10:30</option>
+                                                    <option>11:00</option>
+                                                    <option>11:30</option>
+                                                    <option>12:00</option>
+                                                    <option>12:30</option>
+                                                    <option>13:00</option>
+                                                    <option>13:30</option>
+                                                    <option>14:00</option>
+                                                    <option>14:30</option>
+                                                    <option>15:00</option>
+                                                    <option>15:30</option>
+                                                    <option>16:00</option>
+                                                    <option>16:30</option>
+                                                    <option selected>17:00</option>
+                                                    <option>17:30</option>
+                                                    <option>18:00</option>
+                                                    <option>18:30</option>
+                                                    <option>19:00</option>
+                                                    <option>19:30</option>
+                                                    <option>20:00</option>
+                                                    <option>20:30</option>
+                                                    <option>21:00</option>
+                                                    <option>21:30</option>
+                                                    <option>22:00</option>
+                                                    <option>22:30</option>
+                                                    <option>23:00</option>
+                                                    <option>23:30</option>
+                                                    <option>24:00</option>
+                                                </select>
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="timeZone_relay4">Time Zone</label>
+                                                <select class="form-control" id="timeZone_relay4">
+                                                    <option>EST (Eastern)</option>
+                                                    <option>CST (Central)</option>
+                                                    <option>MPT (Mountain)</option>
+                                                    <option>PST (Pacific)</option>
+                                                </select>
+                                        </div>
+
+                            <!--
                             </div>
                             <div id="pointOptions_4" style="display: none;">
+                            -->
 
+                                        <div class="form-group">
+                                                <label for="pickupDate_relay4">Pickup Date</label>
+                                                <input class="form-control" id="pickupDate_relay4" placeholder="" type="date">
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="deliveryDate_relay4">Delivery Date</label>
+                                                <input class="form-control" id="deliveryDate_relay4" placeholder="" type="date">
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="notes_relay4">Notes</label>
+                                                <textarea class="form-control" id="notes_relay4" rows="3"></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                                <label for="rate_relay4">Negotiated Rate</label>
+                                                <input class="form-control" id="rate_relay4" placeholder="" type="text" disabled>
+                                        </div>
 
-                            <div class="form-group">
-                                    <label for="pickupDate_relay4">Pickup Date</label>
-                                    <input class="form-control" id="pickupDate_relay4" placeholder="" type="date">
-                            </div>
-                            <div class="form-group">
-                                    <label for="deliveryDate_relay4">Delivery Date</label>
-                                    <input class="form-control" id="deliveryDate_relay4" placeholder="" type="date">
-                            </div>
-                            <div class="form-group">
-                                    <label for="notes_relay4">Notes</label>
-                                    <textarea class="form-control" id="notes_relay4" rows="3"></textarea>
-                            </div>
-                            <div class="form-group">
-                                    <label for="rate_relay4">Negotiated Rate</label>
-                                    <input class="form-control" id="rate_relay4" placeholder="" type="text" disabled>
-                            </div>
                             </div>
 
                     </div>
@@ -4149,6 +4164,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
     $('input[type=radio][name=relayView]').change(function() { // Doing it like this because it was double posting document giving me duplicates
 	    if ($('input[name="relayView"]:checked').val() == "Point to Point") {
+	        $("#divRelays").css("display", "none");
 	        if ($('#entityID_relay1').val() > "") {
                 $('#pointOptions_1').css("display", "block");
                 $('#relayOptions_1').css("display", "none");
@@ -4166,6 +4182,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 $('#relayOptions_4').css("display", "none");
             }
 	    } else {
+	        $("#divRelays").css("display", "block");
 	        if ($('#entityID_relay1').val() > "") {
                 $('#pointOptions_1').css("display", "none");
                 $('#relayOptions_1').css("display", "block");
