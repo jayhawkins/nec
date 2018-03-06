@@ -168,7 +168,7 @@ class CarrierNeeds
 
                       $to = array($entitycontactresult['contacts'][$ec]['emailAddress'] => $entitycontactresult['contacts'][$ec]['firstName'] . " " . $entitycontactresult['contacts'][$ec]['lastName']);
 
-                      $body = "<img src=\"" . HTTP_HOST . "img/nec_logo.png\"><br /><br />";
+                      $body = "<img src=\"" . HTTP_HOST . "/img/nec_logo.png\"><br /><br />";
                       $body .= "Hello " . $entitycontactresult['contacts'][$ec]['firstName'] . ",<br /><br />";
                       $body .= $templateresult['email_templates'][0]['body'];
 
