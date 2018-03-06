@@ -107,7 +107,7 @@ class CustomerNeedsCommit
 
             $numSent = 0;
 
-            $body = "<img src=\"" . HTTP_HOST . "img/nec_logo.png\"><br /><br />";
+            $body = "<img src=\"" . HTTP_HOST . "/img/nec_logo.png\"><br /><br />";
             $body .= "Hello " . $contactresult['contacts'][0]['firstName'] . ",<br /><br />";
             $body .= $templateresult['email_templates'][0]['body'];
             if (count($templateresult) > 0) {
@@ -179,7 +179,7 @@ class CustomerNeedsCommit
               try {
                     $to = array($contactresult['emailAddress'] => $contactresult['firstName'] . " " . $contactresult['lastName']);
 
-                    $body = "<img src=\"" . HTTP_HOST . "img/nec_logo.png\"><br /><br />";
+                    $body = "<img src=\"" . HTTP_HOST . "/img/nec_logo.png\"><br /><br />";
                     $body .= "Hello " . $contactresult['firstName'] . ",<br /><br />";
                     $body .= $templateresult['email_templates'][0]['body'];
 
@@ -296,7 +296,7 @@ class CustomerNeedsCommit
                     $to = array($contactresult['emailAddress'] => $contactresult['firstName'] . " " . $contactresult['lastName']);
                     //$to = array("dsmith@dubtel.com" => "Dennis Smith");
 
-                    $body = "<img src=\"" . HTTP_HOST . "img/nec_logo.png\"><br /><br />";
+                    $body = "<img src=\"" . HTTP_HOST . "/img/nec_logo.png\"><br /><br />";
                     $body .= "Hello " . $contactresult['firstName'] . ",<br /><br />";
                     $body .= $templateresult['email_templates'][0]['body'];
 
