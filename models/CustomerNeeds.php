@@ -572,9 +572,8 @@ class CustomerNeeds
             $contactcontext  = stream_context_create($contactoptions);
             $contactresult = json_decode(file_get_contents($contacturl,false,$contactcontext),true);
             //return $contactresult;
-            // $to = array($contactresult['contacts'][0]['emailAddress'] => $contactresult['contacts'][0]['firstName'] . " " . $contactresult['contacts'][0]['lastName']);
+            $to = array($contactresult['contacts'][0]['emailAddress'] => $contactresult['contacts'][0]['firstName'] . " " . $contactresult['contacts'][0]['lastName']);
 
-            $to = array("dsmith@dubtel.com" => "Dennis Smith");
             $returnObject = array();
 
             $body = "Hello " . $contactresult['contacts'][0]['firstName'] . ",<br /><br />";
@@ -674,10 +673,8 @@ class CustomerNeeds
               try {
                   for ($ec=0;$ec<count($entitycontactresult['contacts']);$ec++) {
 
-                      // $to = array($entitycontactresult['contacts'][$ec]['emailAddress'] => $entitycontactresult['contacts'][$ec]['firstName'] . " " . $entitycontactresult['contacts'][$ec]['lastName']);
+                      $to = array($entitycontactresult['contacts'][$ec]['emailAddress'] => $entitycontactresult['contacts'][$ec]['firstName'] . " " . $entitycontactresult['contacts'][$ec]['lastName']);
 
-                      $to = array("dsmith@dubtel.com" => "Dennis Smith");
-                      
                       $body = "Hello " . $entitycontactresult['contacts'][$ec]['firstName'] . ",<br /><br />";
                       $body .= $templateresult['email_templates'][0]['body'];
 
@@ -773,9 +770,8 @@ class CustomerNeeds
                         $contactcontext  = stream_context_create($contactoptions);
                         $contactresult = json_decode(file_get_contents($contacturl,false,$contactcontext),true);
                         //return $contactresult;
-                        //$to = array($contactresult['contacts'][0]['emailAddress'] => $contactresult['contacts'][0]['firstName'] . " " . $contactresult['contacts'][0]['lastName']);
+                        $to = array($contactresult['contacts'][0]['emailAddress'] => $contactresult['contacts'][0]['firstName'] . " " . $contactresult['contacts'][0]['lastName']);
 
-                      $to = array("dsmith@dubtel.com" => "Dennis Smith");
                         $returnObject = array();
 
                         $body = "<img src=\"" . HTTP_HOST . "/img/nec_logo.png\"><br /><br />";
@@ -947,10 +943,7 @@ class CustomerNeeds
                     $contactcontext  = stream_context_create($contactoptions);
                     $contactresult = json_decode(file_get_contents($contacturl,false,$contactcontext),true);
 
-                    // $to = array($contactresult['contacts'][0]['emailAddress'] => $contactresult['contacts'][0]['firstName'] . " " . $contactresult['contacts'][0]['lastName']);
-                    
-                    
-                    $to = array("dsmith@dubtel.com" => "Dennis Smith");
+                    $to = array($contactresult['contacts'][0]['emailAddress'] => $contactresult['contacts'][0]['firstName'] . " " . $contactresult['contacts'][0]['lastName']);
                 }
 
                 $admincontacts = $contact->getContactsByEntity(0); // Get the admin contacts to send email copies to
@@ -977,10 +970,8 @@ class CustomerNeeds
                 $contactcontext  = stream_context_create($contactoptions);
                 $contactresult = json_decode(file_get_contents($contacturl,false,$contactcontext),true);
 
-                // $to = array($contactresult['contacts'][0]['emailAddress'] => $contactresult['contacts'][0]['firstName'] . " " . $contactresult['contacts'][0]['lastName']);
+                $to = array($contactresult['contacts'][0]['emailAddress'] => $contactresult['contacts'][0]['firstName'] . " " . $contactresult['contacts'][0]['lastName']);
 
-                $to = array("dsmith@dubtel.com" => "Dennis Smith");
-                
                 $admincontacts = $contact->getContactsByEntity(0); // Get the admin contacts to send email copies to
                 for ($ac=0;$ac<count($admincontacts);$ac++) {
                     $bcc = array($admincontacts[$ac]['emailAddress'] => $admincontacts[$ac]['firstName'] . " " . $admincontacts[$ac]['lastName']);
