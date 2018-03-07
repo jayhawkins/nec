@@ -447,30 +447,30 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
         $('#commitModalTitle').empty();
         $('#dp-check-list-box').empty();
-            $('#customerID').val("");
+        $('#customerID').val("");
 
-            $('#pickupLocation').val("");
-            $('#pickupContactPerson').val("");
-            $('#pickupPhoneNumber').val("");
-            $('#pickupHoursOfOperation').val("");
-            $('#originationAddress1').val("");
-            $('#originationAddress2').val("");
-            $('#originationCity').val("");
-            $('#originationState').val("");
-            $('#originationZip').val("");
-            $('#originationNotes').val("");
+        $('#pickupLocation').val("");
+        $('#pickupContactPerson').val("");
+        $('#pickupPhoneNumber').val("");
+        $('#pickupHoursOfOperation').val("");
+        $('#originationAddress1').val("");
+        $('#originationAddress2').val("");
+        $('#originationCity').val("");
+        $('#originationState').val("");
+        $('#originationZip').val("");
+        $('#originationNotes').val("");
 
-            $('#deliveryLocation').val("");
-            $('#deliveryContactPerson').val("");
-            $('#deliveryPhoneNumber').val("");
-            $('#deliveryHoursOfOperation').val("");
-            $('#destinationAddress1').val("");
-            $('#destinationAddress2').val("");
-            $('#destinationCity').val("");
-            $('#destinationState').val("");
-            $('#destinationZip').val("");
-            $('#destinationNotes').val("");
-            $('#unitDataBody').empty();
+        $('#deliveryLocation').val("");
+        $('#deliveryContactPerson').val("");
+        $('#deliveryPhoneNumber').val("");
+        $('#deliveryHoursOfOperation').val("");
+        $('#destinationAddress1').val("");
+        $('#destinationAddress2').val("");
+        $('#destinationCity').val("");
+        $('#destinationState').val("");
+        $('#destinationZip').val("");
+        $('#destinationNotes').val("");
+        $('#unitDataBody').empty();
 
         for(var relayNumber = 1; relayNumber <=4 ; relayNumber ++){
             $('#relay_id' + relayNumber).val("");
@@ -500,11 +500,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             $('#hoursOfOperationClose_relay' + relayNumber).val("");
             $('#timeZone_relay' + relayNumber).val("");
 
-            $('#pointOptions_' + relayNumber).css("display", "block");
+            $('#pointOptions_' + relayNumber).css("display", "none");
             $('#relayOptions_' + relayNumber).css("display", "none");
 
         }
-
+            $('#radPointToPoint').prop("checked", true);
+            
+            $('.point-to-point').css("display", "none");
+                
             var dpli = '<div class="form-group row">' +
                         '   <div class="col-sm-2">' +
                             '<label for="qty">Quantity</label>'+
@@ -1066,6 +1069,14 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             var selectedRelayTabs = "";
             var relayCount = relays.length;
 
+            if(relayCount <= 1){                
+                $('#radPointToPoint').prop("checked", true);                
+                $('.point-to-point').css("display", "none");
+            }
+            else{                
+                $('#radRoutes').prop("checked", true);
+            }
+
             $.each(relays, function(key, customer_needs){
                 if (customer_needs.status == 'Available') {
                     //if(customer_needs.deliveryInformation == null) customer_needs.deliveryInformation = {deliveryLocation: "", contactPerson: "", phoneNumber: "", hoursOfOperation: ""};
@@ -1139,18 +1150,27 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                     $('#entityID_relay' + relayNumber).val(currentCarrier);
 
-                    //if (currentCarrier > 0){
-                    if (relayCount > 1){
-                        //$('#pointOptions_' + relayNumber).css("display", "block");
-                        $('#relayOptions_' + relayNumber).css("display", "block");
-                        $("#divRelays").css("display", "block");
-                    }
-                    else{
-                        //$('#pointOptions_' + relayNumber).css("display", "none");
-                        $('#relayOptions_' + relayNumber).css("display", "none");
-                        $("#divRelays").css("display", "none");
-                    }
+                    if ($('input[name="relayView"]:checked').val() == "Point to Point") {
 
+                        if (currentCarrier > 0){
+                            $('#relayOptions_' + relayNumber).css("display", "none");
+                            $('#pointOptions_' + relayNumber).css("display", "block");
+                        }
+                        else{
+                            $('#relayOptions_' + relayNumber).css("display", "none");
+                            $('#pointOptions_' + relayNumber).css("display", "none");
+                        }
+                    } 
+                    else {
+                        if (currentCarrier > 0){
+                            $('#relayOptions_' + relayNumber).css("display", "block");
+                            $('#pointOptions_' + relayNumber).css("display", "block");
+                        }
+                        else{
+                            $('#relayOptions_' + relayNumber).css("display", "none");
+                            $('#pointOptions_' + relayNumber).css("display", "none");
+                        }
+                    }
 
                     $('#address_relay' + relayNumber).val(customer_needs.destinationAddress1);
                     $('#city_relay' + relayNumber).val(customer_needs.destinationCity);
@@ -1937,14 +1957,13 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             <div class="row">
                     <div class="col-md-12">
                         <label for="relayView">Relay View</label><br>
-                        <input type="radio" id="relayView" name="relayView" value="Point to Point" checked /> Point to Point
-                        <input type="radio" id="relayView" name="relayView" value="Routes" /> Routes
+                        <input type="radio" id="radPointToPoint" name="relayView" value="Point to Point" /> Point to Point
+                        <input type="radio" id="radRoutes" name="relayView" value="Routes" /> Routes
                     </div>
             </div>
             <br>
 
-            <div id="divRelays">
-            <div class="row">
+            <div class="row point-to-point">
                     <div class="col-md-12">
                             <h2>Relay Addresses</h2>
                     </div>
@@ -1952,8 +1971,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             <br>
             <div class="row">
                     <div class="col-sm-12 col-md-6 col-lg-3">
-                            <div id="relayOptions_1" style="display: none;">
-                                        <h4>Relay Address 1</h4>
+                                        <h4 class="point-to-point">Relay Address 1</h4>
                                         <input class="form-control" id="relay_id1" placeholder="" type="hidden">
                                         <input class="form-control" id="commit_id1" placeholder="" type="hidden">
                                         <input class="form-control" id="originationLng_relay1" type="hidden">
@@ -1975,7 +1993,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                             </select>
                                         </div>
 
-                            <!--div id="relayOptions_1" style="display: none;"-->
+                            <div id="relayOptions_1" style="display: none;">
 
                                         <div class="form-group">
                                                 <label for="deliveryLocation_relay1">Location</label>
@@ -2125,10 +2143,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                                 </select>
                                         </div>
 
-                            <!--
+                          
                             </div>
                             <div id="pointOptions_1" style="display: none;">
-                            -->
+                            
                                         <div class="form-group">
                                                 <label for="pickupDate_relay1">Pickup Date</label>
                                                 <input class="form-control" id="pickupDate_relay1" placeholder="" type="date">
@@ -2150,8 +2168,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                     </div>
 
-                    <div class="col-sm-12 col-md-6 col-lg-3">
-                            <div id="relayOptions_2" style="display: none;">
+                    <div class="col-sm-12 col-md-6 col-lg-3 point-to-point">
                                         <h4>Relay Address 2</h4>
                                         <input class="form-control" id="relay_id2" placeholder="" type="hidden">
                                         <input class="form-control" id="commit_id2" placeholder="" type="hidden">
@@ -2174,7 +2191,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                             </select>
                                         </div>
 
-                            <!--div id="relayOptions_2" style="display: none;"-->
+                            <div id="relayOptions_2" style="display: none;">
 
                                         <div class="form-group">
                                                 <label for="deliveryLocation_relay2">Location</label>
@@ -2324,10 +2341,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                                 </select>
                                         </div>
 
-                            <!--
+                            
                             </div>
                             <div id="pointOptions_2" style="display: none;">
-                            -->
+                            
 
                                         <div class="form-group">
                                                 <label for="pickupDate_relay2">Pickup Date</label>
@@ -2350,8 +2367,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                     </div>
 
-                    <div class="col-sm-12 col-md-6 col-lg-3">
-                            <div id="relayOptions_3" style="display: none;">
+                    <div class="col-sm-12 col-md-6 col-lg-3 point-to-point">
                                         <h4>Relay Address 3</h4>
                                         <input class="form-control" id="relay_id3" placeholder="" type="hidden">
                                         <input class="form-control" id="commit_id3" placeholder="" type="hidden">
@@ -2374,7 +2390,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                             </select>
                                         </div>
 
-                            <!--div id="relayOptions_3" style="display: none;"-->
+                            <div id="relayOptions_3" style="display: none;">
 
                                         <div class="form-group">
                                                 <label for="deliveryLocation_relay3">Location</label>
@@ -2524,10 +2540,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                                 </select>
                                         </div>
 
-                            <!--
+                            
                             </div>
                             <div id="pointOptions_3" style="display: none;">
-                            -->
+                            
 
                                         <div class="form-group">
                                                 <label for="pickupDate_relay3">Pickup Date</label>
@@ -2550,8 +2566,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                     </div>
 
-                    <div class="col-sm-12 col-md-6 col-lg-3">
-                            <div id="relayOptions_4" style="display: none;">
+                    <div class="col-sm-12 col-md-6 col-lg-3 point-to-point">
                                         <h4>Relay Address 4</h4>
                                         <input class="form-control" id="relay_id4" placeholder="" type="hidden">
                                         <input class="form-control" id="commit_id4" placeholder="" type="hidden">
@@ -2574,7 +2589,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                             </select>
                                         </div>
 
-                            <!--div id="relayOptions_4" style="display: none;"-->
+                            <div id="relayOptions_4" style="display: none;">
 
                                         <div class="form-group">
                                                 <label for="deliveryLocation_relay4">Location</label>
@@ -2724,10 +2739,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                                 </select>
                                         </div>
 
-                            <!--
+                            
                             </div>
                             <div id="pointOptions_4" style="display: none;">
-                            -->
+                            
 
                                         <div class="form-group">
                                                 <label for="pickupDate_relay4">Pickup Date</label>
@@ -2749,7 +2764,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             </div>
 
                     </div>
-            </div>
             </div>
 
             <hr>
@@ -4051,13 +4065,28 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
     function populateAutocomplete(select, relayNumber){
         var currentCarrier = $(select).val();
-
-        if (currentCarrier != ""){
-            $('#relayOptions_' + relayNumber).css("display", "block");
+        if ($('input[name="relayView"]:checked').val() == "Point to Point") {
+                              
+            if (currentCarrier != ""){
+                $('#relayOptions_' + relayNumber).css("display", "none");
+                $('#pointOptions_' + relayNumber).css("display", "block");
+            }
+            else{
+                $('#relayOptions_' + relayNumber).css("display", "none");
+                $('#pointOptions_' + relayNumber).css("display", "none");
+            }
+        } 
+        else {
+            if (currentCarrier != ""){
+                $('#relayOptions_' + relayNumber).css("display", "block");
+                $('#pointOptions_' + relayNumber).css("display", "block");
+            }
+            else{
+                $('#relayOptions_' + relayNumber).css("display", "none");
+                $('#pointOptions_' + relayNumber).css("display", "none");
+            }
         }
-        else{
-            $('#relayOptions_' + relayNumber).css("display", "none");
-        }
+            
 
         $.ajax({
             url: '<?php echo API_HOST_URL . "/locations"; ?>' + '?filter=entityID,eq,' + currentCarrier + '&transform=1',
@@ -4164,41 +4193,46 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
     $('input[type=radio][name=relayView]').change(function() { // Doing it like this because it was double posting document giving me duplicates
 	    if ($('input[name="relayView"]:checked').val() == "Point to Point") {
-	        $("#divRelays").css("display", "none");
+                
+                $('.point-to-point').css("display", "none");
+                
 	        if ($('#entityID_relay1').val() > "") {
-                $('#pointOptions_1').css("display", "block");
-                $('#relayOptions_1').css("display", "none");
-            }
-            if ($('#entityID_relay2').val() > "") {
-                $('#pointOptions_2').css("display", "block");
-                $('#relayOptions_2').css("display", "none");
-            }
-            if ($('#entityID_relay3').val() > "") {
-                $('#pointOptions_3').css("display", "block");
-                $('#relayOptions_3').css("display", "none");
-            }
-            if ($('#entityID_relay4').val() > "") {
-                $('#pointOptions_4').css("display", "block");
-                $('#relayOptions_4').css("display", "none");
-            }
-	    } else {
-	        $("#divRelays").css("display", "block");
+                    $('#pointOptions_1').css("display", "block");
+                    $('#relayOptions_1').css("display", "none");
+                }
+            
+                if ($('#entityID_relay2').val() > "") {
+                    $('#pointOptions_2').css("display", "block");
+                    $('#relayOptions_2').css("display", "none");
+                }
+                if ($('#entityID_relay3').val() > "") {
+                    $('#pointOptions_3').css("display", "block");
+                    $('#relayOptions_3').css("display", "none");
+                }
+                if ($('#entityID_relay4').val() > "") {
+                    $('#pointOptions_4').css("display", "block");
+                    $('#relayOptions_4').css("display", "none");
+                }
+	    } 
+            else {
+                $('.point-to-point').css("display", "block");
+                
 	        if ($('#entityID_relay1').val() > "") {
-                $('#pointOptions_1').css("display", "none");
-                $('#relayOptions_1').css("display", "block");
-            }
-            if ($('#entityID_relay2').val() > "") {
-                $('#pointOptions_2').css("display", "none");
-                $('#relayOptions_2').css("display", "block");
-            }
-            if ($('#entityID_relay3').val() > "") {
-                $('#pointOptions_3').css("display", "none");
-                $('#relayOptions_3').css("display", "block");
-            }
-            if ($('#entityID_relay4').val() > "") {
-                $('#pointOptions_4').css("display", "none");
-                $('#relayOptions_4').css("display", "block");
-            }
+                    $('#pointOptions_1').css("display", "block");
+                    $('#relayOptions_1').css("display", "block");
+                }
+                if ($('#entityID_relay2').val() > "") {
+                    $('#pointOptions_2').css("display", "block");
+                    $('#relayOptions_2').css("display", "block");
+                }
+                if ($('#entityID_relay3').val() > "") {
+                    $('#pointOptions_3').css("display", "block");
+                    $('#relayOptions_3').css("display", "block");
+                }
+                if ($('#entityID_relay4').val() > "") {
+                    $('#pointOptions_4').css("display", "block");
+                    $('#relayOptions_4').css("display", "block");
+                }
 	    }
 	    return true;
 
