@@ -31,6 +31,7 @@ if(auto_logout("login_time")) {
         var example_table = $('#datatable-table').DataTable({
             retrieve: true,
             processing: true,
+            "bSortable": true,
             "pageLength": 50,
             ajax: {
                 url: url,

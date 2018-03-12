@@ -388,8 +388,6 @@ class Reports
 
           $returnData = "Order ID,Customer Name,Carrier Name,Unit Number,VIN,Location, Status\n";
 
-          $returnArray = array();
-
           $dbhandle = new $db('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS);
 
           $ordersquerystring = "select *, orders.customerID as custID, order_details.id as orderDetailID from orders
@@ -460,48 +458,6 @@ class Reports
 
           }
 
-    }
-
-    public function getdeliveredtrailerscsvold(&$db, $entitytype, $entityid) {
-          $dbhandle = new $db('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS);
-          $querystring = "select *, order_statuses.status as statusesstatus, orders.customerID as custID
-                                     from order_details
-                                     join order_statuses on order_statuses.orderDetailID = order_details.id
-                                     left join orders on orders.id = order_details.orderID
-                                     left join entities on entities.id = order_details.carrierID
-                                     where order_details.status = 'Open'
-                                     and order_statuses.status = 'Trailer Delivered'";
-
-          if ($entityid > 0) {
-              if ($entitytype == 1) {
-                  $querystring .= " and orders.customerID = '" . $entityid . "'";
-              } else {
-                  $querystring .= " and order_details.carrierID = '" . $entityid . "'";
-              }
-          }
-
-          $querystring .= " order by order_details.createdAt desc";
-
-          $result = $dbhandle->query($querystring);
-
-          if (count($result) > 0) {
-              $records = $result->fetchAll();
-              $data = "Order ID,Customer Name,Carrier Name,Unit Number,VIN,Location, Status\n";
-              foreach($records as $record) {
-                  /* Get carrier name for approved_pod record */
-                  $entitiesResult = $dbhandle->query("SELECT name FROM entities WHERE id = '" . $record['custID'] . "'");
-
-                  $entitiesData = $entitiesResult->fetchAll();
-                  for ($e = 0; $e < count($entitiesData); $e++) {
-                       $customerName = $entitiesData[$e]['name'];
-                  }
-                  $location = $record['city'] . " " . $record['state'];
-                  $data .= $record['orderID'].",".$customerName.",".$record['name'].",".$record['unitNumber'].",".$record['vinNumber'].",".$location.",".$record['statusesstatus']."\n";
-              }
-              echo $data;
-          } else {
-              echo 'No records found that match criteria';
-          }
     }
 
     public function getundeliveredtrailers(&$db, $entitytype, $entityid) {
