@@ -313,7 +313,7 @@ class Reports
 
     public function getdeliveredtrailers(&$db, $entitytype, $entityid) {
 
-          $returnArray = "";
+          $returnArray = array();
 
           $dbhandle = new $db('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS);
 
@@ -365,12 +365,7 @@ class Reports
                                                   $customerName = $entitiesData[$e]['name'];
                                               }
 
-                                              if ($d > 0) {
-                                                    $returnArray .= ", ";
-                                              }
-
-                                              $returnArray .= json_encode(array('customerName' => $customerName, 'carrierName' => $ordersdata[$o]['name'], 'orderID' => $ordersdata[$o]['orderID'], 'unitNumber' => $data[$c]['unitNumber'], 'vinNumber' => $data[$c]['vinNumber'], 'city' => $data[$c]['city'], 'state' => $data[$c]['state'], 'statusesstatus' => $data[$c]['status']));
-
+                                              $returnArray[] = array('customerName' => $customerName, 'carrierName' => $ordersdata[$o]['name'], 'orderID' => $ordersdata[$o]['orderID'], 'unitNumber' => $data[$c]['unitNumber'], 'vinNumber' => $data[$c]['vinNumber'], 'city' => $data[$c]['city'], 'state' => $data[$c]['state'], 'statusesstatus' => $data[$c]['status']);
 
                                         }
                                     }
@@ -379,7 +374,7 @@ class Reports
 
               }
 
-              echo "{ \"order_details\": [".$returnArray."]}";
+              echo "{ \"order_details\": ".json_encode($returnArray)."}";
 
           } else {
 
