@@ -3445,7 +3445,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 */
                                             var commitData = {customerNeedsID: relayID, entityID: entityID, originationAddress1: originationAddress1, originationCity: originationCity, originationState: originationState, originationZip: originationZip,
                                                             destinationAddress1: destinationAddress1, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, updatedAt: today,
-                                                            pickupDate: pickupDate, deliveryDate: deliveryDate };
+                                                            pickupDate: pickupDate, deliveryDate: deliveryDate, rate: rate };
 
                                             $.ajax({
                                                 url: url,
@@ -3754,11 +3754,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                             var entityID = $('#entityID_relay' + relayNumber).val();
                                             var pickupDate = $('#pickupDate_relay' + relayNumber).val();
                                             var deliveryDate = $('#deliveryDate_relay' + relayNumber).val();
+                                            var relayRate = $('#rate_relay' + relayNumber).val();
 
                                             var commitData = {customerNeedsID: relayID, entityID: entityID, originationAddress1: originationAddress1, originationCity: originationCity, originationState: originationState, originationZip: originationZip,
                                                             destinationAddress1: destinationAddress1, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, status: "Available",
                                                             originationLng: "", originationLat: "", destinationLng: "", destinationLat: "", distance: 0, qty: qty, transportation_mode: transportationMode, transportation_type: "", createdAt: today, updatedAt: today,
-                                                            pickupDate: pickupDate, deliveryDate: deliveryDate };
+                                                            pickupDate: pickupDate, deliveryDate: deliveryDate, rate: relayRate };
 
                                             $.ajax({
                                                 url: '<?php echo API_HOST_URL . "/customer_needs_commit" ?>/',
