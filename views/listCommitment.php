@@ -2161,7 +2161,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                         </div>
                                         <div class="form-group">
                                                 <label for="rate_relay1">Negotiated Rate</label>
-                                                <input class="form-control" id="rate_relay1" placeholder="" type="text" disabled>
+                                                <input class="form-control" id="rate_relay1" placeholder="" type="text">
                                         </div>
 
                             </div>
@@ -2360,7 +2360,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                         </div>
                                         <div class="form-group">
                                                 <label for="rate_relay2">Negotiated Rate</label>
-                                                <input class="form-control" id="rate_relay2" placeholder="" type="text" disabled>
+                                                <input class="form-control" id="rate_relay2" placeholder="" type="text">
                                         </div>
 
                             </div>
@@ -2559,7 +2559,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                         </div>
                                         <div class="form-group">
                                                 <label for="rate_relay3">Negotiated Rate</label>
-                                                <input class="form-control" id="rate_relay3" placeholder="" type="text" disabled>
+                                                <input class="form-control" id="rate_relay3" placeholder="" type="text">
                                         </div>
 
                             </div>
@@ -2758,7 +2758,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                         </div>
                                         <div class="form-group">
                                                 <label for="rate_relay4">Negotiated Rate</label>
-                                                <input class="form-control" id="rate_relay4" placeholder="" type="text" disabled>
+                                                <input class="form-control" id="rate_relay4" placeholder="" type="text">
                                         </div>
 
                             </div>
