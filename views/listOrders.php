@@ -254,7 +254,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                         "           </div>";
                         if(status.hasBeenApproved == 0){
                             statusesList += "       <div class=\"col-md-6\">" +
-                                            "           <button type=\"button\" id=\"approvePOD\" class=\"btn btn-primary w-100\" onclick=\"confirmApprovePOD(" + status.carrierID + ", '" + vinNumber + "'," + status.documentID + ", " + status.orderDetailID + ", " + orderID + ", " + status.id + ", " + status.unitNumber + ");\">Approve POD</button>" +
+                                            "           <button type=\"button\" id=\"approvePOD\" class=\"btn btn-primary w-100\" onclick=\"confirmApprovePOD(" + status.carrierID + ", '" + vinNumber + "'," + status.documentID + ", " + status.orderDetailID + ", " + orderID + ", " + status.id + ", '" + status.unitNumber + "');\">Approve POD</button>" +
                                             "       </div>";
                         }
                         else{
