@@ -385,6 +385,84 @@ class Reports
     }
 
     public function getdeliveredtrailerscsv(&$db, $entitytype, $entityid) {
+
+          $returnData = "Order ID,Customer Name,Carrier Name,Unit Number,VIN,Location, Status\n";
+
+          $returnArray = array();
+
+          $dbhandle = new $db('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS);
+
+          $ordersquerystring = "select *, orders.customerID as custID, order_details.id as orderDetailID from orders
+                                           left join order_details on order_details.orderID = orders.id
+                                           left join entities on entities.id = order_details.carrierID
+                                           where orders.status = 'Open'";
+          if ($entityid > 0) {
+              if ($entitytype == 1) {
+                  $ordersquerystring .= " and orders.customerID = '" . $entityid . "'";
+              } else {
+                  $ordersquerystring .= " and order_details.carrierID = '" . $entityid . "'";
+              }
+          }
+          $ordersquerystring .= " order by orders.createdAt desc";
+          $ordersqueryresult = $dbhandle->query($ordersquerystring);
+          if (count($ordersqueryresult) > 0) {
+
+              $ordersdata = $ordersqueryresult->fetchAll();
+
+              for ($o = 0; $o < count($ordersdata); $o++) {
+
+                      $podArray = array();
+                      $podList = json_decode($ordersdata[$o]['podList'],true);
+                      for ($pl=0;$pl<count($podList);$pl++) {
+                            $podArray[] = $podList[$pl]['vinNumber'];
+                      }
+
+                      for ($d=0;$d<count($podArray);$d++) {
+                              $querystring = "select *
+                                                        from order_statuses
+                                                        where orderID = '" . $ordersdata[$o]['orderID'] . "'
+                                                        and orderDetailID = '" . $ordersdata[$o]['orderDetailID'] . "'
+                                                        and vinNumber = '" . $podArray[$d] . "'";
+                              $querystring .= " order by createdAt desc limit 1";
+
+                              $result = $dbhandle->query($querystring);
+
+                              if (count($result) > 0) {
+                                    $data = $result->fetchAll();
+                                    for ($c = 0; $c < count($data); $c++) {
+                                        if ($data[$c]['status'] == "Trailer Delivered") {
+
+                                              /* Get carrier name for approved_pod record */
+                                              $entitiesResult = $dbhandle->query("SELECT name FROM entities WHERE id = '" . $ordersdata[$o]['custID'] . "'");
+
+                                              $entitiesData = $entitiesResult->fetchAll();
+                                              for ($e = 0; $e < count($entitiesData); $e++) {
+                                                  $customerName = $entitiesData[$e]['name'];
+                                              }
+
+                                              $customerName = str_replace(",", " ", $customerName);
+                                              $name = str_replace(",", " ",$ordersdata[$o]['name']);
+
+                                              $location = $data[$c]['city'] . " " . $data[$c]['state'];
+                                              $returnData .= $ordersdata[$o]['orderID'].",".$customerName.",".$name.",".$data[$c]['unitNumber'].",".$data[$c]['vinNumber'].",".$location.",".$data[$c]['status']."\n";
+                                        }
+                                    }
+                              }
+                      }
+
+              }
+
+              echo $returnData;
+
+          } else {
+
+              echo 'No records found that match criteria';
+
+          }
+
+    }
+
+    public function getdeliveredtrailerscsvold(&$db, $entitytype, $entityid) {
           $dbhandle = new $db('mysql:host=' . DBHOST . ';dbname=' . DBNAME, DBUSER, DBPASS);
           $querystring = "select *, order_statuses.status as statusesstatus, orders.customerID as custID
                                      from order_details
