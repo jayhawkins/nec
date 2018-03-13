@@ -3965,7 +3965,13 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     if(data > 0){
 
                         var relayNumber = 0;
-                        for(relayNumber = 1; relayNumber < 5; relayNumber++){
+                        var relayLimit = 4;
+                        
+                        if ($('input[name="relayView"]:checked').val() == "Point to Point") {
+                            relayLimit = 1;
+                        }
+
+                        for(relayNumber = 1; relayNumber <= relayLimit; relayNumber++){
 
                             var relayData = {};
                             var url = "";
@@ -3974,11 +3980,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             var relayID = $('#relay_id' + relayNumber).val().trim();
                             var commitID = $('#commit_id' + relayNumber).val().trim();
                             var carrierID = $('#entityID_relay' + relayNumber).val();
-                            var destinationAddress1 = $('#address_relay' + relayNumber).val().trim();
-                            var destinationCity = $('#city_relay' + relayNumber).val().trim();
-                            var destinationState = $('#state_relay' + relayNumber).val().trim();
-                            var destinationZip = $('#zip_relay' + relayNumber).val().trim();
-                            var destinationNotes = $('#notes_relay' + relayNumber).val().trim();
+//                            var destinationAddress1 = $('#address_relay' + relayNumber).val().trim();
+//                            var destinationCity = $('#city_relay' + relayNumber).val().trim();
+//                            var destinationState = $('#state_relay' + relayNumber).val().trim();
+//                            var destinationZip = $('#zip_relay' + relayNumber).val().trim();
+//                            var destinationNotes = $('#notes_relay' + relayNumber).val().trim();
 
 /*
                             var deliveryInformation = {deliveryLocation: $('#deliveryLocation_relay' + relayNumber).val().trim(), contactPerson: $('#contactPerson_relay' + relayNumber).val().trim(),
@@ -3990,6 +3996,37 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                                     deliveryHoursOfOperationClose: $('#hoursOfOperationClose_relay' + relayNumber).val(),timeZone: $('#timeZone_relay' + relayNumber).val()};
 
                             if(carrierID != ""){
+
+                                var deliveryInformation = {};
+
+                                var destinationAddress1 = "";
+                                var destinationCity = "";
+                                var destinationState = "";
+                                var destinationZip = "";
+
+                                if ($('input[name="relayView"]:checked').val() == "Point to Point") {
+
+                                    deliveryInformation = {deliveryLocation: $('#deliveryLocation').val().trim(), contactPerson: $('#deliveryContactPerson').val().trim(),
+                                                            phoneNumber: $('#deliveryPhoneNumber').val().trim(), deliveryHoursOfOperationOpen: $('#deliveryHoursOfOperationOpen').val(),
+                                                            deliveryHoursOfOperationClose: $('#deliveryHoursOfOperationClose').val(), deliveryTimeZone: $('#deliveryTimeZone').val()};
+
+                                    destinationAddress1 = $('#destinationAddress1').val().trim();
+                                    destinationCity = $('#destinationCity').val().trim();
+                                    destinationState = $('#destinationState').val().trim();
+                                    destinationZip = $('#destinationZip').val().trim();
+                                } 
+                                else {
+
+                                    deliveryInformation = {deliveryLocation: $('#deliveryLocation_relay' + relayNumber).val().trim(), contactPerson: $('#contactPerson_relay' + relayNumber).val().trim(),
+                                                            phoneNumber: $('#phoneNumber_relay' + relayNumber).val().trim(), deliveryHoursOfOperationOpen: $('#hoursOfOperationOpen_relay' + relayNumber).val().trim(),
+                                                            deliveryHoursOfOperationClose: $('#hoursOfOperationClose_relay' + relayNumber).val().trim(),deliveryTimeZone: $('#timeZone_relay' + relayNumber).val().trim()};
+
+                                    destinationAddress1 = $('#address_relay' + relayNumber).val().trim();
+                                    destinationCity = $('#city_relay' + relayNumber).val().trim();
+                                    destinationState = $('#state_relay' + relayNumber).val().trim();
+                                    destinationZip = $('#zip_relay' + relayNumber).val().trim();
+
+                                }
 
                                     url = '<?php echo API_HOST_URL . "/order_details" ?>/';
                                     type = "POST";
