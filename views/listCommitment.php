@@ -3834,6 +3834,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
     function saveCommitAsOrder(){
 
+        console.log("Calling Saving Commit To Order");
+
         $(document.body).css("cursor", "wait");
 
         var unitDataList = [];
@@ -3857,6 +3859,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         });
 
         if(unitDataList.length > 0){
+            
+            console.log("Made it through the unit list check.");
             var today = new Date();
             var orderID = today.getTime().toString();
             var dd = today.getDate();
