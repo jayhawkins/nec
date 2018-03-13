@@ -26,9 +26,9 @@ class Logs
             $logTypeContext  = stream_context_create($logTypeOptions);
             $result = json_decode(file_get_contents($logTypeURL,false,$logTypeContext));
 
-            return $result;
+            return count($result->log_types->records);
             
-            if(count($result) < 1){
+            if(count($result->log_types->records) < 1){
 
                 //ADD THIS LOG TYPE ID
                 $log_type_id = $this->add_log_type($log_type_name);
