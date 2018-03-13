@@ -3960,6 +3960,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         destinationAddress: destinationAddress1,  destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, originationLng: originationLng, originationLat: originationLat, destinationLng: destinationLng, destinationLat: destinationLat, distance: distance, needsDataPoints: needsdatapoints, podList: unitDataList,
                         comments: "", createdAt: today, updatedAt: today, qty: qty, customerRate: rate, transportationMode: transportationMode};
 
+            console.log(orderData);
+            console.log(JSON.stringify(orderData));
+
             var url = '<?php echo API_HOST_URL . "/orders" ?>';
 
             $.ajax({
