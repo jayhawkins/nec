@@ -3953,6 +3953,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         destinationAddress: destinationAddress1,  destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, originationLng: "", originationLat: "", destinationLng: "", destinationLat: "", distance: 0, needsDataPoints: needsdatapoints, podList: unitDataList,
                         comments: "", createdAt: today, updatedAt: today, qty: qty};
 */
+
+            console.log(carrierIDs);
+            
             var orderData = {customerID: customerID, carrierIDs: carrierIDs, orderID: orderID, deliveryInformation: deliveryInformation, pickupInformation: pickupInformation, originationAddress: originationAddress1, originationCity: originationCity, originationState: originationState, originationZip: originationZip,
                         destinationAddress: destinationAddress1,  destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, originationLng: originationLng, originationLat: originationLat, destinationLng: destinationLng, destinationLat: destinationLat, distance: distance, needsDataPoints: needsdatapoints, podList: unitDataList,
                         comments: "", createdAt: today, updatedAt: today, qty: qty, customerRate: rate, transportationMode: transportationMode};
@@ -3965,9 +3968,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 data: JSON.stringify(orderData),
                 contentType: "application/json",
                 async: false,
-                success: function(data){
-                    console.log(data);
+                success: function(data){   
                     
+                    console.log("Call to POST Orders:", data);
                     if(data > 0){
 
                         var relayNumber = 0;
@@ -4136,6 +4139,9 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     }
                     else{
                         $(document.body).css("cursor", "default");
+                        $("#errorAlertTitle").html("Error");
+                        $("#errorAlertBody").html("There Was An Error Saving Order");
+                        $("#errorAlert").modal('show');
 
                     }
                 },
