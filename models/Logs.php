@@ -26,6 +26,8 @@ class Logs
             $logTypeContext  = stream_context_create($logTypeOptions);
             $result = json_decode(file_get_contents($logTypeURL,false,$logTypeContext));
 
+            return $result;
+            
             if(count($result) < 1){
 
                 //ADD THIS LOG TYPE ID
