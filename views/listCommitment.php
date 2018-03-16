@@ -625,15 +625,26 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     data: null,
                     "bSortable": true,
                     "mRender": function (o) {
-                        var theDate = o.availableDate;
-                        return formatDate(new Date(theDate));
+                        
+                      if (o.availableDate == null){
+                          return '';
+                      }
+                      else if (o.availableDate == "0000-00-00" ) {
+                          return '';
+                      } else {
+                          return formatDate(new Date(o.availableDate));
+                      }
+                      
                     }
                 },
                 {
                     data: null,
                     "bSortable": true,
                     "mRender": function(o) {
-                      if (o.expirationDate == "0000-00-00") {
+                      if (o.expirationDate == null){
+                          return '';
+                      }
+                      else if (o.expirationDate == "0000-00-00" ) {
                           return '';
                       } else {
                           return formatDate(new Date(o.expirationDate));
@@ -3667,7 +3678,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
             var data = {pickupInformation: pickupInformation, originationAddress1: originationAddress1, originationAddress2: originationAddress2, originationCity: originationCity, originationState: originationState, originationZip: originationZip, originationNotes: originationNotes,
                         deliveryInformation: deliveryInformation, destinationAddress1: destinationAddress1, destinationAddress2: destinationAddress2, destinationCity: destinationCity, destinationState: destinationState, destinationZip: destinationZip, destinationNotes: destinationNotes,
-                        qty: qty, updatedAt: today, needsDataPoints: needsdatapoints, unitData: unitDataList, rate: rate, rateType: rateType, transportationMode: transportationMode, status: "Available", entityID: customerID};
+                        qty: qty, createdAt: today,  updatedAt: today, needsDataPoints: needsdatapoints, unitData: unitDataList, rate: rate, rateType: rateType, transportationMode: transportationMode, status: "Available", entityID: customerID};
 
             var url = '<?php echo API_HOST_URL . "/customer_needs" ?>';
 
