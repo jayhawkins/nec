@@ -84,13 +84,10 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 }(jQuery))
 
     var contacts = <?php echo json_encode($contacts); ?>;
-    //console.log(contacts);
 
     var locations_contacts = <?php echo json_encode($locations_contacts); ?>;
-    //console.log(locations_contacts);
 
     var dataPoints = <?php echo json_encode($dataPoints); ?>;
-    //console.log(dataPoints);
 
     var entity = <?php echo json_encode($entity); ?>;
 
@@ -99,8 +96,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
     var entityid = <?php echo $_SESSION['entityid']; ?>;
 
     var allEntities = <?php echo json_encode($allEntities); ?>;
-
-    console.log(allEntities);
 
     var customerNeedsRootIDs = <?php echo json_encode($customer_needs_root)?>;
 
@@ -536,8 +531,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                             emailData.orderNumber = orderNumber;
                             emailData.customerID = customerID;
 
-                            //console.log(JSON.stringify(emailData));
-
                             $.ajax({
                                url: url,
                                type: type,
@@ -685,7 +678,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                         var logs = json.logs;
 
-                        console.log(logs);
                         return logs;
                     }
                 },
@@ -1214,7 +1206,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                      type: type,
                      async: false,
                      success: function(data){
-                         //console.log(data.order_statuses[0]);
+                         
                          if (data.order_statuses.length > 0) {
                              $("#statusCarrierName").html(statusCarrierName);
                              $("#statusID").val(data.order_statuses[0].id);
@@ -1329,8 +1321,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                         var order_details = json.order_details;
 
                         if(entityType == 2 || entityType == 0){
-
-                            console.log(order_details);
 
                         var originationCity = order_details[0].orders[0].originationCity;
                         var originationState = order_details[0].orders[0].originationState;
@@ -2163,7 +2153,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                   updateDisplay();var checkedItems = {}, counter = 0;
                   $("#check-list-box li.active").each(function(idx, li) {
-                      //console.log($(li));
+                      
                       checkedItems[counter] = $(li).context.id;
                       counter++;
                   });
@@ -2303,7 +2293,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                 updateDisplay();var checkedItems = {}, counter = 0;
                 $("#dp-check-list-box li.active").each(function(idx, li) {
-                  //console.log($(li));
+                    
                     checkedItems[counter] = $(li).context.id;
                     counter++;
                 });
@@ -2755,7 +2745,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             if(order.originationZip == null) order.originationZip = "";
             if(order.destinationZip == null) order.destinationZip = "";
             if(order.podList == null) order.podList = [];
-//console.log(order);
+            
             // Populate Edit form
             $('#pickupLocation').val(order.pickupInformation.pickupLocation);
             $('#pickupContactPerson').val(order.pickupInformation.contactPerson);
@@ -7518,8 +7508,6 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
         });
 
         $("#btnPOUpload").unbind('click').bind('click',function(){ // Doing it like this because it was double posting document giving me duplicates
-
-            //console.log($('#filePO').val());
 
             // fileName will tell us if we're in Upload Mode or View/Edit Mode
             if($('#filePO').val() != ""){
