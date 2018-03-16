@@ -252,6 +252,12 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                         "           <div class=\"col-md-6\">" +
                                         "               <button type=\"button\" id=\"viewPOD\" class=\"btn btn-primary w-100\" onclick=\"viewPOD(" + status.documentID + ");\">View POD</button>" +
                                         "           </div>";
+                                
+                                
+            <?php
+                if($_SESSION['entitytype'] == 0){
+            ?>
+    
                         if(status.hasBeenApproved == 0){
                             statusesList += "       <div class=\"col-md-6\">" +
                                             "           <button type=\"button\" id=\"approvePOD\" class=\"btn btn-primary w-100\" onclick=\"confirmApprovePOD(" + status.carrierID + ", '" + vinNumber + "'," + status.documentID + ", " + status.orderDetailID + ", " + orderID + ", " + status.id + ", '" + status.unitNumber + "');\">Approve POD</button>" +
@@ -262,6 +268,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                                             "           <button type=\"button\" id=\"approvePOD\" class=\"btn btn-primary w-100 disabled\" disabled>Approved</button>" +
                                             "       </div>";
                         }
+                <?php }?>
 
                         statusesList += "       </div>" +
                                         "       <hr>";
@@ -1796,6 +1803,13 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                 success: function(data){
                      var customerID = data.orders[0].customerID;
                      var orderID = data.orders[0].orderID;
+                     
+                     var podList = data.orders[0].podList;
+                     
+                     for(var i = 0; i < podList.length; i++){
+                         if(podList[i].deliveryDate == null) podList[i].deliveryDate = "";
+                         if(podList[i].notes == null) podList[i].notes = "";
+                    }
 
                      $("#orderNumber").html(orderID);
 
@@ -3067,6 +3081,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
     .w-100{
         width: 100% !important;
     }
+    
  </style>
 
  <div id="orders">
@@ -3164,7 +3179,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
         <?php
             }
-            else if($_SESSION['entitytype'] == 2){
+            else{
                 ?>
         <ul class="text-summary">
             <li>Order # <p id="orderNumber" style="display: inline;"></p></li>
@@ -3600,7 +3615,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
             </div>
             <?php
                 }
-                else if($_SESSION['entitytype'] == 2){
+                else{
                     ?>
 
             <div class="col-md-9">
@@ -3732,7 +3747,7 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
             <!-- start right column -->
             <?php
-                if($_SESSION['entitytype'] == 0){
+                if($_SESSION['entitytype'] < 2){
             ?>
             <!-- start right column content -->
             <div class="col-md-9">
@@ -3748,8 +3763,8 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                                     </select>
                                 </li>
-                                <li class="list-inline-item pull-right"><button id="btnAddStatus" class="btn btn-primary" onclick="openAddStatus()">Add Status</button></li>
-                                <li class="list-inline-item pull-right"><button id="btnCloseAddStatus" class="btn btn-primary" onclick="closeAddStatus()">Close Add Status</button></li>
+                                <li <?php if($_SESSION['entitytype'] == 1) echo 'style="display: none;"'; ?> class="list-inline-item pull-right"><button id="btnAddStatus" class="btn btn-primary" onclick="openAddStatus()">Add Status</button></li>
+                                <li <?php if($_SESSION['entitytype'] == 1) echo 'style="display: none;"'; ?> class="list-inline-item pull-right"><button id="btnCloseAddStatus" class="btn btn-primary" onclick="closeAddStatus()">Close Add Status</button></li>
                             </ul>
                         </div>
 
