@@ -685,18 +685,27 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
 
                         var logs = json.logs;
 
+                        console.log(logs);
                         return logs;
                     }
                 },
                 columns:  [
                         { data: "id", visible: false },
+                        { data: "user_id", visible: false },
+                        { data: null,
+                            "bSortable": true,
+                            "mRender": function (o) {
+                                var userFullName = o.members[0].firstName + ' ' + o.members[0].lastName;
+
+                                return userFullName;
+                            }
+                        },
                         { data: "log_type_id", visible: false },
                         { data: "log_descr" },
                         { data: "ref_id", visible: false },
-                        { data: "user_id", visible: false },
                         { data: "createdAt" }
                     ],
-                    order: [[5, "desc"]]
+                    order: [[6, "desc"]]
               });
 
             //To Reload The Ajax
@@ -4124,10 +4133,11 @@ $customer_needs_root = json_decode(file_get_contents(API_HOST_URL . "/customer_n
                     <thead>
                     <tr>
                         <th>ID</th>
+                        <th>User ID</th>
+                        <th>User</th>
                         <th>Log Type ID</th>
                         <th>Ledger Description</th>
                         <th>Reference ID</th>
-                        <th>User ID</th>
                         <th>Date</th>
                     </tr>
                     </thead>
